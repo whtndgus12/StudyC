@@ -1,4 +1,3 @@
-StudyC
 # ACK 업무 교육 일지
 
 <br/><br/><br/><br/>
