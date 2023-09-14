@@ -1,0 +1,1575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOsetMgmtDAO_sql.xml
+    Description :                                      처방SET관리DAO
+                  -->
+<mapper namespace="MdpOsetMgmtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis (처방SET기본저장)
+        Description :                                           처방SET기본저장 mdd_osetbst_i01
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis */
+		  into  MDOSETBST
+		        (
+		        OSET_CD            /*  SET 모음구분*/
+		     ,  OSET_SNO           /*  SET 모음순번*/
+		     ,  OSET_DVSN_CD       /*  SET 구분*/
+		     ,  SORT_SQNC          /*  나열순서*/
+		     ,  OSET_NM            /*  SET 모음명*/
+		     ,  HGRN_OSET_SNO      /*  상위코드*/
+		     ,  LWRN_EXST_YN       /*  하위여부*/
+		     ,  ANAG_RMRK_CTN      /*  항균제비고내용 */
+		     ,  ORDR_CRTN_LNKN_NO  /*  처방생성연결번호 */
+		     /* AUDIT */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values
+		        (
+		        #{osetCd}
+		     ,  case
+		        when #{osetSno} &gt; 0 then #{osetSno}
+		                            else (
+		                                 select  nvl(max(a.OSET_SNO),0)+1
+		                                   from  MDOSETBST a
+		                                  where  a.OSET_CD       = #{osetCd}
+		                                    and  a.OSET_DVSN_CD  = #{osetDvsnCd}
+		                                 )
+		        end
+		     ,  #{osetDvsnCd}
+		     ,  case when #{sortSqnc} &gt; 0 then #{sortSqnc}
+		                                  else (
+		                                       select  nvl(max(a.SORT_SQNC ),0)+1
+		                                         from  MDOSETBST a
+		                                        where  a.OSET_CD       = #{osetCd}
+		                                          and  a.OSET_DVSN_CD  = #{osetDvsnCd}
+		                                       )
+		        end
+		     ,  #{osetNm}
+		     ,  #{hgrnOsetSno}
+		     ,  #{lwrnExstYn}
+		     ,  #{anagRmrkCtn}
+		     ,  MDOSETBSTQ.NEXTVAL
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis2 (SET기본 추가)
+        Description :                                           SET기본 추가 mdo_osetbst_m01$I02
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis2"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsis2 */
+		  into  MDOSETBST
+		        (
+		        OSET_CD            /* SET 모음코드 */
+		     ,  OSET_SNO           /* SET 모음순번 */
+		     ,  OSET_DVSN_CD       /* SET 구분     */
+		     ,  SORT_SQNC          /* 나열순서     */
+		     ,  OSET_NM            /* SET 모음명   */
+		     ,  HGRN_OSET_SNO      /* 상위코드     */
+		     ,  LWRN_EXST_YN       /* 하위여부     */
+		     ,  USE_YN             /* 사용유무     */
+		     ,  ANAG_RMRK_CTN      /* 항균제비고내용 */
+		     ,  ORDR_CRTN_LNKN_NO  /* 처방생성연결번호 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values
+		        (
+		        #{osetCd}                               -- SET 모음코드
+		     ,  #{osetSno}                              -- SET 모음순번
+		     ,  #{osetDvsnCd}                           -- SET 구분
+		     ,  #{osetSortSqnc}                         -- 나열순서
+		     ,  #{osetNm}                               -- SET 모음명
+		     ,  #{hgrnOsetSno}                          -- 상위코드
+		     ,  'N'                                     -- 하위여부
+		     ,  'Y'                                     -- 사용유무
+		     ,  #{anagRmrkCtn}                          -- 항균제비고내용
+		     ,  MDOSETBSTQ.NEXTVAL                      -- 처방생성연결번호
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmrk (다른SET에서 즐겨찾기(북마크))
+        Description :                                           다른SET에서 즐겨찾기(북마크) mdo_osetbst_m01$I08
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmrk"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmrk */
+		  into  MDOSETBST
+		        (
+		        OSET_CD                        /* 처방SET코드 */
+		     ,  OSET_SNO                       /* 처방SET일련번호 */
+		     ,  OSET_DVSN_CD                   /* 처방SET구분코드 */
+		     ,  OSET_NM                        /* 처방SET명 */
+		     ,  SCIN_CD                        /* 상병코드 */
+		     ,  SCIN_NM                        /* 상병명 */
+		     ,  USE_YN                         /* 사용여부 */
+		     ,  SORT_SQNC                      /* 정렬순서 */
+		     ,  LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  HGRN_OSET_SNO                  /* 상위처방SET일련번호 */
+		     ,  MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  MDCR_OSET_COPY_DVSN_CD         /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  ORGL_MDCR_OSET_CD              /* 원진료처방SET코드 */
+		     ,  ORGL_MDCR_OSET_SNO             /* 원진료처방SET일련번호 */
+		     ,  ORGL_MDCR_OSET_DVSN_CD         /* 원진료처방SET구분코드 */
+		     ,  CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     ,  ORDR_CRTN_LNKN_NO              /* 처방생성연결번호 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		select
+		        #{osetCd}                        /* 처방SET코드 */
+		     ,  #{osetSno}                       /* 처방SET일련번호 */
+		     ,  #{osetDvsnCd}                    /* 처방SET구분코드 */
+		     ,  a.OSET_NM                        /* 처방SET명 */
+		     ,  a.SCIN_CD                        /* 상병코드 */
+		     ,  a.SCIN_NM                        /* 상병명 */
+		     ,  a.USE_YN                         /* 사용여부 */
+		     ,  nvl(#{sortSqnc}, a.SORT_SQNC)    /* 정렬순서 */
+		     ,  a.LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  nvl(#{hgrnOsetSno}, 0)            /* 상위처방SET일련번호 */
+		     ,  a.MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  'L'                              /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  #{orglMdcrOsetCd}                /* 원진료처방SET코드 */
+		     ,  #{orglMdcrOsetSno}               /* 원진료처방SET일련번호 */
+		     ,  #{orglMdcrOsetDvsnCd}            /* 원진료처방SET구분코드 */
+		     ,  a.CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  a.ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     ,  MDOSETBSTQ.NEXTVAL        /* 처방생성연결번호 */
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		  from  MDOSETBST a
+		 where  a.OSET_CD       = #{orglMdcrOsetCd}
+		   and  a.OSET_SNO      = #{orglMdcrOsetSno}
+		   and  a.OSET_DVSN_CD  = #{orglMdcrOsetDvsnCd}
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopy (처방SET기본 복사)
+        Description :                                           처방SET기본 복사 mdo_osetbst_m01$I02
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopy */
+		  into  MDOSETBST
+		        (
+		        OSET_CD                        /* 처방SET코드 */
+		     ,  OSET_SNO                       /* 처방SET일련번호 */
+		     ,  OSET_DVSN_CD                   /* 처방SET구분코드 */
+		     ,  OSET_NM                        /* 처방SET명 */
+		     ,  SCIN_CD                        /* 상병코드 */
+		     ,  SCIN_NM                        /* 상병명 */
+		     ,  USE_YN                         /* 사용여부 */
+		     ,  SORT_SQNC                      /* 정렬순서 */
+		     ,  LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  HGRN_OSET_SNO                  /* 상위처방SET일련번호 */
+		     ,  MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  MDCR_OSET_COPY_DVSN_CD         /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  ORGL_MDCR_OSET_CD              /* 원진료처방SET코드 */
+		     ,  ORGL_MDCR_OSET_SNO             /* 원진료처방SET일련번호 */
+		     ,  ORGL_MDCR_OSET_DVSN_CD         /* 원진료처방SET구분코드 */
+		     ,  CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     ,  CNFM_ID                        /* 확인자ID */
+		     ,  CNFR_DT                        /* 확인일시 */
+		     ,  ORDR_CRTN_LNKN_NO              /* 처방생성연결번호 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		     )
+		select
+		        #{osetCd}                        /* 처방SET코드 */
+		     ,  #{osetSno}                       /* 처방SET일련번호 */
+		     ,  #{osetDvsnCd}                    /* 처방SET구분코드 */
+		     ,  a.OSET_NM                        /* 처방SET명 */
+		     ,  a.SCIN_CD                        /* 상병코드 */
+		     ,  a.SCIN_NM                        /* 상병명 */
+		     ,  a.USE_YN                         /* 사용여부 */
+		     ,  #{sortSqnc}                      /* 정렬순서 */
+		     ,  a.LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  nvl(#{hgrnOsetSno}, 0)            /* 상위처방SET일련번호 */
+		     ,  a.MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  'C'                              /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  #{orglMdcrOsetCd}                /* 원진료처방SET코드 */
+		     ,  #{orglMdcrOsetSno}               /* 원진료처방SET일련번호 */
+		     ,  #{orglMdcrOsetDvsnCd}            /* 원진료처방SET구분코드 */
+		     ,  a.CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  a.ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     /*----------------------------------------------------*/
+		     /* 처방 SET 복사 시 SET인 경우에는 확인한 것으로 간주 */
+		     /*----------------------------------------------------*/
+		     ,  case when a.LWRN_EXST_YN = 'N' then #{gvUserId} else null end   /* 확인자ID */
+		     ,  case when a.LWRN_EXST_YN = 'N' then sysdate     else null end   /* 확인일시 */
+		     /*----------------------------------------------------*/
+		     ,  MDOSETBSTQ.NEXTVAL        /* 처방생성연결번호 */
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		  from  MDOSETBST a
+		 where  a.OSET_CD       = #{orglMdcrOsetCd}
+		   and  a.OSET_SNO      = #{orglMdcrOsetSno}
+		   and  a.OSET_DVSN_CD  = #{orglMdcrOsetDvsnCd}
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopyAll (SET기본(전체)복사)
+        Description :                                           SET기본(전체)복사
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopyAll"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisCopyAll */
+		  into  MDOSETBST
+		        (
+		        OSET_CD                        /* 처방SET코드 */
+		     ,  OSET_SNO                       /* 처방SET일련번호 */
+		     ,  OSET_DVSN_CD                   /* 처방SET구분코드 */
+		     ,  OSET_NM                        /* 처방SET명 */
+		     ,  SCIN_CD                        /* 상병코드 */
+		     ,  SCIN_NM                        /* 상병명 */
+		     ,  USE_YN                         /* 사용여부 */
+		     ,  SORT_SQNC                      /* 정렬순서 */
+		     ,  LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  HGRN_OSET_SNO                  /* 상위처방SET일련번호 */
+		     ,  MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  MDCR_OSET_COPY_DVSN_CD         /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  ORGL_MDCR_OSET_CD              /* 원진료처방SET코드 */
+		     ,  ORGL_MDCR_OSET_SNO             /* 원진료처방SET일련번호 */
+		     ,  ORGL_MDCR_OSET_DVSN_CD         /* 원진료처방SET구분코드 */
+		     ,  CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     ,  CNFM_ID                        /* 확인자ID */
+		     ,  CNFR_DT                        /* 확인일시 */
+		     ,  ORDR_CRTN_LNKN_NO              /* 처방생성연결번호 */
+		        /* AUDIT */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		     )
+		select
+		        #{osetCd1}                       /* 처방SET코드 */
+		     ,  a.OSET_SNO                       /* 처방SET일련번호 */
+		     ,  #{osetDvsnCd1}                   /* 처방SET구분코드 */
+		     ,  a.OSET_NM                        /* 처방SET명 */
+		     ,  a.SCIN_CD                        /* 상병코드 */
+		     ,  a.SCIN_NM                        /* 상병명 */
+		     ,  a.USE_YN                         /* 사용여부 */
+		     ,  a.SORT_SQNC                      /* 정렬순서 */
+		     ,  a.LWRN_EXST_YN                   /* 하위존재여부 */
+		     ,  a.HGRN_OSET_SNO                  /* 상위처방SET일련번호 */
+		     ,  a.MDCR_OSET_DVSN_CD              /* 진료처방SET구분코드 */
+		     ,  case when a.MDCR_OSET_COPY_DVSN_CD = 'L' then 'L'                       else 'C'            end /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		     ,  case when a.MDCR_OSET_COPY_DVSN_CD = 'L' then a.ORGL_MDCR_OSET_CD       else a.OSET_CD      end /* 원진료처방SET코드 */
+		     ,  case when a.MDCR_OSET_COPY_DVSN_CD = 'L' then a.ORGL_MDCR_OSET_SNO      else a.OSET_SNO     end /* 원진료처방SET일련번호 이전 쿼리는 null 이 였음 -&gt; 수정함*/
+		     ,  case when a.MDCR_OSET_COPY_DVSN_CD = 'L' then a.ORGL_MDCR_OSET_DVSN_CD  else a.OSET_DVSN_CD end /* 원진료처방SET구분코드 */
+		     ,  a.CLNC_SCIN_CD                   /* 임상상병코드 */
+		     ,  a.ACDG_ADMN_MI                   /* 항암제투여시간분 */
+		     -----------------------------------------------------
+		     -- 처방 SET 복사 시 SET인 경우에는 확인한 것으로 간주
+		     -----------------------------------------------------
+		     ,  case when a.LWRN_EXST_YN = 'N' then #{gvUserId} else null end   /* 확인자ID */
+		     ,  case when a.LWRN_EXST_YN = 'N' then sysdate     else null end   /* 확인일시 */
+		     -----------------------------------------------------
+		     ,  MDOSETBSTQ.NEXTVAL        /* 처방생성연결번호 */
+		        /* AUDIT */
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		  from  MDOSETBST a
+		 where  a.OSET_CD       = #{osetCd}
+		   and  a.OSET_DVSN_CD  = #{osetDvsnCd}
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis (처방SET기본 수정)
+        Description :                                           처방SET기본 수정 mdd_osetbst_u01
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis */
+		        MDOSETBST
+		   set
+		        OSET_NM             = case when #{osetNm} is null then OSET_NM            /*  SET 모음명*/
+		                                                          else #{osetNm}
+		                              end
+		     ,  HGRN_OSET_SNO       = case when #{hgrnOsetSno} &gt; 0 then #{hgrnOsetSno} /*  상위코드*/
+		                                                           else case when #{osetDvsnCd1} = 'X' then #{hgrnOsetSno}
+		                                                                                               else HGRN_OSET_SNO
+		                                                                end
+		                              end
+		     ,  LWRN_EXST_YN        = case when #{lwrnExstYn} is null then LWRN_EXST_YN       /*  상위코드*/
+		                                                              else #{lwrnExstYn}
+		                              end
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD         = #{osetCd}
+		   and  OSET_SNO        = #{osetSno}
+		   and  OSET_DVSN_CD    = nvl(OSET_DVSN_CD, #{osetDvsnCd})
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis2 (SET기본 수정)
+        Description :                                           SET기본 수정 mdo_osetbst_m01$U02
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis2"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetBsis2 */
+		        MDOSETBST
+		   set
+		        LWRN_EXST_YN      = 'N'
+		     /*------------------------------------------------------*/
+		     /* ADD/REPL 저장 한 경우 확인 한것으로 간주             */
+		     /*------------------------------------------------------*/
+		     ,  CNFM_ID             = #{gvUserId}
+		     ,  CNFR_DT             = sysdate
+		     /*-------------------------------------------------------------------------*/
+		     /* ADD/REPL 할때도 같이 타므로                                             */
+		     /* 폴더생성했던 시점(SET으로 이후 등록했어도)으로 추가건으로 잡히도록 변경 */
+		     /*-------------------------------------------------------------------------*/
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_SNO     = #{osetSno}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm (처방SET 확인)
+        Description :                                           처방SET 확인정보를 업데이트한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm */
+		        MDOSETBST
+		   set
+		        CNFM_ID                = #{gvUserId}
+		     ,  CNFR_DT                = sysdate
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD      = #{osetCd}       /* 처방SET코드 */
+		   and  OSET_SNO     = #{osetSno}      /* 처방SET일련번호 */
+		   and  OSET_DVSN_CD = #{osetDvsnCd}   /* 처방SET구분코드 */
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm2 (처방SET확인 2)
+        Description :                                           처방SET확인 - 확인일시를 직접 설정
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm2"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateOsetCnfm2 */
+		        MDOSETBST
+		   set
+		        CNFM_ID      = #{cnfmId}
+		     ,  CNFR_DT      = to_date(#{cnfrDt}, 'yyyymmddhh24miss')
+		     ,  LAST_UPDR_ID = #{gvUserId}
+		     ,  LAST_UPDT_IP = #{gvUserIp}
+		     ,  LAST_UPDT_DT = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD         = #{osetCd}
+		   and  OSET_SNO        = #{osetSno}
+		   and  OSET_DVSN_CD    = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUp (처방SET버전업)
+        Description :                                           처방SET의 버전을 올린다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUp"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUp */
+		        MDOSETBST
+		   set
+		        MDCR_OSET_MDFR_ID      = #{gvUserId}               /* 진료처방SET변경자ID */
+		     ,  MDCR_OSET_MDFC_DT      = sysdate                           /* 진료처방SET변경일시 */
+		     ,  MDCR_OSET_VRSN_ID      = to_char(nvl(MDCR_OSET_VRSN_ID, 1) + 0.1)
+		     ,  MDCR_OSET_MDRE_CTN     = #{mdcrOsetMdreCtn}
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_SNO     = #{osetSno}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUpCnfm (처방SET 버전업 및 확인)
+        Description :                                           처방SET버전을 올리과 확인 처리를 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUpCnfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateVrsnUpCnfm */
+		update  /*+ mdo_osetbst_m01$U03_SET기본 수정 SQL */
+		        MDOSETBST
+		   set
+		        OSET_NM                = #{osetNm}
+		     ,  MDCR_OSET_MDFR_ID      = #{gvUserId}   /* 진료처방SET변경자ID */
+		     ,  MDCR_OSET_MDFC_DT      = sysdate       /* 진료처방SET변경일시 */
+		     ,  MDCR_OSET_VRSN_ID      = to_char(nvl(to_number(MDCR_OSET_VRSN_ID), 1) + 0.1)
+		     ,  MDCR_OSET_MDRE_CTN     = #{mdcrOsetMdreCtn}
+		     ,  USE_YN                 = #{useYn}
+		     /*------------------------------------------------------*/
+		     /* 이력 저장 한 경우 확인 한것으로 간주                 */
+		     /*------------------------------------------------------*/
+		     ,  CNFM_ID                = #{gvUserId}
+		     ,  CNFR_DT                = sysdate
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD         = #{osetCd}
+		   and  OSET_SNO        = #{osetSno}
+		   and  OSET_DVSN_CD    = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateScin (처방SET기본저장(상병))
+        Description :                                           처방SET기본저장(상병) mdd_osetbst_u03
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateScin"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateScin */
+		        MDOSETBST
+		   set
+		        SCIN_CD      = case when #{clncScinCd} is null then ''
+		                                                       else #{scinCd}
+		                       end
+		     ,  SCIN_NM      = case when #{clncScinCd} is null then ''
+		                                                       else #{scinNm}
+		                       end
+		     ,  CLNC_SCIN_CD = case when #{clncScinCd} is null then ''
+		                                                       else #{clncScinCd}
+		                       end
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD         = #{osetCd}
+		   and  OSET_SNO        = #{osetSno}
+		   and  OSET_DVSN_CD    = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateAnagRmrkCtn (처방SET기본저장(항균제특이사항))
+        Description :                                           처방SET기본저장(항균제특이사항)
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateAnagRmrkCtn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateAnagRmrkCtn */
+		        MDOSETBST
+		   set
+		        ANAG_RMRK_CTN          = #{anagRmrkCtn}        /* 항균제비고내용 */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD         = #{osetCd}
+		   and  OSET_SNO        = #{osetSno}
+		   and  OSET_DVSN_CD    = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateHgrnOsetSno (처방SET상위처방SET번호 수정)
+        Description :                                           처방SET상위처방SET번호 수정 mdd_osetbst_u14
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateHgrnOsetSno"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-updateHgrnOsetSno */
+		        MDOSETBST
+		   set
+		        HGRN_OSET_SNO          = #{hgrnOsetSno}
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_SNO     = #{osetSno}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsis (처방SET 기본 삭제)
+        Description :                                           처방SET 기본 삭제 mdo_osetbst_m01$D18
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsis */
+		  from  MDOSETBST
+		 where  OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+		   and  OSET_SNO in
+		        (
+		        select  OSET_SNO
+		          from  (
+		                select  OSET_SNO, HGRN_OSET_SNO
+		                  from  MDOSETBST
+		                 where  OSET_CD      = #{osetCd}
+		                   and  OSET_DVSN_CD = #{osetDvsnCd}
+		                ) x
+		         start
+		           with  OSET_SNO = #{osetSno}
+		         connect
+		             by  prior OSET_SNO = HGRN_OSET_SNO
+		        )
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisByPK (처방SET삭제(PK사용))
+        Description :                                           PK를 사용하여 처방SET을 삭제한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisByPK"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisByPK */
+		  from  MDOSETBST
+		 where
+		        OSET_CD       = #{osetCd}      /* 처방SET코드 */
+		   and  OSET_SNO      = #{osetSno}     /* 처방SET일련번호 */
+		   and  OSET_DVSN_CD  = #{osetDvsnCd}  /* 처방SET구분코드 */
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisAll (처방SET 기본 삭제)
+        Description :                                           처방SET 기본 삭제
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisAll"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisAll */
+		  from  MDOSETBST
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHx (처방SET 기본이력 삭제)
+        Description :                                           처방SET 기본이력 삭제 mdo_osetbst_m01$D14
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHx */
+		        MDOSETBHT
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+		   and  OSET_SNO in
+		        (
+		        select  OSET_SNO
+		          from  (
+		                select  OSET_SNO
+		                     ,  HGRN_OSET_SNO
+		                  from  MDOSETBST
+		                 where  OSET_CD      = #{osetCd}
+		                   and  OSET_DVSN_CD = #{osetDvsnCd}
+		                ) x
+		         start
+		          with  OSET_SNO = #{osetSno}
+		        connect
+		            by  PRIOR OSET_SNO = HGRN_OSET_SNO
+		        )
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxByPK (처방SET 이력 삭제(PK사용))
+        Description :                                           PK를 사용하여 처방SET 이력을 삭제한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxByPK"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxByPK */
+		  from  MDOSETBHT
+		 where
+		        OSET_CD       = #{osetCd}      /* 처방SET코드 */
+		   and  OSET_SNO      = #{osetSno}     /* 처방SET일련번호 */
+		   and  OSET_DVSN_CD  = #{osetDvsnCd}  /* 처방SET구분코드 */
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxAll (처방SET 기본이력 삭제)
+        Description :                                           처방SET 기본이력 삭제
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxAll"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-deleteOsetBsisHxAll */
+		  from  MDOSETBHT
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="osetSno" column="OSET_SNO"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno (SET기본 순번 채번)
+        Description :                                           SET기본 순번 채번 mdo_osetbst_m01$S01
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneNewOsetSno */
+		        nvl(max(OSET_SNO) , 0) + 1 as OSET_SNO
+		     ,  nvl(max(SORT_SQNC), 0) + 1 as SORT_SQNC
+		  from  (
+		        select  max(OSET_SNO)  as OSET_SNO
+		             ,  max(SORT_SQNC) as SORT_SQNC
+		          from  MDOSETBST
+		         where  OSET_CD      = #{osetCd}
+		           and  OSET_DVSN_CD = #{osetDvsnCd}
+		         union  all
+		        select  max(OSET_SNO)  as OSET_SNO
+		             ,  max(SORT_SQNC) as SORT_SQNC
+		          from  MDOSETBHT
+		         where  OSET_CD      = #{osetCd}
+		           and  OSET_DVSN_CD = #{osetDvsnCd}
+		        )
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="acdgYn" column="ACDG_YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn (항암제여부 조회)
+        Description :                                           항암제여부 조회 mdo_osetbst_m01$S03
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOneAcdgYn */
+		        nvl(max('Y'), 'N') as ACDG_YN
+		  from
+		        MDOSETBST
+		 where
+		        OSET_CD         = #{osetCd}              /* SET 모음코드 */
+		   and  OSET_SNO        = #{osetSno}             /* SET 모음순번 */
+		   and  OSET_DVSN_CD    = #{osetDvsnCd}
+		   and  ANAG_RMRK_CTN   = 'CHEMOSET'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="lvelVl" column="LVEL_VL"/>
+		<result property="osetCd" column="OSET_CD"/>
+		<result property="osetSno" column="OSET_SNO"/>
+		<result property="osetDvsnCd" column="OSET_DVSN_CD"/>
+		<result property="osetNm" column="OSET_NM"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="lwrnExstYn" column="LWRN_EXST_YN"/>
+		<result property="hgrnOsetSno" column="HGRN_OSET_SNO"/>
+		<result property="mdcrOsetDvsnCd" column="MDCR_OSET_DVSN_CD"/>
+		<result property="mdcrOsetCopyDvsnCd" column="MDCR_OSET_COPY_DVSN_CD"/>
+		<result property="orglMdcrOsetCd" column="ORGL_MDCR_OSET_CD"/>
+		<result property="orglMdcrOsetSno" column="ORGL_MDCR_OSET_SNO"/>
+		<result property="orglMdcrOsetDvsnCd" column="ORGL_MDCR_OSET_DVSN_CD"/>
+		<result property="orglMdcrOsetVrsnId" column="ORGL_MDCR_OSET_VRSN_ID"/>
+		<result property="anagOsetCd" column="ANAG_OSET_CD"/>
+		<result property="anagOsetSno" column="ANAG_OSET_SNO"/>
+		<result property="mdcrOsetMdfrId" column="MDCR_OSET_MDFR_ID"/>
+		<result property="afiMdcrOsetMdfrNm" column="AFI_MDCR_OSET_MDFR_NM"/>
+		<result property="mdcrOsetMdfcDt" column="MDCR_OSET_MDFC_DT"/>
+		<result property="mdcrOsetVrsnId" column="MDCR_OSET_VRSN_ID"/>
+		<result property="mdcrOsetMdreCtn" column="MDCR_OSET_MDRE_CTN"/>
+		<result property="emrShrtOrdrUseNo" column="EMR_SHRT_ORDR_USE_NO"/>
+		<result property="clncScinCd" column="CLNC_SCIN_CD"/>
+		<result property="clncScinNm" column="CLNC_SCIN_NM"/>
+		<result property="mdcrUseYn" column="MDCR_USE_YN"/>
+		<result property="dittOrdrAlwnDdcn" column="DITT_ORDR_ALWN_DDCN"/>
+		<result property="targMcrrCtn" column="TARG_MCRR_CTN"/>
+		<result property="anagRmrkCtn" column="ANAG_RMRK_CTN"/>
+		<result property="acdgAdmnMi" column="ACDG_ADMN_MI"/>
+		<result property="cnfmId" column="CNFM_ID"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="ordrCrtnLnknNo" column="ORDR_CRTN_LNKN_NO"/>
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="afiAbrvDprtNm" column="AFI_ABRV_DPRT_NM"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001 ()
+        Description :                                           SET Master 전체 List 조회 mdd_osetbst_l21 CP 처방SET Master 전체
+                                                                List 조회 mdd_osetbst_l22
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOsetMstrAll0001 */
+		<![CDATA[
+		select  /*+ mdd_osetbst_l21$S01_SET Master 전체 List 조회 DAMs */
+		        to_char(LEVEL)               as LVEL_VL /* 레벨값 */
+		     ,  a.OSET_CD                                 /* 처방SET코드 */
+		     ,  a.OSET_SNO                                /* 처방SET일련번호 */
+		     ,  a.OSET_DVSN_CD                            /* 처방SET구분코드 */
+		     ,  a.OSET_NM                                 /* 처방SET명 */
+		     ,  a.SCIN_CD                                 /* 상병코드 */
+		     ,  a.SCIN_NM                                 /* 상병명 */
+		     ,  a.USE_YN                                  /* 사용여부 */
+		     ,  a.SORT_SQNC                               /* 정렬순서 */
+		     ,  a.LWRN_EXST_YN                            /* 하위존재여부 */
+		     ,  a.HGRN_OSET_SNO                           /* 상위처방SET일련번호 */
+		     ,  a.MDCR_OSET_DVSN_CD                       /* 진료처방SET구분코드 */
+		     ,  a.MDCR_OSET_COPY_DVSN_CD                  /* 진료처방SET복사구분코드 */
+		     ,  a.ORGL_MDCR_OSET_CD                       /* 원진료처방SET코드 */
+		     ,  a.ORGL_MDCR_OSET_SNO                      /* 원진료처방SET일련번호 */
+		     ,  a.ORGL_MDCR_OSET_DVSN_CD                  /* 원진료처방SET구분코드 */
+		     ,  a.ORGL_MDCR_OSET_VRSN_ID                  /* 원진료처방SET버전ID */
+		     ,  a.ANAG_OSET_CD                            /* 항균제처방SET코드 */
+		     ,  a.ANAG_OSET_SNO                           /* 항균제처방SET일련번호 */
+		     ,  a.MDCR_OSET_MDFR_ID                       /* 진료처방SET변경자ID */
+		     ,  a.AFI_MDCR_OSET_MDFR_NM                   /* 진료처방SET변경자명 */
+		     ,  a.MDCR_OSET_MDFC_DT                       /* 진료처방SET변경일시 */
+		     ,  a.MDCR_OSET_VRSN_ID                       /* 진료처방SET버전ID */
+		     ,  a.MDCR_OSET_MDRE_CTN                      /* 진료처방SET변경사유내용 */
+		     ,  a.EMR_SHRT_ORDR_USE_NO                    /* EMR단축처방사용번호 */
+		     ,  a.CLNC_SCIN_CD                            /* 임상상병코드 */
+		     ,  a.CLNC_SCIN_NM                            /* 임상상병명 */
+		     ,  a.MDCR_USE_YN                             /* 진료사용여부(임상상병코드) */
+		     ,  a.DITT_ORDR_ALWN_DDCN                     /* Ditto처방허용일수 */
+		     ,  a.TARG_MCRR_CTN                           /* 표적미생물내용 */
+		     ,  a.ANAG_RMRK_CTN                           /* 항균제비고내용 */
+		     ,  a.ACDG_ADMN_MI                            /* 항암제투여시간분 */
+		     ,  a.CNFM_ID                                 /* 확인자ID */
+		     ,  a.CNFR_DT                                 /* 확인일시 */
+		     ,  a.ORDR_CRTN_LNKN_NO                       /* 처방생성연결번호 */
+		     ,  a.FVRT_KIND_CD                            /* 즐겨찾기종류코드 */
+		     ,  a.AFI_ABRV_DPRT_NM                        /* 진료부서약어코드및 CP명 */
+		     ,  a.FRST_RGSR_ID                            /* 최초등록자ID */
+		     ,  a.FRST_RGSR_NM                            /* 최초등록자명 */
+		     ,  a.FRST_RGST_DT                            /* 최초등록일시 */
+		     ,  a.LAST_UPDR_ID                            /* 최종수정자ID */
+		     ,  a.LAST_UPDR_NM                            /* 최종수정자명 */
+		     ,  a.LAST_UPDT_DT                            /* 최종수정일시 */
+		  from
+		       ( select
+		                 a.OSET_CD                                                       /* 처방SET코드 */
+		              ,  a.OSET_SNO                                                      /* 처방SET일련번호 */
+		              ,  a.OSET_DVSN_CD                                                  /* 처방SET구분코드 */
+		              ,  case when a.OSET_NM = '' then '새폴더'
+		                                          else a.OSET_NM
+		                 end                          as OSET_NM                         /* 처방SET명 */
+		              ,  a.SCIN_CD                                                       /* 상병코드 */
+		              ,  a.SCIN_NM                                                       /* 상병명 */
+		              ,  a.USE_YN                                                        /* 사용여부 */
+		              ,  a.SORT_SQNC                                                     /* 정렬순서 */
+		              ,  a.LWRN_EXST_YN                                                  /* 하위존재여부 */
+		              ,  a.HGRN_OSET_SNO                                                 /* 상위처방SET일련번호 */
+		              ,  a.MDCR_OSET_DVSN_CD                                             /* 진료처방SET구분코드 */
+		              ,  a.MDCR_OSET_COPY_DVSN_CD                                        /* 진료처방SET복사구분코드 */
+		              ,  a.ORGL_MDCR_OSET_CD                                             /* 원진료처방SET코드 */
+		              ,  a.ORGL_MDCR_OSET_SNO                                            /* 원진료처방SET일련번호 */
+		              ,  a.ORGL_MDCR_OSET_DVSN_CD                                        /* 원진료처방SET구분코드 */
+		              ,  a.ORGL_MDCR_OSET_VRSN_ID                                        /* 원진료처방SET버전ID */
+		              ,  a.ANAG_OSET_CD                                                  /* 항균제처방SET코드 */
+		              ,  a.ANAG_OSET_SNO                                                 /* 항균제처방SET일련번호 */
+		              ,  a.MDCR_OSET_MDFR_ID                                             /* 진료처방SET변경자ID */
+		              ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.MDCR_OSET_MDFR_ID ) as AFI_MDCR_OSET_MDFR_NM
+		              ,  to_char(a.MDCR_OSET_MDFC_DT, 'yyyymmdd') as MDCR_OSET_MDFC_DT   /* 진료처방SET변경일시 */
+		              ,  nvl(a.MDCR_OSET_VRSN_ID, '1')  as MDCR_OSET_VRSN_ID             /* 진료처방SET버전ID */
+		              ,  a.MDCR_OSET_MDRE_CTN                                            /* 진료처방SET변경사유내용 */
+		              ,  a.EMR_SHRT_ORDR_USE_NO                                          /* EMR단축처방사용번호 */
+		              ,  a.CLNC_SCIN_CD                                                  /* 임상상병코드 */
+		              ,  b.TRMN_NM                             as CLNC_SCIN_NM           /* 임상상병명 */
+		              ,  b.MDCR_USE_YN                                                   /* 진료사용여부(임상상병코드) */
+		              ,  a.DITT_ORDR_ALWN_DDCN                                           /* Ditto처방허용일수 */
+		              ,  a.TARG_MCRR_CTN                                                 /* 표적미생물내용 */
+		              ,  a.ANAG_RMRK_CTN                                                 /* 항균제비고내용 */
+		              ,  a.ACDG_ADMN_MI                                                  /* 항암제투여시간분 */
+		]]>
+		<choose>
+		  <when test='osetDvsnCd == "Y"'>
+		              ,  a.CNFM_ID                                                       /* 확인자ID */
+		              ,  to_char(a.CNFR_DT, 'yyyymmddhh24miss')    as CNFR_DT            /* 확인일시 */
+		  </when>
+		  <otherwise>
+		              ----------------------------------------------------------
+		              -- 조회 당월이 01,02월은 전년도 3월부터 올해 02월 까지
+		              --             03월 부터는 금년 3월부터 내년 02월 까지
+		              ----------------------------------------------------------
+		              , case when a.CNFR_DT &gt;= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                        else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                       end  then a.CNFM_ID
+		                                            else ''
+		                end                           as CNFM_ID
+		              , case when a.CNFR_DT &gt;= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                        else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                       end  then to_char(a.CNFR_DT, 'yyyymmddhh24miss')
+		                                            else ''
+		                end                           as CNFR_DT
+		  </otherwise>
+		</choose>
+		<![CDATA[
+		              ,  a.ORDR_CRTN_LNKN_NO                                             /* 처방생성연결번호 */
+		              ,  'N'                   as FVRT_KIND_CD                           /* 즐겨찾기종류코드 */
+		              ,  case a.OSET_DVSN_CD when 'D' then ( select F_A.ABRV_DPRT_CD
+		                                                       from HZDEPTMMT F_A
+		                                                    where F_A.DPRT_CD = a.OSET_CD )  -- 진료과
+		                                   when 'C' then FN_MD_GET_CPCD_AS(a.OSET_CD)
+		                                   else ''
+		                                   end       as  AFI_ABRV_DPRT_NM                /* 진료부서약어코드및 CP명 */
+		              ,  a.FRST_RGSR_ID
+		              ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.FRST_RGSR_ID ) as FRST_RGSR_NM
+		              ,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss')    as FRST_RGST_DT
+		              ,  a.LAST_UPDR_ID
+		              ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.LAST_UPDR_ID ) as LAST_UPDR_NM
+		              ,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss')    as LAST_UPDT_DT
+		          from
+		                MDOSETBST a
+		             ,  METRDCTMT b
+		         where
+		                a.OSET_CD         = #{osetCd}                   /* SET 모음구분 */
+		]]>
+		<choose>
+		  <when test='osetDvsnCd == "Y"'>
+		           and  a.OSET_DVSN_CD    in ('1','2','3','C')                /* SET구분      */
+		  </when>
+		  <otherwise>
+		           and  a.OSET_DVSN_CD    = #{osetDvsnCd}              /* SET구분      */
+		           and  (
+		                 (
+		                  (nvl(#{oprtCd}, 'X') = 'S')
+		                   and  (a.EMR_SHRT_ORDR_USE_NO is not null)
+		                 )
+		                 or
+		                 (
+		                  (nvl(#{oprtCd}, 'X') != 'S')
+		                  and  (a.OSET_NM like #{oprtCd}||'%')
+		                  -- and  (nvl(OSET_NM, '*') like nvl({oprtCd}, '*')||'%')
+		                 )
+		                )
+		  </otherwise>
+		</choose>
+		<![CDATA[
+		           and  nvl(a.USE_YN, 'Y') <> 'N'
+		           and  b.TRMN_ID         (+)= a.CLNC_SCIN_CD
+		      )  a
+		  start  with a.HGRN_OSET_SNO = 0
+		 connect by prior a.OSET_SNO = a.HGRN_OSET_SNO
+		]]>
+		<choose>
+		  <when test='osetDvsnCd == "Y"'>
+		 order siblings by a.SORT_SQNC, a.OSET_NM
+		  </when>
+		  <otherwise>
+		 order  siblings by case when a.OSET_DVSN_CD = 'C' then a.OSET_SNO
+		                          when a.OSET_DVSN_CD = 'T' then a.OSET_SNO
+		                                                    else 2
+		                     end
+		                   ------------------------------------------------------------
+		                   -- 처방조회 순서
+		                   ------------------------------------------------------------
+		                   , case when #{osetSortCd} is null then case when (select nvl(max(z.OSET_SORT_CD), '1')
+		                                                                       from MDOSETORT z
+		                                                                      where z.OSET_CD      = a.OSET_CD
+		                                                                        and z.OSET_DVSN_CD = a.OSET_DVSN_CD
+		                                                                        and z.OSET_TYP_CD  = '1'
+		                                                                    ) = '2' then a.SORT_SQNC
+		                                                                            else 99999
+		                                                          end
+		                          when #{osetSortCd} = '2' then a.SORT_SQNC
+		                                                                      else 99999
+		                     end
+		                   ------------------------------------------------------------
+		                   , 5
+		  </otherwise>
+		</choose>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="osetSno" column="OSET_SNO"/>
+		<result property="lwrnExstYn" column="LWRN_EXST_YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset (하위 처방SET의 처방SET순번과 하위여부를 조회)
+        Description :                                           하위 처방SET의 처방SET순번과 하위여부를 조회
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listLwenOset */
+		        OSET_SNO
+		     ,  LWRN_EXST_YN
+		  from
+		        MDOSETBST
+		 where
+		        OSET_CD       = #{osetCd}
+		   and  OSET_DVSN_CD  = #{osetDvsnCd}
+		   and  HGRN_OSET_SNO = #{osetSno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="lvelVl" column="LVEL_VL"/>
+		<result property="osetCd" column="OSET_CD"/>
+		<result property="osetSno" column="OSET_SNO"/>
+		<result property="osetDvsnCd" column="OSET_DVSN_CD"/>
+		<result property="osetNm" column="OSET_NM"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="lwrnExstYn" column="LWRN_EXST_YN"/>
+		<result property="hgrnOsetSno" column="HGRN_OSET_SNO"/>
+		<result property="mdcrOsetDvsnCd" column="MDCR_OSET_DVSN_CD"/>
+		<result property="mdcrOsetCopyDvsnCd" column="MDCR_OSET_COPY_DVSN_CD"/>
+		<result property="orglMdcrOsetCd" column="ORGL_MDCR_OSET_CD"/>
+		<result property="orglMdcrOsetSno" column="ORGL_MDCR_OSET_SNO"/>
+		<result property="orglMdcrOsetDvsnCd" column="ORGL_MDCR_OSET_DVSN_CD"/>
+		<result property="orglMdcrOsetVrsnId" column="ORGL_MDCR_OSET_VRSN_ID"/>
+		<result property="anagOsetCd" column="ANAG_OSET_CD"/>
+		<result property="anagOsetSno" column="ANAG_OSET_SNO"/>
+		<result property="mdcrOsetMdfrId" column="MDCR_OSET_MDFR_ID"/>
+		<result property="afiMdcrOsetMdfrNm" column="AFI_MDCR_OSET_MDFR_NM"/>
+		<result property="mdcrOsetMdfcDt" column="MDCR_OSET_MDFC_DT"/>
+		<result property="mdcrOsetVrsnId" column="MDCR_OSET_VRSN_ID"/>
+		<result property="mdcrOsetMdreCtn" column="MDCR_OSET_MDRE_CTN"/>
+		<result property="emrShrtOrdrUseNo" column="EMR_SHRT_ORDR_USE_NO"/>
+		<result property="clncScinCd" column="CLNC_SCIN_CD"/>
+		<result property="clncScinNm" column="CLNC_SCIN_NM"/>
+		<result property="mdcrUseYn" column="MDCR_USE_YN"/>
+		<result property="dittOrdrAlwnDdcn" column="DITT_ORDR_ALWN_DDCN"/>
+		<result property="targMcrrCtn" column="TARG_MCRR_CTN"/>
+		<result property="anagRmrkCtn" column="ANAG_RMRK_CTN"/>
+		<result property="acdgAdmnMi" column="ACDG_ADMN_MI"/>
+		<result property="cnfmId" column="CNFM_ID"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="ordrCrtnLnknNo" column="ORDR_CRTN_LNKN_NO"/>
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="afiAbrvDprtNm" column="AFI_ABRV_DPRT_NM"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset (항암처방SET 조회)
+        Description :                                           항암처방SET 조회 mdd_osetbst_l25
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listAntcOset */
+		        to_char(LEVEL)               as LVEL_VL   /* 레벨값 */
+		     ,  a.OSET_CD                                 /* 처방SET코드 */
+		     ,  a.OSET_SNO                                /* 처방SET일련번호 */
+		     ,  a.OSET_DVSN_CD                            /* 처방SET구분코드 */
+		     ,  a.OSET_NM                                 /* 처방SET명 */
+		     ,  a.SCIN_CD                                 /* 상병코드 */
+		     ,  a.SCIN_NM                                 /* 상병명 */
+		     ,  a.USE_YN                                  /* 사용여부 */
+		     ,  a.SORT_SQNC                               /* 정렬순서 */
+		     ,  a.LWRN_EXST_YN                            /* 하위존재여부 */
+		     ,  a.HGRN_OSET_SNO                           /* 상위처방SET일련번호 */
+		     ,  a.MDCR_OSET_DVSN_CD                       /* 진료처방SET구분코드 */
+		     ,  a.MDCR_OSET_COPY_DVSN_CD                  /* 진료처방SET복사구분코드 */
+		     ,  a.ORGL_MDCR_OSET_CD                       /* 원진료처방SET코드 */
+		     ,  a.ORGL_MDCR_OSET_SNO                      /* 원진료처방SET일련번호 */
+		     ,  a.ORGL_MDCR_OSET_DVSN_CD                  /* 원진료처방SET구분코드 */
+		     ,  a.ORGL_MDCR_OSET_VRSN_ID                  /* 원진료처방SET버전ID */
+		     ,  a.ANAG_OSET_CD                            /* 항균제처방SET코드 */
+		     ,  a.ANAG_OSET_SNO                           /* 항균제처방SET일련번호 */
+		     ,  a.MDCR_OSET_MDFR_ID                       /* 진료처방SET변경자ID */
+		     ,  a.AFI_MDCR_OSET_MDFR_NM                   /* 진료처방SET변경자명 */
+		     ,  a.MDCR_OSET_MDFC_DT                       /* 진료처방SET변경일시 */
+		     ,  a.MDCR_OSET_VRSN_ID                       /* 진료처방SET버전ID */
+		     ,  a.MDCR_OSET_MDRE_CTN                      /* 진료처방SET변경사유내용 */
+		     ,  a.EMR_SHRT_ORDR_USE_NO                    /* EMR단축처방사용번호 */
+		     ,  a.CLNC_SCIN_CD                            /* 임상상병코드 */
+		     ,  a.CLNC_SCIN_NM                            /* 임상상병명 */
+		     ,  a.MDCR_USE_YN                             /* 진료사용여부(임상상병코드) */
+		     ,  a.DITT_ORDR_ALWN_DDCN                     /* Ditto처방허용일수 */
+		     ,  a.TARG_MCRR_CTN                           /* 표적미생물내용 */
+		     ,  a.ANAG_RMRK_CTN                           /* 항균제비고내용 */
+		     ,  a.ACDG_ADMN_MI                            /* 항암제투여시간분 */
+		     ,  a.CNFM_ID                                 /* 확인자ID */
+		     ,  a.CNFR_DT                                 /* 확인일시 */
+		     ,  a.ORDR_CRTN_LNKN_NO                       /* 처방생성연결번호 */
+		     ,  a.FVRT_KIND_CD                            /* 즐겨찾기종류코드 */
+		     ,  a.AFI_ABRV_DPRT_NM                        /* 진료부서약어코드및 CP명 */
+		     ,  a.FRST_RGSR_ID                            /* 최초등록자ID */
+		     ,  a.FRST_RGSR_NM                            /* 최초등록자명 */
+		     ,  a.FRST_RGST_DT                            /* 최초등록일시 */
+		     ,  a.LAST_UPDR_ID                            /* 최종수정자ID */
+		     ,  a.LAST_UPDR_NM                            /* 최종수정자명 */
+		     ,  a.LAST_UPDT_DT                            /* 최종수정일시 */
+		  from  (
+		        select
+		                a.OSET_CD                                                       /* 처방SET코드 */
+		             ,  a.OSET_SNO                                                      /* 처방SET일련번호 */
+		             ,  a.OSET_DVSN_CD                                                  /* 처방SET구분코드 */
+		             ,  case when a.OSET_NM = '' then '새폴더'
+		                                         else a.OSET_NM
+		                end                          as OSET_NM                         /* 처방SET명 */
+		             ,  a.SCIN_CD                                                       /* 상병코드 */
+		             ,  a.SCIN_NM                                                       /* 상병명 */
+		             ,  a.USE_YN                                                        /* 사용여부 */
+		             ,  a.SORT_SQNC                                                     /* 정렬순서 */
+		             ,  a.LWRN_EXST_YN                                                  /* 하위존재여부 */
+		             ,  a.HGRN_OSET_SNO                                                 /* 상위처방SET일련번호 */
+		             ,  a.MDCR_OSET_DVSN_CD                                             /* 진료처방SET구분코드 */
+		             ,  a.MDCR_OSET_COPY_DVSN_CD                                        /* 진료처방SET복사구분코드 */
+		             ,  a.ORGL_MDCR_OSET_CD                                             /* 원진료처방SET코드 */
+		             ,  a.ORGL_MDCR_OSET_SNO                                            /* 원진료처방SET일련번호 */
+		             ,  a.ORGL_MDCR_OSET_DVSN_CD                                        /* 원진료처방SET구분코드 */
+		             ,  a.ORGL_MDCR_OSET_VRSN_ID                                        /* 원진료처방SET버전ID */
+		             ,  a.ANAG_OSET_CD                                                  /* 항균제처방SET코드 */
+		             ,  a.ANAG_OSET_SNO                                                 /* 항균제처방SET일련번호 */
+		             ,  a.MDCR_OSET_MDFR_ID                                             /* 진료처방SET변경자ID */
+		             ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.MDCR_OSET_MDFR_ID ) as AFI_MDCR_OSET_MDFR_NM
+		             ,  to_char(a.MDCR_OSET_MDFC_DT, 'yyyymmdd') as MDCR_OSET_MDFC_DT   /* 진료처방SET변경일시 */
+		             ,  nvl(a.MDCR_OSET_VRSN_ID, '1')  as MDCR_OSET_VRSN_ID             /* 진료처방SET버전ID */
+		             ,  a.MDCR_OSET_MDRE_CTN                                            /* 진료처방SET변경사유내용 */
+		             ,  a.EMR_SHRT_ORDR_USE_NO                                          /* EMR단축처방사용번호 */
+		             ,  a.CLNC_SCIN_CD                                                  /* 임상상병코드 */
+		             ,  b.TRMN_NM                             as CLNC_SCIN_NM           /* 임상상병명 */
+		             ,  b.MDCR_USE_YN                                                   /* 진료사용여부(임상상병코드) */
+		             ,  a.DITT_ORDR_ALWN_DDCN                                           /* Ditto처방허용일수 */
+		             ,  a.TARG_MCRR_CTN                                                 /* 표적미생물내용 */
+		             ,  a.ANAG_RMRK_CTN                                                 /* 항균제비고내용 */
+		             ,  a.ACDG_ADMN_MI                                                  /* 항암제투여시간분 */
+		             /* ,  a.CNFM_ID                                                    -- 확인자ID   */
+		             /* ,  to_char(a.CNFR_DT, 'yyyymmddhh24miss')    as CNFR_DT         -- 확인일시   */
+		             /*--------------------------------------------------------                       */
+		             /* 조회 당월이 01,02월은 전년도 3월부터 올해 02월 까지                           */
+		             /*             03월 부터는 금년 3월부터 내년 02월 까지                           */
+		             /*--------------------------------------------------------                       */
+		<![CDATA[
+		             , case when a.CNFR_DT >= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                       else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                      end  then a.CNFM_ID
+		                                           else ''
+		               end                           as CNFM_ID
+		             , case when a.CNFR_DT >= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                       else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                      end  then to_char(a.CNFR_DT, 'yyyymmddhh24miss')
+		                                           else ''
+		               end                           as CNFR_DT
+		]]>
+		             ,  a.ORDR_CRTN_LNKN_NO                                             /* 처방생성연결번호 */
+		             ,  'N'                   as FVRT_KIND_CD                           /* 즐겨찾기종류코드 */
+		             ,  case a.OSET_DVSN_CD when 'D' then ( select F_A.ABRV_DPRT_CD
+		                                                      from HZDEPTMMT F_A
+		                                                   where F_A.DPRT_CD = a.OSET_CD )  -- 진료과
+		                                  when 'C' then FN_MD_GET_CPCD_AS(a.OSET_CD)
+		                                  else ''
+		                                  end       as  AFI_ABRV_DPRT_NM                /* 진료부서약어코드및 CP명 */
+		             ,  a.FRST_RGSR_ID
+		             ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.FRST_RGSR_ID ) as FRST_RGSR_NM
+		             ,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss')    as FRST_RGST_DT
+		             ,  a.LAST_UPDR_ID
+		             ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.LAST_UPDR_ID ) as LAST_UPDR_NM
+		             ,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss')    as LAST_UPDT_DT
+		          from
+		                MDOSETBST a
+		             ,  METRDCTMT b
+		         where
+		                a.OSET_CD         = #{osetCd}                   /* SET 모음구분 */
+		           and  a.OSET_DVSN_CD    = #{osetDvsnCd}
+		           and  a.ANAG_RMRK_CTN = 'CHEMOSET'
+		<![CDATA[
+		           and  nvl(a.USE_YN, 'Y') <> 'N'
+		]]>
+		           and  b.TRMN_ID         (+)= a.CLNC_SCIN_CD
+		        ) a
+		 start
+		  with  a.HGRN_OSET_SNO = 0
+		connect
+		    by  prior a.OSET_SNO = a.HGRN_OSET_SNO
+		 order  siblings
+		    by  a.OSET_NM
+	</select>
+
+
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-executeInsOsetHx (처방SET이력 등록)
+        Description : 처방SET이력을 등록한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-executeInsOsetHx"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-executeInsOsetHx */
+		{call sp_md_create_osetbht(
+		   #{osetCd}         -- SET코드
+		,  #{osetSno}        -- SET순번
+		,  #{osetDvsnCd}     -- SET구분코드
+		,  null              -- 변경사유
+		,  #{gvUserId}       -- 등록자ID
+		,  #{gvUserIp}       -- 등록자IP
+		,  #{gvClntPrgmId}   -- SMCP_ID
+		,  #{gvSrvrPrgmId}   -- SMSP_ID
+		,  #{errYn}          -- ERROR 여부
+		,  #{errCtn}         -- ERROR 내용
+		)}
+	</select>
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="osetCd1" column="OSET_CD_1"/>
+		<result property="osetSno1" column="OSET_SNO_1"/>
+		<result property="osetDvsnCd1" column="OSET_DVSN_CD_1"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000 (추가 컬럼 조회)
+        Description :                                           추가 컬럼 조회
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-selectOne000 */
+		select
+		  '' as OSET_CD_1
+		, 0 as OSET_SNO_1
+		, '' as OSET_DVSN_CD_1
+		from
+		  dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmt (SET기본 추가)
+        Description :                                           SET기본 추가
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-insertOsetBsisBmt */
+		  into  MDOSETBST
+		        (
+		        OSET_CD            /* SET 모음코드 */
+		     ,  OSET_SNO           /* SET 모음순번 */
+		     ,  OSET_DVSN_CD       /* SET 구분     */
+		     ,  OSET_NM            /* SET 모음명   */
+		             ,  SCIN_CD            /* 상병코드 */
+		             ,  SCIN_NM            /* 상병명 */
+		             ,  USE_YN             /* 사용여부 */
+		             ,  SORT_SQNC          /* 나열순서     */
+		     ,  LWRN_EXST_YN       /* 하위여부     */
+		     ,  HGRN_OSET_SNO      /* 상위코드     */
+		             ,  MDCR_OSET_DVSN_CD      /* 진료처방SET구분코드 */
+		             ,  MDCR_OSET_COPY_DVSN_CD /* 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기) */
+		             ,  ORGL_MDCR_OSET_CD      /* 원진료처방SET코드 */
+		             ,  ORGL_MDCR_OSET_SNO     /* 원진료처방SET일련번호 */
+		             ,  ORGL_MDCR_OSET_DVSN_CD /* 원진료처방SET구분코드 */
+		             ,  CLNC_SCIN_CD           /* 임상상병코드 */
+		     ,  ANAG_RMRK_CTN      /* 항균제비고내용 */
+		     ,  ACDG_ADMN_MI       /* 항암제투여시간분 */
+		     ,  ORDR_CRTN_LNKN_NO  /* 처방생성연결번호 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values
+		        (
+		        #{osetCd}                               -- SET 모음코드
+		     ,  #{osetSno}                              -- SET 모음순번
+		     ,  #{osetDvsnCd}                           -- SET 구분
+		     ,  #{osetNm}                               -- SET 모음명
+		     ,  #{scinCd}                               -- 상병코드
+		     ,  #{scinNm}                               -- 상병명
+		     ,  #{useYn}                                -- 사용여부
+		     ,  #{sortSqnc}                         -- 나열순서
+		     ,  #{lwrnExstYn}                           -- 하위존재여부
+		     ,  #{hgrnOsetSno}                          -- 상위코드
+		     ,  #{mdcrOsetDvsnCd}                       -- 진료처방SET구분코드
+		     ,  #{mdcrOsetCopyDvsnCd}                   -- 진료처방SET복사구분코드 ('C'복사, 'L'즐겨찾기)
+		     ,  #{orglMdcrOsetCd}                       -- 원진료처방SET코드
+		     ,  #{orglMdcrOsetSno}                      -- 원진료처방SET일련번호
+		     ,  #{orglMdcrOsetDvsnCd}                   -- 원진료처방SET구분코드
+		     ,  #{clncScinCd}                           -- 임상상병코드
+		     ,  #{anagRmrkCtn}                          -- 항균제비고내용
+		     ,  #{acdgAdmnMi}                           -- 항암제투여시간분
+		     ,  MDOSETBSTQ.NEXTVAL                      -- 처방생성연결번호
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO">
+
+		<result property="osetCd" column="OSET_CD"/>
+		<result property="osetSno" column="OSET_SNO"/>
+		<result property="osetDvsnCd" column="OSET_DVSN_CD"/>
+		<result property="osetNm" column="OSET_NM"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="lwrnExstYn" column="LWRN_EXST_YN"/>
+		<result property="hgrnOsetSno" column="HGRN_OSET_SNO"/>
+		<result property="mdcrOsetDvsnCd" column="MDCR_OSET_DVSN_CD"/>
+		<result property="mdcrOsetCopyDvsnCd" column="MDCR_OSET_COPY_DVSN_CD"/>
+		<result property="orglMdcrOsetCd" column="ORGL_MDCR_OSET_CD"/>
+		<result property="orglMdcrOsetSno" column="ORGL_MDCR_OSET_SNO"/>
+		<result property="orglMdcrOsetDvsnCd" column="ORGL_MDCR_OSET_DVSN_CD"/>
+		<result property="orglMdcrOsetVrsnId" column="ORGL_MDCR_OSET_VRSN_ID"/>
+		<result property="anagOsetCd" column="ANAG_OSET_CD"/>
+		<result property="anagOsetSno" column="ANAG_OSET_SNO"/>
+		<result property="mdcrOsetMdfrId" column="MDCR_OSET_MDFR_ID"/>
+		<result property="afiMdcrOsetMdfrNm" column="AFI_MDCR_OSET_MDFR_NM"/>
+		<result property="mdcrOsetMdfcDt" column="MDCR_OSET_MDFC_DT"/>
+		<result property="mdcrOsetVrsnId" column="MDCR_OSET_VRSN_ID"/>
+		<result property="mdcrOsetMdreCtn" column="MDCR_OSET_MDRE_CTN"/>
+		<result property="emrShrtOrdrUseNo" column="EMR_SHRT_ORDR_USE_NO"/>
+		<result property="clncScinCd" column="CLNC_SCIN_CD"/>
+		<result property="clncScinNm" column="CLNC_SCIN_NM"/>
+		<result property="mdcrUseYn" column="MDCR_USE_YN"/>
+		<result property="dittOrdrAlwnDdcn" column="DITT_ORDR_ALWN_DDCN"/>
+		<result property="targMcrrCtn" column="TARG_MCRR_CTN"/>
+		<result property="anagRmrkCtn" column="ANAG_RMRK_CTN"/>
+		<result property="acdgAdmnMi" column="ACDG_ADMN_MI"/>
+		<result property="cnfmId" column="CNFM_ID"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="ordrCrtnLnknNo" column="ORDR_CRTN_LNKN_NO"/>
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="afiAbrvDprtNm" column="AFI_ABRV_DPRT_NM"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch (처방 화면 SET 명 검색)
+        Description :
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetMgmtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetMgmtDAO-listOrdrScrnSetNmSrch */
+		             a.OSET_CD                                                       /* 처방SET코드 */
+		          ,  a.OSET_SNO                                                      /* 처방SET일련번호 */
+		          ,  a.OSET_DVSN_CD                                                  /* 처방SET구분코드 */
+		          ,  case when a.OSET_NM = '' then '새폴더'
+		                                      else a.OSET_NM
+		             end                          as OSET_NM                         /* 처방SET명 */
+		          ,  a.SCIN_CD                                                       /* 상병코드 */
+		          ,  a.SCIN_NM                                                       /* 상병명 */
+		          ,  a.USE_YN                                                        /* 사용여부 */
+		          ,  a.SORT_SQNC                                                     /* 정렬순서 */
+		          ,  a.LWRN_EXST_YN                                                  /* 하위존재여부 */
+		          ,  a.HGRN_OSET_SNO                                                 /* 상위처방SET일련번호 */
+		          ,  a.MDCR_OSET_DVSN_CD                                             /* 진료처방SET구분코드 */
+		          ,  a.MDCR_OSET_COPY_DVSN_CD                                        /* 진료처방SET복사구분코드 */
+		          ,  a.ORGL_MDCR_OSET_CD                                             /* 원진료처방SET코드 */
+		          ,  a.ORGL_MDCR_OSET_SNO                                            /* 원진료처방SET일련번호 */
+		          ,  a.ORGL_MDCR_OSET_DVSN_CD                                        /* 원진료처방SET구분코드 */
+		          ,  a.ORGL_MDCR_OSET_VRSN_ID                                        /* 원진료처방SET버전ID */
+		          ,  a.ANAG_OSET_CD                                                  /* 항균제처방SET코드 */
+		          ,  a.ANAG_OSET_SNO                                                 /* 항균제처방SET일련번호 */
+		          ,  a.MDCR_OSET_MDFR_ID                                             /* 진료처방SET변경자ID */
+		          ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.MDCR_OSET_MDFR_ID ) as AFI_MDCR_OSET_MDFR_NM
+		          ,  to_char(a.MDCR_OSET_MDFC_DT, 'yyyymmdd') as MDCR_OSET_MDFC_DT   /* 진료처방SET변경일시 */
+		          ,  nvl(a.MDCR_OSET_VRSN_ID, '1')  as MDCR_OSET_VRSN_ID             /* 진료처방SET버전ID */
+		          ,  a.MDCR_OSET_MDRE_CTN                                            /* 진료처방SET변경사유내용 */
+		          ,  a.EMR_SHRT_ORDR_USE_NO                                          /* EMR단축처방사용번호 */
+		          ,  a.CLNC_SCIN_CD                                                  /* 임상상병코드 */
+		          ,  b.TRMN_NM                             as CLNC_SCIN_NM           /* 임상상병명 */
+		          ,  b.MDCR_USE_YN                                                   /* 진료사용여부(임상상병코드) */
+		          ,  a.DITT_ORDR_ALWN_DDCN                                           /* Ditto처방허용일수 */
+		          ,  a.TARG_MCRR_CTN                                                 /* 표적미생물내용 */
+		          ,  a.ANAG_RMRK_CTN                                                 /* 항균제비고내용 */
+		          ,  a.ACDG_ADMN_MI                                                  /* 항암제투여시간분 */
+		          ----------------------------------------------------------
+		          -- 조회 당월이 01,02월은 전년도 3월부터 올해 02월 까지
+		          --             03월 부터는 금년 3월부터 내년 02월 까지
+		          ----------------------------------------------------------
+		          , case when a.CNFR_DT >= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                    else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                   end  then a.CNFM_ID
+		                                        else ''
+		            end                           as CNFM_ID
+		          , case when a.CNFR_DT >= case when to_char(sysdate, 'MM') in ('01', '02') then to_date(to_char(to_number(to_char(sysdate, 'yyyy')) - 1) || '0301', 'yyyymmdd')
+		                                                                                    else to_date(to_char(sysdate, 'yyyy') || '0301', 'yyyymmdd')
+		                                   end  then to_char(a.CNFR_DT, 'yyyymmddhh24miss')
+		                                        else ''
+		            end                           as CNFR_DT
+		          ,  a.ORDR_CRTN_LNKN_NO                                             /* 처방생성연결번호 */
+		          ,  'N'                   as FVRT_KIND_CD                           /* 즐겨찾기종류코드 */
+		          ,  case a.OSET_DVSN_CD when 'D' then ( select F_A.ABRV_DPRT_CD
+		                                                   from HZDEPTMMT F_A
+		                                                where F_A.DPRT_CD = a.OSET_CD )  -- 진료과
+		                               when 'C' then FN_MD_GET_CPCD_AS(a.OSET_CD)
+		                               else ''
+		                               end       as  AFI_ABRV_DPRT_NM                /* 진료부서약어코드및 CP명 */
+		          ,  a.FRST_RGSR_ID
+		          ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.FRST_RGSR_ID ) as FRST_RGSR_NM
+		          ,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss')    as FRST_RGST_DT
+		          ,  a.LAST_UPDR_ID
+		          ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.LAST_UPDR_ID ) as LAST_UPDR_NM
+		          ,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss')    as LAST_UPDT_DT
+		      from
+		            MDOSETBST a
+		         ,  METRDCTMT b
+		     where
+		            (
+		             (a.OSET_CD         = #{osetCd}  and a.OSET_DVSN_CD = 'P')                 /* 개인SET */
+		             or
+		             (a.OSET_CD         = #{osetCd1} and a.OSET_DVSN_CD = 'D')                 /* 부서SET */
+		              or
+		             (a.OSET_CD         = 'COMMON' and a.OSET_DVSN_CD = 'A')                 /* COMMON */
+		            )
+		       and  upper(a.OSET_NM) like upper('%'||#{osetNm}||'%')
+		       and  a.LWRN_EXST_YN    = 'N'
+		       and  nvl(a.USE_YN, 'Y') <> 'N'
+		       and  b.TRMN_ID         (+)= a.CLNC_SCIN_CD
+		     order by a.OSET_DVSN_CD desc, a.OSET_NM
+		]]>
+	</select>
+
+
+
+</mapper>

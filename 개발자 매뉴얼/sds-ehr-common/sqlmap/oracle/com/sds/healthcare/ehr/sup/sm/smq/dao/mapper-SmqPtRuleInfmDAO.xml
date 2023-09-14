@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmqPtRuleInfmDAO_sql.xml 
+    Description :                                      수검자Rule정보
+                  -->
+<mapper namespace="SmqPtRuleInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule-result" type="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO">
+	
+		<result property="hlscRuleSno" column="HLSC_RULE_SNO"/>
+		<result property="hlscClsfCd" column="HLSC_CLSF_CD"/>
+		<result property="hlscRuleNm" column="HLSC_RULE_NM"/>
+		<result property="hlscRuleScrpCtn" column="HLSC_RULE_SCRP_CTN"/>
+		<result property="hlscRuleUseTrgtDvsnCd" column="HLSC_RULE_USE_TRGT_DVSN_CD"/>
+		<result property="hlscRuleUseTrgtId" column="HLSC_RULE_USE_TRGT_ID"/>
+		<result property="ruleRturDvsnCd" column="RULE_RTUR_DVSN_CD"/>
+		<result property="rulePrmtIaotCd" column="RULE_PRMT_IAOT_CD"/>
+		<result property="rulePrmtDvsnCd" column="RULE_PRMT_DVSN_CD"/>
+		<result property="rulePrmtVrabNm" column="RULE_PRMT_VRAB_NM"/>
+		<result property="rulePrmtTrgtId1" column="RULE_PRMT_TRGT_ID1"/>
+		<result property="rulePrmtTrgtId2" column="RULE_PRMT_TRGT_ID2"/>
+		<result property="rulePrmtTrgtId3" column="RULE_PRMT_TRGT_ID3"/>
+		<result property="rulePrmtTrgtId4" column="RULE_PRMT_TRGT_ID4"/>
+		<result property="rulePrmtTrgtId5" column="RULE_PRMT_TRGT_ID5"/>
+		<result property="rulePrmtTrgtId6" column="RULE_PRMT_TRGT_ID6"/>
+		<result property="hlscRsltVl" column="HLSC_RSLT_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule"  parameterType="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-listPtRule */
+		       a.HLSC_RULE_SNO
+		     , a.HLSC_CLSF_CD
+		     , a.HLSC_RULE_NM
+		     , a.HLSC_RULE_SCRP_CTN
+		     , a.HLSC_RULE_USE_TRGT_DVSN_CD
+		     , a.HLSC_RULE_USE_TRGT_ID
+		     , a.RULE_RTUR_DVSN_CD
+		     , a.RULE_PRMT_IAOT_CD
+		     , a.RULE_PRMT_DVSN_CD
+		     , a.RULE_PRMT_VRAB_NM
+		     , a.RULE_PRMT_TRGT_ID1
+		     , a.RULE_PRMT_TRGT_ID2
+		     , a.RULE_PRMT_TRGT_ID3
+		     , a.RULE_PRMT_TRGT_ID4
+		     , a.RULE_PRMT_TRGT_ID5
+		     , a.RULE_PRMT_TRGT_ID6
+		     , a.HLSC_RSLT_VL
+		  from (
+		        select a.HLSC_RULE_SNO
+		             , a.HLSC_CLSF_CD
+		             , a.HLSC_RULE_NM
+		             , a.HLSC_RULE_SCRP_CTN
+		             , a.HLSC_RULE_USE_TRGT_DVSN_CD
+		             , a.HLSC_RULE_USE_TRGT_ID
+		             , a.RULE_RTUR_DVSN_CD
+		             , b.RULE_PRMT_IAOT_CD
+		             , b.RULE_PRMT_DVSN_CD
+		             , b.RULE_PRMT_VRAB_NM
+		             , b.RULE_PRMT_TRGT_ID1
+		             , b.RULE_PRMT_TRGT_ID2
+		             , b.RULE_PRMT_TRGT_ID3
+		             , b.RULE_PRMT_TRGT_ID4
+		             , b.RULE_PRMT_TRGT_ID5
+		             , b.RULE_PRMT_TRGT_ID6
+		             , c.HLSC_RSLT_VL
+		             , min(case when c.SNO is null then 0 else 1 end) over (partition by a.HLSC_RULE_SNO)  exist 
+		          from SMMRULEMT a
+		             , SMMRULEDT b
+		             , (
+		               select -- 검사결과(판정용)
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , case when c3.EXRS_FRMT_CD = 'T' then 
+		                          substrb(to_char(c3.EXRS_CTN), 1, 3900)
+		                      else 
+		                          c3.EXRS_NCVL_VL
+		                      end                                                       HLSC_RSLT_VL 
+		                 from SMMRULEDT c1
+		                    , SMARSORDT c2
+		                    , SZRESULMT c3
+		                where #{hlscRuleUseTrgtDvsnCd} = '1'
+		                  and c1.RULE_PRMT_DVSN_CD = '01'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c3.PTNO = c2.PTNO
+		                  and c3.ORDR_YMD = c2.ORDR_YMD
+		                  and c3.ORDR_SNO = c2.ORDR_SNO
+		                  and c3.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                  and nvl(c3.EXRS_UPDT_YN, 'N') = 'N'
+		               union all
+		               select -- 검사결과(결과변환용)
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , case when c3.EXRS_FRMT_CD = 'T' then 
+		                          substrb(to_char(nvl(c3.EXRS_CTN, c4.EXRS_CTN)), 1, 3900)
+		                      else 
+		                          nvl(c3.EXRS_NCVL_VL, c4.EXRS_NCVL_VL)
+		                      end                                                       HLSC_RSLT_VL 
+		                 from SMMRULEDT c1
+		                inner join SMARSORDT c2
+		                        on #{hlscRuleUseTrgtDvsnCd} = '2'
+		                       and c1.RULE_PRMT_DVSN_CD = '01'
+		                       and c2.APNT_NO = #{apntNo}
+		           left outer join SZRESULMT c3
+		                        on c3.PTNO = c2.PTNO
+		                       and c3.ORDR_YMD = c2.ORDR_YMD
+		                       and c3.ORDR_SNO = c2.ORDR_SNO
+		                       and c3.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                       and nvl(c3.EXRS_UPDT_YN, 'N') = 'N'                  
+		           left outer join SMDRSLTET c4 
+		                        on c4.APNT_NO = c2.APNT_NO
+		                       and c4.HLSC_SNO = c2.HLSC_SNO
+		                       and c4.PRVL_ORDR_SNO = c2.PRVL_ORDR_SNO
+		                       and c4.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                    where (c3.EXMN_CD is not null or c4.EXMN_CD is not null)
+		               union all
+		               select -- 성별
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO 
+		                    , c3.GEND_CD                                                HLSC_RSLT_VL
+		                 from SMMRULEDT c1
+		                    , SMARSMAST c2
+		                    , APPTPTNTT c3
+		                where c1.RULE_PRMT_DVSN_CD = '02'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c3.PTNO = c2.PTNO
+		               union all
+		               select -- 연령
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , to_char(trunc(months_between(c2.ORDR_YMD, c3.BTDT)/12))   hlsc_rslt_vl 
+		                 from SMMRULEDT c1
+		                    , SMARSMAST c2
+		                    , APPTPTNTT c3
+		                where c1.RULE_PRMT_DVSN_CD = '03'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c3.PTNO = c2.PTNO
+		               union all
+		               select -- 문진결과
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , c4.INQY_RESP_VL                                           hlsc_rslt_vl 
+		                 from SMMRULEDT c1
+		                    , SMARSMAST c2
+		                    , SMAPTINQT c3
+		                    , SMDRESPMT c4
+		                where c1.RULE_PRMT_DVSN_CD = '04'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c3.RPRS_APNT_NO = c2.RPRS_APNT_NO
+		                  and c4.INQY_LIST_SNO = c3.INQY_LIST_SNO
+		                  and c4.INQY_QSTN_SNO = c1.RULE_PRMT_TRGT_ID1
+		                  and c4.INQY_QSTN_AMND_NO = c1.RULE_PRMT_TRGT_ID2
+		               union all
+		               select -- 검사참고치(상한치)
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , c3.BASE_UPLM_VL                                           HLSC_RSLT_VL 
+		                 from SMMRULEDT c1
+		                    , SMDRSLTET c2
+		                    , SMDORDBAT c3
+		                where c1.RULE_PRMT_DVSN_CD = '05'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c2.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                  and c3.HLSC_EXRS_SNO = c2.HLSC_EXRS_SNO
+		                  and c3.EXRS_RFRC_MNNG_CD = c1.RULE_PRMT_TRGT_ID2
+		               union all
+		               select -- 검사참고치(하한치)
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , c3.BASE_LWLM_VL                                           HLSC_RSLT_VL 
+		                 from SMMRULEDT c1
+		                    , SMDRSLTET c2
+		                    , SMDORDBAT c3
+		                where c1.RULE_PRMT_DVSN_CD = '06'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c2.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                  and c3.HLSC_EXRS_SNO = c2.HLSC_EXRS_SNO
+		                  and c3.EXRS_RFRC_MNNG_CD = c1.RULE_PRMT_TRGT_ID2
+		               union all
+		               select -- 소견
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , c1.RULE_PRMT_VRAB_NM                                      HLSC_RSLT_VL
+		                 from SMMRULEDT c1
+		                    , SMMOPNNMT c2
+		                where c1.RULE_PRMT_DVSN_CD = '51'
+		                  and c2.HLSC_OPNN_SNO = to_number(c1.RULE_PRMT_TRGT_ID1)
+		               union all
+		               select -- 검사결과코드
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , c1.RULE_PRMT_VRAB_NM                                      HLSC_RSLT_VL
+		                 from SMMRULEDT c1
+		                    , SMCRTXTCT c2
+		                where c1.RULE_PRMT_DVSN_CD = '52'
+		                  and c2.EXMN_CD = c1.RULE_PRMT_TRGT_ID1
+		                  and c2.HLSC_RSLT_CD = c1.RULE_PRMT_TRGT_ID2
+		               union all               
+		               select -- 검사결과 를 저장 할 공간이 있는지 확인
+		                      c1.HLSC_RULE_SNO
+		                    , c1.SNO
+		                    , case when c3.EXRS_FRMT_CD = 'T' then 
+		                          substrb(to_char(c3.EXRS_CTN), 1, 3900)
+		                      else 
+		                          c3.EXRS_NCVL_VL
+		                      end                                                       HLSC_RSLT_VL 
+		                 from SMMRULEDT c1
+		                    , SMARSORDT c2
+		                    , SMDRSLTET c3
+		                where c1.RULE_PRMT_DVSN_CD = '53'
+		                  and c2.APNT_NO = #{apntNo}
+		                  and c3.APNT_NO = c2.APNT_NO
+		                  and c3.HLSC_SNO = c2.HLSC_SNO
+		                  and c3.PRVL_ORDR_SNO = c2.PRVL_ORDR_SNO
+		                  and c3.EXMN_CD = c1.RULE_PRMT_TRGT_ID1                                    
+		               ) c  
+		         where 1=1
+		           and a.HLSC_CLSF_CD = #{hlscClsfCd}
+		           and a.HLSC_RULE_USE_TRGT_DVSN_CD = #{hlscRuleUseTrgtDvsnCd}
+		           and a.DLTN_YN = 'N'
+		           and b.HLSC_RULE_SNO = a.HLSC_RULE_SNO 
+		           and c.HLSC_RULE_SNO(+) = b.HLSC_RULE_SNO
+		           and c.SNO(+) = b.SNO
+		       ) a
+		 where a.EXIST = 1                 
+		 order by 
+		       a.HLSC_RULE_SNO
+		     , a.RULE_PRMT_IAOT_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO">
+	
+		<result property="testVl" column="TEST_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqPtRuleInfmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sm-smq-dao-SmqPtRuleInfmDAO-selectOneDummy */
+		select pa_sm.ec                              as TEST_VL            
+		  from dual
+	</select>
+
+
+
+</mapper>

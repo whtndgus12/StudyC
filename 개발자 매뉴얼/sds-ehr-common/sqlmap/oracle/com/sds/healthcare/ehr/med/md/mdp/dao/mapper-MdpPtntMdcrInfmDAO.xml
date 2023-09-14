@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpPtntMdcrInfmDAO_sql.xml 
+    Description :                                      환자의 진료관련 정보들을 조회한다.
+                  -->
+<mapper namespace="MdpPtntMdcrInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="oprtYmd" column="OPRT_YMD"/>
+		<result property="oprtSno" column="OPRT_SNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="oprtSttsCd" column="OPRT_STTS_CD"/>
+		<result property="cscrCd" column="CSCR_CD"/>
+		<result property="cscrNm" column="CSCR_NM"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="ankiCd" column="ANKI_CD"/>
+		<result property="opsrId1" column="OPSR_ID1"/>
+		<result property="opsrId2" column="OPSR_ID2"/>
+		<result property="opsrId3" column="OPSR_ID3"/>
+		<result property="cfdrId" column="CFDR_ID"/>
+		<result property="ordpCd" column="ORDP_CD"/>
+		<result property="opsrNm" column="OPSR_NM"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="afiOprtSttsNm" column="AFI_OPRT_STTS_NM"/>
+		<result property="anshId1" column="ANSH_ID1"/>
+		<result property="anshNm" column="ANSH_NM"/>
+		<result property="anstStrtDt" column="ANST_STRT_DT"/>
+		<result property="opstDt" column="OPST_DT"/>
+		<result property="anstFnshDt" column="ANST_FNSH_DT"/>
+		<result property="sutrFnshDt" column="SUTR_FNSH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-listPtntOprtInfmInqr */
+		<![CDATA[
+		select  a.PTNO                          as PTNO     /* 환자번호 */
+		     ,  to_char(a.OPRT_YMD, 'yyyymmdd') as OPRT_YMD /* 수술일자 */
+		     ,  a.OPRT_SNO                      as OPRT_SNO /* 수술일련번호 */
+		     ,  a.CODV_CD                       as CODV_CD  /* 내원구분코드 */    
+		     ,  a.MDRP_NO                       as MDRP_NO  /* 진료접수번호 */
+		     ,  a.OPRT_STTS_CD                  as OPRT_STTS_CD /* 수술상태코드 */
+		     ,  a.CSCR_CD                       as CSCR_CD  /* Case_Cart코드(임상수술코드) */
+		     ,  a.CSCR_NM                       as CSCR_NM  /* 수술명 */
+		     ,  a.SCIN_CD                       as SCIN_CD  /* 상병코드 */
+		     ,  a.SCIN_NM                       as SCIN_NM  /* 상병명 */
+		     ,  a.ANKI_CD                       as ANKI_CD  /* 마취종류코드 */
+		     ,  a.OPSR_ID1                      as OPSR_ID1 /* 집도의사ID1 */
+		     ,  a.OPSR_ID2                      as OPSR_ID2 /* 집도의사ID2 */
+		     ,  a.OPSR_ID3                      as OPSR_ID3 /* 집도의사ID3 */
+		     ,  a.CFDR_ID                       as CFDR_ID  /* 수석의사ID */
+		     ,  a.ORDP_CD                       as ORDP_CD  /* 집도과코드 */
+		     ,  (select  USER_NM
+		           from  CCUSRDPHT
+		          where  USER_ID = a.OPSR_ID1) as OPSR_NM   /* 집도의명 */
+		     ,  c.KORN_DPRT_NM                 as KORN_DPRT_NM /* 집도과명_한글 */
+		     ,  c.ABRV_DPRT_CD                 as ABRV_DPRT_CD /* 집도과명_약어부서코드 */
+		     ,  (select DETL_CD_NM
+		           from CCCMCDDMT 
+		          where COMN_GRP_CD = a.OPRT_STTS_CD
+		              and COMN_DTLS_CD = 'MM126') as AFI_OPRT_STTS_NM
+		     ,  a.ANSH_ID1                     as ANSH_ID1 /* 마취의사ID1 */
+		     ,  (select  USER_NM
+		           from  CCUSRDPHT
+		          where  USER_ID = a.ANSH_ID1) as ANSH_NM   /* 마취의사명 */
+		     ,  to_char(a.ANST_STRT_DT, 'yyyymmddhh24mi') as ANST_STRT_DT   /* 마취시작일시 */
+		     ,  to_char(a.OPST_DT, 'yyyymmddhh24mi') as OPST_DT             /* 수술시작일시 */
+		     ,  to_char(a.ANST_FNSH_DT, 'yyyymmddhh24mi') as ANST_FNSH_DT   /* 마취종료일시 */
+		     ,  to_char(a.SUTR_FNSH_DT, 'yyyymmddhh24mi') as SUTR_FNSH_DT   /* 봉합종료일시(수술종료시간) */
+		 ]]>    
+		  from  MDOPSCHET a
+		<if test='mdrpNo != "9"'>
+		     ,  MNSOPNRMT b
+		</if>
+		     ,  HZDEPTMMT c
+		 where  1=1 
+		<if test='mdrpNo != "9"'>
+		and     a.PTNO = b.PTNO(+)
+		and     a.OPRT_YMD = b.OPRT_YMD(+)
+		and     a.OPRT_SNO = b.OPRT_SNO(+)
+		</if>
+		<![CDATA[
+		   and  a.ORDP_CD = c.DPRT_CD
+		   and  nvl(a.OPRT_STTS_CD, '1') <> '9'
+		   and  a.PTNO = #{ptno}
+		   and  a.OPRT_YMD >= to_date(#{mdcrYmd}, 'yyyymmdd')
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO">
+	
+		<result property="babyBdwgVl" column="BABY_BDWG_VL"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="mdppBdwgVl" column="MDPP_BDWG_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOnePtntBdwgInfm */
+		        nvl((select  BABY_BDWG_VL
+		               from  MNWBABPAT
+		              where  NWBR_PTNO = #{ptno}), 0) as BABY_BDWG_VL
+		     ,  nvl((select  ITEM_RCRD_VL
+		               from  (
+		                     select  domt.PTNO
+		                          ,  bmmt.BODY_MSRN_ITEM_SNO as ITEM_SNO
+		                          ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		                          ,  bmmt.BODY_MSRN_RCRD_DT  as ITEM_RCRD_DT
+		                          ,  case
+		                               when (upper(bmmt.BODY_MSRN_UNIT_CD) = 'G' and              /* 단위 컬럼 추가 g으로 측정되는 경우 kg 전환 처리 */
+		                                     REGEXP_INSTR(bmmt.BODY_MSRN_RCRD_VL, '[^0-9]') = 0) then to_char(to_number(bmmt.BODY_MSRN_RCRD_VL)/1000, 'FM990.999' )
+		                                                                                         else bmmt.BODY_MSRN_RCRD_VL
+		                             end  as ITEM_RCRD_VL
+		                          ,  dense_rank() over(partition by bmmt.BODY_MSRN_ITEM_SNO
+		                                                   order by to_char(bmmt.BODY_MSRN_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		                       from  MECFSDOMT domt
+		                          ,  MECFSBMMT bmmt
+		                          ,  MECFSDAMT damt
+		                          ,  APRCRPTNT ptnt
+		                      where  ptnt.MDRP_NO = #{mdrpNo}
+		                        and  domt.MDRP_NO       = ptnt.MDRP_NO
+		                        and  bmmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		                        and  bmmt.BODY_MSRN_RCRD_DT >= trunc(sysdate) - 365 /* 최근1년 조회 */
+		                        and  bmmt.BODY_MSRN_RCRD_DT  < trunc(sysdate) + 1
+		                        and  damt.CNOS_ITEM_SNO = bmmt.BODY_MSRN_ITEM_SNO
+		                        and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_BM'
+		                        and  damt.CNOS_ITEM_NM = 'WT'
+		                    )
+		             where  rank = 1
+		               and  rownum = 1), 0) as BDWG_VL
+		     ,  nvl((select  MDPP_BDWG_VL
+		               from  APPTADIFT
+		              where  PTNO = #{ptno}), 0) as MDPP_BDWG_VL
+		  from  dual
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="ltncTbrcMccsTypeCd" column="LTNC_TBRC_MCCS_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm (잠복결핵진료비유형코드 정보를 조회한다.) 
+        Description :                                           잠복결핵진료비유형코드 정보를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntMdcrInfmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntMdcrInfmDAO-selectOneLtncTbrcInfm */
+		select  PTNO
+		     ,  MDRP_NO
+		     ,  CODV_CD
+		     ,  LTNC_TBRC_MCCS_TYPE_CD
+		  from  APRCRPTNT
+		 where  MDRP_NO = #{mdrpNo}
+	</select>
+
+
+
+</mapper>

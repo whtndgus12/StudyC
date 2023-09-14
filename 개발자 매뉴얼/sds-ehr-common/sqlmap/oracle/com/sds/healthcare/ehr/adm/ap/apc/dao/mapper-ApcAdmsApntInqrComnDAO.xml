@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcAdmsApntInqrComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcAdmsApntInqrComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntInqrComnDAO-listAdmsApnt-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsApntInqrComnDVO">
+	
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="wardAbrvCd" column="WARD_ABRV_CD"/>
+		<result property="wardNm" column="WARD_NM"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="oprtPrrnYmd" column="OPRT_PRRN_YMD"/>
+		<result property="admsItdrId" column="ADMS_ITDR_ID"/>
+		<result property="admsItdrNm" column="ADMS_ITDR_NM"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntInqrComnDAO-listAdmsApnt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsApntInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntInqrComnDAO-listAdmsApnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntInqrComnDAO-listAdmsApnt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsApntInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntInqrComnDAO-listAdmsApnt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsApntComnDAO-listAdmsApnt */
+		        b.PTNT_NM                                    as  PTNT_NM
+		     ,  a.PTNO                                       as  PTNO
+		     ,  b.GEND_CD                                    as  GEND_CD
+		     ,  fn_ap_age_s(a.PTNO, SYSDATE) as  AGE_VL
+		     ,  d.ABRV_DPRT_CD                               as  WARD_ABRV_CD
+		     ,  d.KORN_DPRT_NM                               as  WARD_NM
+		     ,  a.PTRM_NO                                    as  PTRM_NO
+		     ,  to_char(a.OPRT_PRRN_YMD,'yyyymmdd')          as  OPRT_PRRN_YMD
+		     ,  a.ADMS_ITDR_ID                               as  ADMS_ITDR_ID
+		     ,  c.USER_NM                                    as  ADMS_ITDR_NM
+		     ,  a.MCDP_CD                                    as  MCDP_CD       
+		  from  APRCAMAPT a
+		     ,  APPTPTNTT b
+		     ,  CCUSRDPHT c
+		     ,  HZDEPTMMT d
+		 where  a.ADMS_PRRN_YMD = to_date(#{admsPrrnYmd}, 'yyyymmdd')
+		  <if test = "mcdpCd != null and mcdpCd != ''">
+		   and  a.MCDP_CD = #{mcdpCd}
+		  </if>
+		  <if test = "admsItdrId != null and admsItdrId != ''">
+		   and  a.ADMS_ITDR_ID = #{admsItdrId}
+		  </if> 
+		  <if test = "wardAbrvCd != null and wardAbrvCd != ''">
+		   and  d.ABRV_DPRT_CD = #{wardAbrvCd}
+		  </if>                   
+		   and  a.CNCL_DT is null     
+		   and  a.PTNO    = b.PTNO     
+		   and  c.USER_ID = a.ADMS_ITDR_ID     
+		   and  d.DPRT_CD(+) = a.WARD_CD
+	</select>
+
+
+
+</mapper>

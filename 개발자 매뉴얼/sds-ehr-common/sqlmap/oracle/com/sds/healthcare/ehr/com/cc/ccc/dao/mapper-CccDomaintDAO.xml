@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccDomaintDAO_sql.xml 
+    Description :                                      도메인 DAO
+                  -->
+<mapper namespace="CccDomaintDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO">
+	
+		<result property="dmanEnsnNm" column="DMAN_ENSN_NM"/>
+		<result property="dmanKornNm" column="DMAN_KORN_NM"/>
+		<result property="dataTypNm" column="DATA_TYP_NM"/>
+		<result property="bswrNm" column="BSWR_NM"/>
+		<result property="tablUseYn" column="TABL_USE_YN"/>
+		<result property="tablUseCnt" column="TABL_USE_CNT"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint (도메인 조회) 
+        Description :                                           도메인 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDomaint */
+		<![CDATA[
+		select  /*+ ccd_domaint_l01$S01_도메인 조회 */ 
+		            a.DMAN_ENSN_NM
+		          , a.DMAN_KORN_NM
+		          , a.DATA_TYP_NM
+		          , a.BSWR_NM
+		          , a.TABL_USE_YN
+		          , a.TABL_USE_CNT
+		          , case when EXISTS( select  b.COMN_GRP_CD
+		                              from    CCCDDMINT b
+		                              where   b.DMAN_ENSN_NM = a.DMAN_ENSN_NM
+		                            )
+		                 then 'Y'
+		                 else 'N'
+		            end as RTUR_VL
+		          , ( select  max(b.COMN_GRP_CD)
+		              from    CCCDDMINT b
+		              where   b.DMAN_ENSN_NM = a.DMAN_ENSN_NM
+		            ) as COMN_GRP_CD
+		    from    CCDOMAINT a
+		    where   ((nvl(#{dmanKornNm}, '*') = '*') or (a.DMAN_ENSN_NM like '%' || #{dmanKornNm} || '%') or
+		             (a.DMAN_KORN_NM like '%' || #{dmanKornNm} || '%'))
+		      and   a.SB_DMAN_TYP_NM  in ('INTEGRATION', 'INDIVIDUAL')
+		      and   a.DMAN_TYP_NM = 'CODE'
+		]]>	
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO">
+	
+		<result property="tablNm" column="TABL_NM"/>
+		<result property="tablKornNm" column="TABL_KORN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl (테이블 조회) 
+        Description :                                           테이블 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listAlltabl */
+		<![CDATA[
+		select  /*+ ccd_alltabl_l01$S01_테이블 조회 */ 
+		             a.TABLE_NAME AS "TABL_NM"
+		           , b.COMMENTS AS "TABL_KORN_NM"
+		    from     ALL_TABLES a
+		           , ALL_TAB_COMMENTS b
+		    where    a.TABLE_NAME = b.TABLE_NAME
+		      and    a.TABLE_NAME in (  'APCTRLMMT'
+		                              , 'ACCTRLMMT'
+		                              , 'AICTRLMMT'
+		                              , 'MZCTRLMMT'
+		                              , 'MECTRLMMT'
+		                              , 'MRCTRLMMT'
+		                              , 'QMCTRLMMT'
+		                              , 'QDCTRLMMT'
+		                              , 'SDMCTRLMT'
+		                              , 'STMCTRLMT'
+		                              , 'SUCTRLMMT'
+		                              , 'SCMCTRLMT'
+		                              , 'SMCTRLMMT'
+		                              , 'SZCTRLMMT'
+		                              , 'XWCTRLMMT'
+		                              , 'XWCTRLMMT'
+		                             )
+		]]>
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL1"/>
+		<result property="bswrNm" column="BSWR_NM"/>
+		<result property="sbjtScopNm" column="SBJT_SCOP_NM"/>
+		<result property="typeCd" column="TYPE_CD"/>
+		<result property="typeCdStr" column="TYPE_CD_STR"/>
+		<result property="rprsEnsnTablNm" column="RPRS_ENSN_TABL_NM"/>
+		<result property="dmanKornNm" column="DMAN_KORN_NM"/>
+		<result property="dmanEnsnNm" column="DMAN_ENSN_NM"/>
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="grpCdNm" column="GRP_CD_NM"/>
+		<result property="tablUseCnt" column="TABL_USE_CNT"/>
+		<result property="sttsCnt" column="STTS_CNT"/>
+		<result property="sttsCd" column="STTS_CD"/>
+		<result property="sttsCd1" column="STTS_CD1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint (코드 도메인 연계 조회) 
+        Description :                                           코드 도메인 연계 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listcddmint */
+		<![CDATA[
+		select  /*+ ccd_cddmint_l02$S01_코드 도메인 연계 조회 */ 
+		           b.DMAN_ENSN_NM || c.COMN_GRP_CD as RTUR_VL
+		         , CAST('' AS VARCHAR2(100)) AS RTUR_VL1
+		         , substr(b.BSWR_NM, INSTR(b.BSWR_NM, '.') + 1, length(b.BSWR_NM) - INSTR(b.BSWR_NM, '.')) as BSWR_NM
+		         , substr(substr(b.SBJT_SCOP_NM, INSTR(b.SBJT_SCOP_NM, '.') + 1, length(b.SBJT_SCOP_NM) - INSTR(b.SBJT_SCOP_NM, '.')),
+		           INSTR(substr(b.SBJT_SCOP_NM, INSTR(b.SBJT_SCOP_NM, '.') + 1, length(b.SBJT_SCOP_NM) - INSTR(b.SBJT_SCOP_NM, '.')), '.') + 1,
+		           length(substr(b.SBJT_SCOP_NM, INSTR(b.SBJT_SCOP_NM, '.') + 1, length(b.SBJT_SCOP_NM) - INSTR(b.SBJT_SCOP_NM, '.'))) -
+		           INSTR(substr(b.SBJT_SCOP_NM, INSTR(b.SBJT_SCOP_NM, '.') + 1, length(b.SBJT_SCOP_NM) - INSTR(b.SBJT_SCOP_NM, '.')), '.')) as SBJT_SCOP_NM
+		         , c.TYPE_CD
+		         , CAST(decode(c.TYPE_CD,'C','공통코드', 'L','개별코드', '미정의') AS VARCHAR2(100)) as TYPE_CD_STR
+		         , decode(c.TYPE_CD,'C', '', 'L', c.RPRS_ENSN_TABL_NM) as RPRS_ENSN_TABL_NM
+		         , b.DMAN_KORN_NM
+		         , b.DMAN_ENSN_NM
+		         , c.COMN_GRP_CD
+		         , c.GRP_CD_NM
+		         , b.TABL_USE_CNT
+		         , count(*) over( partition by a.DMAN_ENSN_NM order by a.DMAN_ENSN_NM)  as STTS_CNT
+		         , a.STTS_CD
+		         , a.STTS_CD AS STTS_CD1
+		    from   CCCDDMINT a
+		         , CCDOMAINT b
+		         , CCCMCDMMT c
+		    where  a.DMAN_ENSN_NM = b.DMAN_ENSN_NM
+		      and  a.COMN_GRP_CD  = c.COMN_GRP_CD
+		      and  ((nvl(#{dmanKornNm}, '*') = '*') or (b.DMAN_KORN_NM = #{dmanKornNm}))
+		      and  ((nvl(#{sbjtScopNm}, '*') = '*') or (b.SBJT_SCOP_NM like '%' || #{sbjtScopNm} || '%'))
+		      and  ((nvl(#{sttsCd}, '*') = '*') or (a.STTS_CD = #{sttsCd}))
+		      and  ((nvl(#{grpCdNm}, '*') = '*') or (c.COMN_GRP_CD = #{grpCdNm}))
+		      and  ((nvl(#{rprsEnsnTablNm}, '*') = '*') or (c.RPRS_ENSN_TABL_NM = #{rprsEnsnTablNm}))
+		      and  b.SB_DMAN_TYP_NM  in ('INTEGRATION', 'INDIVIDUAL')
+		      and  b.DMAN_TYP_NM = 'CODE'
+		]]>
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO">
+	
+		<result property="dataTypNm" column="DATA_TYP_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp (도메인 타입조회) 
+        Description :                                           도메인 타입조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-listDmanTyp */
+		<![CDATA[
+		select  /*+ ccd_cddmint_l01$S01_도메인 타입조회 */ 
+		           b.DATA_TYP_NM
+		    from   CCCDDMINT a  -- 코드 도메인 관계
+		         , CCDOMAINT b  -- 표준 도메인
+		    where  a.COMN_GRP_CD  = #{comn_grp_cd}
+		      and  a.DMAN_ENSN_NM = b.DMAN_ENSN_NM
+		]]>
+			
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-insertDomaint (공통코드도메인관계 추가) 
+        Description :                                           공통코드도메인관계 추가
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-insertDomaint"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-insertDomaint */
+		<![CDATA[
+		INSERT 
+		   INTO CCCDDMINT(COMN_GRP_CD,
+		                              DMAN_ENSN_NM,
+		                              STTS_CD,
+		                              FRST_RGSR_ID,
+									  FRST_RGST_IP,
+									  FRST_RGST_DT,
+									  FRST_RGST_CLNT_PRGM_ID,
+									  FRST_RGST_SRVR_PRGM_ID,
+		                              LAST_UPDR_ID,
+									  LAST_UPDT_IP,
+		 							  LAST_UPDT_DT,
+									  LAST_UPDT_CLNT_PRGM_ID,
+									  LAST_UPDT_SRVR_PRGM_ID)
+		VALUES (#{comnGrpCd},
+		             #{dmanEnsnNm},
+		             'Y',
+		             #{gvUserId},
+					 #{gvUserIp},
+					 sysdate,
+					 #{gvClntPrgmId},
+		             #{gvSrvrPrgmId},
+		             #{gvUserId},
+					 #{gvUserIp},
+					 sysdate,
+					 #{gvClntPrgmId},
+		             #{gvSrvrPrgmId})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-updateDomaint (공통코드도메인관계 수정) 
+        Description :                                           공통코드도메인관계 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-updateDomaint"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccDomaintDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccDomaintDAO-updateDomaint */
+		<![CDATA[
+		UPDATE CCCDDMINT
+		       SET COMN_GRP_CD = #{comnGrpCd},
+		             DMAN_ENSN_NM = #{dmanEnsnNm} ,
+		             STTS_CD = #{sttsCd},
+		             LAST_UPDR_ID = #{gvUserId},
+		             LAST_UPDT_IP = #{gvUserIp},
+		 			 LAST_UPDT_DT = sysdate,
+					 LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+					 LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 WHERE COMN_GRP_CD = #{comnGrpCd}
+		     AND DMAN_ENSN_NM = #{dmanEnsnNm}
+		]]>
+	</update>
+
+</mapper>

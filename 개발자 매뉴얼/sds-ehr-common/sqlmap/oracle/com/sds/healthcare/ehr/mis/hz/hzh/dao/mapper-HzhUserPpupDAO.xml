@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhUserPpupDAO_sql.xml 
+    Description : -->
+<mapper namespace="HzhUserPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="wrknPartCd" column="WRKN_PART_CD"/>
+		<result property="wrknPartNm" column="WRKN_PART_NM"/>
+		<result property="lastEncmDd" column="LAST_ENCM_DD"/>
+		<result property="rtrmPrapDd" column="RTRM_PRAP_DD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="emplFrrn" column="EMPL_FRRN"/>
+		<result property="emplBrrn" column="EMPL_BRRN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup (사용자 목록 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup */
+		select rownum as SQNC -- 순서
+		     , USER_ID        -- 사용자ID
+		     , USER_NM        -- 사용자명
+		     , DPRT_CD        -- 부서코드
+		     , KORN_DPRT_NM   -- 한글부서명
+		     , WRKN_PART_CD   -- 근무지
+		     , WRKN_PART_NM   -- 근무지명  
+		     , LAST_ENCM_DD   -- 병원입사일 2023.06.Add.
+		     , RTRM_PRAP_DD   -- 퇴직발령일
+		     , COMN_CD_NM     -- 퇴직여부명 추가필요
+		     , EMPL_FRRN      -- 앞번호
+		     , EMPL_BRRN      -- 뒷번호
+		from
+		     (select USER_ID      -- 사용자ID
+		           , USER_NM      -- 사용자명
+		           , DPRT_CD      -- 부서코드
+		           , KORN_DPRT_NM -- 한글부서명
+		           , WRKN_PART_CD -- 근무지
+		           , WRKN_PART_NM -- 근무지명  
+		           , LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		           , RTRM_PRAP_DD -- 퇴직발령일
+		           , COMN_CD_NM   -- 퇴직여부명 추가필요
+		           , EMPL_FRRN    -- 앞번호
+		           , EMPL_BRRN    -- 뒷번호
+		        from
+		             (select  /*+ index(a HZUSERMMT_I01) index(b HZDEPTMMT_PK) */
+		                      EMNO                                                               as USER_ID      -- 사용자ID
+		                   ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                   ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                   , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                   ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                   , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                   ,  to_char(LAST_ENCM_DD, 'YYYYMMDD')                                  as LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		                   ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                   ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                   ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                   ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                from  HZUSERMMT a -- (HZ)사원IF
+		               where (a.EMNO like #{srchCdNm} || '%' or EMPY_NM  like '%' || #{srchCdNm} || '%') -- 사번 성명 통합조회토록 수정 2023.06.
+		                and  sysdate <= decode(#{ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                 nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		             ) m
+		      order by case when REGEXP_INSTR(#{srchCdNm},'[^0-9]') = 0 then m.USER_ID else m.USER_NM end  asc
+		/* -- 사번 성명 통합조회토록 수정 2023.06.
+		               where  a.EMNO                      like {srchCdNm} || '%' -- 검색코드명
+		                 and  sysdate <= decode({ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                                      nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                 and  {srchCd}    = 'C'                                   -- 검색코드[C:사용자ID]
+		               union  all
+		              select
+		                      EMNO                                                               as USER_ID      -- 사용자ID
+		                   ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                   ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                   , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                   ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                   , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                   ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                   ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                   ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                   ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                from  HZUSERMMT a -- (HZ)사원IF
+		               where  EMPY_NM  like '%' || {srchCdNm} || '%' -- 검색코드명
+		                 and  sysdate <= decode({ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                                      nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                 and  {srchCd}    = 'N'                                          -- 검색코드[N:사용자명]
+		             ) m
+		       order  by  case {srchCd} when 'C' then m.USER_ID else m.USER_NM end  asc */
+		     ) x
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="wrknPartCd" column="WRKN_PART_CD"/>
+		<result property="wrknPartNm" column="WRKN_PART_NM"/>
+		<result property="lastEncmDd" column="LAST_ENCM_DD"/>
+		<result property="rtrmPrapDd" column="RTRM_PRAP_DD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="emplFrrn" column="EMPL_FRRN"/>
+		<result property="emplBrrn" column="EMPL_BRRN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup (사용자 목록 조회) 
+        Description :                                           hzd_useramt_l01$S01_사용자_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-pagingUserPpup */
+		select RNUM
+		     , RNUM as SQNC
+		     , USER_ID
+		     , USER_NM
+		     , DPRT_CD
+		     , KORN_DPRT_NM
+		     , WRKN_PART_CD
+		     , WRKN_PART_NM
+		     , LAST_ENCM_DD   -- 병원입사일 2023.06.Add.
+		     , RTRM_PRAP_DD
+		     , COMN_CD_NM
+		     , EMPL_FRRN
+		     , EMPL_BRRN
+		 from(
+		      select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-listUserPpup */
+		             rownum as RNUM -- 순서
+		           , USER_ID        -- 사용자ID
+		           , USER_NM        -- 사용자명
+		           , DPRT_CD        -- 부서코드
+		           , KORN_DPRT_NM   -- 한글부서명
+		           , WRKN_PART_CD   -- 근무지
+		           , WRKN_PART_NM   -- 근무지명  
+		           , LAST_ENCM_DD   -- 병원입사일 2023.06.Add
+		           , RTRM_PRAP_DD   -- 퇴직발령일
+		           , COMN_CD_NM     -- 퇴직여부명 추가필요
+		           , EMPL_FRRN      -- 앞번호
+		           , EMPL_BRRN      -- 뒷번호
+		      from
+		           (select USER_ID      -- 사용자ID
+		                 , USER_NM      -- 사용자명
+		                 , DPRT_CD      -- 부서코드
+		                 , KORN_DPRT_NM -- 한글부서명
+		                 , WRKN_PART_CD -- 근무지
+		                 , WRKN_PART_NM -- 근무지명  
+		                 , LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		                 , RTRM_PRAP_DD -- 퇴직발령일
+		                 , COMN_CD_NM   -- 퇴직여부명 추가필요
+		                 , EMPL_FRRN    -- 앞번호
+		                 , EMPL_BRRN    -- 뒷번호
+		              from
+		                   (select  /*+ index(a HZUSERMMT_I01) index(b HZDEPTMMT_PK) */
+		                            EMNO                                                               as USER_ID      -- 사용자ID
+		                         ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                         ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                         ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                         ,  to_char(LAST_ENCM_DD, 'YYYYMMDD')                                  as LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		                         ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                         ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                         ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                         ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                      from  HZUSERMMT a -- (HZ)사원IF
+		                     where (a.EMNO like #{srchCdNm} || '%' or EMPY_NM  like '%' || #{srchCdNm} || '%') -- 사번 성명 통합조회토록 수정 2023.06.
+		                       and  sysdate <= decode(#{ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                              nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                   ) m
+		             order by case when REGEXP_INSTR(#{srchCdNm},'[^0-9]') = 0 then m.USER_ID else m.USER_NM end  asc
+		/*
+		                     where  a.EMNO    like {srchCdNm} || '%' -- 검색코드명
+		                       and  {srchCd} = 'C'                   -- 검색코드[C:사용자ID]
+		                       and  sysdate <= decode({ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                              nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                     union  all
+		                    select
+		                            EMNO                                                               as USER_ID      -- 사용자ID
+		                         ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                         ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                         ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                         ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                         ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                         ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                         ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                      from  HZUSERMMT a -- (HZ)사원IF
+		                     where  EMPY_NM   like '%' || {srchCdNm} || '%' -- 검색코드명
+		                       and  {srchCd} = 'N'                          -- 검색코드[N:사용자명]
+		                       and  sysdate <= decode({ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                               nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                   ) m
+		             order  by  case {srchCd} when 'C' then m.USER_ID else m.USER_NM end  asc */
+		           ) x
+		    )
+		 where RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)
+		   and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup (사용자 목록 조회 개수조회) 
+        Description :                                           hzd_useramt_l01$S01_사용자_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhUserPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhUserPpupDAO-selectOneUserPpup */
+		select Count(*) AS TOTAL_DATA_COUNT
+		  from (
+		      select rownum as SQNC -- 순서
+		           , USER_ID        -- 사용자ID
+		           , USER_NM        -- 사용자명
+		           , DPRT_CD        -- 부서코드
+		           , KORN_DPRT_NM   -- 한글부서명
+		           , WRKN_PART_CD   -- 근무지
+		           , WRKN_PART_NM   -- 근무지명  
+		           , LAST_ENCM_DD   -- 병원입사일 2023.06.Add.
+		           , RTRM_PRAP_DD   -- 퇴직발령일
+		           , COMN_CD_NM     -- 퇴직여부명 추가필요
+		           , EMPL_FRRN      -- 앞번호
+		           , EMPL_BRRN      -- 뒷번호
+		      from
+		           (select USER_ID      -- 사용자ID
+		                 , USER_NM      -- 사용자명
+		                 , DPRT_CD      -- 부서코드
+		                 , KORN_DPRT_NM -- 한글부서명
+		                 , WRKN_PART_CD -- 근무지
+		                 , WRKN_PART_NM -- 근무지명  
+		                 , LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		                 , RTRM_PRAP_DD -- 퇴직발령일
+		                 , COMN_CD_NM   -- 퇴직여부명 추가필요
+		                 , EMPL_FRRN    -- 앞번호
+		                 , EMPL_BRRN    -- 뒷번호
+		              from
+		                   (select  /*+ index(a HZUSERMMT_I01) index(b HZDEPTMMT_PK) */
+		                            EMNO                                                               as USER_ID      -- 사용자ID
+		                         ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                         ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                         ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                         ,  to_char(LAST_ENCM_DD, 'YYYYMMDD')                                  as LAST_ENCM_DD -- 병원입사일 2023.06.Add
+		                         ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                         ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                         ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                         ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                      from  HZUSERMMT a -- (HZ)사원IF
+		                     where (a.EMNO like #{srchCdNm} || '%' or EMPY_NM  like '%' || #{srchCdNm} || '%') -- 사번 성명 통합조회토록 수정 2023.06.
+		                       and  sysdate <= decode(#{ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                              nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                   ) m
+		             order by case when REGEXP_INSTR(#{srchCdNm},'[^0-9]') = 0 then m.USER_ID else m.USER_NM end  asc
+		/* -- 사번 성명 통합조회토록 수정 2023.06.
+		                     where  a.EMNO    like {srchCdNm} || '%' -- 검색코드명
+		                       and  {srchCd} = 'C'                   -- 검색코드[C:사용자ID]
+		                     union  all
+		                    select
+		                            EMNO                                                               as USER_ID      -- 사용자ID
+		                         ,  EMPY_NM                                                            as USER_NM      -- 사용자명
+		                         ,  DPRT_CD                                                            as DPRT_CD      -- 부서코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as KORN_DPRT_NM -- 부서명
+		                         ,  WRKN_PART_CD                                                       as WRKN_PART_CD -- 근무파트코드
+		                         , (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = a.WRKN_PART_CD) as WRKN_PART_NM -- 근무지명
+		                         ,  to_char(RTRM_PRAP_DD, 'YYYYMMDD')                                  as RTRM_PRAP_DD -- 퇴직발령일
+		                         ,  ''                                                                 as COMN_CD_NM   -- 퇴직여부명 추가필요
+		                         ,  EMPL_FRRN                                                          as EMPL_FRRN    -- 앞번호
+		                         ,  EMPL_BRRN                                                          as EMPL_BRRN    -- 뒷번호
+		                      from  HZUSERMMT a -- (HZ)사원IF
+		                     where  EMPY_NM  like '%' || {srchCdNm} || '%' -- 검색코드명
+		                       and  sysdate <= decode({ceckYn},'1',to_date('29991231', 'YYYYMMDD'),
+		                                                            nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD') ) )
+		                       and  {srchCd}    = 'N'                                          -- 검색코드[N:사용자명]
+		                   ) m
+		             order  by  case {srchCd} when 'C' then m.USER_ID else m.USER_NM end  asc */
+		           ) x
+		       )
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpEnntNtrtMdprDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpEnntNtrtMdprDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpEnntNtrtMdprDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm1" column="ORDR_NM_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpEnntNtrtMdprDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpEnntNtrtMdprDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpEnntNtrtMdprDAO-listEnntNtrtMdprInqr_EN 영양액 약품조회 */
+						   a.DIET_CD as ORDR_CD                                                   /*  식사코드             */
+						,  a.DIET_NM as ORDR_NM_1                                                   /*  식사명               */
+					 from  SUDIECDCT a
+				   where  a.TBFD_YN = 'Y'  /* 식사코드 Q33N => 경관여부 기준으로 가지고 오도록 수정 */
+					  and  length(a.DIET_CD)   = 6
+					  and  a.APFN_YMD          = to_date('29991231','YYYYMMDD')
+					  and  nvl(a.ORDR_PSBL_YN, 'N') = 'Y'   /*  처방가능여부 */
+					union all
+				   select  b.ORDR_CD
+						,  b.MDPR_NM
+					 from  (select  PHRM_DTLS_CTRL_CD
+								 ,  PHRM_DTLS_CTRL_NM
+							  from  SDMCTRLMT
+							 where  PHRM_CTRL_CD = 'SD705'  ) a
+						,  MDORDRCMT b
+					where  b.ORDR_CD = a.PHRM_DTLS_CTRL_CD
+		]]>
+	</select>
+
+
+
+</mapper>

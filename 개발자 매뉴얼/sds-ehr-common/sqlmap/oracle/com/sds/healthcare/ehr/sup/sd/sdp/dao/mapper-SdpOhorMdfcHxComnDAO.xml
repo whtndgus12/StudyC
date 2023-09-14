@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpOhorMdfcHxComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="SdpOhorMdfcHxComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx (원외처방병경이력) 
+        Description :                                           원외처방병경이력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx */
+		<![CDATA[
+				   delete  /*+ sdd_palthit_d01$I01_원외처방병경이력 삭제처리 */
+						   SDPALTHIT
+					where  PTNO             = nvl(#{ptno}, PTNO)
+					  and  ORDR_YMD         = to_date(#{ordrYmd}, 'yyyymmdd')
+					  and  MDTN_NO_DVSN_CD  = #{mdtnNoDvsnCd}
+					  and  MDTN_NO          = #{mdtnNo}
+					  and  ( (nvl(#{afiSbsnMddvNm}, 'XXX') != 'RETURN'
+					   			   and  SBSN_MDDV_CD    != 'R'
+					   			   and  ORDR_SNO         = #{ordrSno}
+					   			  )
+					   			   or
+					   			  (nvl(#{afiSbsnMddvNm}, 'XXX') = 'RETURN'
+					   			   and  SBSN_MDDV_CD    = 'R'
+					   			  )
+					   			)
+					  and  MDTN_LCDV_CD     = decode(#{mdtnLcdvCd}, '', MDTN_LCDV_CD, 'A', MDTN_LCDV_CD, #{mdtnLcdvCd})
+					]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHx (원외처방변경이력) 
+        Description :                                           원외처방변경이력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHx"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHx */
+		<![CDATA[
+					   	insert  /*+ sdd_palthit_i01$I01_원외처방변경이력 등록처리 */
+					   	  into  SDPALTHIT
+					   		 (
+					   			PTNO
+					   		 ,  ORDR_YMD
+					   		 ,  MDTN_NO_DVSN_CD
+					   		 ,  MDTN_NO
+					   		 ,  ORDR_SNO
+					   		 ,  SBSN_MDDV_CD
+					   		 ,  PTDV_CD
+					   		 ,  MCDP_CD
+					   		 ,  DRBN_NO
+					   		 ,  MDPR_CD
+					   		 ,  PCKN_UNAD_QTY
+					   		 ,  NTM
+					   		 ,  DDCN
+					   		 ,  DRUS_CD
+					   		 ,  DTLS_BRKD_MEMO_CTN
+					   		 ,  MDTN_LCDV_CD
+					   		 ,  FRST_RGSR_ID
+					   		 ,  FRST_RGST_IP
+					   		 ,  FRST_RGST_DT
+					   		 ,  FRST_RGST_CLNT_PRGM_ID
+					   		 ,  FRST_RGST_SRVR_PRGM_ID
+					   		 ,  LAST_UPDR_ID
+					   		 ,  LAST_UPDT_IP
+					   		 ,  LAST_UPDT_DT
+					   		 ,  LAST_UPDT_CLNT_PRGM_ID
+					   		 ,  LAST_UPDT_SRVR_PRGM_ID
+					   		 )
+					   	values
+					   		 (
+					   			#{ptno}
+					   		 ,  to_date(#{ordrYmd}, 'yyyymmdd')
+					   		 ,  #{mdtnNoDvsnCd}
+					   		 ,  #{mdtnNo}
+					   		 ,  #{ordrSno}
+					   		 ,  #{afiSbsnMddvNm}
+					   		 ,  #{ptdvCd}
+					   		 ,  #{mcdpCd}
+					   		 ,  #{drbnNo}
+					   		 ,  #{mdprCd}
+					   		 ,  #{pcknUnadQty}
+					   		 ,  #{ntm}
+					   		 ,  #{ddcn}
+					   		 ,  #{drusCd}
+					   		 ,  #{dtlsBrkdMemoCtn}
+					   		 ,  #{mdtnLcdvCd}
+					   		 ,  #{gvUserId}
+					   		 ,  #{gvUserIp}
+					   		 ,  sysdate
+					   		 ,  #{gvClntPrgmId}
+					   		 ,  #{gvSrvrPrgmId}
+					   		 ,  #{gvUserId}
+					   		 ,  #{gvUserIp}
+					   		 ,  sysdate
+					   		 ,  #{gvClntPrgmId}
+					   		 ,  #{gvSrvrPrgmId}
+					   		 )
+					]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHxRtrnHx (원외처방변경이력 반납이력) 
+        Description :                                           원외처방변경이력 반납이력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHxRtrnHx"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-insertOhorMdfcHxRtrnHx */
+		<![CDATA[
+				   insert  /*+ sdd_palthit_i02$I01_원외처방변경이력 반납이력 등록처리 */
+					 into  SDPALTHIT
+						(
+					   			PTNO
+					   		 ,  ORDR_YMD
+					   		 ,  MDTN_NO_DVSN_CD
+					   		 ,  MDTN_NO
+					   		 ,  ORDR_SNO
+					   		 ,  SBSN_MDDV_CD
+					   		 ,  PTDV_CD
+					   		 ,  MCDP_CD
+					   		 ,  DRBN_NO
+					   		 ,  MDPR_CD
+					   		 ,  PCKN_UNAD_QTY
+					   		 ,  NTM
+					   		 ,  DDCN
+					   		 ,  DRUS_CD
+					   		 ,  DTLS_BRKD_MEMO_CTN
+					   		 ,  MDTN_LCDV_CD
+						,  FRST_RGSR_ID
+						,  FRST_RGST_IP
+						,  FRST_RGST_DT
+						,  FRST_RGST_CLNT_PRGM_ID
+						,  FRST_RGST_SRVR_PRGM_ID
+						,  LAST_UPDR_ID
+						,  LAST_UPDT_IP
+						,  LAST_UPDT_DT
+						,  LAST_UPDT_CLNT_PRGM_ID
+						,  LAST_UPDT_SRVR_PRGM_ID
+						)
+				   select  a.PTNO
+						,  a.ORDR_YMD
+						,  a.MDTN_NO_DVSN_CD
+						,  a.MDTN_NO
+						,  b.ORDR_SNO
+						,  'R'
+						,  a.PTDV_CD
+						,  a.MCDP_CD
+						,  b.PHDP_CMMD_BNDL_NO
+						,  b.MDPR_CD
+						,  b.PCKN_UNAD_QTY
+						,  b.MDNT
+						,  b.MDTN_DDCN
+						,  b.DRUS_CD
+						,  #{dtlsBrkdMemoCtn}
+						,  #{mdtnLcdvCd}
+						,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+						,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+					 from
+						   SDPORDBAT a
+						,  SDPORDDET b
+					where  a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+					  and  a.MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+					  and  a.MDTN_NO = #{mdtnNo}
+					  and  a.MDTN_LCDV_CD = decode(#{mdtnLcdvCd}, null, a.MDTN_LCDV_CD, 'A', a.MDTN_LCDV_CD, #{mdtnLcdvCd})
+					  and  b.ORDR_YMD = a.ORDR_YMD
+					  and  b.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD
+					  and  b.MDTN_NO = a.MDTN_NO
+					  and  b.MDTN_LCDV_CD = a.MDTN_LCDV_CD
+					  and  b.SDPF_EXRE_CD is null
+					]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO">
+	
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="afiMdtnNm" column="AFI_MDTN_NM"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="afiOddrNm" column="AFI_ODDR_NM"/>
+		<result property="afiBsisDrusNm" column="AFI_BSIS_DRUS_NM"/>
+		<result property="dtlsBrkdMemoCtn" column="DTLS_BRKD_MEMO_CTN"/>
+		<result property="afiAbrvMcdpDprtCd" column="AFI_ABRV_MCDP_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin1 */
+		<![CDATA[
+				   select  /*+ sdd_palthit_l02$S01_원외처방변경이력출력 */
+						   substr(b.DETL_CD_NM, 1, 4)                             as DETL_CD_NM           /*  코드명               */
+						,  to_char(a.ORDR_YMD, 'yyyyMMdd')                        as ORDR_YMD             /*  처방일자             */
+						,  /*a.MDTN_LCDV_CD|| */  a.MDTN_NO_DVSN_CD||to_char(a.MDTN_NO)  as AFI_MDTN_NM          /*  투약번호             */
+					   /*  MODIFIED_BY_AFC ,_fn_ap_patname_s(a.PTNO)_PTNT_NM */
+						,  ( select F_A.PTNT_NM from APPTPTNTT F_A where F_A.PTNO = a.PTNO )                         as PTNT_NM              /*  환자번호             */
+						,  a.PTNO                                                 as PTNO                 /*  환자번호             */
+						,  a.MCDP_CD                                              as MCDP_CD              /*  진료과               */
+					   /*  MODIFIED_BY_AFC ,_pa_cc_codmge.fn_cc_username_s(c.ODDR_ID)_AFI_ODDR_NM */
+						,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = c.ODDR_ID )                     as AFI_ODDR_NM          /*  처방의(외래,병동)    */
+						,  a.MDPR_CD||' '||to_char(a.PCKN_UNAD_QTY)||
+								   '*'||to_char(a.NTM)||'*'||to_char(a.DDCN)||'*'||a.DRUS_CD           as AFI_BSIS_DRUS_NM /*  용법                 */
+						,  a.DTLS_BRKD_MEMO_CTN                                   as DTLS_BRKD_MEMO_CTN   /*  세부내역             */
+					   /*  MODIFIED_BY_AFC ,_pa_cc_codmge.fn_cc_deptscd(a.MCDP_CD)_AFI_ABRV_MCDP_DPRT_CD */
+						,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A where F_A.DPRT_CD = a.MCDP_CD group by F_A.ABRV_DPRT_CD )    as AFI_ABRV_MCDP_DPRT_CD
+					 from
+						   SDPALTHIT a                              /*  원외처방변경이력     */
+						,  SDPORDBAT c                              /*  처방내역기본         */
+						,  CCCMCDDMT b                               /*  공통코드관리         */
+					where  a.LAST_UPDT_DT between to_date(#{inqrStrtYmd}, 'yyyyMMdd')
+											  and to_date(#{inqrFnshYmd}, 'yyyyMMdd') + 1
+					  and  a.MDTN_LCDV_CD = decode(#{mdtnLcdvCd}, null, a.MDTN_LCDV_CD, 'A', a.MDTN_LCDV_CD, #{mdtnLcdvCd}) /*  투약위치 */
+					  and  a.SBSN_MDDV_CD    in (#{sbsnMddvCd1},
+												 #{sbsnMddvCd2},
+												 #{sbsnMddvCd3},
+												 #{sbsnMddvCd4})                   /*  대체변경구분         */
+					  and  b.COMN_GRP_CD = 'SD025'                      /*  그룹코드             */
+					  and  b.COMN_DTLS_CD = a.SBSN_MDDV_CD                         /*  대체변경구분         */
+					  and  c.ORDR_YMD = a.ORDR_YMD                    /*  처방일자             */
+					  and  c.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD                  /*  처방일자             */
+					  and  c.MDTN_NO = a.MDTN_NO                        /*  투약번호             */
+					  and  c.MDTN_LCDV_CD = a.MDTN_LCDV_CD                /*  투약위치             */
+					order
+					   by
+						   b.DETL_CD_NM
+						,  a.ORDR_YMD
+						,  a.MDTN_NO_DVSN_CD
+						,  a.MDTN_NO
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO">
+	
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="afiMdtnNm" column="AFI_MDTN_NM"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="afiOddrNm" column="AFI_ODDR_NM"/>
+		<result property="afiBsisDrusNm" column="AFI_BSIS_DRUS_NM"/>
+		<result property="dtlsBrkdMemoCtn" column="DTLS_BRKD_MEMO_CTN"/>
+		<result property="afiAbrvMcdpDprtCd" column="AFI_ABRV_MCDP_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2 (원외처방변경이력출력) 
+        Description :                                           원외처방변경이력출력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-listOhorMdfcHxPrin2 */
+		<![CDATA[
+				   select  /*+ sdd_palthit_l03$S01_원외처방변경이력출력 */
+							substr(b.DETL_CD_NM, 1, 4)                             as DETL_CD_NM           /*  코드명               */
+						,  to_char(a.ORDR_YMD, 'yyyyMMdd')                        as ORDR_YMD             /*  처방일자             */
+						,  /* a.MDTN_LCDV_CD|| */  a.MDTN_NO_DVSN_CD||to_char(a.MDTN_NO)  as AFI_MDTN_NM          /*  투약번호             */
+					   /*  MODIFIED_BY_AFC ,_fn_ap_patname_s(a.PTNO)_PTNT_NM */
+						,  ( select F_A.PTNT_NM from APPTPTNTT F_A where F_A.PTNO = a.PTNO )                         as PTNT_NM              /*  환자번호             */
+						,  a.PTNO                                                 as PTNO                 /*  환자번호             */
+						,  a.MCDP_CD                                              as MCDP_CD              /*  진료과               */
+					   /*  MODIFIED_BY_AFC ,_pa_cc_codmge.fn_cc_username_s(c.ODDR_ID)_AFI_ODDR_NM */
+						,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = c.ODDR_ID )                     as AFI_ODDR_NM          /*  처방의(외래,병동)    */
+						,  a.MDPR_CD||' '||to_char(a.PCKN_UNAD_QTY)||
+								   '*'||to_char(a.NTM)||'*'||to_char(a.DDCN)||'*'||a.DRUS_CD           as AFI_BSIS_DRUS_NM /*  용법                 */
+						,  a.DTLS_BRKD_MEMO_CTN                                   as DTLS_BRKD_MEMO_CTN   /*  세부내역             */
+					   /*  MODIFIED_BY_AFC ,_pa_cc_codmge.fn_cc_deptscd(a.MCDP_CD)_AFI_ABRV_MCDP_DPRT_CD */
+						,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A where F_A.DPRT_CD = a.MCDP_CD group by F_A.ABRV_DPRT_CD )    as AFI_ABRV_MCDP_DPRT_CD
+							 from
+								   SDPORDBAT c                              /*  처방조제기본        */
+								,  SDPALTHIT a                              /*  원외처방변경이력     */
+								,  CCCMCDDMT b                               /*  공통코드관리         */
+							where
+								   c.ORDR_YMD  between to_date(#{inqrStrtYmd},   'yyyyMMdd')
+												   and to_date(#{inqrFnshYmd},   'yyyyMMdd')
+							  and  c.MDTN_NO_DVSN_CD = 'K'    /*  투약번호구분코드 */
+							  and  c.MDTN_LCDV_CD = decode(#{mdtnLcdvCd}, null, c.MDTN_LCDV_CD, 'A', c.MDTN_LCDV_CD, #{mdtnLcdvCd}) /*  투약위치 */
+							  and  a.ORDR_YMD = c.ORDR_YMD                    /*  처방일자             */
+							  and  a.MDTN_NO_DVSN_CD = c.MDTN_NO_DVSN_CD                  /*  처방일자             */
+							  and  a.MDTN_NO = c.MDTN_NO                        /*  투약번호             */
+							  and  a.MDTN_LCDV_CD = c.MDTN_LCDV_CD                /*  투약위치             */
+							  and  a.PTNO = c.PTNO
+					  and  a.SBSN_MDDV_CD    in (#{sbsnMddvCd1},
+												 #{sbsnMddvCd2},
+												 #{sbsnMddvCd3},
+												 #{sbsnMddvCd4})          /*  대체변경구분         */
+							  and  b.COMN_GRP_CD = 'SD025'                      /*  그룹코드             */
+							  and  b.COMN_DTLS_CD = a.SBSN_MDDV_CD                         /*  대체변경구분         */
+						order  by
+								   b.DETL_CD_NM,
+								   a.ORDR_YMD,
+								   a.MDTN_NO_DVSN_CD,
+								   a.MDTN_NO
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO">
+	
+		<result property="inqrCnt" column="INQR_CNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct (원외처방변경이력 건수) 
+        Description :                                           원외처방변경이력 건수
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneOhorMdfcHxCct */
+		<![CDATA[
+						   select  /*+ sdd_palthit_s01$S01_원외처방변경이력 건수 조회 */
+					   count(*) as INQR_CNT
+				 from
+					   SDPALTHIT a
+				where  a.PTNO = #{ptno}
+				  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+				  and  a.MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+				  and  a.MDTN_NO = #{mdtnNo}
+				  and  a.MDTN_LCDV_CD = decode(#{mdtnLcdvCd}, null, MDTN_LCDV_CD, 'A', MDTN_LCDV_CD, #{mdtnLcdvCd})
+				]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-updateOhorMdfcHx (원외처방병경이력) 
+        Description :                                           원외처방병경이력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-updateOhorMdfcHx"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-updateOhorMdfcHx */
+		<![CDATA[
+				   update  /*+ sdd_palthit_u01$U01_원외처방변경이력 수정처리 */
+					   			SDPALTHIT
+					   	   set
+					   			DTLS_BRKD_MEMO_CTN = #{dtlsBrkdMemoCtn}
+					   		 ,  LAST_UPDR_ID       = #{gvUserId}
+					   		 ,  LAST_UPDT_IP       = #{gvUserIp}
+					   		 ,  LAST_UPDT_DT       = sysdate
+					   		 ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+					   		 ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+					   	 where  PTNO               = #{ptno}
+					   	   and  ORDR_YMD           = to_date(#{ordrYmd}, 'yyyymmdd')
+					   	   and  MDTN_NO_DVSN_CD    = #{mdtnNoDvsnCd}
+					   	   and  MDTN_NO            = #{mdtnNo}
+					   	   and  ORDR_SNO           = #{ordrSno}
+					   	   and  MDTN_LCDV_CD       = #{mdtnLcdvCd}
+					]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-selectOneTablPkOhorMdfcHx */
+		<![CDATA[
+		select PTNO as PTNO
+		  from SDPALTHIT
+		 where PTNO            = (select PTNO
+		                            from SDPORDBAT 
+		                           where ORDR_YMD        = to_date(#{ordrYmd}, 'yyyymmdd')
+		                             and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                             and MDTN_LCDV_CD    = #{mdtnLcdvCd}
+		                             and MDTN_NO         = #{mdtnNo}
+		                             and rownum          = 1)   
+		   and ORDR_YMD        = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		   and MDTN_LCDV_CD    = #{mdtnLcdvCd}
+		   and MDTN_NO         = #{mdtnNo}
+		   and ORDR_SNO       in (select ORDR_SNO
+		                            from SDPORDDET 
+		                           where ORDR_YMD        = to_date(#{ordrYmd}, 'yyyymmdd')
+		                             and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                             and MDTN_LCDV_CD    = #{mdtnLcdvCd}
+		                             and MDTN_NO         = #{mdtnNo})
+		   and SBSN_MDDV_CD    = #{sbsnMddvCd}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx2"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpOhorMdfcHxComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpOhorMdfcHxComnDAO-deleteOhorMdfcHx2 */
+		<![CDATA[
+		delete SDPALTHIT
+		 where (PTNO
+		      , ORDR_YMD
+		      , MDTN_NO_DVSN_CD
+		      , MDTN_LCDV_CD
+		      , MDTN_NO
+		      , ORDR_SNO) in (select b.PTNO
+		                           , b.ORDR_YMD
+		                           , b.MDTN_NO_DVSN_CD
+		                           , b.MDTN_LCDV_CD
+		                           , b.MDTN_NO
+		                           , b.ORDR_SNO
+		                        from
+		                               SDPORDBAT a
+		                           ,   SDPORDDET b
+		                       where  a.ORDR_YMD        = to_date( #{ordrYmd} , 'YYYYMMDD')
+		                         and  a.MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                         and  a.MDTN_NO         = #{mdtnNo}
+		                         and  a.MDTN_LCDV_CD    = decode( #{mdtnLcdvCd}, null, a.MDTN_LCDV_CD, 'A', a.MDTN_LCDV_CD, #{mdtnLcdvCd} )
+		                         and  b.ORDR_YMD        = a.ORDR_YMD
+		                         and  b.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD
+		                         and  b.MDTN_NO         = a.MDTN_NO
+		                         and  b.MDTN_LCDV_CD    = a.MDTN_LCDV_CD
+		                         and  b.SDPF_EXRE_CD   is null) 
+		   and SBSN_MDDV_CD = #{sbsnMddvCd}
+		]]>
+	</delete>
+
+</mapper>

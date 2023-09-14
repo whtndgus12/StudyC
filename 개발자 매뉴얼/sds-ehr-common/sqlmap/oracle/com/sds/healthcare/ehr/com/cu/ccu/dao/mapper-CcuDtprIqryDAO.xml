@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuDtprIqryDAO_sql.xml 
+    Description :                                      당직자 call 문의 등록 프로그램
+                  -->
+<mapper namespace="CcuDtprIqryDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-insertFultInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-insertFultInfm"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  >
+		<![CDATA[
+		INSERT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-insertFultInfm */
+		  INTO  CCDNIQCMT
+		     (
+		        SYST_NO                   --시스템번호
+		     ,  INPT_DT
+		     ,  INPR_ID
+		     ,  DPRT_CD
+			 ,  APLN_TLNO
+			 ,  PRGM_ID
+		     ,  FULT_CLSF_CD
+			 ,  MSTK_CTN
+		     ,  FULT_MNGN_CTN
+		     ,  PHTG_FILE_CTN
+		     ,  STTS_DVSN_CD
+			 ,  FINS_DT
+			 ,  CLOT_RQPR_ID
+			 ,  RQPR_ID
+			 ,  PRSG_FINS_DT
+			 ,  RESP_PRSS_CD
+		     ,  ITDV_CD
+		     ,  FRST_RGSR_ID                      -- 최초등록자ID
+		     ,  FRST_RGST_IP                      -- 최초등록IP
+		     ,  FRST_RGST_DT                      -- 최초등록일시
+		     ,  FRST_RGST_CLNT_PRGM_ID            -- 최초등록EMR클라이언트프로그램ID
+		     ,  FRST_RGST_SRVR_PRGM_ID            -- 최초등록EMR서버프로그램ID
+		     ,  LAST_UPDR_ID                      -- 최종수정자ID
+		     ,  LAST_UPDT_IP                      -- 최종수정IP
+		     ,  LAST_UPDT_DT                      -- 최종수정일시
+		     ,  LAST_UPDT_CLNT_PRGM_ID            -- 최종수정EMR클라이언트프로그램ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID            -- 최종수정EMR서버프로그램ID	
+		    )
+		VALUES
+		     (
+		        (select  trim(nvl(to_char(Max(to_number(SYST_NO))+1,'0000000000'),'0000000001')) as SYST_NO from CCDNIQCMT ) -- 시스템번호
+			 ,  to_date(#{inptDt}, 'YYYYMMDDHH24MISS')
+		     ,  #{inprId}
+		     ,  #{dprtCd}               -- 부서코드
+		     ,  #{aplnTlno}          -- 신청자전화번호
+		     ,  #{prgmId}  -- 프로그램ID
+		     ,  #{fultClsfCd}  -- 결함분류코드
+		     ,  #{mstkCtn}     -- 오류내용
+		     ,  #{fultMngnCtn}
+		     ,  #{phtgFileCtnByte}
+		     ,  #{sttsDvsnCd} 
+		     ,  to_date( #{finsDt} ,'YYYYMMDDHH24MISS') --완료일시
+		     ,  #{clotRqprId}           -- 호출요청자ID
+		     ,  #{rqprId} --부서요청자ID
+		     ,  to_date(#{prsgFinsDt}, 'YYYYMMDDHH24MISS')           -- 처리완료일시
+		     ,  #{respPrssCd}  --답변진행상태코드
+		     ,  #{itdvCd}
+		     ,  #{gvUserId}                       -- 최초등록자ID
+		     ,  #{gvUserIp}                       -- 최초등록IP
+		     ,  sysdate                           -- 최초등록일시
+		     ,  #{gvClntPrgmId}                   -- 최초등록EMR클라이언트프로그램ID
+		     ,  #{gvSrvrPrgmId}                   -- 최초등록EMR서버프로그램ID
+		     ,  #{gvUserId}                       -- 최종수정자ID
+		     ,  #{gvUserIp}                       -- 최종수정IP
+		     ,  sysdate                           -- 최종수정일시
+		     ,  #{gvClntPrgmId}                   -- 최종수정EMR클라이언트프로그램ID
+		     ,  #{gvSrvrPrgmId}                   -- 최종수정EMR서버프로그램ID
+		     )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-updateFultInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-updateFultInfm"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  >
+		<![CDATA[
+		UPDATE
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-updateFultInfm */
+		        CCDNIQCMT
+		   SET  CLOT_RQPR_ID = #{clotRqprId}
+		     ,  RQPR_ID = #{rqprId}
+		     ,  DPRT_CD = #{dprtCd}
+		     ,  APLN_TLNO = #{aplnTlno}
+		     ,  PRGM_ID = #{prgmId}
+		     ,  FULT_CLSF_CD = #{fultClsfCd}
+		     ,  ITDV_CD = #{itdvCd}
+		     ,  RESP_PRSS_CD = #{respPrssCd}
+		     ,  PHTG_FILE_CTN = #{phtgFileCtnByte}
+		     ,  STTS_DVSN_CD = #{sttsDvsnCd}
+		     ,  FINS_DT = sysdate
+		     ,  PRSG_FINS_DT = sysdate
+			 ,  MSTK_CTN = #{mstkCtn}
+			 ,  FULT_MNGN_CTN = #{fultMngnCtn} 
+		     ,  LAST_UPDR_ID = #{gvUserId}                                /*  최종수정자ID        */
+		     ,  LAST_UPDT_IP = #{gvUserIp}                                     /*  최종수정IP          */
+			 ,  LAST_UPDT_DT = sysdate                                         /*  최종수정일시          */
+			 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                               /*  최종수정SMC클라이언트프로그램ID */
+			 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+		 WHERE  SYST_NO = #{systNo}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="systNo" column="SYST_NO"/>
+		<result property="inptDt" column="INPT_DT"/>
+		<result property="inprId" column="INPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="aplnTlno" column="APLN_TLNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="fultClsfCd" column="FULT_CLSF_CD"/>
+		<result property="mstkCtn" column="MSTK_CTN"/>
+		<result property="fultMngnCtn" column="FULT_MNGN_CTN"/>
+		<result property="finsDt" column="FINS_DT"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm2" column="USER_NM_2"/>
+		<result property="lginId2" column="LGIN_ID_2"/>
+		<result property="comnDtlsCd3" column="COMN_DTLS_CD_3"/>
+		<result property="prsgFinsDt" column="PRSG_FINS_DT"/>
+		<result property="respPrssCd" column="RESP_PRSS_CD"/>
+		<result property="itdvCd" column="ITDV_CD"/>
+		<result property="rqprId" column="RQPR_ID"/>
+		<result property="sttsDvsnCd" column="STTS_DVSN_CD"/>
+		<result property="comnDtlsCd2" column="COMN_DTLS_CD_2"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultInfm */
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPT_DT AS INPT_DT
+		     ,  A.INPR_ID AS INPR_ID
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.FULT_CLSF_CD AS FULT_CLSF_CD
+		     ,  A.MSTK_CTN AS MSTK_CTN
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+		     ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+		     --,  A.CLOT_RQPR_ID AS CLOT_RQPR_ID
+		     ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  A.RESP_PRSS_CD AS RESP_PRSS_CD
+		     --,  PHTG_FILE_CTN
+		     ,  A.ITDV_CD AS ITDV_CD
+		     ,  A.RQPR_ID AS RQPR_ID
+		     ,  A.STTS_DVSN_CD AS STTS_DVSN_CD
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		  FROM  CCDNIQCMT A
+		     ,  CCUSERAMT B
+		     ,  HZDEPTMMT D
+		     ,  CCUSERAMT E
+		     , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				-- WHERE  COMN_GRP_CD = 'CCC_009'
+			   ) G
+		     ,  CCUSERAMT H
+		     , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J
+		 WHERE  SYST_NO = #{systNo}
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			         (A.ITDV_CD = 'H' and G.COMN_GRP_CD = 'CCC_009')
+			      or (A.ITDV_CD = 'S' and G.COMN_GRP_CD = 'CCC_010')
+			      or (A.ITDV_CD = 'A' and G.COMN_GRP_CD = 'CCC_014')
+			    )
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultDvsn */
+		        COMN_DTLS_CD AS COMN_DTLS_CD
+		     ,  DETL_CD_NM AS DETL_CD_NM
+		     ,  DETL_CD_DSCR_CTN AS DETL_CD_DSCR_CTN
+		     ,  APST_YMD AS APST_YMD
+		     ,  APFN_YMD AS APFN_YMD
+		  FROM  CCCMCDDMT
+		 WHERE  COMN_GRP_CD = #{comnGrpCd}
+		   and  to_date(#{inqrStrtYmd},'YYYYMMDD') >= trunc(APST_YMD)
+		   and  to_date(#{inqrFnshYmd},'YYYYMMDD') <= trunc(APFN_YMD)
+		 ORDER
+		    BY  to_number(COMN_DTLS_CD)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="phtgFileCtnByte" column="PHTG_FILE_CTN_BYTE"/>
+		<result property="phtgFileCtn" column="PHTG_FILE_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-selectOneFultImg */
+		       A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+		  FROM  CCDNIQCMT A
+		  WHERE  SYST_NO = #{systNo}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="systNo" column="SYST_NO"/>
+		<result property="inprId" column="INPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="inptDt" column="INPT_DT"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="aplnTlno" column="APLN_TLNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="mstkCtn" column="MSTK_CTN"/>
+		<result property="fultMngnCtn" column="FULT_MNGN_CTN"/>
+		<result property="finsDt" column="FINS_DT"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm2" column="USER_NM_2"/>
+		<result property="lginId2" column="LGIN_ID_2"/>
+		<result property="prsgFinsDt" column="PRSG_FINS_DT"/>
+		<result property="comnDtlsCd1" column="COMN_DTLS_CD_1"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="comnDtlsCd2" column="COMN_DTLS_CD_2"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="phtgFileCtnByte" column="PHTG_FILE_CTN_BYTE"/>
+		<result property="phtgFileCtn" column="PHTG_FILE_CTN"/>
+		<result property="comnDtlsCd3" column="COMN_DTLS_CD_3"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="itdvCd" column="ITDV_CD"/>
+		<result property="dvsnVl" column="DVSN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm */
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_009'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J 
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --H/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('H' = #{itdvCd} and A.ITDV_CD = 'H') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'H')
+		        )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --H/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_010'
+			   ) G
+			 ,  CCUSERAMT H
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --SYS S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('S' = #{itdvCd} and A.ITDV_CD = 'S') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'S')
+			      )
+		]]>   
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --SYS S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_014'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --APP S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			         ('A' = #{itdvCd} and A.ITDV_CD = 'A') OR 
+			         ('W' = #{itdvCd} and A.ITDV_CD = 'A')
+			      )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --APP S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 ORDER
+		    BY  INPT_DT DESC
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-deleteFultInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-deleteFultInfm"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  >
+		DELETE
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-deleteFultInfm */
+		  FROM  CCDNIQCMT
+		 WHERE  SYST_NO = #{systNo}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="systNo" column="SYST_NO"/>
+		<result property="inprId" column="INPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="inptDt" column="INPT_DT"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="aplnTlno" column="APLN_TLNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="mstkCtn" column="MSTK_CTN"/>
+		<result property="fultMngnCtn" column="FULT_MNGN_CTN"/>
+		<result property="finsDt" column="FINS_DT"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm2" column="USER_NM_2"/>
+		<result property="lginId2" column="LGIN_ID_2"/>
+		<result property="prsgFinsDt" column="PRSG_FINS_DT"/>
+		<result property="comnDtlsCd1" column="COMN_DTLS_CD_1"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="comnDtlsCd2" column="COMN_DTLS_CD_2"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="phtgFileCtnByte" column="PHTG_FILE_CTN_BYTE"/>
+		<result property="phtgFileCtn" column="PHTG_FILE_CTN"/>
+		<result property="comnDtlsCd3" column="COMN_DTLS_CD_3"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="itdvCd" column="ITDV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfm2 */
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_009'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J 
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --H/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('H' = #{itdvCd} and A.ITDV_CD = 'H') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'H')
+		        )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --H/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_010'
+			   ) G
+			 ,  CCUSERAMT H
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --SYS S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('S' = #{itdvCd} and A.ITDV_CD = 'S') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'S')
+			      )
+		]]>   
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --SYS S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			 ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			 ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			 ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  A.PHTG_FILE_CTN as PHTG_FILE_CTN_BYTE   /*  사진파일내용 */
+			 ,  '' as PHTG_FILE_CTN
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_014'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --APP S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			         ('A' = #{itdvCd} and A.ITDV_CD = 'A') OR 
+			         ('W' = #{itdvCd} and A.ITDV_CD = 'A')
+			      )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --APP S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 ORDER
+		    BY  COMN_DTLS_CD_3, COMN_DTLS_CD_1, INPT_DT DESC 
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO">
+	
+		<result property="systNo" column="SYST_NO"/>
+		<result property="inprId" column="INPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="inptDt" column="INPT_DT"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="aplnTlno" column="APLN_TLNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="mstkCtn" column="MSTK_CTN"/>
+		<result property="fultMngnCtn" column="FULT_MNGN_CTN"/>
+		<result property="finsDt" column="FINS_DT"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm2" column="USER_NM_2"/>
+		<result property="lginId2" column="LGIN_ID_2"/>
+		<result property="prsgFinsDt" column="PRSG_FINS_DT"/>
+		<result property="comnDtlsCd1" column="COMN_DTLS_CD_1"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="comnDtlsCd2" column="COMN_DTLS_CD_2"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="atflCd" column="ATFL_CD"/>
+		<result property="comnDtlsCd3" column="COMN_DTLS_CD_3"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="itdvCd" column="ITDV_CD"/>
+		<result property="dvsnVl" column="DVSN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuDtprIqryDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuDtprIqryDAO-listFultInfmNotImage */
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			   ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			   ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			   ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  case when length(A.PHTG_FILE_CTN) > 2 then 'Y' else 'N' end  ATFL_CD  /*  첨부여부 */
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_009'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J 
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --H/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('H' = #{itdvCd} and A.ITDV_CD = 'H') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'H')
+		        )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --H/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			   ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			   ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			   ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  case when length(A.PHTG_FILE_CTN) > 2 then 'Y' else 'N' end  ATFL_CD  /*  첨부여부 */
+			 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			 ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			 ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_010'
+			   ) G
+			 ,  CCUSERAMT H
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --SYS S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			          ('S' = #{itdvCd} and A.ITDV_CD = 'S') OR
+			          ('W' = #{itdvCd} and A.ITDV_CD = 'S')
+			      )
+		]]>   
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --SYS S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		 UNION
+		   ALL
+		SELECT   
+		        A.SYST_NO AS SYST_NO
+		     ,  A.INPR_ID AS INPR_ID /* 당직자ID */
+		     ,  B.USER_NM AS USER_NM /* 당직자명 */
+		     ,  A.INPT_DT AS INPT_DT /* 요청일시 */
+		     ,  decode(A.DPRT_CD, null, '', A.DPRT_CD) AS DPRT_CD
+		     ,  decode(D.KORN_DPRT_NM, null, '', D.KORN_DPRT_NM) AS KORN_DPRT_NM
+		     ,  A.APLN_TLNO AS APLN_TLNO
+		     ,  A.PRGM_ID AS PRGM_ID
+		     ,  A.MSTK_CTN AS MSTK_CTN /* 오류내용 */
+		     ,  A.FULT_MNGN_CTN AS FULT_MNGN_CTN /* 조치내용 */
+		     ,  A.FINS_DT AS FINS_DT
+		     ,  decode(E.USER_NM, null, '', E.USER_NM) AS USER_NM_1  /* 호출자명 */
+		  	 ,  decode(E.LGIN_ID, null, '', E.LGIN_ID) AS LGIN_ID    /* 호출자ID */
+		  	 ,  decode(H.USER_NM, null, '', H.USER_NM) AS USER_NM_2    /* 요청자명 */
+		  	 ,  decode(H.LGIN_ID, null, '', H.LGIN_ID) AS LGIN_ID_2    /* 요청자ID */
+			   ,  A.PRSG_FINS_DT AS PRSG_FINS_DT
+		     ,  F.COMN_DTLS_CD AS COMN_DTLS_CD_1 /* 진행상태코드 */
+			   ,  F.DETL_CD_NM AS DETL_CD_NM_1
+		     ,  G.COMN_DTLS_CD AS COMN_DTLS_CD_2
+			   ,  G.DETL_CD_NM AS DETL_CD_NM_2 /* 접수구분명 */
+		     ,  case when length(A.PHTG_FILE_CTN) > 2 then 'Y' else 'N' end  ATFL_CD  /*  첨부여부 */
+		  	 ,  J.COMN_DTLS_CD AS COMN_DTLS_CD_3 /* 결함상태 */
+			   ,  decode(J.DETL_CD_NM, '전체','',J.DETL_CD_NM) AS DETL_CD_NM_3 /* 결함상태 */
+			   ,  A.ITDV_CD as ITDV_CD     /* 중복제거를 위해 사용 */
+		     ,  '' AS DVSN_VL
+		  FROM  CCDNIQCMT A
+			 ,  CCUSERAMT B
+			 ,  HZDEPTMMT D
+			 ,  CCUSERAMT E
+			 , (
+			 			SELECT  COMN_GRP_CD
+		   					 ,  COMN_DTLS_CD
+		   					 ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 			     WHERE  COMN_GRP_CD = 'CCC_015'
+			   ) F
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_014'
+			   ) G
+			 ,  CCUSERAMT H 
+			 , (
+				 		SELECT  COMN_GRP_CD
+		     				 ,  COMN_DTLS_CD
+		     	  		     ,  DETL_CD_NM
+		  				  FROM  CCCMCDDMT
+		 				 WHERE  COMN_GRP_CD = 'CCC_016'
+			   ) J  
+		 WHERE  trunc(A.INPT_DT, 'MI') BETWEEN trunc(to_date(#{inqrStrtYmd},'YYYY-MM-DD HH24'), 'MI') and trunc(to_date(#{inqrFnshYmd},'YYYY-MM-DD HH24'), 'MI') +59/24/60 +59/24/60/60
+		   AND  B.LGIN_ID = A.INPR_ID
+		   AND  D.DPRT_CD(+) = A.DPRT_CD
+		   AND  E.LGIN_ID(+) = A.CLOT_RQPR_ID
+		   AND  H.LGIN_ID(+) = A.RQPR_ID
+		   AND  F.COMN_DTLS_CD = A.RESP_PRSS_CD --진행상태
+		   AND  G.COMN_DTLS_CD = A.FULT_CLSF_CD --APP S/W 접수구분
+		   AND  J.COMN_DTLS_CD = NVL(A.STTS_DVSN_CD, 0) --결함구분
+		   AND  (
+			         ('A' = #{itdvCd} and A.ITDV_CD = 'A') OR 
+			         ('W' = #{itdvCd} and A.ITDV_CD = 'A')
+			      )
+		]]>
+		   <if test='fultClsfCd != "0"'>
+		   AND  A.FULT_CLSF_CD = #{fultClsfCd} --APP S/W 접수구분
+		   </if>
+		   <if test='sttsDvsnCd != "0"'>
+		   AND  A.STTS_DVSN_CD = #{sttsDvsnCd} --결함질의 구분
+		   </if>
+		<![CDATA[
+		   AND  A.MSTK_CTN like '%'|| #{mstkCtn} ||'%' --오류내용
+		   AND  F.COMN_DTLS_CD like '%' || #{comnDtlsCd} || '%'
+		]]>
+		    <choose>
+		        <when test='dvsnVl == "Y"'>
+		           ORDER BY  COMN_DTLS_CD_3, COMN_DTLS_CD_1, INPT_DT DESC 
+		        </when>
+		        <when test='dvsnVl == "N"'>
+		            ORDER BY  INPT_DT DESC
+		        </when>
+		     </choose>
+	</select>
+
+
+
+</mapper>

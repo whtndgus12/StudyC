@@ -1,0 +1,1037 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MriOtptMcdpRcrdMngmDAO_sql.xml 
+    Description :                                      외래진료기록 관리DAO
+                  -->
+<mapper namespace="MriOtptMcdpRcrdMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="mdcrAndvCd" column="MDCR_ANDV_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="rckiNm" column="RCKI_NM"/>
+		<result property="rcrdDt" column="RCRD_DT"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+		<result property="rcrdNo" column="RCRD_NO"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="cnfrYn" column="CNFR_YN"/>
+		<result property="cnfmId" column="CNFM_ID"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="detlCtn" column="DETL_CTN"/>
+		<result property="mntgSeqnNo" column="MNTG_SEQN_NO"/>
+		<result property="mntgDvsnCd" column="MNTG_DVSN_CD"/>
+		<result property="exclYn" column="EXCL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt (외래진료기록관리 미서명 전체 조회) 
+        Description :                                           외래진료기록관리 미서명 전체 조회 (mrd_opdlstv_l99)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdNotSgnt */
+		       T.MDRP_NO
+		     , T.PTNO
+		     , T.PTNT_NM
+		     , T.MCDP_CD
+		     , T.MCDP_NM
+		     , T.MDCR_ANDV_CD
+		     , T.DETL_CD_NM
+		     , T.MDCR_YMD
+		     , T.MDDR_ID
+		     , T.USER_NM
+		     , T.RCKI_CD
+		     , T.RCKI_NM
+		     , T.RCRD_DT
+		     , T.DVSN_NM
+		     , T.RCRD_NO
+		     , T.MDCR_DT
+		     , NVL(Z.CNFR_YN, 'N') AS CNFR_YN
+		     , Z.CNFM_ID
+		     , TO_CHAR(Z.CNFR_DT, 'YYYYMMDDHH24MISS') AS CNFR_DT
+		     , Z.DETL_CTN -- 비고사항 저장을 위해 컬럼 추가
+		     , Z.MNTG_SEQN_NO
+		     , 'Z' as MNTG_DVSN_CD
+		     , Z.EXCL_YN
+		  FROM (
+				SELECT 
+				        A.MDRP_NO
+				     ,  A.PTNO
+				     ,  D.PTNT_NM
+				     ,  A.MCDP_CD
+				     ,  G.KORN_DPRT_NM AS MCDP_NM
+				     ,  CASE A.CODV_CD 
+				     		WHEN 'I' THEN A.CODV_CD
+				     		ELSE E.MDCR_ANDV_CD
+				     	END AS MDCR_ANDV_CD /* 진료구분 */
+				     ,  CASE A.CODV_CD 
+				     		WHEN 'I' THEN '입원'
+				     		ELSE (SELECT  cc.DETL_CD_NM
+						            FROM  CCCMCDDMT cc
+						           WHERE  cc.COMN_GRP_CD = 'AP008' --'AP02'
+						             AND  cc.COMN_DTLS_CD = E.MDCR_ANDV_CD
+						         )
+				     	END AS DETL_CD_NM /* 진료구분 */
+				     ,  TO_CHAR(E.MDCR_YMD, 'YYYYMMDD') AS MDCR_YMD
+				     ,  A.WRDR_DCDR_ID AS MDDR_ID
+				     ,  Z.EMPY_NM AS USER_NM
+				     ,  A.RCKI_CD
+				     ,  C.EMR_FORM_NM  AS RCKI_NM
+				     ,  TO_CHAR(A.RCRD_DT, 'YYYYMMDDHH24MISS') AS RCRD_DT
+				     ,  '' AS DVSN_NM
+				     ,  A.RCRD_NO
+				     ,  TO_CHAR(E.MDCR_DT, 'YYYYMMDDHH24MISS') AS MDCR_DT
+				     ,  Z.SLCL_CD
+				  FROM  MEDOCMBST A /* 진료기록 */
+				     ,  MEDOCMDTT B /* 진료기록상세 */
+				     ,  MEFORMBST C /* 진료기록서식 */
+				     ,  APPTPTNTV D /* 환자 */
+				     ,  MERCKINDT F /* 기록종류 */
+				     ,  APRCRPTNT E /* 진료접수 */
+				     ,  HZDEPTMMT G /* 부서마스터 */
+				     ,  HZUSERMMT Z /* 사원마스터 */
+				 WHERE  1 = 1
+				   AND  A.RCRD_SAVE_DVSN_CD = '9' /* 9 : 임시저장 */
+				   AND  A.CHRT_OTAM_DVSN_CD = 'O' /* 차트외래입원구분코드 */
+				   AND  A.CODV_CD IN ('I', 'O', 'E')
+				   AND  A.WRDR_DCDR_ID = NVL(#{mddrId}, A.WRDR_DCDR_ID)
+				   AND  A.RCRD_DT BETWEEN TO_DATE(#{inqrStrtYmd} || '000000', 'YYYYMMDDHH24MISS')
+				                      AND TO_DATE(#{inqrFnshYmd} || '235959', 'YYYYMMDDHH24MISS')
+				   AND  A.PTNO = NVL(#{ptno}, A.PTNO)
+				   AND  A.MCDP_CD = NVL(#{mcdpCd}, A.MCDP_CD)
+				   AND  A.RCRD_LAST_YN = 'Y'
+				   AND  NVL(A.DLTN_YN, 'N') = 'N'
+				   AND  NVL(A.CRTF_YN, 'N') = 'N'
+				   AND  A.RCRD_NO = B.RCRD_NO
+				   AND  A.RCAM_NO = B.RCAM_NO
+				   AND  C.SPRN_DPRT_CD = B.SPRN_DPRT_CD
+				   AND  C.FORM_NO = B.FORM_NO
+				   AND  C.SPRN_DPRT_CD = (SELECT  DISTINCT EMR_DTLS_CTRL_CD
+				                            FROM  MECTRLMMT
+				                           WHERE  EMR_CTRL_CD = 'MED_005')
+				   AND  NVL(C.CRTF_YN, 'N') = 'Y'
+				   AND  NVL(C.APRL_FNCT_YN, 'N') = 'N'
+				   AND  A.PTNO = D.PTNO
+				   AND  A.RCKI_CD = F.RCKI_CD
+				   AND  A.MDRP_NO = E.MDRP_NO
+				   AND  A.MCDP_CD = G.DPRT_CD
+				   AND  Z.ID_NO = A.WRDR_DCDR_ID
+				   AND  DECODE(#{mntgChrcVl}, '', 1, REGEXP_INSTR(#{mntgChrcVl}, ','||A.RCKI_CD||',')) > 0
+		       ) T
+		     , MRDPMNTGT Z /* 의무기록모니터링관리 */
+		 WHERE 1=1
+		   AND Z.MDRP_NO(+) = T.MDRP_NO
+		   AND Z.RCRD_NO(+) = T.RCRD_NO
+		   AND Z.MNTG_DVSN_CD(+) = 'Z'
+		 ORDER BY T.MCDP_CD, T.SLCL_CD, T.MDDR_ID, T.MDCR_YMD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="mdcrAndvCd" column="MDCR_ANDV_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="rckiNm" column="RCKI_NM"/>
+		<result property="rcrdDt" column="RCRD_DT"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+		<result property="rcrdNo" column="RCRD_NO"/>
+		<result property="rcamNo" column="RCAM_NO"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="mntgSeqnNo" column="MNTG_SEQN_NO"/>
+		<result property="cnfrYn" column="CNFR_YN"/>
+		<result property="cnfmId" column="CNFM_ID"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="mntgDvsnCd" column="MNTG_DVSN_CD"/>
+		<result property="detlCtn" column="DETL_CTN"/>
+		<result property="exclYn" column="EXCL_YN"/>
+		<result property="seqno" column="SEQNO"/>
+		<result property="dvsnNm2" column="DVSN_NM2"/>
+		<result property="detlNm1" column="DETL_NM1"/>
+		<result property="mddrId1" column="MDDR_ID_1"/>
+		<result property="mddrNm1" column="MDDR_NM_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd (외래진료기록관리 다건조회) 
+        Description :                                           외래진료기록관리 다건조회 (mrd_opdlstv_l01)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrd */
+		        T.MDRP_NO
+		     ,  T.PTNO
+		     ,  T.PTNT_NM
+		     ,  T.MCDP_CD
+		     ,  T.MCDP_NM
+		     ,  T.MDCR_ANDV_CD
+		     ,  T.DETL_CD_NM
+		     ,  T.MDCR_YMD
+		     ,  T.MDDR_ID
+		     ,  T.USER_NM
+		     ,  T.RCKI_CD
+		     ,  T.RCKI_NM
+		     ,  T.RCRD_DT
+		     ,  case
+		            when #{gvHsptCd} = (select FN_CC_GET_CNST_VL('MED_001', 'HSPT_CD_FIRST') from dual) then
+		                T.DVSN_NM 
+		                	|| '[' || (
+		                            CASE WHEN
+		                                        (
+		                                         SELECT COUNT(1)
+		                                          FROM MROPTTRET A   /* 영상 EMR 접수 테이블 */
+		                                             , MROPTCHDT B   /* 영상 EMR 기록상세 */
+		                                         WHERE A.MDRP_NO = B.MDRP_NO
+		                                           AND A.CODV_CD = 'O'
+		                                           AND B.FORM_NO = '001' /* 외래 진료기록 */
+		                                           AND A.PTNO = T.PTNO
+		                                           AND A.MDCR_YMD = TO_DATE(T.MDCR_YMD, 'YYYYMMDD')
+		                                           AND A.MCDP_CD = T.MCDP_CD
+		                                           AND A.MDDR_ID = T.MDDR_ID
+		                                        ) > 0 THEN 'Y' ELSE 'N' END
+		                            ) || ']'
+		                            || (
+		                               CASE WHEN T.RCKI_CD = (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD') from dual) THEN '' /* 기록종류:재진 */
+		                                    WHEN T.RCKI_CD = (select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD') from dual) THEN '/' || (SELECT COUNT(1)  /* 기록종류:초진 */
+		                                                                          FROM APRCRPTNT X
+		                                                                         WHERE X.PTNO = T.PTNO
+		                                                                           AND X.MCDP_CD = T.MCDP_CD
+		                                                                           AND X.MDCR_YMD = TO_DATE(T.MDCR_YMD, 'YYYYMMDD')
+		                                                                           AND nvl( X.MDCR_YN, 'Y' ) = 'Y'
+		                                                                           AND X.CNCL_DT IS NULL)
+		                                END
+		                               )
+		                            || decode(T.DETL_CD_NM, '입원', '/[C]', null)
+		            else  T.DVSN_NM || decode(T.DETL_CD_NM, '입원', '/[C]', null)
+		        end     as    DVSN_NM
+		     ,  T.RCRD_NO
+		     ,  T.RCAM_NO
+		     ,  T.MDCR_DT
+		     ,  X.MNTG_SEQN_NO
+		     ,  NVL(X.CNFR_YN, 'N') AS CNFR_YN
+		     ,  X.CNFM_ID
+		     ,  TO_CHAR(X.CNFR_DT, 'YYYYMMDDHH24MISS') AS CNFR_DT
+		     ,  'Y' AS MNTG_DVSN_CD
+		     ,  X.DETL_CTN
+		     ,  X.EXCL_YN
+		     ,  T.SEQ   SEQNO          /* client Sort용 */
+		     ,  T.DVSN_NM   DVSN_NM2   /* client Sort용 */
+		     ,  T.ORDDRLIST   AS DETL_NM1
+		     ,  T.MRID    AS MDDR_ID_1   /* 작성의 */
+		     ,  T.MRIDNM  AS MDDR_NM_1   /* 작성의명 */
+		    FROM (
+		        select
+		                T.MDRP_NO
+		             ,  T.PTNO
+		             ,  b.PTNT_NM  as PTNT_NM
+		             ,  T.MCDP_CD
+		             ,  T.MCDP_NM
+		             ,  T.MDCR_ANDV_CD
+		             ,  T.DETL_CD_NM
+		             ,  T.MDCR_YMD
+		             ,  T.MDDR_ID
+		             ,  c.USER_NM  as USER_NM
+		             ,  T.RCKI_CD
+		             ,  T.RCKI_NM
+		             ,  T.RCRD_DT
+		             ,  T.DVSN_NM
+		             ,  T.RCRD_NO
+		             ,  T.RCAM_NO
+		             ,  T.MDCR_DT
+		             ,  T.CODV_CD
+		             ,  T.SEQ
+		             ,  T.ORDDRLIST
+		             ,  T.MRID
+		             ,  T.MRIDNM
+		          from
+		              (
+		               select   /* 초.재진 미작성인 경우, 응급실 기록지 미작성인 경우 */
+		                        /* + ordered use_nl(a) */
+		                        decode(a.CODV_CD,'E',20,10)       as  seq
+		                     ,  a.MDRP_NO                                  as MDRP_NO
+		                     ,  a.PTNO                                     as PTNO
+		                     ,  a.MCDP_CD                                  as MCDP_CD
+		                     ,  (select  z.KORN_DPRT_NM
+		                           from  HZDEPTMMT z
+		                          where  z.DPRT_CD = a.MCDP_CD
+		                        )                                          as MCDP_NM
+		                     ,  a.MDCR_ANDV_CD                             as MDCR_ANDV_CD /* 진료예약구분코드 */
+		                     ,  (select  z.DETL_CD_NM
+		                           from  CCCMCDDMT z
+		                          where  Z.COMN_GRP_CD = 'AP008' /* 'AP02' */
+		                            and  Z.COMN_DTLS_CD = a.MDCR_ANDV_CD
+		                        )                                          as DETL_CD_NM
+		                     ,  to_char(a.MDCR_YMD, 'yyyymmdd')            as MDCR_YMD
+		                     ,  a.MDDR_ID                                  as MDDR_ID
+		                     ,  b.RCKI_CD  as RCKI_CD
+		                     ,  b.RCKI_NM  as RCKI_NM
+		                     ,  to_char(a.MDCR_YMD, 'yyyymmdd')            as RCRD_DT
+		                     ,  '미작성'                                    as DVSN_NM
+		                     ,  ''                                         as RCRD_NO
+		                     ,  ''                                         as RCAM_NO
+		                     ,  to_char(a.MDCR_DT, 'YYYYMMDDHH24MISS')     as MDCR_DT
+		                     ,  A.CODV_CD
+		                     ,  case  /* 55043 내시경전문의, 55143 내시경일반 -> 내시경 확인자 표시 */
+		                             when #{dvsnCd} = 'I' and a.MDDR_ID in ('55043','55143') then (select FN_MR_OTPT_INCM_ODDR_INQR('1',a.mdrp_no) from dual) /* 1:내시경 확인자 조회 */
+		                             /* 일반의 -> 처방의 표시 */
+		                             when #{dvsnCd} = 'I' and substr(a.MDDR_ID,1,2) = '55' then (select FN_MR_OTPT_INCM_ODDR_INQR('2',a.mdrp_no) from dual) /* 2:처방의 조회 */
+		                             else ''
+		                        end       orddrlist
+		                     ,  a.mrid
+		                     ,  (select USER_NM from CCUSRDPHT where USER_ID = a.mrid)  mridnm
+		                  from
+		                       (select a.RCDR_ID    mrid  /* 작성의 */
+		                              ,b.*
+		                          from MRINBATDT a, APRCRPTNT b
+		                         where #{strtDt} <= #{lastUpdtDt}   /* 배치작업 수행한 일자를 포함하는 경우 */
+		                           and a.INCM_WODV_CD = 'MR2'
+		                           and a.PRSG_DT is null   /* 작성완료 건 제외 */
+		                           and a.RCRD_YMD >= TO_DATE(#{strtDt},'YYYYMMDD')   /* meddate */
+		                           and a.RCRD_YMD <= case when #{fnshDt} <= #{lastUpdtDt} then TO_DATE(#{fnshDt},'YYYYMMDD')
+		                                               else TO_DATE(#{lastUpdtDt},'YYYYMMDD')
+		                                          end
+		                           and b.MDRP_NO = a.MDRP_NO
+		                           and b.PTNO||'' = nvl(#{ptno}, b.PTNO)             /* index 안 타도록 함 */
+		                           and b.MCDP_CD||'' = nvl(#{mcdpCd}, b.MCDP_CD)
+		                           and b.MDDR_ID||'' = nvl(#{mddrId}, b.MDDR_ID)
+		                           and (select FN_MR_OTPT_INCM_YN(b.mdrp_no, '1', #{gvHsptCd}) from dual) = 'Y' /*  미작성대상 */
+		                           /* 2018-11-01 권태성 접수번호가 같은데 환자는 틀린 경우 생김[GR-MRD 김진]
+		                              (영주쌤한테 문의한 결과 아마도 오라클에서 넣을 때랑 화면에서 넣을때랑 겹쳐서 접수번호가 같은 경우가 생길수도 있다고함)
+		                               	취소이력 and 진료일자 추가  */
+		                           and b.CNCL_DT is null
+		                           and b.MDCR_YMD between to_date(#{strtDt}, 'yyyymmdd')
+		                                              and to_date(#{fnshDt}, 'yyyymmdd')
+		                        union
+		                        select '-'   mrid   /*  -: client에서 등록할수 없음을 표시 */
+		                              ,a.*
+		                          from APRCRPTNT a
+		                         where #{fnshDt} > #{lastUpdtDt}    /* 배치작업 이후일자를 포함하는 경우 */
+		                           and a.MDCR_YMD >= case when #{strtDt} <= #{lastUpdtDt} then to_date(#{lastUpdtDt}, 'yyyymmdd')+1   /* 배치작업 +1일 부터 */
+		                                                   else to_date(#{strtDt} , 'yyyymmdd')
+		                                              end
+		                           and a.MDCR_YMD <= to_date(#{fnshDt} , 'yyyymmdd')
+		                           and nvl( a.MDCR_YN, 'Y' ) = 'Y'            /* 필요없는 조건이지만 fn_OpdMibiyn 수행횟수를 줄여보고자 추가 */
+		                           and  a.PTNO||'' = nvl(#{ptno}, a.PTNO)             /* index 안 타도록 함 */
+		                           and  a.MCDP_CD||'' = nvl(#{mcdpCd}, a.MCDP_CD)
+		                           and  a.MDDR_ID||'' = nvl(#{mddrId}, a.MDDR_ID)
+		                           and (select FN_MR_OTPT_INCM_YN(a.mdrp_no, '1', #{gvHsptCd}) from dual) = 'Y' /* 미작성대상 */
+		                           /* 2018-11-01 권태성 접수번호가 같은데 환자는 틀린 경우 생김[GR-MRD 김진]
+		                              (영주쌤한테 문의한 결과 아마도 오라클에서 넣을 때랑 화면에서 넣을때랑 겹쳐서 접수번호가 같은 경우가 생길수도 있다고함)
+		                              취소이력 and 진료일자 추가 */
+		                           and a.CNCL_DT is null
+		                        ) a
+		                     , (select  a.MR_DTLS_CTRL_CD as FVDV_CD
+		                              , a.MR_DTLS_CTRL_NM as RCKI_CD
+		                              , b.RCKI_NM
+		                          from MRCTRLMMT a
+		                              , MERCKINDT b
+		                          where a.MR_CTRL_CD = 'MRI_055' --//FVDV_CD 해당하는 작성할 기록지
+		                            and a.MR_DTLS_CTRL_NM = b.RCKI_CD
+		                         union all
+		                         select '_E'   FVDV_CD, RCKI_CD, RCKI_NM
+		                           from MERCKINDT
+		                          where RCKI_CD = (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD') from dual) /* 기록종류:응급실기록 */
+		                        ) b
+		                 where #{dvsnCd} in ('I', 'A', 'T')   /* A:전체,  I:미작성, R:미서명, C:서명, Q:입원내역에 작성된 미서명, T:미작성+미서명 */
+		                   and b.FVDV_CD (+)= decode(a.CODV_CD,'E','_E',a.FVDV_CD)
+		                  union all
+		                 select  /* 미서명인 경우 */
+		                        30    as    seq
+		                     ,  a.MDRP_NO                                  as MDRP_NO
+		                     ,  a.PTNO                                     as PTNO
+		                     ,  b.ORGL_BLNG_MCDP_CD                                  as MCDP_CD
+		                     ,  (select  z.KORN_DPRT_NM
+		                           from  HZDEPTMMT z
+		                          where  z.DPRT_CD = b.ORGL_BLNG_MCDP_CD
+		                        )                                          as MCDP_NM
+		                     ,  a.MDCR_ANDV_CD                             as MDCR_ANDV_CD
+		                     ,  (select  z.DETL_CD_NM
+		                           from  CCCMCDDMT z
+		                          where  Z.COMN_GRP_CD = 'AP008' /* 'AP02' */
+		                            and  Z.COMN_DTLS_CD = a.MDCR_ANDV_CD
+		                        )                                          as DETL_CD_NM
+		                     ,  to_char(a.MDCR_YMD, 'yyyymmdd')              as MDCR_YMD
+		                     ,  decode(#{gvHsptCd},(select FN_CC_GET_CNST_VL('MED_001', 'HSPT_CD_SECOND') from dual),a.MDDR_ID,nvl(b.RCDR_ID,a.MDDR_ID))       as MDDR_ID
+		                     ,  b.RCKI_CD                                  as RCKI_CD
+		                     ,  (select  z.RCKI_NM
+		                           from  MERCKINDT z
+		                          where  z.RCKI_CD = b.RCKI_CD
+		                        )                                          as RCKI_NM
+		                     ,  to_char(b.RCRD_DT, 'yyyymmdd')             as RCRD_DT
+		                     ,  case
+		                            when #{gvHsptCd} = (select FN_CC_GET_CNST_VL('MED_001', 'HSPT_CD_SECOND') from dual) then
+		                                case 
+		                                	when b.RCKI_CD in ((select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD') from dual), (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD') from dual)) /* 기록종류:초진,재진 */
+		                                		then '미서명(임시저장)'  
+		                                    when b.RCKI_CD in ((select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD') from dual), (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD') from dual)) /* 기록종류:응급실기록,응급실기타기록 */ 
+		                                     	then c.USER_ID||'/'||c.USER_NM || '(임시저장)'
+		                                end
+		                            else '미서명(임시저장)'
+		                        end                                        as DVSN_NM
+		                     ,  b.RCRD_NO                                  as RCRD_NO
+		                     ,  b.RCAM_NO                                  as RCAM_NO
+		                     ,  to_char(nvl(a.MDCR_DT,b.MDCR_DT), 'YYYYMMDDHH24MISS')     as MDCR_DT
+		                     ,  A.CODV_CD
+		                     ,  ''   orddrlist
+		                     ,  b.WRDR_DCDR_ID   mrid
+		                     ,  c.USER_NM        mridnm
+		                  from  MEDOCMBST b
+		                     ,  APRCRPTNT a
+		                     ,  CCUSRDPHT c
+		                 where  #{dvsnCd} in ('R', 'A', 'T')   /*  A - 전체, I - 미작성, R - 미서명, C - 서명(기록완료), Q:입원환자의 외래기록을 작성했는데 미서명인 경우 */
+		                   AND  (b.CRTF_YN is null  or  b.CRTF_YN = 'N' )
+		                       /*  MEDOCMBST_I17 : MDCR_YMD, RCKI_CD, CRTF_YN */
+		                   AND  b.MDCR_YMD between to_date(nvl(#{strtDt}, '19900101'), 'yyyymmdd')
+		                                       and to_date(nvl(#{fnshDt}, '29992131'), 'yyyymmdd')
+		                   AND  b.CHRT_OTAM_DVSN_CD = 'O'
+		                   AND  b.CODV_CD IN ('O', 'E')
+		                   AND  b.RCRD_LAST_YN = 'Y'
+		                   AND  NVL(b.DLTN_YN, 'N') = 'N'
+		                   AND  (select FN_MR_OTPT_INCM_YN(b.MDRP_NO, '2', #{gvHsptCd}) from dual) = 'Y'   /* 미서명대상 */
+		                   and  b.PTNO = nvl(#{ptno}, b.PTNO)
+		                   and  b.RCKI_CD  in (  (select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD') from dual)) /* 기록종류:초진,재진,응급실기록,응급실기타기록 */ 
+		                   and  a.MDRP_NO = b.MDRP_NO
+		                   and  a.PTNO = b.PTNO   /* 이상한 데이터 제외조건 */
+		                   and  b.ORGL_BLNG_MCDP_CD = nvl(#{mcdpCd}, b.ORGL_BLNG_MCDP_CD)
+		                   and  (    (#{gvHsptCd} =  (select FN_CC_GET_CNST_VL('MED_001', 'HSPT_CD_SECOND') from dual) and a.MDDR_ID = nvl(#{mddrId}, a.MDDR_ID))
+		                          or (#{gvHsptCd} <> (select FN_CC_GET_CNST_VL('MED_001', 'HSPT_CD_SECOND') from dual) and b.RCDR_ID = nvl(#{mddrId}, b.RCDR_ID))
+		                        )
+		                    and  c.USER_ID (+)= b.WRDR_DCDR_ID
+		                    and a.MDCR_YMD = b.MDCR_YMD /*2021-05-25 이정연 접수변경내역은 미비제외 임현정선생님요청*/
+		                  union all
+		                 select  /* 입원환자의 외래기록을 작성했는데 미서명인 경우  //2017-01-05 장은석 , [AA-MRD 정유내] */
+		                        40    as    seq
+		                     ,  b.MDRP_NO                                        as MDRP_NO
+		                     ,  b.PTNO                                           as PTNO
+		                     ,  b.ORGL_BLNG_MCDP_CD                              as MCDP_CD
+		                     ,  (select  z.KORN_DPRT_NM
+		                           from  HZDEPTMMT z
+		                          where  z.DPRT_CD = b.ORGL_BLNG_MCDP_CD
+		                        )                                                as MCDP_NM
+		                     ,  null                                             as MDCR_ANDV_CD
+		                     ,  '입원'                                            as DETL_CD_NM
+		                     ,  to_char(b.MDCR_YMD, 'yyyymmdd')                  as MDCR_YMD
+		                     ,  b.RCDR_ID                                        as MDDR_ID
+		                     ,  b.RCKI_CD                                        as RCKI_CD
+		                     ,  (select  z.RCKI_NM
+		                           from  MERCKINDT z
+		                          where  z.RCKI_CD = b.RCKI_CD
+		                        )                                                as RCKI_NM
+		                     ,  to_char(b.RCRD_DT, 'yyyymmdd')                   as RCRD_DT
+		                     ,  '미서명(임시저장)'                                   as DVSN_NM
+		                     ,  b.RCRD_NO                                        as RCRD_NO
+		                     ,  b.RCAM_NO                                        as RCAM_NO
+		                     ,  to_char(b.MDCR_DT, 'YYYYMMDDHH24MISS')           as MDCR_DT
+		                     ,  b.CODV_CD
+		                     ,  ''   orddrlist
+		                     ,  b.WRDR_DCDR_ID   mrid
+		                     ,  c.USER_NM        mridnm
+		                  from ( select b.RCRD_NO, b.RCAM_NO
+		                           from medocmbst b
+		                          where #{dvsnCd} in ('Q')
+		                              /*  MEDOCMBST_I12 : RCRD_DT, RCKI_CD, CRTF_YN */
+		                            and (b.CRTF_YN is null  or  b.CRTF_YN = 'N' )
+		                            and b.RCRD_DT between to_date(nvl(#{strtDt}, '19900101'), 'yyyymmdd')
+		                                              and to_date(nvl(#{fnshDt}, '29992131'), 'yyyymmdd')
+		                            and  nvl(b.DLTN_YN, 'N') = 'N'
+		                            and  b.CHRT_OTAM_DVSN_CD <> 'I'
+		                            and  b.CODV_CD       = 'I' 
+		                            and  b.RCKI_CD  in ( (select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD')     from dual)
+												       , (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD')     from dual)
+												       , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD')     from dual)
+												       , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD') from dual)) /* 기록종류:초진,재진,응급실기록,응급실기타기록 */
+		                            and  b.PTNO = nvl(#{ptno}, b.PTNO)
+		                            and  b.ORGL_BLNG_MCDP_CD = nvl(#{mcdpCd}, b.ORGL_BLNG_MCDP_CD)
+		                            and  b.RCDR_ID = nvl(#{mddrId}, b.RCDR_ID)
+		                         union all
+		                         select b.RCRD_NO, b.RCAM_NO
+		                           from medocmbst b
+		                          where #{dvsnCd} in ('A', 'R', 'T')  /* A:전체,  I:미작성, R:미서명, C:서명, Q:입원내역에 작성된 외래기록 미서명, T:미작성+미서명 */
+		                                /*  MEDOCMBST_I17 : MDCR_YMD, RCKI_CD, CRTF_YN */
+		                            and (b.CRTF_YN is null  or  b.CRTF_YN = 'N' )
+		                            and b.MDCR_YMD between to_date(nvl(#{strtDt}, '19900101'), 'yyyymmdd')
+		                                              and to_date(nvl(#{fnshDt}, '29992131'), 'yyyymmdd')
+		                            and  nvl(b.DLTN_YN, 'N') = 'N'
+		                            and  b.CHRT_OTAM_DVSN_CD <> 'I'
+		                            and  b.CODV_CD       = 'I'
+		                            and  b.RCKI_CD  in ( (select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD')     from dual)
+									                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD')     from dual)
+									                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD')     from dual)
+									                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD') from dual)) /* 기록종류:초진,재진,응급실기록,응급실기타기록 */ 
+		                            and  b.PTNO = nvl(#{ptno}, b.PTNO)
+		                            and  b.ORGL_BLNG_MCDP_CD = nvl(#{mcdpCd}, b.ORGL_BLNG_MCDP_CD)
+		                            and  b.RCDR_ID = nvl(#{mddrId}, b.RCDR_ID)
+		                        ) m
+		                      , MEDOCMBST b
+		                      , CCUSRDPHT c
+		                  where #{dvsnCd} in ('Q', 'A', 'R', 'T')  /* A:전체,  I:미작성, R:미서명, C:서명, Q:입원내역에 작성된 외래기록 미서명, T:미작성+미서명 */
+		                    and b.rcrd_no = m.rcrd_no
+		                    and c.USER_ID (+)= b.WRDR_DCDR_ID
+		                 union all
+		                select  /* 서명(기록완료)인 경우 */
+		                        50     as    seq
+		                     ,  a.MDRP_NO                                   as MDRP_NO
+		                     ,  a.PTNO                                      as PTNO
+		                     ,  a.MCDP_CD                                   as MCDP_CD
+		                     ,  (select  z.KORN_DPRT_NM
+		                           from  HZDEPTMMT z
+		                          where  z.DPRT_CD = a.MCDP_CD
+		                        )                                           as MCDP_NM
+		                     ,  a.MDCR_ANDV_CD                              as MDCR_ANDV_CD
+		                     ,  (select  z.DETL_CD_NM
+		                           from  CCCMCDDMT z
+		                          where  Z.COMN_GRP_CD = 'AP008' /* 'AP02' */
+		                            and  Z.COMN_DTLS_CD = a.MDCR_ANDV_CD
+		                        )                                          as DETL_CD_NM
+		                     ,  to_char(a.MDCR_YMD, 'yyyymmdd')               as MDCR_YMD
+		                     ,  a.MDDR_ID                                   as MDDR_ID
+		                     ,  b.RCKI_CD                                   as RCKI_CD
+		                     ,  (select  z.RCKI_NM
+		                           from  MERCKINDT z
+		                          where  z.RCKI_CD = b.RCKI_CD
+		                        )                                           as RCKI_NM
+		                     ,  to_char(b.RCRD_DT, 'yyyymmdd')              as RCRD_DT
+		                     ,  '서명(기록완료)'                             as DVSN_NM
+		                     ,  b.RCRD_NO                                   as RCRD_NO
+		                     ,  b.RCAM_NO                                   as RCAM_NO
+		                     ,  to_char(a.MDCR_DT, 'YYYYMMDDHH24MISS')      as MDCR_DT
+		                     ,  A.CODV_CD
+		                     ,  ''   orddrlist
+		                     ,  b.ATHN_ID   mrid
+		                     ,  c.USER_NM   mridnm
+		                  from  APRCRPTNT a
+		                     ,  MEDOCMBST b
+		                     ,  CCUSRDPHT c
+		                 where  #{dvsnCd} in ('C', 'A')   /*  A:전체,  I:미작성, R:미서명, C:서명, Q:입원내역에 작성된 미서명, T:미작성+미서명 */
+		                   and  a.PTNO    = b.PTNO
+		                   and  a.MDRP_NO = b.MDRP_NO
+		                   and  nvl( a.MDCR_YN, 'Y' ) = 'Y'
+		                   and  (select FN_MR_OTPT_INCM_YN(a.MDRP_NO, '2', #{gvHsptCd}) from dual) = 'Y' /* 미서명대상 */
+		                   and  b.CRTF_YN = 'Y'
+		                   and  a.PTNO = nvl(#{ptno}, a.PTNO)
+		                   and  b.MCDP_CD = nvl(#{mcdpCd}, b.ORGL_BLNG_MCDP_CD)
+		                   and  a.MDDR_ID = nvl(#{mddrId}, a.MDDR_ID)
+		                   and  a.MDCR_YMD between to_date(nvl(#{strtDt}, '19900101'), 'yyyymmdd')
+		                                       and to_date(nvl(#{fnshDt}, '29992131'), 'yyyymmdd')
+		                   and  a.CNCL_DT       is null
+		                   and  b.RCKI_CD in (   (select FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD')     from dual)
+							                   , (select FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD') from dual)) /* 기록종류:초진,재진,응급실기록,응급실기타기록 */ 
+		                   and  NVL(b.DLTN_YN, 'N') = 'N'
+		                   and  c.USER_ID (+)= b.ATHN_ID
+		               ) T
+		             , APPTPTNTV b
+		             , CCUSRDPHT c
+		         where b.PTNO = T.PTNO
+		           and c.USER_ID = T.MDDR_ID
+		       ) T
+		     , MRDPMNTGT X
+		  WHERE 1=1
+		       AND X.MDRP_NO(+) = T.MDRP_NO
+		       AND decode(T.DVSN_NM, '미작성', 'I', X.RCRD_NO(+)) = decode(T.DVSN_NM, '미작성', 'I', t.RCRD_NO) -- 미작성이 아닌경우는 RCRD_NO를 안봄 
+		       AND X.MNTG_DVSN_CD(+) = 'Y'
+		       AND (   ( #{inqrDvsnCd} = 'A' )   /* 비고사상: A:전체, Y:있음, N:없음 */
+		            or ( #{inqrDvsnCd} = 'Y'  and  trim(X.DETL_CTN) is not null )
+		            or ( #{inqrDvsnCd} = 'N'  and  trim(X.DETL_CTN) is null )
+		       )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="rckiNm" column="RCKI_NM"/>
+		<result property="detlNm" column="DETL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki (외래진료기록관리 기록종류 조회) 
+        Description :                                           외래진료기록관리 기록종류 조회(mrd_opdlstv_l98)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcki */
+		        RCKI_CD
+		     ,  RCKI_NM
+		     ,  (RCKI_CD || ' - ' || RCKI_NM) as DETL_NM
+		  from  MERCKINDT
+		 where  SCRN_FORM_DVSN_CD = nvl(#{scrnFormDvsnCd}, SCRN_FORM_DVSN_CD)
+		   and  (NVL(ADMS_RCRD_APLY_YN, 'X') = #{admsRcrdAplyYn} or NVL(OTPT_RCRD_APLY_YN, 'X') = #{otptRcrdAplyYn} or NVL(ER_RCRD_APLY_YN, 'X') = #{erRcrdAplyYn})
+		   and  RCKI_CD = nvl(#{rckiCd}, RCKI_CD)
+		   and  nvl(USE_YN, 'Y') = 'Y'
+		 order
+		    by  RCKI_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="cct1" column="CCT_1"/>
+		<result property="cct2" column="CCT_2"/>
+		<result property="cct3" column="CCT_3"/>
+		<result property="afiTotlRa1" column="AFI_TOTL_RA_1"/>
+		<result property="afiTotlRa2" column="AFI_TOTL_RA_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst (외래진료기록 통계 조회) 
+        Description :                                           외래진료기록 통계 조회 (mrd_opdlstv_l02)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-listOtptMcdpRcrdStst */
+		        T.MCDP_CD
+		     ,  T.MCDP_NM
+		     ,  T.MDDR_ID
+		     ,  CASE WHEN T.GB = '0000' THEN '합계'
+		             WHEN T.GB = '1100' THEN '소계'
+		             ELSE T.USER_NM END USER_NM
+		     ,  T.CCT_1
+		     ,  T.CCT_2
+		     ,  T.CCT_3
+		     ,  ROUND(CCT_2 / CCT_1 * 100, 1) AS AFI_TOTL_RA_1  --//미작성율
+		     ,  ROUND(CCT_3 / CCT_1 * 100, 1) AS AFI_TOTL_RA_2 --//미서명율
+		  FROM (
+		        SELECT
+		                T.MCDP_CD
+		             ,  T.MCDP_NM
+		             ,  T.MDDR_ID
+		             ,  T.USER_NM
+		             ,  (CASE WHEN T.MCDP_CD IS NULL THEN '0' ELSE '1' END) || (CASE WHEN T.MCDP_NM IS NULL THEN '0' ELSE '1' END) || (CASE WHEN T.MDDR_ID IS NULL THEN '0' ELSE '1' END) || (CASE WHEN T.USER_NM IS NULL THEN '0' ELSE '1' END) AS GB
+		             ,  SUM(T.TOTL_CNT) AS CCT_1
+		             ,  SUM(T.NO_REC_CNT) AS CCT_2
+		             ,  SUM(T.NO_SIGN_CNT) AS CCT_3
+		          FROM  (
+		                SELECT
+		                        T.MCDP_CD
+		                     ,  T.MCDP_NM
+		                     ,  T.MDDR_ID
+		                     ,  T.USER_NM
+		                     ,  SUM(1) AS TOTL_CNT
+		                     ,  SUM(CASE WHEN DVSN_NM = '1' THEN 1 ELSE 0 END) AS NO_REC_CNT
+		                     ,  SUM(CASE WHEN DVSN_NM = '2' THEN 1 ELSE 0 END) AS NO_SIGN_CNT
+		                     ,  SUM(CASE WHEN DVSN_NM = '3' THEN 1 ELSE 0 END) AS SIGN_CNT
+		                  FROM (
+		                        select MCDP_CD
+		                             , b.KORN_DPRT_NM  as MCDP_NM
+		                             , MDDR_ID
+		                             , c.USER_NM   as  USER_NM
+		                             , CASE when NO_REC = 'Y' then '1'
+		                                    else
+		                                        case when CRTF_YN = 'N' then '2'    --미서명
+		                                             else  '3'    --서명완료
+		                                        end
+		                               END  as  DVSN_NM
+		                          from (
+		                               select a.MCDP_CD
+		                                    , a.MDDR_ID
+		                                    , FN_MR_OTPT_INCM_YN(a.MDRP_NO, '1', #{gvHsptCd})  NO_REC   --//미작성여부 대상
+		                                    , (select max(nvl(sb.CRTF_YN,'N'))    --//N,Y 동시에 있으면 Y로 집계
+		                                         from MEDOCMBST sb
+		                                        where sb.MDRP_NO = a.MDRP_NO
+		                                          and sb.RCKI_CD  in (  FN_CC_GET_CNST_VL('MED_002', 'S_FRVS_RCRD')
+																       , FN_CC_GET_CNST_VL('MED_002', 'S_REVS_RCRD')
+																       , FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD')
+																       , FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_ETC_RCRD')) /* 기록종류:초진,재진,응급실기록,응급실기타기록 */
+		                                          AND sb.CHRT_OTAM_DVSN_CD = 'O'
+		                                          AND sb.CODV_CD IN ('O', 'E')
+		                                          AND sb.RCRD_LAST_YN = 'Y'
+		                                          AND NVL(sb.DLTN_YN, 'N') = 'N'
+		                                       )   CRTF_YN
+		                                 from APRCRPTNT a
+		                                where 1=1
+		                                  and a.MDCR_YMD between to_date(#{strtDt}, 'yyyymmdd')
+		                                                     and to_date(#{fnshDt}, 'yyyymmdd')
+		                                  and a.MDCR_YN = 'Y'
+		                                  and a.CNCL_DT  is null
+		                                  and a.MCDP_CD = nvl(#{mcdpCd}, a.MCDP_CD)
+		                                  and a.MDDR_ID = nvl(#{mddrId}, a.MDDR_ID)
+		                                  and FN_MR_OTPT_INCM_YN(a.MDRP_NO, '2', #{gvHsptCd}) = 'Y'   --//미서명여부 대상
+		                               ) a
+		                             , HZDEPTMMT b
+		                             , CCUSRDPHT c
+		                         where b.DPRT_CD = a.MCDP_CD
+		                           and c.USER_ID = a.MDDR_ID
+		                       ) T
+		                 WHERE 1=1
+		                 GROUP BY T.MCDP_CD
+		                         ,  T.MCDP_NM
+		                         ,  T.MDDR_ID
+		                         ,  T.USER_NM
+		                 ORDER BY  MCDP_CD, MDDR_ID
+		                ) T
+		         WHERE 1=1
+		         GROUP BY ROLLUP(T.MCDP_CD
+		                         ,  T.MCDP_NM
+		                         ,  T.MDDR_ID
+		                         ,  T.USER_NM)
+		       ) T
+		 WHERE 1=1
+		   AND (
+		        ((#{midlSumYn} = '' or #{midlSumYn} is null) and (T.GB IN ('1111', '1100', '0000')))
+		         or
+		        ((#{midlSumYn} = 'Y') and (T.GB = '0000' or T.GB = '1100'))
+		       )
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateOtptMcdpRcrdIncmBat (외래미비BAT 작성의 수정) 
+        Description :                                           외래미비BAT 작성의 수정 (mrd_dpmntgt_i02)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateOtptMcdpRcrdIncmBat"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  >
+		update MRINBATDT /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateOtptMcdpRcrdIncmBat */
+		   set RCDR_ID = #{rcdrId}
+		 where INCM_WODV_CD = 'MR2'
+		   and MDRP_NO = #{mdrpNo}
+		   and PRSG_DT is null
+		   and exists (
+						select *
+						  from MRINBATDT
+						 where INCM_WODV_CD = 'MR2'
+						   and MDRP_NO = #{mdrpNo}
+						   and PRSG_DT is null   --//작성완료 건 제외
+		   )
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="strtDt" column="STRT_DT"/>
+		<result property="fnshDt" column="FNSH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd (외래진료기록관리 배치일자조회) 
+        Description :                                           외래진료기록관리 배치일자조회 (mrd_opdlstv_l07) pc_mr_nowrite 배치작업으로 처리한
+                                                                최종진료일자
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd-result" useCache="true" flushCache="false">
+		 select /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptMcdpRcrdBatYmd */
+		        '' as STRT_DT,
+		        nvl(max(to_char(PRSG_DT,'yyyymmdd') ),'10000101') as FNSH_DT
+		   from MRINBATDT
+		  where INCM_WODV_CD = 'MR1'
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch001 (외래미비배치 추가001) 
+        Description :                                           외래기록 삭제했을때 미작성건으로 다시 추가, 서명취소했읃때 미서명건으로 다시 추가
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch001"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  >
+		insert into MRINBATDT /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch001 */
+		    ( INCM_WODV_CD
+		    , WORK_DT
+		    , PRSG_DT
+		    , MDRP_NO
+		    , MDDR_ID
+		    , RCKI_CD
+		    , RCRD_YMD
+			/*  ========================= */
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID 
+			)
+		    select 
+			   'MR2'             AS INCM_WODV_CD --미작성대상
+		     , sysdate           AS WORK_DT
+		     , null              AS PRSG_DT
+		     , a.MDRP_NO         AS MDRP_NO
+		     , a.MDDR_ID         AS MDDR_ID  --미비의사
+		     , b.RCKI_CD         AS RCKI_CD  --작성할 기록지
+		     , to_date(a.MDCR_YMD, 'yyyymmdd') AS RCRD_YMD  
+			/*  ============================= */
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		  from APRCRPTNT a
+		     , (select  a.MR_DTLS_CTRL_CD as FVDV_CD
+		              , a.MR_DTLS_CTRL_NM as RCKI_CD
+		              , b.RCKI_NM
+		         from MRCTRLMMT a
+		              , MERCKINDT b
+		        where a.MR_CTRL_CD = 'MRI_055' --//FVDV_CD 해당하는 작성할 기록지
+		          and a.MR_DTLS_CTRL_NM = b.RCKI_CD
+		         union all
+		         select 
+		         	'_E'                  AS FVDV_CD
+		         	, RCKI_CD             AS RCKI_CD
+		         	, RCKI_NM             AS RCKI_NM
+		           from MERCKINDT
+		          where RCKI_CD = FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD') /* 131 : 응급실기록 */
+		         ) b
+		 where 1=1
+		   and a.MDRP_NO = #{mdrpNo}
+		   --and FN_MR_OTPT_INCM_YN(a.MDRP_NO, '1', #{gvHsptCd}) = 'Y'     -- FN_MR_OTPT_INCM_YN 안에서 medocmbst를 참조하므로 사용불가.  무조건 insert함.
+		   and b.FVDV_CD (+)= decode(a.CODV_CD,'E','_E', a.FVDV_CD)
+		   and not exists (select 1
+		                     from MRINBATDT
+		                    where INCM_WODV_CD = 'MR2'
+		                      and PRSG_DT is null  --작성완료 건 제외
+		                      and MDRP_NO = a.MDRP_NO
+		                    ) 
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch002 (외래미비배치 추가002) 
+        Description :                                           외래접수정보가 변경되어 미작성대상에서 작성대상으로 변경되었는지 판단하기 위해 MRINBATDT 테이블에
+                                                                insert함.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch002"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  >
+		insert into MRINBATDT /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertOtptIncmBtch002 */
+		    ( INCM_WODV_CD
+		    , WORK_DT
+		    , PRSG_DT
+		    , MDRP_NO
+		    , MDDR_ID
+		    , RCKI_CD
+		    , RCRD_YMD
+			/*  ========================= */
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID 
+			)
+		    select 
+		      'MR2'             AS INCM_WODV_CD --작성할대상
+			 , sysdate          AS WORK_DT
+			 , null             AS PRSG_DT
+			 , #{mdrpNo}        AS MDRP_NO
+			 , #{mddrId}        AS MDDR_ID  --미비의사
+			 , b.RCKI_CD        AS RCKI_CD  --작성할 기록지
+			 , to_date(#{mdcrYmd}, 'yyyymmdd') AS RCRD_YMD  
+			/*  ============================= */
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  sysdate
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  sysdate
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+			from dual a
+		     , (select  a.MR_DTLS_CTRL_CD as FVDV_CD
+		              , a.MR_DTLS_CTRL_NM as RCKI_CD
+		              , b.RCKI_NM
+		         from MRCTRLMMT a
+		            , MERCKINDT b
+		        where a.MR_CTRL_CD = 'MRI_055' --//FVDV_CD 해당하는 작성할 기록지
+		          and a.MR_DTLS_CTRL_NM = b.RCKI_CD
+		         union all
+		         select 
+		         	'_E'                  AS FVDV_CD
+		         	, RCKI_CD             AS RCKI_CD
+		         	, RCKI_NM             AS RCKI_NM
+		           from MERCKINDT
+		          where RCKI_CD = FN_CC_GET_CNST_VL('MED_002', 'S_ERRM_RCRD') /* 131 : 응급실기록 */
+		         ) b
+			where 1=1
+			and b.FVDV_CD (+)= decode(#{codvCd},'E','_E',#{fvdvCd})
+			and not exists (select 1
+			                 from MRINBATDT
+			                where INCM_WODV_CD = 'MR2'
+			                  and PRSG_DT is null  --작성완료 건 제외
+			                  and MDRP_NO = #{mdrpNo}
+			                ) 
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO">
+	
+		<result property="workYn" column="WORK_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn (배치작업이 완료된 유무 확인) 
+        Description :                                           배치작업이 완료된 유무 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-selectOneOtptIncmBtchWorkYn */
+				  decode(count(1),0,'N','Y') as WORK_YN 
+		  from MRINBATDT
+		 where INCM_WODV_CD = 'MR1'             
+		   and PRSG_DT >= TO_DATE(#{mdcrYmd}, 'YYYYMMDD')  --이미 배치작업이 완료된 진료일자라면 insert 대상임.
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertMdrcMntgHx003 (의무기록모니터링관리 이력 등록 (외래기록작성의변경)) 
+        Description :                                           의무기록모니터링관리 이력 등록 (외래기록작성의변경 mrd_dpmntgt_i01)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertMdrcMntgHx003"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  >
+		INSERT INTO MRDPMNTGT /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-insertMdrcMntgHx003 */
+		(
+		       MNTG_SEQN_NO         -- 모니터링시퀀스번호
+		     , MDRP_NO         -- 진료접수번호
+		     , RCRD_NO         -- 기록번호
+		     , MNTG_DVSN_CD         -- 모니터링구분코드
+		     , RCKI_CD         -- 기록종류코드
+		     , RCRD_DT         -- 기록일시
+		     , RGST_DT         -- 등록일시
+		     , CNFR_YN         -- 확인여부
+		     , CNFM_ID         -- 확인자ID
+		     , CNFR_DT         -- 확인일시
+		     , FRST_RGSR_ID         -- 최초등록자ID
+		     , FRST_RGST_IP         -- 최초등록IP
+		     , FRST_RGST_DT         -- 최초등록일시
+		     , FRST_RGST_CLNT_PRGM_ID         -- 최초등록화면ID
+		     , FRST_RGST_SRVR_PRGM_ID         -- 최초등록서버프로그램ID
+		     , LAST_UPDR_ID         -- 최종수정자ID
+		     , LAST_UPDT_IP         -- 최종수정IP
+		     , LAST_UPDT_DT         -- 최종수정일시
+		     , LAST_UPDT_CLNT_PRGM_ID         -- 최종수정화면ID
+		     , LAST_UPDT_SRVR_PRGM_ID         -- 최종수정서버프로그램ID
+		     , DETL_CTN                                 -- 상세내용
+		     , EXCL_YN                                   -- 제외여부
+		)
+		VALUES
+		(
+		 (SELECT LPAD(NVL(MAX(MNTG_SEQN_NO)+1, 1), 10, '0') FROM MRDPMNTGT)   -- 모니터링시퀀스번호    
+		    , #{mdrpNo}         -- 진료접수번호
+		    , #{rcrdNo}         -- 기록번호
+		    , #{mntgDvsnCd}         -- 모니터링구분코드
+		    , ''         -- 기록종류코드
+		    , TO_DATE(#{rcrdDt}, 'YYYYMMDDHH24MISS')         -- 기록일시
+		    , SYSDATE         -- 등록일시
+		    , #{cnfrYn}         -- 확인여부
+		    , #{cnfmId}         -- 확인자ID
+		    , TO_DATE(#{cnfrDt}, 'YYYYMMDDHH24MISS')         -- 확인일시
+			, #{gvUserId}           -- 최초등록자ID
+			, #{gvUserIp}           -- 최초등록IP
+			, sysdate               -- 최초등록일시
+			, #{gvClntPrgmId}       -- 최초등록화면ID
+			, #{gvSrvrPrgmId}       -- 최초등록서버프로그램ID
+			, #{gvUserId}           -- 최종수정자ID
+			, #{gvUserIp}           -- 최종수정IP
+			, sysdate               -- 최종수정일시
+			, #{gvClntPrgmId}       -- 최종수정화면ID
+			, #{gvSrvrPrgmId}       -- 최종수정서버프로그램ID
+			, #{detlCtn}               -- 상세내용
+		    , #{exclYn}                -- 제외여부
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateMdrcMntgHx (의무기록모니터링관리 이력 변경) 
+        Description :                                           의무기록모니터링관리 이력 변경 (mrd_dpmntgt_u01)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateMdrcMntgHx"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriOtptMcdpRcrdMngmDVO"  >
+		UPDATE MRDPMNTGT /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriOtptMcdpRcrdMngmDAO-updateMdrcMntgHx */
+		   SET CNFR_YN = #{cnfrYn}
+		     , CNFM_ID = #{cnfmId}
+		     , CNFR_DT = TO_DATE(#{cnfrDt}, 'YYYYMMDDHH24MISS')
+		     , DETL_CTN = #{detlCtn}
+		     , EXCL_YN = #{exclYn}
+		     , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = SYSDATE
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 WHERE MNTG_SEQN_NO = #{mntgSeqnNo}
+	</update>
+
+</mapper>

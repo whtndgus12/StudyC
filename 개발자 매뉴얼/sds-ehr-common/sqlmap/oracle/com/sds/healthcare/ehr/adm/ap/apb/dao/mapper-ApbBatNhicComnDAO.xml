@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbBatNhicComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbBatNhicComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ortaNm" column="ORTA_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt (배치 자격조회 대상 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt-result" useCache="true" flushCache="false">
+		<![CDATA[
+			select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicTrgt */
+		         a.PTNO
+			     , b.PTNT_NM
+			     , '재원'  as ORTA_NM
+			  from APRCRPTNT a
+			     , APPTPTNTT b
+			 where a.DSCH_DT = to_date('29991231','yyyymmdd')
+			   and a.CODV_CD = 'I'
+			   and a.CNCL_DT is null
+			   and b.PTNO    = a.PTNO
+			   and nvl(#{slctYn1},'N') = 'Y' /* 재원 */
+			   and (  (  nvl(#{slctYn4},'N') <> 'Y')
+			       or (  nvl(#{slctYn4},'N')  = 'Y'  /*당일 기 조회자 제외*/
+			         and not exists (select 1
+			                           from ACETQCLGT
+			                          where PTNO = a.PTNO
+			                            and trunc(TRNM_DT) = trunc(sysdate)
+			                            and rownum =1
+			                        )
+			          )
+			       )
+			 union
+			select distinct a.PTNO
+			     , b.PTNT_NM
+			     , '외래'     as ORTA_NM
+			  from (
+			        select a.PTNO
+			          from APRCRPTNT a
+			         where a.MDCR_YMD = nvl(to_date(#{mdcrYmd},'yyyymmdd'),trunc(sysdate))
+			           and a.CODV_CD in ('O','H')
+			           and a.CNCL_DT is null
+			           and nvl(#{slctYn2},'N') = 'Y' /* 외래 */
+			         union all
+			        select PTNO
+			          from APQLQLDLT
+			         where PTAD_AGNC_YMD >= trunc(sysdate) - 90
+			           and SRIL_MDCR_RGST_NO is null
+			           and CNCL_DT is null
+			           and nvl(#{slctYn2},'N') = 'Y' /* 외래 */
+			           /* and TRNM_YMD >= trunc(sysdate) - 3  -- 대상자가 너무 많을 경우 추가 */
+			       ) a
+			     , APPTPTNTT b
+			 where b.PTNO     = a.PTNO
+			   and (  (  nvl(#{slctYn4},'N') <> 'Y')
+			       or (  nvl(#{slctYn4},'N')  = 'Y'  /*당일 기 조회자 제외*/
+			         and not exists (select 1
+			                           from ACETQCLGT
+			                          where PTNO = a.PTNO
+			                            and trunc(TRNM_DT) = trunc(sysdate)
+			                            and rownum =1
+			                        )
+			          )
+			       )		
+			 union
+			select a.PTNO
+			     , b.PTNT_NM
+			     , '결핵'    as ORTA_NM
+			  from (
+			        select distinct PTNO
+			          from APQLQLDLT
+			         where ASCS_CLSF_CD in ('T','t')  /* 결핵  */
+			           and CNCL_DT is null
+			       ) a
+			     , APPTPTNTT b
+			 where b.PTNO     = a.PTNO
+			   and nvl(#{slctYn3},'N') = 'Y' /* 결핵 */
+			   and (  (  nvl(#{slctYn4},'N') <> 'Y')
+			       or (  nvl(#{slctYn4},'N')  = 'Y'  /*당일 기 조회자 제외*/
+			         and not exists (select 1
+			                           from ACETQCLGT
+			                          where PTNO = a.PTNO
+			                            and trunc(TRNM_DT) = trunc(sysdate)
+			                            and rownum =1
+			                        )
+			          )
+			       )
+		     union
+			select a.PTNO
+			     , b.PTNT_NM
+			     , '평가'    as ORTA_NM
+			  from (
+			        select distinct INSR_DTLS_CTRL_CD as PTNO
+			          from AICTRLMMT
+			         where INSR_CTRL_CD    =   'AIZ_998'  /* 작업대상자  */	           
+			       ) a
+			     , APPTPTNTT b
+			 where b.PTNO     = a.PTNO	   
+			   and (  (  nvl(#{slctYn4},'N') <> 'Y')
+			       or (  nvl(#{slctYn4},'N')  = 'Y'  /*당일 기 조회자 제외*/
+			         and not exists (select 1
+			                           from ACETQCLGT
+			                          where PTNO = a.PTNO
+			                            and trunc(TRNM_DT) = trunc(sysdate)
+			                            and rownum =1
+			                        )
+			          )
+			       )
+			 order by 3 desc
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-insertBatNhicLog (배치 자격 log 등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-insertBatNhicLog"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO"  >
+		<![CDATA[ 
+		       insert /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-insertBatNhicLog */
+		         into AIETBTDGT
+		            (
+		              BTCH_WORK_ID
+		            , BTCH_WORK_DETL_ID
+		            , BTCH_WORK_DETL_NM
+		            , BTCH_WORK_DETL_STRT_DT
+		            , BTCH_WORK_DETL_FNSH_DT
+		            , RMRK_CTN
+		            , ERR_MESG_CTN
+		            , FRST_RGSR_ID
+		            , FRST_RGST_IP
+		            , FRST_RGST_DT
+		            , FRST_RGST_CLNT_PRGM_ID
+		            , FRST_RGST_SRVR_PRGM_ID
+		            , LAST_UPDR_ID
+		            , LAST_UPDT_IP
+		            , LAST_UPDT_DT
+		            , LAST_UPDT_CLNT_PRGM_ID
+		            , LAST_UPDT_SRVR_PRGM_ID
+		            )
+		       values
+		            ( #{btchWorkId}
+		            , #{btchWorkDetlId}
+		            , #{btchWorkDetlNm}
+		            , sysdate
+		            , null
+		            , #{rmrkCtn}
+		            , #{errMesgCtn}
+		            , #{gvUserId}
+		            , #{gvUserIp}
+		            , sysdate
+		            , #{gvClntPrgmId}
+		            , #{gvSrvrPrgmId}
+		            , #{gvUserId}
+		            , #{gvUserIp}
+		            , sysdate
+		            , #{gvClntPrgmId}
+		            , #{gvSrvrPrgmId}
+		            )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-updateBatNhicLog (배치 자격 log 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-updateBatNhicLog"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-updateBatNhicLog */
+		       AIETBTDGT
+		   set BTCH_WORK_DETL_FNSH_DT  =   sysdate
+		     , RMRK_CTN                =   #{rmrkCtn}
+			   , ERR_MESG_CTN            =   #{errMesgCtn}
+			   , LAST_UPDR_ID            =   #{gvUserId}
+			   , LAST_UPDT_IP            =   #{gvUserIp}
+			   , LAST_UPDT_DT            =   sysdate
+			   , LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+			   , LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		 where BTCH_WORK_ID            =   #{btchWorkId}
+		   and BTCH_WORK_DETL_ID       =   #{btchWorkDetlId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO">
+	
+		<result property="btchWorkDetlId" column="BTCH_WORK_DETL_ID"/>
+		<result property="btchWorkDetlStrtDt" column="BTCH_WORK_DETL_STRT_DT"/>
+		<result property="btchWorkDetlFnshDt" column="BTCH_WORK_DETL_FNSH_DT"/>
+		<result property="totlCct" column="TOTL_CCT"/>
+		<result property="sucsCct" column="SUCS_CCT"/>
+		<result property="falrCct" column="FALR_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog (배치 자격조회 로그 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbBatNhicComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbBatNhicComnDAO-listBatNhicLog */
+		       substr(a.BTCH_WORK_DETL_ID,1,8)                                   BTCH_WORK_DETL_ID
+		     , to_char(a.BTCH_WORK_DETL_STRT_DT,'yyyymmddhh24miss')              BTCH_WORK_DETL_STRT_DT
+		     , to_char(a.BTCH_WORK_DETL_FNSH_DT,'yyyymmddhh24miss')              BTCH_WORK_DETL_FNSH_DT 
+		     , to_number(nvl(a.RMRK_CTN,'0'))                                    TOTL_CCT
+		     , to_number(nvl(a.RMRK_CTN,'0')) - to_number(nvl(ERR_MESG_CTN,'0')) SUCS_CCT  
+		     , to_number(nvl(a.ERR_MESG_CTN,'0'))                                FALR_CCT
+		  from AIETBTDGT a
+		 where a.BTCH_WORK_ID      = #{btchWorkId}
+		   and to_date(substr(a.BTCH_WORK_DETL_ID,1,8),'yyyymmdd') between nvl(to_date(#{inqrStrtDt}, 'yyyymmdd'),trunc(sysdate)-5)
+		                                                             and nvl(to_date(#{inqrFnshDt}, 'yyyymmdd'),trunc(sysdate))
+		 order by a.BTCH_WORK_DETL_ID desc 
+	</select>
+
+
+
+</mapper>

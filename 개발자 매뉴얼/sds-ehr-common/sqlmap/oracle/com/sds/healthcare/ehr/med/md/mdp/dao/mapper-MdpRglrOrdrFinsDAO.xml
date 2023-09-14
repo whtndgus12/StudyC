@@ -1,0 +1,878 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpRglrOrdrFinsDAO_sql.xml
+    Description : -->
+<mapper namespace="MdpRglrOrdrFinsDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntOrdrBsisRglrOrdrFins (환자처방기본 정규처방완료 처리)
+        Description :                                           정규처방완료시 환자처방기본 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntOrdrBsisRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntOrdrBsisRglrOrdrFins  */
+				     MDPAORDBT                                   /*  환자처방기본 */
+			  set  RGOR_FNDR_ID       = #{gvUserId}              /*  정규처방완료의사 */
+				 ,  RGOR_FINS_DT       = sysdate                 /*  정규처방완료일시 */
+				 ,  LAST_UPDR_ID       = #{gvUserId}             /*  최종수정자ID */
+				 ,  LAST_UPDT_IP       = #{gvUserIp}             /*  최종수정IP */
+				 ,  LAST_UPDT_DT       = sysdate                 /*  최종수정일시 */
+				 ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}    /*  최종수정SMC클라이언트프로그램ID */
+				 ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}    /*  최종수정SMC서버프로그램ID */
+		 where
+				    PTNO = #{ptno}                               /*  환자번호 */
+		    and  ORDR_YMD = to_date( #{ordrYmd}, 'YYYYMMDD' )    /*  처방일자 */
+			and  CODV_CD = nvl( #{codvCd}, 'I' )
+			and  RGOR_CNNU_ID is null
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBsisOrdrRglrOrdrFins (기본처방 정규처방완료 처리)
+        Description :                                           정규처방완료시 기본처방 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBsisOrdrRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBsisOrdrRglrOrdrFins_기본처방 정규처방완료 처리 */
+				     MDBASORDT
+			  set  RGOR_FNDR_ID       = #{gvUserId}
+				  ,  RGOR_FINS_DT       = sysdate
+		          ,  LAST_UPDR_ID       = #{gvUserId}            /*  최종수정자ID */
+		          ,  LAST_UPDT_IP        = #{gvUserIp}            /*  최종수정IP */
+		          ,  LAST_UPDT_DT       = sysdate                /*  최종수정일시 */
+		          ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}    /*  최종수정SMC클라이언트프로그램ID */
+		          ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}    /*  최종수정SMC서버프로그램ID */
+		 where
+				    PTNO      = #{ptno}
+		    and  ORDR_YMD  = to_date( #{ordrYmd}, 'YYYYMMDD')
+			and  CODV_CD   = nvl( #{codvCd},'I')
+			--and  OROC_CD   = decode( CODV_CD, 'I', 'W', OROC_CD )
+			and  RGOR_FNDR_ID is null
+		    and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateDrugOrdrRglrOrdrFins (약처방 정규처방완료 처리)
+        Description :                                           정규처방완료시 약처방 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateDrugOrdrRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateDrugOrdrRglrOrdrFins_약주사처방 정규처방완료 처리 */
+				        MDMEDORDT
+			     set  RGOR_FNDR_ID      = #{gvUserId}
+				    ,  RGOR_FINS_DT       = sysdate
+				    ,  LAST_UPDR_ID       = #{gvUserId}       /*  최종수정자ID */
+				    ,  LAST_UPDT_IP       = #{gvUserIp}            /*  최종수정IP */
+				    ,  LAST_UPDT_DT       = sysdate                /*  최종수정일시 */
+				    ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}           /*  최종수정SMC클라이언트프로그램ID */
+				    ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}           /*  최종수정SMC서버프로그램ID */
+			where
+				    PTNO               = #{ptno}
+			   and  ORDR_YMD           = to_date( #{ordrYmd}, 'YYYYMMDD')
+			   and  CODV_CD            = nvl( #{codvCd},'I')
+			   --and  OROC_CD            = decode( CODV_CD, 'I', 'W', OROC_CD )
+			   and  RGOR_FNDR_ID is null
+			   and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+			   and  (
+				      ( CODV_CD != 'D' )
+					   or
+					   (
+						   ( CODV_CD = 'D' )
+							and
+						   ( ODKI_CD != 'D' )
+						)
+				   )
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateExmnOrdrRglrOrdrFins (검사처방 정규처방완료 처리)
+        Description :                                           정규처방완료시 검사처방 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateExmnOrdrRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateExmnOrdrRglrOrdrFins_검사처방 정규처방완료 처리 */
+				        MDEXMORDT
+			     set  RGOR_FNDR_ID         = #{gvUserId}
+				    ,  RGOR_FINS_DT          = sysdate
+				    ,  LAST_UPDR_ID          = #{gvUserId}       /*  최종수정자ID */
+				    ,  LAST_UPDT_IP           = #{gvUserIp}       /*  최종수정IP */
+				    ,  LAST_UPDT_DT          = sysdate           /*  최종수정일시 */
+				    ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}           /*  최종수정SMC클라이언트프로그램ID */
+				    ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}           /*  최종수정SMC서버프로그램ID */
+			where
+				       PTNO                       = #{ptno}
+		       and  ORDR_YMD               = to_date( #{ordrYmd}, 'YYYYMMDD')
+			   and  CODV_CD                 = nvl( #{codvCd},'I')
+			   --and  OROC_CD                  = decode( CODV_CD, 'I', 'W', OROC_CD )
+			   and  RGOR_FNDR_ID is null
+			   and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+			   and  (
+					   ( CODV_CD != 'D' )
+						or
+					   (
+						   ( CODV_CD = 'D' )
+							and
+						   ( ODKI_CD != 'D' )
+						)
+					)
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBlodOrdrRglrOrdrFins (혈액처방 정규처방완료 처리)
+        Description :                                           정규처방완료시 혈액처방 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBlodOrdrRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateBlodOrdrRglrOrdrFins_수혈처방 정규처방완료 처리 */
+				        MDBLDORDT
+			      set  RGOR_FNDR_ID      = #{gvUserId}
+				     ,  RGOR_FINS_DT       = sysdate
+				     ,  LAST_UPDR_ID       = #{gvUserId}            /*  최종수정자ID */
+				     ,  LAST_UPDT_IP        = #{gvUserIp}            /*  최종수정IP */
+				     ,  LAST_UPDT_DT       = sysdate                /*  최종수정일시 */
+				     ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}           /*  최종수정SMC클라이언트프로그램ID */
+				     ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}           /*  최종수정SMC서버프로그램ID */
+			where
+				       PTNO      = #{ptno}
+			   and  ORDR_YMD  = to_date( #{ordrYmd}, 'YYYYMMDD')
+			   and  CODV_CD   = nvl( #{codvCd},'I')
+			   --and  OROC_CD   = decode( CODV_CD, 'I', 'W', OROC_CD )
+			   and  RGOR_FNDR_ID is null
+			   and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateCivOrdrRglrOrdrFins (CIV처방 정규처방완료 처리)
+        Description :                                           정규처방완료시 CIV처방 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateCivOrdrRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateCivOrdrRglrOrdrFins_CIV처방 정규처방완료 처리 */
+				        MDCIVORDT
+			     set  RGOR_FNDR_ID       = #{gvUserId}
+				    ,  RGOR_FINS_DT        = sysdate
+				    ,  LAST_UPDR_ID        = #{gvUserId}       /*  최종수정자ID */
+				    ,  LAST_UPDT_IP         = #{gvUserIp}            /*  최종수정IP */
+				    ,  LAST_UPDT_DT        = sysdate                /*  최종수정일시 */
+				    ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}           /*  최종수정SMC클라이언트프로그램ID */
+				    ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}           /*  최종수정SMC서버프로그램ID */
+			where
+				       PTNO                    = #{ptno}
+			   and  ORDR_YMD            = to_date( #{ordrYmd}, 'YYYYMMDD')
+			  /* and  CODV_CD            = nvl( :mds_cpoe00p_015[0].codv_cd,'I') */
+			  /* and  OROC_CD            = decode( CODV_CD, 'I', 'W', OROC_CD ) */
+			   and  RGOR_FNDR_ID is null
+			   and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateOrdrAdtnSpabSbjcRglrOrdrFins (처방추가특이사항 정규처방완료 처리)
+        Description :                                           정규처방완료시 처방추가특이사항 정규처방완료 정보를 Update 한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateOrdrAdtnSpabSbjcRglrOrdrFins"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateOrdrAdtnSpabSbjcRglrOrdrFins_처방추가특이내용 정규처방완료 처리 */
+				        MDPADUNNT
+			     set  RGOR_FNDR_ID       = #{gvUserId}
+				     ,  RGOR_FINS_DT       = sysdate
+				     ,  LAST_UPDR_ID       = #{gvUserId}       /*  최종수정자ID */
+				     ,  LAST_UPDT_IP       = #{gvUserIp}            /*  최종수정IP */
+				     ,  LAST_UPDT_DT       = sysdate                /*  최종수정일시 */
+				     ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}           /*  최종수정SMC클라이언트프로그램ID */
+				     ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}           /*  최종수정SMC서버프로그램ID */
+			where
+				       PTNO      = #{ptno}
+			   and  ORDR_YMD  = to_date( #{ordrYmd}, 'YYYYMMDD')
+			  /* and  CODV_CD   = nvl( :mds_cpoe00p_015[0].codv_cd,'I') */
+			  /* and  OROC_CD   = decode( CODV_CD, 'I', 'W', OROC_CD ) */
+			   and  RGOR_FNDR_ID is null
+			   and  nvl( ADTN_ORDV_CD,'N') != 'Y'
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="rsltCd" column="RSLT_CD"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn (정규처방 완료여부 조회)
+        Description :                                           정규처방 완료여부를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneRglrOrdrFinsYn */
+				  decode(RGOR_CNNU_ID, null, decode(RGOR_FNDR_ID, null, 'N', 'P'), 'Y') as RSLT_CD
+				  /*
+				   * N : 정규처방 미완료
+				   * P : 의사정규처방 완료, 간호 미확인
+				   * Y : 의사정규처방 완료, 간호 확인
+				   */
+		  from  MDPAORDBT        /*  환자처방기본 */
+		where
+				   MDRP_NO  = #{mdrpNo}
+		   and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBsisOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 기본처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBsisOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBsisOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_기본처방 */
+				   MDBASORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				   /*  AUDIT */
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsDrugOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 약처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsDrugOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsDrugOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_약주사처방 */
+				   MDMEDORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				   /*  AUDIT */
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			  and  (
+					 (CODV_CD <> 'D')
+					 or
+					 (CODV_CD = 'D' and ODKI_CD <> 'D')        /*  DSC퇴원처방은 제외 */
+				   )
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsExmnOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 검사처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsExmnOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsExmnOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_검사처방 */
+				   MDEXMORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				   /*  AUDIT */
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			  and  (
+					 (CODV_CD <> 'D')
+					 or
+					 (CODV_CD = 'D' and ODKI_CD <> 'D')        /*  DSC퇴원처방 제외 */
+				   )
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsOrdrFeeOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 처방료처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsOrdrFeeOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsOrdrFeeOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_처방료처방 */
+				   MDTRTORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			  and  (
+					 (CODV_CD <> 'D')
+					 or
+					 (CODV_CD = 'D' and ODKI_CD <> 'D')    /*  DSC퇴원처방은 제외 */
+				   )
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBlodOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 혈액처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBlodOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsBlodOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_수혈처방 */
+				   MDBLDORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsCivOrdrAdtnOrdr (간호확인 후 정규처방완료 추가처방처리)
+        Description :                                           간호확인 이후 정규처방을 시도하는 경우, 추가처방처리가 필요한 경우 CIV처방 추가처방여부를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsCivOrdrAdtnOrdr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updateRglrOrdrFinsCivOrdrAdtnOrdr_간호확인후_정규처방완료_추가처방처리_CIV처방 */
+				   MDCIVORDT
+			  set
+				   ADTN_ORDV_CD = 'Y'
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  CODV_CD  = nvl(#{codvCd}, 'I')
+			  --and  OROC_CD  = decode(CODV_CD, 'I', 'W', OROC_CD)
+			  and  RGOR_FNDR_ID is null
+			  and  nvl(ADTN_ORDV_CD, 'N') = 'N'
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="AFI_RTUR_YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn (투석처방여부 조회)
+        Description :                                           투석처방여부을 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDlysOrdrYn_투석처방여부 단건조회 */
+				   decode(count(*), 0, 'N', 'Y') as yn
+			 from
+				   MNHTRTORT a       /*  투석실시 */
+			where
+				   PTNO          = #{ptno}
+			  and  DLYS_ACTN_DT is not null        /*  액팅일시가 있음 */
+			  and  RTRN_RQST_DT is null            /*  반납되지 않음 */
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin (청구실명제 관련 재원환자 전과이력의 상병정보 확인)
+        Description :                                           상병코드가 없는 전과전실한 입원환자의 이전 상병정보를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneClamRanmDptrHxScin_청구실명제_관련_재원환자_전과이력의_상병정보_확인 */
+				   b.SCIN_CD as SCIN_CD
+				,  b.SCIN_NM as SCIN_NM
+				,  a.APST_YMD as APST_YMD
+			 from
+				   APRCDTRTT a  /*  전과전실 */
+				,  HZDEPTMMT c  /*  조직Master I/F(MDM연계) */
+				,  MDPADIAGT b  /*  환자상병내역 */
+			where
+				   a.MDRP_NO = #{mdrpNo}
+			  and  a.CODV_CD = 'I'
+			  and  a.APST_YMD <= trunc(sysdate)
+			  and  a.APFN_YMD >= trunc(sysdate)
+			  and  c.DPRT_CD = a.MCDP_CD
+		      and  a.MCDP_CD = #{mcdpCd}    --IM관련처리 삭제 후 남은 쿼리
+			  and  a.SCIN_CD is null
+			  and  b.MDRP_NO = a.MDRP_NO
+			  and  b.MAIN_SCIN_YN ='Y'
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="mccnCd" column="MCCN_CD"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr (의사 주진단별 Default Center 조회)
+        Description :                                           의사 주진단별 Default Center를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOneDrPrncDxBsisCntr_의사 주진단별 Default Center 조회*/
+				   fn_md_abccenter_s(#{mddrId}
+										  , #{mcdpCd}
+										  , #{scinCd}
+										  , #{ptno}
+										  , to_date(#{mdcrDt},'yyyymmddhh24miss')
+										  , #{codvCd}
+										  , '') as MCCN_CD
+			 from
+				   dual
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntDptrRmtrScin (환자의 전과전실 상병코드 수정)
+        Description :                                           환자의 전과전실 상병코드를 수정한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+    -->
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntDptrRmtrScin"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  >
+		<![CDATA[
+		update  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-updatePtntDptrRmtrScin */
+		                APRCDTRTT
+		           set  SCIN_CD              = #{scinCd}             /* 상병코드 */
+		             ,  ABC_MCCN_CD          = #{abcMccnCd}          /* ABC진료센터코드 */
+		             ,  SCIN_CD_INPT_DR_ID   = #{scinCdInptDrId}     /* 상병코드입력의사ID */
+		             ,  SCIN_CD_INPT_DT      = sysdate               /* 상병코드입력일시 */
+		     ,  LAST_UPDR_ID = #{gvUserId}
+		     ,  LAST_UPDT_IP = #{gvUserIp}
+		     ,  LAST_UPDT_DT = current_timestamp
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		         where  PTNO                 = #{ptno}
+		           and  MDRP_NO              = #{mdrpNo}
+		           and  trunc(sysdate) between APST_YMD and APFN_YMD
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn (수술_시술_경과기록_유무_여부_조회)
+        Description :                                           환자의 서명된 수술/시술 경과기록이 존재하는지 확인한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcElrcIncmYn_수술_시술_경과기록_유무_여부_조회_DAM */
+				   case when count(ptno) > 0 then 'Y' else 'N' end as YN
+			 from
+				   MEDOCMBST a
+			where  a.MDRP_NO = #{mdrpNo}
+			  and  a.RCKI_CD = FN_CC_GET_CNST_VL('MED_002', 'S_ELPS_RCRD')                                      /*  경과기록 */
+			  and  a.RCRD_DT between to_date(#{ordrYmd}, 'yyyymmdd')-1
+				   and to_date(#{ordrYmd}, 'yyyymmdd')+.99999             /*  기록일시(기준일시) : 경과기록은 시간까지 관리됨. */
+			  and  a.RCRD_SAVE_DVSN_CD = '1'                              /*  서명된 기록 */
+			  and  rownum < 2
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn (수술_시술관련_처치_검사처방_유무_조회)
+        Description :                                           환자에게 내려진 수술, 시술관련 검사,처치처방 유무를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdExmnTxOrdrEn_수술_시술관련_처치_검사처방_유무_조회 */
+				   case when sum(CNT) > 0 then 'Y' else 'N' end as YN
+			 from
+				(
+				   SELECT  /*+ index(a MMTRTORT_PK) index(b CCCOMCDT_PK) */
+						   count(*) CNT
+					 from  MDTRTORDT a
+						,  MZCTRLMMT b
+					where  a.PTNO   = #{ptno}
+					  and  a.ORDR_YMD between to_date(#{ordrYmd}, 'yyyymmdd')-1
+										  and to_date(#{ordrYmd}, 'yyyymmdd')
+					  and  a.MDRP_NO = #{mdrpNo}
+					  and  a.CODV_CD   = 'I'
+					  and  nvl(a.DC_DVSN_CD, 'N') = 'N'
+					  and  b.MDCR_CTRL_CD = 'MM963'
+					  and  b.MDCR_CTRL_CHRC_VL2 like 'D%'
+					  and  b.MDCR_DTLS_CTRL_CD    = a.ORDR_CD
+					  and  rownum < 2
+					union  all
+				   SELECT  /*+ index(a MMEXMORT_IDX2) index(b CCCOMCDT_PK) */
+						   count(*) CNT
+					 from  MDEXMORDT a
+						,  MZCTRLMMT b
+					where  a.PTNO = #{ptno}
+					  and  a.ENFR_DT between to_date(#{ordrYmd}, 'yyyymmdd')-1
+										 and to_date(#{ordrYmd}, 'yyyymmdd')+.99999
+					  and  a.MDRP_NO = #{mdrpNo}
+					  and  a.CODV_CD   = 'I'
+					  and  a.EXOR_PRSS_CD > 'C'
+					  and  nvl(a.DC_DVSN_CD, 'N') = 'N'
+					  and  b.MDCR_CTRL_CD = 'MM963'
+					  and  b.MDCR_CTRL_CHRC_VL2 like 'C%'
+					  and  b.MDCR_DTLS_CTRL_CD    = a.ORDR_CD
+					  and  rownum < 2
+				)
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn (수술간호기록_조회)
+        Description :                                           수술일자가 처방일자(하루 전까지)인 수술간호기록 유무를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtCareRcrdEn_수술간호기록_조회 */
+				   decode(count(*), 0, 'N', 'Y') as YN
+			 from  MNSOPNRMT a           /*  수술간호기록         */
+				,  MDOPSCHET b           /*  수술스케줄           */
+			where  1 = 1
+			  and  a.PTNO        = #{ptno}
+			  and  a.OPRT_YMD    between to_date(#{ordrYmd}, 'yyyymmdd')-1
+									 and to_date(#{ordrYmd}, 'yyyymmdd')
+			  and  b.PTNO = a.PTNO
+			  and  b.OPRT_YMD = a.OPRT_YMD
+			  and  b.OPRT_SNO = a.OPRT_SNO
+			  and  b.OPRM_CHOT_DT is not null
+			  and  b.CODV_CD = 'I'
+			  and  b.MDRP_NO = #{mdrpNo}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn (수술_시술관련_처치처방_유무_조회)
+        Description :                                           환자에게 내려진 수술, 시술관련 처치처방 유무를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntOprtMdpcRltdTxOrdrEn_수술_시술관련_처치처방_유무_조회 */
+				   case when count(ptno) > 0 then 'Y' else 'N' end as YN
+			 from  MDTRTORDT a
+				,  MZCTRLMMT b
+			where  a.PTNO   = #{ptno}
+			  and  a.ORDR_YMD between to_date(#{ordrYmd}, 'yyyymmdd')-1
+								  and to_date(#{ordrYmd}, 'yyyymmdd')
+			  and  a.MDRP_NO = #{mdrpNo}
+			  and  a.CODV_CD   = 'I'
+			  and  nvl(a.DC_DVSN_CD, 'N') = 'N'
+			  and  b.MDCR_CTRL_CD = 'MM963'
+			  and  b.MDCR_CTRL_CHRC_VL2 like 'XD%'
+			  and  b.MDCR_DTLS_CTRL_CD    = a.ORDR_CD
+			  and  rownum < 2
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+		<result property="afiDrnkDvsnNm" column="AFI_DRNK_DVSN_NM"/>
+		<result property="afiApteSttsNm" column="AFI_APTE_STTS_NM"/>
+		<result property="slpnDsblCtn" column="SLPN_DSBL_CTN"/>
+		<result property="afiEmtnSttsNm" column="AFI_EMTN_STTS_NM"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList (자살위험요인유무 조회)
+        Description :                                           환자의 자살위험요소 정보를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listPtntSucdRiskElmnInfmList */   /*+ mdd_wnisemt_l01$S01_자살위험요인유무_조회_DAM */
+				   decode(sign(
+					   (
+					   decode(a.MRRG_STTS_CD, '3', 1, '4', 1, 0)               + /*  결혼          - 3:사혼,4:이혼               */
+					   decode(a.DRNK_DVSN_CD, '2', 1, '3', 1, 0)               + /*  음주유무      - 1:무,2:음주(중),3:금주      */
+					   decode(a.APTE_STTS_CD, '3', 1, 0)                       + /*  식욕 상태     - 1:좋음,2:보통,3:나쁨        */
+					   decode(a.SLPN_DSBL_EN||a.GENR_SLPL_TKNG_YN, 'YY', 1, 0) + /*  수면장애 유무 - Y:유, 수면제복용유무 - Y:유 */
+					   decode(a.EMTN_STTS_STBL_YN, 'N', 1, 0)                    /*  정서상태 안정 여부 - N:불안정,Y:안정        */
+					   ) - 2
+				   ), 1, 'Y', 'N') as YN
+				,  decode(a.DRNK_DVSN_CD, '2', '■ 음주유무 : 음주(중)', '3', '■ 음주유무 : 금주', '') as AFI_DRNK_DVSN_NM
+				,  decode(a.APTE_STTS_CD, '3', '■ 식욕상태 : 나쁨', '') as AFI_APTE_STTS_NM
+				,  decode(a.SLPN_DSBL_EN||a.GENR_SLPL_TKNG_YN, 'YY', '■ 수면장애 및 수면제 복용 중', '') as SLPN_DSBL_CTN
+				,  decode(a.EMTN_STTS_STBL_YN, 'N', '■ 정서상태 : 불안정', '') as AFI_EMTN_STTS_NM
+			 from
+				   MNWNISEMT a  /*  병동간호정보조사 */
+			where
+				   a.MDRP_NO = #{mdrpNo}
+			  and  not exists (
+							   select  /*  협진에 등록되어 있지 않아야 한다. */
+									   'Y'
+								 from  MDCONSRCT a
+								where  a.PTNO    = #{ptno}
+								  and  a.MDRP_NO = #{mdrpNo}
+		                          and  a.WNTD_DR_MCDP_CD = fn_cc_get_dprt_cd('DPRT_PSY')
+								  /* and  a.WNTD_DR_MCDP_CD in ('201041', '201045') */      /*  201041 : 우울증센터 DEP, 201045: 정신건강클리닉POC */
+								  and  nvl(a.CMTX_STTS_CD, '1') <> '9'
+								  and  nvl(a.DLTN_YN, 'N')       = 'N'
+								  and  rownum < 2
+							   )
+			   and  not exists (
+							   select  /*  제외목록에 등록되어 있지 않아야 한다. */
+									   'Y'
+								 from  MDEXCEPIT a
+									,  APRCRPTNT p      /*  진료접수 */
+								where  p.MDRP_NO           = #{mdrpNo}
+								  and  a.PTNO              = p.PTNO
+								  and  a.ORDR_YMD          = p.MDCR_DT
+								  and  a.INQR_EXCL_DVSN_CD = 'C'
+								  and  rownum < 2
+							   )
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="yn" column="YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn (뇌졸중적정성평가 대상여부 조회)
+        Description :                                           환자 접수기준 뇌졸중적정성평가 대상여부를 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-selectOnePtntCrinPrprVltnTrgtYn */   /*+ mdd_crinwkt_s05$S01_뇌졸중적정성평가대상여부 단건조회DAM */
+				   decode(count(*), 0, 'N', 'Y') as yn
+			 from
+				   APRCRLTNT a          /*  진료접수관계 */
+				,  MDCRINWKT b          /*  뇌졸중관리 */
+			where
+				   a.MDRP_NO = #{mdrpNo}
+			  and  a.MDRP_RLTN_DVSN_CD = '01'          /*  응급 -> 입원 */
+			  and  a.MDRP_RLTN_MDRP_NO = b.MDRP_NO     /*  응급 접수번호를 이용하여 자료를 찾는다. */
+			  and  (b.CRIN_DVSN_CD <> '3' or b.CRIN_DVSN_CD is null)
+			  and  b.CRIN_MNGM_DVSN_CD = 'STROKE'
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO">
+
+		<result property="hndwSgntSno" column="HNDW_SGNT_SNO"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="rprsImagYn" column="RPRS_IMAG_YN"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt (의사수기서명 조회)
+        Description :                                           의사수기서명 내용을 조회한다.
+
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRglrOrdrFinsDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRglrOrdrFinsDAO-listDrHndwSgnt */
+				   b.HNDW_SGNT_SNO as HNDW_SGNT_SNO
+				,  b.USER_ID as USER_ID
+				,  (select USER_NM from CCUSRDPHT where user_id = b.USER_ID) as USER_NM
+				,  b.RPRS_IMAG_YN as RPRS_IMAG_YN
+				,  to_char(b.FRST_RGST_DT, 'YYYYMMDDHH24MISS') as FRST_RGST_DT
+			 from
+				   CCUSRDPHT x     /*  사용자-부서정보 */
+				,  CCUSERAMT y     /*  OCS사용자 */
+				,  HZUSERMMT z     /*  사용자 인터페이스 */
+				,  HZUSERMMT a
+				,  MRBSDRSGT b      /*  의사수기서명 */
+			where
+				   x.USER_ID   = #{userId}
+			  and  x.LGIN_ID   = y.LGIN_ID
+			  and  y.EMNO      = z.EMNO
+			  and  z.EMPL_FRRN = a.EMPL_FRRN
+			  and  z.EMPL_BRRN = a.EMPL_BRRN
+			  and  a.EMNO      = b.USER_ID
+			  and  b.DLTN_YN = 'N'
+			order
+			   by  b.HNDW_SGNT_SNO
+			]]>
+	</select>
+
+
+
+</mapper>

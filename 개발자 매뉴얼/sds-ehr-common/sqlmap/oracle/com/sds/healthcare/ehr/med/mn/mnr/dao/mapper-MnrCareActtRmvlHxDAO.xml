@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnrCareActtRmvlHxDAO_sql.xml 
+    Description : MnrCareActtRmvlHxDAO 클래스
+-->
+<mapper namespace="MnrCareActtRmvlHxDAO">
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-deleteCareActtRmvlHx0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-deleteCareActtRmvlHx0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO"  >
+		<![CDATA[
+		   delete  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-deleteCareActtRmvlHx0001_[간호활동] 간호활동 제거이력 삭제 */
+			   from MNWRCPNRT
+		   where 1=1
+			   and  PTNO               = #{ptno}
+			   and  MDRP_NO            = #{mdrpNo}
+			   /*         and  WARD_CD            = :mns_wrcpnet_075[0].ward_cd */
+			   and  RGCA_GRP_CD        = #{rgcaGrpCd}
+			   and  RGCA_ITEM_CD       = #{rgcaItemCd}
+			   and  RGCA_ITEM_SNO      = #{rgcaItemSno}
+			]]>
+	</delete>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCopyCareActtRmvlHx () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCopyCareActtRmvlHx"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO"  >
+		<![CDATA[
+		   insert  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCopyCareActtRmvlHx_[간호활동] 응급실 환자 제거이력 복사 */
+			   into  MNWRCPNRT
+					 (
+					 PTNO                       /*  환자번호 */
+				  ,  MDRP_NO
+				  ,  WARD_CD                    /*  병동코드 */
+				  ,  RGCA_GRP_CD                /*  정규간호활동그룹코드 */
+				  ,  RGCA_ITEM_CD               /*  정규간호활동항목코드 */
+				  ,  RGCA_ITEM_SNO              /*  정규간호활동항목일련번호 */
+				  ,  RGCA_ITEM_RMVL_SNO         /*  정규간호활동항목제거일련번호 */
+				  ,  RMVL_DT                    /*  제거일시 */
+				  ,  RMVL_DR_ID                 /*  제거의사ID */
+				  ,  RMVL_DR_NM                 /*  제거의사명 */
+				  ,  RMVL_STTS_CD               /*  제거상태코드 */
+				  ,  RMVL_SITE_OBSR_CD          /*  제거부위관찰코드 */
+				  ,  RMVL_RESN_CTN              /*  제거사유내용 */
+				  ,  DLTN_YN                    /*  삭제여부 */
+				  ,  DLPR_ID
+				  ,  DLTN_DT
+				  ,  FRST_RGSR_ID               /*  최초등록자ID */
+				  ,  FRST_RGST_IP               /*  최초등록IP */
+				  ,  FRST_RGST_DT               /*  최초등록일시 */
+				  ,  FRST_RGST_CLNT_PRGM_ID          /*  최초등록SMC클라이언트프로그램ID */
+				  ,  FRST_RGST_SRVR_PRGM_ID          /*  최초등록SMC서버프로그램ID */
+				  ,  LAST_UPDR_ID               /*  최종수정자ID */
+				  ,  LAST_UPDT_IP               /*  최종수정IP */
+				  ,  LAST_UPDT_DT               /*  최종수정일시 */
+				  ,  LAST_UPDT_CLNT_PRGM_ID          /*  최종수정SMC클라이언트프로그램ID */
+				  ,  LAST_UPDT_SRVR_PRGM_ID          /*  최종수정SMC서버프로그램ID */
+					 )
+			   select
+					 PTNO                       /*  환자번호 */
+				  ,  #{admsMdrpNo}
+				  ,  #{wardCd}                    /*  병동코드 */
+				  ,  RGCA_GRP_CD                /*  정규간호활동그룹코드 */
+				  ,  RGCA_ITEM_CD               /*  정규간호활동항목코드 */
+				  ,  #{rgcaItemSno} + RGCA_ITEM_SNO              /*  정규간호활동항목일련번호 */
+				  ,  RGCA_ITEM_RMVL_SNO         /*  정규간호활동항목제거일련번호 */
+				  ,  RMVL_DT                    /*  제거일시 */
+				  ,  RMVL_DR_ID                 /*  제거의사ID */
+				  ,  RMVL_DR_NM                 /*  제거의사명 */
+				  ,  RMVL_STTS_CD               /*  제거상태코드 */
+				  ,  RMVL_SITE_OBSR_CD          /*  제거부위관찰코드 */
+				  ,  RMVL_RESN_CTN              /*  제거사유내용 */
+				  ,  DLTN_YN                    /*  삭제여부 */
+				  ,  DLPR_ID
+				  ,  DLTN_DT
+			      ,  #{gvUserId}    
+			      ,  #{gvUserIp}    
+			      ,  sysdate        
+			      ,  #{gvClntPrgmId}
+			      ,  #{gvSrvrPrgmId}
+			      ,  #{gvUserId}    
+			      ,  #{gvUserIp}    
+			      ,  sysdate        
+			      ,  #{gvClntPrgmId}
+			      ,  #{gvSrvrPrgmId}
+			  from
+				  MNWRCPNRT
+			  where 1=1
+				  and MDRP_NO = #{errmMdrpNo}
+			   /*            and WARD_CD = :mns_wrcpnit_015[0].ward_cd */
+			]]>
+	</insert>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCareActtRmvlHx0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCareActtRmvlHx0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO"  >
+		<![CDATA[
+		   insert  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-insertCareActtRmvlHx0001_환자정규간호 항목 제거 이력등록 */
+			 into  MNWRCPNRT
+				   (
+				   PTNO                       /*  환자번호 */
+				,  MDRP_NO
+				,  WARD_CD                    /*  병동코드 */
+				,  RGCA_GRP_CD                /*  정규간호활동그룹코드 */
+				,  RGCA_ITEM_CD               /*  정규간호활동항목코드 */
+				,  RGCA_ITEM_SNO              /*  정규간호활동항목일련번호 */
+				,  RGCA_ITEM_RMVL_SNO         /*  정규간호활동항목제거일련번호 */
+				,  RMVL_DT                    /*  제거일시 */
+				,  RMVL_DR_ID                 /*  제거의사ID */
+				,  RMVL_DR_NM                 /*  제거의사명 */
+				,  RMVL_STTS_CD               /*  제거상태코드 */
+				,  RMVL_SITE_OBSR_CD          /*  제거부위관찰코드 */
+				,  RMVL_RESN_CTN              /*  제거사유내용 */
+				,  DLTN_YN                    /*  삭제여부 */
+				,  FRST_RGSR_ID               /*  최초등록자ID */
+				,  FRST_RGST_IP               /*  최초등록IP */
+				,  FRST_RGST_DT               /*  최초등록일시 */
+				,  FRST_RGST_CLNT_PRGM_ID          /*  최초등록SMC클라이언트프로그램ID */
+				,  FRST_RGST_SRVR_PRGM_ID          /*  최초등록SMC서버프로그램ID */
+				,  LAST_UPDR_ID               /*  최종수정자ID */
+				,  LAST_UPDT_IP               /*  최종수정IP */
+				,  LAST_UPDT_DT               /*  최종수정일시 */
+				,  LAST_UPDT_CLNT_PRGM_ID          /*  최종수정SMC클라이언트프로그램ID */
+				,  LAST_UPDT_SRVR_PRGM_ID          /*  최종수정SMC서버프로그램ID */
+				   )
+		   values
+				   (
+				   #{ptno}                       /*  환자번호 */
+				,  #{mdrpNo}                    /*  병동코드 */
+				,  #{wardCd}                    /*  병동코드 */
+				,  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+				,  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+				,  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			   /*          ,  (select  nvl(max(RGCA_ITEM_RMVL_SNO), 0) + 1 */
+			   /*                from  MNWRCPNRT */
+			   /*               where  PTNO          = :mns_wrcpnit_070[0].ptno */
+			   /*                 and  MDRP_NO       = :mns_wrcpnit_070[0].mdrp_no */
+			   /*                 and  WARD_CD       = :mns_wrcpnit_070[0].ward_cd */
+			   /*                 and  RGCA_GRP_CD   = :mns_wrcpnit_070[0].rgca_grp_cd */
+			   /*                 and  RGCA_ITEM_CD  = :mns_wrcpnit_070[0].rgca_item_cd */
+			   /*                 and  RGCA_ITEM_SNO = :mns_wrcpnit_070[0].rgca_item_sno */
+			   /*             ) */
+				,  1
+				,  to_date(#{rmvlDt}, 'YYYYMMDDHH24MI')
+				,  #{rmvlDrId}
+				,  #{rmvlDrNm}
+				,  #{rmvlSttsCd}
+				,  #{rmvlSiteObsrCd}
+				,  #{rmvlResnCtn}
+				,  'N'
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				   )
+			]]>
+		  
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO">
+		<result property="prphPhlbEn" column="PRPH_PHLB_EN"/>
+		<result property="prphPhlbOcrnDt" column="PRPH_PHLB_OCRN_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-selectOnePrphDcvnRmvlObsrYn_[전과전동일지] 말초정맥관 제거후관찰 존재여부 조회 */
+			   decode(CCT, 0 , 'N', 'Y') as PRPH_PHLB_EN
+			 , to_char(PRPH_PHLB_OCRN_DT, 'YYYYMMDDHH24MISS') as PRPH_PHLB_OCRN_DT
+			from
+			(
+			   select
+				   count(*)      CCT
+				,  max(RMVL_DT)  PRPH_PHLB_OCRN_DT
+			   from
+				   MNWRCPNRT
+			   where 1=1
+				   and PTNO = #{ptno}
+				   and MDRP_NO = #{mdrpNo}
+				   and RGCA_GRP_CD = '1'  /*  말초정맥관 */
+				   and RMVL_STTS_CD = 'A' /*  제거후 관찰 */
+				   and RMVL_SITE_OBSR_CD = 'C' /*  지속 */
+			)
+		]]>
+		  
+	</select>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-updateCareActtRmvlHx0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-updateCareActtRmvlHx0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtRmvlHxDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtRmvlHxDAO-updateCareActtRmvlHx0001_[간호활동] 제거이력 수정 */
+			   MNWRCPNRT
+		   set
+				RMVL_DT = decode(#{rmvlDt}, '', RMVL_DT, to_date(#{rmvlDt}, 'YYYYMMDDHH24MI'))
+			  , RMVL_STTS_CD = #{rmvlSttsCd}
+			  , RMVL_SITE_OBSR_CD = #{rmvlSiteObsrCd}
+		      , LAST_UPDR_ID       = #{gvUserId}    
+		      , LAST_UPDT_IP       = #{gvUserIp}    
+		      , LAST_UPDT_DT       = sysdate        
+		      , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		      , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		   where
+				 PTNO               = #{ptno}
+			and  MDRP_NO            = #{mdrpNo}
+			   /*      and  WARD_CD            = :mns_wrcpnit_070[0].ward_cd */
+			and  RGCA_GRP_CD        = #{rgcaGrpCd}
+			and  RGCA_ITEM_CD       = #{rgcaItemCd}
+			and  RGCA_ITEM_SNO      = #{rgcaItemSno}
+			   /*      and  RGCA_ITEM_RMVL_SNO = :mns_wrcpnit_070[0].rgca_item_rmvl_sno */
+			]]>
+	</update>
+
+</mapper>

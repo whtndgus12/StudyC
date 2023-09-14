@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsRulAuthDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsRulAuthDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="checkValue" column="CHECK_VALUE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth () 
+        Description :                                           실행 권한 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulAuthDAO-listRulAuth */
+		<![CDATA[
+		SELECT
+		       		RA.PRGM_ID
+		     	  , MAX(RA.Check_Value) as CHECK_VALUE        
+		 FROM (
+		   				select 	AA.PRGM_ID
+		        				  , AA.ATHR_CNDT_GRP_ID
+		       					  , MIN(CASE WHEN  Check1 = 'N' then '0'
+		                  						   WHEN  Check1 = 'Y' then 'Y'
+		                  						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R001') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.MDCR_DPRT_CD)) THEN  '1'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R001') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.MDCR_DPRT_CD)) THEN  '2'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R002') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.EXCF_CD)) THEN  '3'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R002') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.EXCF_CD)) THEN  '4'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R003') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.USER_ID)) THEN  '5'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R003') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.USER_ID)) THEN  '6'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R004') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCFM_CD)) THEN  '7'	-- 직종코드(GP170)
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R004') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCFM_CD)) THEN  '8'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R005') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCFM_CD)) THEN  '9'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R005') AND (AA.CNDT_OPRR_CD = 'C002') AND (BB.CRTF_ATHR_USE_YN = 'Y') AND (BB.AFI_SRCH_CNDT_CTN = 'N')) THEN  'A'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R008') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.NCNT = 0))  THEN  'B'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R008') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.NCNT <> 0)) THEN  'C'
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R009') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL = #{gvUserIp})) THEN  'D'  -- CNDT_TRGT_ITEM_VL <> IP  수정필용
+				          						   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R009') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = #{gvUserIp})) THEN  'E'  -- CNDT_TRGT_ITEM_VL = IP		         	 					   
+												   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R010') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCCL_CD)) THEN  'F'  -- 직급코드(GP005)
+		                       					   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R010') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCCL_CD)) THEN  'G'
+		                       					   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R011') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCRS_CD)) THEN  'H'  -- 직책코드(GP007)
+		                       					   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R011') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCRS_CD)) THEN  'I'
+		                       					   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R012') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCDT_CD)) THEN  'J'  -- 직무코드(GP009)
+		                       					   WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R012') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCDT_CD)) THEN  'K'
+												   WHEN  (AA.CNDT_TRGT_ITEM_CD  = 'Z001') THEN  'Y'
+				          					ELSE 'Y'
+				          			END) as Check_Value
+		        		from (
+		           					select
+		                 						m0.PRGM_ID
+		               						  , b0.ATHR_CNDT_ITEM_ID
+		               						  , b0.CNDT_OPRR_CD
+		               						  , b0.CNDT_TRGT_ITEM_VL
+		               						  , b0.CNDT_TRGT_ITEM_CD
+		               						  , decode(b0.ATHR_CNDT_GRP_ID,'T000001', Trim(b0.ATHR_CNDT_ITEM_ID || b0.CNDT_TRGT_ITEM_CD || b0.CNDT_TRGT_ITEM_VL), b0.ATHR_CNDT_GRP_ID) as ATHR_CNDT_GRP_ID
+		               						  , b0.NCNT
+		               						  , case when (b0.PRGM_ID is null) then 'Y'  -- 실행권한에 등록이 안됨
+		                      					else 'A' end as Check1
+		           					from     CSPRMLTMT m0		-- 프로그램목록_T
+		               						  , (
+		                							select  /*+ csd_pgexrmt_l02$S01_프로그램 실행권한 조건 조회 */
+				             									a1.PRGM_ID 					as PRGM_ID,						-- 프로그램ID
+				             									a1.ATHR_CNDT_GRP_ID 	as ATHR_CNDT_GRP_ID,		-- 권한조건그룹ID
+				             									a1.ATHR_CNDT_ITEM_ID 	as ATHR_CNDT_ITEM_ID,		-- 권한조건항목ID
+				             									a1.CNDT_OPRR_CD 			as CNDT_OPRR_CD,				-- 조건연산자코드
+				             									a1.CNDT_TRGT_ITEM_VL 	as CNDT_TRGT_ITEM_VL,		-- 조건대상항목값
+				             									a1.CNDT_TRGT_ITEM_CD 	as CNDT_TRGT_ITEM_CD,		-- 조건대상항목코드
+				             									(select Count(*)
+				                								   from CCUSRDPHT a,		-- NEXMED-EHR 사용자 역할정보_T
+																		   CSAGCIDMT d		-- 권한그룹조건항목상세_T
+				               								    Where a.LGIN_ID      							= d.ATHR_GRP_CNDT_ITEM_VL
+				                             						and nvl(a.MDCR_DPRT_CD, 'NONE') 	= d.ATHR_GRP_CNDT_DPRT_CD
+				                             						and d.ATHR_GRP_CNDT_ID 				= a1.CNDT_TRGT_ITEM_VL
+				                             						and a.LGIN_ID      							=  #{lginId}
+																) as NCNT
+		  		         							  from  CSEARCIMT a1,		-- 실행권한RULE조건항목_T
+					              							   CSEARCGMT a2 	-- 실행권한RULE조건그룹_T
+					   			 					where a1.APST_DT < sysdate
+					       							   and a1.APFN_DT > sysdate
+					       							   and a1.PRGM_ID 					= a2.PRGM_ID  
+					       							   and a1.ATHR_CNDT_GRP_ID   = a2.ATHR_CNDT_GRP_ID
+					 	   							   and a2.APST_DT < sysdate
+						   							   and a2.APFN_DT > sysdate
+				       							) b0
+		             			where m0.PRGM_ID = b0.PRGM_ID(+)
+				       		) AA
+				       	   ,(
+		              			select  /*+ csd_useramt_l03$S01_실행권한 및 기능권한 대상자 조건 조회 */
+				            				a.LGIN_ID 								as LGIN_ID,							-- lgin_id
+				            				a.USER_ID 								as USER_ID,						-- 사용자ID
+				            				a.USER_NM 							as USER_NM,						-- 사용자명
+				            				nvl(a.MDCR_DPRT_CD, 'NONE') 	as MDCR_DPRT_CD,				-- 진료부서코드
+				            				c.KORN_DPRT_NM 					as KORN_DPRT_NM,				-- 진료부서코드명
+				            				nvl(b.OCFM_CD, 'NONE') 			as OCFM_CD,						-- 직종코드(GP170)	
+				            				nvl(a.EXCF_CD, 'NONE') 			as EXCF_CD,						-- 검사분류코드
+				            				nvl(b.CRTF_ATHR_USE_YN, 'N') 	as CRTF_ATHR_USE_YN,		-- 인증권한사용여부
+				            				'Y' 										as AFI_SRCH_CNDT_CTN,
+											nvl(b.OCCL_CD, 'NONE')       	as OCCL_CD,          			-- 직급코드(GP005)
+		                       	 			nvl(b.OCRS_CD, 'NONE')       	as OCRS_CD,          			-- 직책코드(GP007)
+		                        			nvl(b.OCDT_CD, 'NONE')       	as OCDT_CD           			-- 직무코드(GP009)
+				         		  from   CCUSRDPHT a,	-- NEXMED-EHR 사용자 역할정보
+				            				CCUSERAMT b,	-- NEXMED-EHR 사용자
+				            				HZDEPTMMT c	-- 조직Master I/F(MDM연계)_T
+				        	    where  a.USER_ID      =  #{lginId}
+				          		   and  b.LGIN_ID      = a.LGIN_ID
+				          		   and  c.DPRT_CD    = a.MDCR_DPRT_CD
+				         	) BB
+				      group by AA.PRGM_ID, AA.ATHR_CNDT_GRP_ID
+				  ) RA
+		  GROUP BY RA.PRGM_ID
+		  HAVING MAX(RA.Check_Value) <> 'Y' 
+		  ORDER BY RA.PRGM_ID
+		 ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="checkValue" column="CHECK_VALUE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO
+		resultMap : com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull-result
+    -->
+	<select id="com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulAuthDVO"  resultMap="com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healistRulAuthModullthcare-ehr-com-cs-ccs-dao-CcsRulistRulAuthModullAuthDAO-listRulAuthModull */
+		<![CDATA[
+			with CSMMDPRGT_TEMP AS 
+			(
+			   select b.PRGM_ID
+			     from CSMHSPMOT a  				-- 병원별모듈_T
+			           , CSMMDPRGT b  				-- 모듈별프로그램_T
+			   where a.MODU_ID = b.MODU_ID   -- 모듈 ID
+			      and a.USE_YN = 'Y'
+			)	   
+		    select	RA.PRGM_ID
+		          	  , RA.Check_Value
+		     from  (        
+						select  AA.PRGM_ID
+				       			,  MAX(CASE 	WHEN  Check1 = 'N' then '0'
+				                  				  	WHEN  Check1 = 'Y' then 'Y'
+				                  					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R001') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.MDCR_DPRT_CD)) THEN  '1'  -- 부서코드
+						         	 				WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R001') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.MDCR_DPRT_CD)) THEN  '2'
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R002') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.EXCF_CD)) THEN  '3'  -- 검사분류코드
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R002') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.EXCF_CD)) THEN  '4'
+						         	 				WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R003') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.USER_ID)) THEN  '5'  -- 사용자ID
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R003') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.USER_ID)) THEN  '6'
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R004') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCFM_CD)) THEN  '7'  -- 직종코드
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R004') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCFM_CD)) THEN  '8'
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R005') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCFM_CD)) THEN  '9'  -- 인증권한
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R005') AND (AA.CNDT_OPRR_CD = 'C002') AND (BB.CRTF_ATHR_USE_YN = 'Y') AND (BB.AFI_SRCH_CNDT_CTN = 'N')) THEN  'A'  
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R008') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.NCNT = 0))  THEN  'B'  -- 사용자그룹
+						         	 				WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R008') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.NCNT <> 0)) THEN  'C'
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R009') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL = '127.0.0.1')) THEN  'D'   -- 실행IP -- CNDT_TRGT_ITEM_VL <> IP  수정필용
+						          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R009') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = '127.0.0.1')) THEN  'E'  -- CNDT_TRGT_ITEM_VL = IP
+													WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R010') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCCL_CD)) THEN  'F'  -- 직급코드(GP005)
+		                          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R010') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCCL_CD)) THEN  'G'
+		                          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R011') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCRS_CD)) THEN  'H'  -- 직책코드(GP007)
+		                          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R011') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCRS_CD)) THEN  'I'
+		                          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R012') AND (AA.CNDT_OPRR_CD = 'C001') AND (AA.CNDT_TRGT_ITEM_VL <> BB.OCDT_CD)) THEN  'J'  -- 직무코드(GP009)
+		                          					WHEN  ((AA.CNDT_TRGT_ITEM_CD = 'R012') AND (AA.CNDT_OPRR_CD = 'C002') AND (AA.CNDT_TRGT_ITEM_VL = BB.OCDT_CD)) THEN  'K'
+						          					WHEN  (AA.CNDT_TRGT_ITEM_CD = 'Z001') THEN  'Y'	  -- 전체권한(ALL)
+						          		ELSE 'Y' END) as Check_Value
+				          from 
+				                (
+				           			select 
+				                				m0.PRGM_ID  											-- 프로그램ID  
+				               				  , b0.ATHR_CNDT_ID  									-- 권한조건그룹ID       
+				               				  , b0.ATHR_CNDT_ITEM_ID  							-- 권한조건항목ID    
+				               				  , b0.CNDT_OPRR_CD  								-- 조건연산자코드    
+				               				  , b0.CNDT_TRGT_ITEM_VL  							-- 조건대상항목값      
+				               				  , b0.CNDT_TRGT_ITEM_CD  							-- 조건대상항목코드      
+				               				  , b0.NCNT   
+				               				  , case when (b2.PRGM_ID is null) then 'N'  	-- 모듈에 등록됨
+				                      				  when (b0.PRGM_ID is null) then 'Y'  	-- 실행권한에 등록이 안됨
+				                      			else 'A' end as Check1
+				           			  from   CSPRMLTMT m0
+				                              , (
+				                					select  /*+ csd_pgexrmt_l02$S01_프로그램 실행권한 조건 조회 */
+						             							a1.PRGM_ID 					as PRGM_ID,             			-- 프로그램ID
+						             							a1.ATHR_CNDT_GRP_ID 	as ATHR_CNDT_ID,        		-- 권한조건그룹ID
+						             							a1.ATHR_CNDT_ITEM_ID	as ATHR_CNDT_ITEM_ID,   	-- 권한조건항목ID
+						             							a1.CNDT_OPRR_CD 			as CNDT_OPRR_CD,        		-- 조건연산자코드
+						             							a1.CNDT_TRGT_ITEM_VL 	as CNDT_TRGT_ITEM_VL,   	-- 조건대상항목값
+						             							a1.CNDT_TRGT_ITEM_CD 	as CNDT_TRGT_ITEM_CD,   	-- 조건대상항목코드
+						            	 						(	select Count(*) 
+						                							  from CCUSRDPHT a 	-- NEXMED-EHR 사용자 역할정보_T 
+		                                                                    , CSAGCIDMT d  -- 권한그룹조건항목상세_T  
+						               								where a.LGIN_ID      							= d.ATHR_GRP_CNDT_ITEM_VL
+						                             				   and nvl(a.MDCR_DPRT_CD, 'NONE') 	= d.ATHR_GRP_CNDT_DPRT_CD
+						                             				   and d.ATHR_GRP_CNDT_ID 				= a1.CNDT_TRGT_ITEM_VL
+						                             				   and a.LGIN_ID      							= #{lginId}
+																) 									as NCNT
+						         					  from   CSEARCIMT a1,  	-- 실행권한RULE조건항목_T
+		                                    					CSEARCGMT a2  	-- 실행권한RULE조건그룹_T 
+						        				    where 	a1.APST_DT < sysdate
+						          					   and 	a1.APFN_DT > sysdate
+						          					   and 	a1.PRGM_ID in (Select PRGM_ID from CSMMDPRGT_TEMP)
+													   and	a1.PRGM_ID 					= a2.PRGM_ID  
+		                               				   and	a1.ATHR_CNDT_GRP_ID 	= a2.ATHR_CNDT_GRP_ID
+		                               				   and	a2.APST_DT < sysdate
+		                               				   and	a2.APFN_DT > sysdate
+						       					) b0
+							  				  , CSMMDPRGT_TEMP b2
+				             		where	m0.PRGM_ID = b0.PRGM_ID(+)
+				              		   and	m0.PRGM_ID = b2.PRGM_ID(+) 	             	            
+						        ) AA
+						       , (
+						           	select  /*+ csd_useramt_l03$S01_실행권한 및 기능권한 대상자 조건 조회 */
+						            			a.LGIN_ID 								as LGIN_ID,
+						            			a.USER_ID 								as USER_ID,
+						            			a.USER_NM 							as USER_NM,
+						            			nvl(a.MDCR_DPRT_CD, 'NONE') 	as MDCR_DPRT_CD,
+						            			c.KORN_DPRT_NM 					as KORN_DPRT_NM,
+						            			nvl(b.OCFM_CD, 'NONE') 			as OCFM_CD,
+						            			nvl(a.EXCF_CD, 'NONE') 			as EXCF_CD,
+						            			nvl(b.CRTF_ATHR_USE_YN, 'N')	as CRTF_ATHR_USE_YN,
+						            			'Y' 										as AFI_SRCH_CNDT_CTN,
+		                            			nvl(b.OCCL_CD, 'NONE')        	as OCCL_CD,          -- 직급코드(GP005)
+		                            			nvl(b.OCRS_CD, 'NONE')        	as OCRS_CD,          -- 직책코드(GP007)
+		                            			nvl(b.OCDT_CD, 'NONE')        	as OCDT_CD           -- 직무코드(GP009)
+						         	 from   CCUSRDPHT a,
+						            		   CCUSERAMT b,
+						            		   HZDEPTMMT c
+						           where	a.USER_ID   = #{lginId}
+						          	  and		b.LGIN_ID   = a.LGIN_ID
+						          	  and		c.DPRT_CD = a.MDCR_DPRT_CD 
+						        ) BB
+						group 
+							 by AA.PRGM_ID
+		         ) RA
+		 where RA.Check_Value <> 'Y'
+		]]>
+	</select>
+
+
+
+</mapper>

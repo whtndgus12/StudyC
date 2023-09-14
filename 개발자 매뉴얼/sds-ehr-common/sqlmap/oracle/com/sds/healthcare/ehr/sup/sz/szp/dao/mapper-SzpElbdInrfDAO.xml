@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SzpElbdInrfDAO_sql.xml 
+    Description : -->
+<mapper namespace="SzpElbdInrfDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO">
+	
+		<result property="elbdDsplZoneCd" column="ELBD_DSPL_ZONE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd (전광판 연계 검사실 여부 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-selectOneCeckElbdDsplZoneCd */
+		select ELBD_DSPL_ZONE_CD
+		  from SZROOMCMT
+		 where EXRM_CD = #{exrmCd}
+		   and EXCF_CD = #{excfCd}
+		   and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-updateMergeElbdTrgtInfm (전광판 정보 생성) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-updateMergeElbdTrgtInfm"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-updateMergeElbdTrgtInfm */
+		merge
+		 into SWBOARDMT a
+		using (select PTNO
+		            , ORDR_YMD
+		            , ORDR_SNO
+		            , RPTN_DT
+		            , EXMN_STTS_CD
+		            , EXCF_CD
+		            , EXRM_CD
+		            , ENFR_DT
+		            , ENRM_EDCT_FLDV_CD
+		            , MDRP_NO
+		            , LAST_UPDR_ID
+		            , LAST_UPDT_IP
+		            , LAST_UPDT_DT
+		            , LAST_UPDT_CLNT_PRGM_ID
+		            , LAST_UPDT_SRVR_PRGM_ID
+		         from SWWORKMMT
+		        where PTNO = #{ptno}
+		          and ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		          and ORDR_SNO = #{ordrSno}
+		          and RPTN_DT IS NOT NULL
+		      ) b
+		   on (a.PTNO = b.PTNO and a.ORDR_YMD = b.ORDR_YMD and a.ORDR_SNO = b.ORDR_SNO)
+		 when matched
+		 then update
+		         set a.EXMN_YMD = trunc(b.RPTN_DT)
+		           , a.EXOR_PRSS_CD = b.EXMN_STTS_CD
+		           , a.EXCF_CD = b.EXCF_CD
+		           , a.EXRM_CD = b.EXRM_CD
+		           , a.RPTN_DT = b.RPTN_DT
+		           , a.ENFR_DT = b.ENFR_DT
+		           , a.PRSS_CD = b.ENRM_EDCT_FLDV_CD
+		           , a.STTS_MDFC_DT = sysdate
+		           , a.DSPL_YN = case when b.RPTN_DT is null then 'N' 
+		                              else case when b.ENFR_DT is not null then 'N' else 'Y' end
+		                         end
+		           , a.LAST_UPDR_ID = b.LAST_UPDR_ID
+		           , a.LAST_UPDT_IP = b.LAST_UPDT_IP
+		           , a.LAST_UPDT_DT = sysdate
+		           , a.LAST_UPDT_CLNT_PRGM_ID = b.LAST_UPDT_CLNT_PRGM_ID
+		           , a.LAST_UPDT_SRVR_PRGM_ID = b.LAST_UPDT_SRVR_PRGM_ID
+		 when not matched
+		 then insert
+		           ( 
+		             PTNO
+		           , ORDR_YMD
+		           , ORDR_SNO
+		           , EXMN_YMD
+		           , EXOR_PRSS_CD
+		           , EXCF_CD
+		           , EXRM_CD
+		           , SORT_SQNC
+		           , RPTN_DT
+		           , ENFR_DT
+		           , PRSS_CD
+		           , STTS_MDFC_DT
+		           , DSPL_YN
+		           , MDRP_NO
+		           , FRST_RGSR_ID
+		           , FRST_RGST_IP
+		           , FRST_RGST_DT
+		           , FRST_RGST_CLNT_PRGM_ID
+		           , FRST_RGST_SRVR_PRGM_ID
+		           , LAST_UPDR_ID
+		           , LAST_UPDT_IP
+		           , LAST_UPDT_DT
+		           , LAST_UPDT_CLNT_PRGM_ID
+		           , LAST_UPDT_SRVR_PRGM_ID
+		           )
+		      values
+		           (
+		             b.PTNO
+		           , b.ORDR_YMD
+		           , b.ORDR_SNO
+		           , trunc(b.RPTN_DT)
+		           , b.EXMN_STTS_CD
+		           , b.EXCF_CD
+		           , b.EXRM_CD
+		           , nvl((select max(SORT_SQNC) 
+		                    from SWBOARDMT c 
+		                   where c.EXMN_YMD = trunc(b.RPTN_DT)
+		                     and c.EXCF_CD = b.EXCF_CD
+		                     and c.EXRM_CD = b.EXRM_CD),0) + 1
+		           , b.RPTN_DT
+		           , b.ENFR_DT
+		           , b.ENRM_EDCT_FLDV_CD
+		           , sysdate
+		           , case when b.RPTN_DT is null then 'N' 
+		                              else case when b.ENFR_DT is not null then 'N' else 'Y' end
+		                         end
+		           , b.MDRP_NO
+		           , b.LAST_UPDR_ID
+		           , b.LAST_UPDT_IP
+		           , sysdate
+		           , b.LAST_UPDT_CLNT_PRGM_ID
+		           , b.LAST_UPDT_SRVR_PRGM_ID
+		           , b.LAST_UPDR_ID
+		           , b.LAST_UPDT_IP
+		           , sysdate
+		           , b.LAST_UPDT_CLNT_PRGM_ID
+		           , b.LAST_UPDT_SRVR_PRGM_ID
+		           )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-deleteElbdTrgtInfm (전광판 정보 삭제) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-deleteElbdTrgtInfm"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpElbdInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpElbdInrfDAO-deleteElbdTrgtInfm */
+		delete
+		  from SWBOARDMT
+		 where PTNO = #{ptno}
+		   and ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		   and ORDR_SNO = #{ordrSno}
+	</delete>
+
+</mapper>

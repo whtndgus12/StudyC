@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzDprtDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzDprtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt-result" type="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listDprt */
+		      DPRT_CD as DPRT_CD               /*  무의미 코드 */
+		   ,  KORN_DPRT_NM as KORN_DPRT_NM          /*  무의미 코드명 */   
+		   ,  ABRV_DPRT_CD as ABRV_DPRT_CD          /*  약어코드 */
+		 from  HZDEPTMMT
+		where  1=1
+		<if test="mdcrTissDvsnCd != null and mdcrTissDvsnCd != ''">
+		  and  MDCR_TISS_DVSN_CD = #{mdcrTissDvsnCd} 
+		</if> 
+		order 
+		   by  HRAF_BASE_SORT_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac-result" type="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO">
+	
+		<result property="pltgNm" column="PLTG_NM"/>
+		<result property="ptptNm" column="PTPT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac (진료장소조회) 
+        Description :                                           진료과의 진료장소를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-selectOneMcdrPlac */
+		   (
+		    select F_A.DETL_CD_NM
+		     from CCCMCDDMT F_A
+		    where F_A.COMN_GRP_CD = 'CC013'
+		      and F_A.COMN_DTLS_CD = b.LCDV_CD
+		   ) || ' ' || b.FLOR_NO || '층'             as PLTG_NM
+		  ,  b.KORN_DPRT_NM                           as PTPT_NM
+		from
+		    HZDEPTMMT b
+		where b.DPRT_CD = #{dprtCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt-result" type="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzDprtDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzDprtDAO-listHgrnDprt */
+		        DPRT_CD
+		      , ABRV_DPRT_CD
+		      , KORN_DPRT_NM 
+		  from hzdeptmmt
+		 where 1=1 
+		   and (
+		        HRAF_HGRN_DPRT_CD = #{dprtCd}
+		        or 
+		        DPRT_CD = #{dprtCd}
+		       )
+	</select>
+
+
+
+</mapper>

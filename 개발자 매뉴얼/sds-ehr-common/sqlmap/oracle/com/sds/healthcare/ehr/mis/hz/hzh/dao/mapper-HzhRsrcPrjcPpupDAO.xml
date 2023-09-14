@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhRsrcPrjcPpupDAO_sql.xml 
+    Description :                                      연구과제 팝업용 DAO
+                  -->
+<mapper namespace="HzhRsrcPrjcPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="rsrcInfmHxId" column="RSRC_INFM_HX_ID"/>
+		<result property="rsrcRnprId" column="RSRC_RNPR_ID"/>
+		<result property="rsrcRnprNm" column="RSRC_RNPR_NM"/>
+		<result property="rscsGiveInstCd" column="RSCS_GIVE_INST_CD"/>
+		<result property="cstrNm" column="CSTR_NM"/>
+		<result property="irbrPrjcNo" column="IRBR_PRJC_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup (HZH010FJ_1_Popup_IRB No.를 통한 연구과제_목록 조회) 
+        Description :                                           HZH010FJ_1_Popup_IRB No.를 통한 연구과제_목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjtByIrbnoPpup */
+			   rownum      as SQNC         /* 순서 */
+		 			  , s.RSRC_PRJC_CD 	as RSRC_PRJC_CD 	/* 연구과제코드 */
+		 			  , s.RSRC_PRJC_KRLN_NM as RSRC_PRJC_NM	 /* 연구과제명 */
+		 			  , s.RSRC_INFM_HX_ID  	as  RSRC_INFM_HX_ID 	/* 연구정보이력ID */
+		 			  , s.RSRC_RNPR_EMNO 	as RSRC_RNPR_ID            /* 연구책임자사원번호 */
+		 			  , (select USER_NM from CCUSRDPHT where USER_ID = s.RSRC_RNPR_EMNO) 	as RSRC_RNPR_NM    /* 연구책임자명 */
+		 			  , s.RSCS_SPRT_INST_NM 	as RSCS_GIVE_INST_CD         /* 연구비지원기관명 */
+		 			  , s.RSRC_INST_CD 	as  CSTR_NM     /* 연구기관명 */
+		 			  , s.IRBR_PRJC_NO   as  IRBR_PRJC_NO    /*  IRB 과제번호 */
+		 		   from 	 RPRSRPRJT s /* [HM]연구과제 */
+		 		            , ( /* 연구과제관리부서 권한체크 */
+		 		                  select (case when count(*) <> 0 then 'Y' 
+		 		                                  else 'N'  end)   CLRS_MNGM_DPRT_YN
+		 		                   from HZUSERMMT u
+		 		                          , HZMICOCDT c
+		 		                    where u.EMNO  = #{gvUserId}
+		 		                      and c.COMN_GRP_CD = 'RPZ_001'             /* 연구과제 상수 */
+		 		                      and c.MIS_COMN_CD = 'CLRS_MNGM_DPRT_CD'   /* 연구과제관리부서코드 */
+		 		                      and c.COMN_CD_NM  = u.DPRT_CD
+		 		              )   c
+		 		             , ( /* 사용자 역할별 권한체크 */
+		 		                   select min(CHRC_CD_VL01)   MNGM_PHRC_YN  /* 관리약사 권한 여부 */
+		 		              	           , min(CHRC_CD_VL02)   TOT_SRCH_YN  /* 연구과제 전체조회 권한 여부 */
+		 		                    from HZMICOCDT
+		 		                     where COMN_GRP_CD = 'RPZ_002'     /* 사용자 역할별 권한 */
+		 		                     and MIS_COMN_CD = #{gvUserId}
+		 		               )   d
+		 		  where  s.BSPL_CD  = #{bsplCd}                         /* 사업장코드 */
+		 			and  (s.DLTN_YN is null or s.DLTN_YN != 'Y')	
+		]]>	
+		 			 <if test='srchCd != null and srchCd == "C" and srchCdNm != null and srchCdNm != ""'>
+		 		    	and (#{srchCd} = 'C' and upper(s.IRBR_PRJC_NO) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec)  /* IRB 과제번호 */
+		 			 </if>
+		 			 <if test='srchCd != null and srchCd == "N" and srchCdNm != null and srchCdNm != ""'>
+		 				and (#{srchCd} = 'N' and upper(s.RSRC_PRJC_KRLN_NM) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec) /* 연구과제명 */
+		 			 </if>
+		 			 <if test='rsrcRnprId != null and rsrcRnprId != ""'>
+		 			    and s.RSRC_RNPR_EMNO = #{rsrcRnprId}           /* 연구책임자 */
+		 			 </if>
+		 		    /* 조회 권한 체크 */
+		 		   and ( (c.CLRS_MNGM_DPRT_YN = 'Y')      --연구과제관리부서
+		 		            or ( (c.CLRS_MNGM_DPRT_YN = 'N')     --연구과제관리부서가 아닌경우 본인과제만 조회
+		 		                   and (  #{gvUserId} = s.RSRC_RNPR_EMNO      --연구책임자
+		 									 or #{gvUserId} = s.MNGM_PHRC_ID	  --관리약사
+		 		                             or #{gvUserId} = s.RSRC_CRDR_ID1          --CRC1
+		 		                             or #{gvUserId} = s.RSRC_CRDR_ID2           --CRC2
+		 		                             or #{gvUserId} = s.CLNC_EXAM_RNPR_ID      --임상시험실시기관 관리책임자
+		 		                             or exists ( select 'O'                 --공동연구자에 등록된 자(CRA는 삭제되면 조회안되게)
+		 		                                           from RPJONRSRT
+		 		                                          where RSRC_PRJC_CD = s.RSRC_PRJC_CD
+		 		                                            and RSRH_ID = #{gvUserId}
+		 													and (DLTN_YN is null or DLTN_YN != 'Y')
+		 		                                          )
+		 		                             or nvl(d.TOT_SRCH_YN, 'N') = 'Y'   /* 연구과제 전체조회 권한 */
+		 		                          )
+		 		                      )
+		 		                  )
+		 		order by s.RSRC_PRJC_CD desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="rsrcRnprId" column="RSRC_RNPR_ID"/>
+		<result property="rsrcRnprNm" column="RSRC_RNPR_NM"/>
+		<result property="irbrPrjcNo" column="IRBR_PRJC_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup (HZH010FJ_1_Popup_연구과제_목록 조회) 
+        Description :                                           hmd_rsrprjt_l01$S01_연구과제_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcPrjcPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcPrjcPpupDAO-listRsrcPrjcPpup */
+		       rownum as SQNC         /* 순서 */
+		     , RSRC_PRJC_CD    /* 연구과제코드 */
+		     , RSRC_PRJC_NM    /* 연구과제명 */
+		     , RSRC_RNPR_ID    /* 연구책임자ID */
+		     , RSRC_RNPR_NM    /* 연구책임자명 */
+		     , IRBR_PRJC_NO    /*  IRB 과제번호 */
+		  from 
+		       (
+		        select  
+		               m.RSRC_PRJC_CD    /* 연구과제코드 */
+		             , m.RSRC_PRJC_NM    /* 연구과제명 */
+		             , m.RSRC_RNPR_EMNO as RSRC_RNPR_ID  /* 연구책임자ID */
+		             , m.RSRC_RNPR_NM    /* 연구책임자명 */
+		             , m.IRBR_PRJC_NO    /*  IRB 과제번호 */
+		          from
+		               (select 
+		                       s.RSRC_PRJC_CD 
+		                     , s.RSRC_PRJC_KRLN_NM 	as RSRC_PRJC_NM 
+		                     , s.RSRC_RNPR_EMNO
+		                     , (select EMPY_NM from HZUSERMMT where EMNO(+) = s.RSRC_RNPR_EMNO) RSRC_RNPR_NM /* 연구책임자명 */
+		                     , s.IRBR_PRJC_NO
+		                  from RPRSRPRJT s /* 연구과제 */
+		            			, ( /* 연구과제관리부서 권한체크 */
+		                   			select (case when count(*) <> 0 then 'Y' 
+		                               else 'N'  end)   CLRS_MNGM_DPRT_YN
+		                   			from HZUSERMMT u
+		                          		, HZMICOCDT c
+		                   			where u.EMNO        = #{gvUserId}
+		                    		and c.COMN_GRP_CD = 'RPZ_001'             /* 연구과제 상수 */
+		                    		and c.MIS_COMN_CD = 'CLRS_MNGM_DPRT_CD'   /* 연구과제관리 부서코드 */
+		                    		and c.COMN_CD_NM  = u.DPRT_CD
+		            			)   c
+		          				, ( /* 사용자 역할별 권한체크 */
+		                 			select min(CHRC_CD_VL01)   MNGM_PHRC_YN  /* 관리약사 권한 여부 */
+		                       				, min(CHRC_CD_VL02)   TOT_SRCH_YN  /* 연구과제 전체조회 권한 여부 */
+		                  			from HZMICOCDT
+		                  			where COMN_GRP_CD = 'RPZ_002'     /* 사용자 역할별 권한 */
+		                  			and MIS_COMN_CD = #{gvUserId}
+		           				)   d
+		                 where  s.BSPL_CD = #{bsplCd}     /* 사업장코드 */
+		                  and (s.DLTN_YN is null or s.DLTN_YN != 'Y')
+		 						/* 조회 권한 체크 */
+						  and (  (c.CLRS_MNGM_DPRT_YN = 'Y')   -- 연구과제관리부서면 전체 조회
+		                		or ( (c.CLRS_MNGM_DPRT_YN = 'N')  -- 연구과제관리부서가 아닌경우 본인 과제만 조회
+		                       and (  #{gvUserId} = s.RSRC_RNPR_EMNO   -- 연구책임자
+									 or #{gvUserId} = s.MNGM_PHRC_ID	--관리약사
+		                             or #{gvUserId} = s.RSRC_CRDR_ID1       -- CRC1
+		                             or #{gvUserId} = s.RSRC_CRDR_ID2        -- CRC2
+		                             or #{gvUserId} = s.CLNC_EXAM_RNPR_ID   -- 임상시험실시기관 관리책임자
+		                             or exists ( select 'O'              -- 공동연구자에 등록된 자(CRA는 삭제되면 조회안되게)
+		                                           from RPJONRSRT
+		                                          where RSRC_PRJC_CD = s.RSRC_PRJC_CD
+		                                            and RSRH_ID = #{gvUserId}
+													and (DLTN_YN is null or DLTN_YN != 'Y')
+		                                          )
+		                             or nvl(d.TOT_SRCH_YN, 'N') = 'Y'   /* 연구과제 전체조회 권한 */
+		                            )
+		                      )
+		                  )
+		]]>
+						/* 조회 조건 */
+		                   <if test='irbrPrjcNo != null and irbrPrjcNo != ""'>
+		                   and s.IRBR_PRJC_NO like  '%' || pa_sm.set_ec(#{irbrPrjcNo}) || '%' escape pa_sm.ec /* IRB 과제번호 */
+		                   </if>
+		                   <if test='srchCd != null and srchCd == "C"'>
+		                   and (#{srchCd} = 'C' and upper(s.RSRC_PRJC_CD) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec) /* 연구과제코드 */
+		                   </if>
+		                   <if test='srchCd != null and srchCd == "N"'>
+		                   and (#{srchCd} = 'N' and upper(s.RSRC_PRJC_KRLN_NM) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec) /* 연구과제명 */
+		                   </if>
+		                   <if test='rsrcRnprId != null and rsrcRnprId != ""'>
+		                   and s.RSRC_RNPR_EMNO = #{rsrcRnprId}           /* 연구책임자 */
+		                   </if>
+		              
+		                ) m
+		         order by m.RSRC_PRJC_CD desc
+		       )
+	</select>
+
+
+
+</mapper>

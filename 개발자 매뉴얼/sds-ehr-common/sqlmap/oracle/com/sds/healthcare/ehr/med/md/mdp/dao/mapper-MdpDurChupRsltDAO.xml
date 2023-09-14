@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDurChupRsltDAO_sql.xml 
+    Description :                                      DUR점검결과DAO
+                  -->
+<mapper namespace="MdpDurChupRsltDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-insertDurChupRslt (DUR점검결과 등록) 
+        Description :                                           DUR점검결과 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-insertDurChupRslt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-insertDurChupRslt */
+		  into  MDDURRCVT
+		        (
+		        MDRP_NO
+		     ,  CHUP_RSLT_SNO
+		     ,  PTNO
+		     ,  CODV_CD
+		     ,  ORDR_YMD
+		     ,  MCDP_CD
+		     ,  MDPR_SNO
+		     ,  MDPR_CD
+		     ,  MDPR_NM
+		     ,  INGR_CD
+		     ,  INGR_NM
+		     ,  T1MD_QTY
+		     ,  D1AD_NTM
+		     ,  TOTL_ADMN_DDCN
+		     ,  CHUP_KIND_CD
+		     ,  CHUP_TYPE_CD
+		     ,  CHUP_RSLT_GRAD_CD
+		     ,  CHUP_RSLT_CTN
+		     ,  SDEF_INFM_CTN
+		     ,  DPLC_ORDR_CMMD_DVSN_CD
+		     ,  DPLC_ORDR_YMD
+		     ,  DPLC_ORDR_HMS
+		     ,  DPLC_ORDR_INSY_ID
+		     ,  DPLC_ORDR_HNDV_NO
+		     ,  DPLC_ORDR_INST_NM
+		     ,  DPLC_ORDR_INST_TLNO_CTN
+		     ,  DPLC_ORDR_INST_FXNO_CTN
+		     ,  DPLC_ODDR_NM
+		     ,  DPLC_ODDR_LCNS_NO
+		     ,  DPLC_CMMD_YMD
+		     ,  DPLC_CMMD_HMS
+		     ,  DPLC_CMMD_INSY_ID
+		     ,  DPLC_CMIN_NM
+		     ,  DPLC_CMIN_TLNO_CTN
+		     ,  DPLC_CMMD_PHRC_NM
+		     ,  DPLC_CMMD_PHRC_LCNS_NO
+		     ,  DPLC_MDPR_SNO
+		     ,  DPLC_MDPR_CD
+		     ,  DPLC_MDPR_NM
+		     ,  DPLC_INGR_CD
+		     ,  DPLC_INGR_NM
+		     ,  DPLC_T1MD_QTY
+		     ,  DPLC_D1AD_NTM
+		     ,  DPLC_TOTL_ADMN_DDCN
+		     ,  ORDR_MNGM_NO
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values  (
+		        #{mdrpNo}
+		     ,  (
+		        select  nvl(max(CHUP_RSLT_SNO), 0) + 1
+		          from  MDDURRCVT
+		         where  MDRP_NO = #{mdrpNo}
+		        )
+		     ,  #{ptno}
+		     ,  #{codvCd}
+		     ,  to_date(#{ordrYmd}, 'YYYYMMDD')
+		     ,  #{mcdpCd}
+		     ,  mod(#{mdprSno}, 10000)      /* 5자리 이내로 번호처리 */
+		     ,  #{mdprCd}
+		     ,  #{mdprNm}
+		     ,  #{ingrCd}
+		     ,  #{ingrNm}
+		     ,  #{t1mdQty}
+		     ,  #{d1adNtm}
+		     ,  #{totlAdmnDdcn}
+		     ,  #{chupKindCd}
+		     ,  #{chupTypeCd}
+		     ,  #{chupRsltGradCd}
+		     ,  #{chupRsltCtn}
+		     ,  #{sdefInfmCtn}
+		     ,  #{dplcOrdrCmmdDvsnCd}
+		     ,  to_date(#{dplcOrdrYmd}, 'YYYYMMDD')
+		     ,  #{dplcOrdrHms}
+		     ,  #{dplcOrdrInsyId}
+		     ,  #{dplcOrdrHndvNo}
+		     ,  #{dplcOrdrInstNm}
+		     ,  #{dplcOrdrInstTlnoCtn}
+		     ,  #{dplcOrdrInstFxnoCtn}
+		     ,  #{dplcOddrNm}
+		     ,  #{dplcOddrLcnsNo}
+		     ,  to_date(#{dplcCmmdYmd}, 'YYYYMMDD')
+		     ,  #{dplcCmmdHms}
+		     ,  #{dplcCmmdInsyId}
+		     ,  #{dplcCminNm}
+		     ,  #{dplcCminTlnoCtn}
+		     ,  #{dplcCmmdPhrcNm}
+		     ,  #{dplcCmmdPhrcLcnsNo}
+		     ,  mod(#{dplcMdprSno}, 10000)   /* 5자리 이내로 번호처리 */
+		     ,  #{dplcMdprCd}
+		     ,  #{dplcMdprNm}
+		     ,  #{dplcIngrCd}
+		     ,  #{dplcIngrNm}
+		     ,  #{dplcT1mdQty}
+		     ,  #{dplcD1adNtm}
+		     ,  #{dplcTotlAdmnDdcn}
+		     ,  #{ordrMngmNo}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt (DUR점검결과 삭제) 
+        Description :                                           DUR점검결과 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt */
+		  from  MDDURRCVT
+		 where  MDRP_NO = #{mdrpNo}
+		   and  CODV_CD = #{codvCd}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt2"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt2 */
+		  from  MDDURRCVT
+		 where  MDRP_NO = #{mdrpNo}
+		   and  CODV_CD = 'o'
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt3 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt3"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-deleteDurChupRslt3 */
+		  from  MDDURRCVT
+		 where  MDRP_NO = #{mdrpNo}
+		   and  CODV_CD = 'O'
+	</delete>
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-executeBatchIns (DUR점검결과 다건등록) 
+        Description :                                           DUR점검결과 다건등록
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-executeBatchIns" parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO" >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-executeBatchIns */
+		  into  MDDURRCVT
+		        (
+		        MDRP_NO
+		     ,  CHUP_RSLT_SNO
+		     ,  PTNO
+		     ,  CODV_CD
+		     ,  ORDR_YMD
+		     ,  MCDP_CD
+		     ,  MDPR_SNO
+		     ,  MDPR_CD
+		     ,  MDPR_NM
+		     ,  INGR_CD
+		     ,  INGR_NM
+		     ,  T1MD_QTY
+		     ,  D1AD_NTM
+		     ,  TOTL_ADMN_DDCN
+		     ,  CHUP_KIND_CD
+		     ,  CHUP_TYPE_CD
+		     ,  CHUP_RSLT_GRAD_CD
+		     ,  CHUP_RSLT_CTN
+		     ,  SDEF_INFM_CTN
+		     ,  DPLC_ORDR_CMMD_DVSN_CD
+		     ,  DPLC_ORDR_YMD
+		     ,  DPLC_ORDR_HMS
+		     ,  DPLC_ORDR_INSY_ID
+		     ,  DPLC_ORDR_HNDV_NO
+		     ,  DPLC_ORDR_INST_NM
+		     ,  DPLC_ORDR_INST_TLNO_CTN
+		     ,  DPLC_ORDR_INST_FXNO_CTN
+		     ,  DPLC_ODDR_NM
+		     ,  DPLC_ODDR_LCNS_NO
+		     ,  DPLC_CMMD_YMD
+		     ,  DPLC_CMMD_HMS
+		     ,  DPLC_CMMD_INSY_ID
+		     ,  DPLC_CMIN_NM
+		     ,  DPLC_CMIN_TLNO_CTN
+		     ,  DPLC_CMMD_PHRC_NM
+		     ,  DPLC_CMMD_PHRC_LCNS_NO
+		     ,  DPLC_MDPR_SNO
+		     ,  DPLC_MDPR_CD
+		     ,  DPLC_MDPR_NM
+		     ,  DPLC_INGR_CD
+		     ,  DPLC_INGR_NM
+		     ,  DPLC_T1MD_QTY
+		     ,  DPLC_D1AD_NTM
+		     ,  DPLC_TOTL_ADMN_DDCN
+		     ,  ORDR_MNGM_NO
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+			 ,  PRTX_RLTN_RESN_VL
+			 ,  PRTX_RLTN_RESN_CTN
+		        )
+		values  (
+		        #{mdrpNo}
+		     ,  (
+		        select  nvl(max(CHUP_RSLT_SNO), 0) + 1
+		          from  MDDURRCVT
+		         where  MDRP_NO = #{mdrpNo}
+		        )
+		     ,  #{ptno}
+		     ,  #{codvCd}
+		     ,  to_date(#{ordrYmd}, 'YYYYMMDD')
+		     ,  #{mcdpCd}
+		     ,  mod(#{mdprSno}, 10000)      /* 5자리 이내로 번호처리 */
+		     ,  #{mdprCd}
+		     ,  #{mdprNm}
+		     ,  #{ingrCd}
+		     ,  #{ingrNm}
+		     ,  #{t1mdQty}
+		     ,  #{d1adNtm}
+		     ,  #{totlAdmnDdcn}
+		     ,  #{chupKindCd}
+		     ,  #{chupTypeCd}
+		     ,  #{chupRsltGradCd}
+		     ,  #{chupRsltCtn}
+		     ,  #{sdefInfmCtn}
+		     ,  #{dplcOrdrCmmdDvsnCd}
+		     ,  to_date(#{dplcOrdrYmd}, 'YYYYMMDD')
+		     ,  #{dplcOrdrHms}
+		     ,  #{dplcOrdrInsyId}
+		     ,  #{dplcOrdrHndvNo}
+		     ,  #{dplcOrdrInstNm}
+		     ,  #{dplcOrdrInstTlnoCtn}
+		     ,  #{dplcOrdrInstFxnoCtn}
+		     ,  #{dplcOddrNm}
+		     ,  #{dplcOddrLcnsNo}
+		     ,  to_date(#{dplcCmmdYmd}, 'YYYYMMDD')
+		     ,  #{dplcCmmdHms}
+		     ,  #{dplcCmmdInsyId}
+		     ,  #{dplcCminNm}
+		     ,  #{dplcCminTlnoCtn}
+		     ,  #{dplcCmmdPhrcNm}
+		     ,  #{dplcCmmdPhrcLcnsNo}
+		     ,  mod(#{dplcMdprSno}, 10000)   /* 5자리 이내로 번호처리 */
+		     ,  #{dplcMdprCd}
+		     ,  #{dplcMdprNm}
+		     ,  #{dplcIngrCd}
+		     ,  #{dplcIngrNm}
+		     ,  #{dplcT1mdQty}
+		     ,  #{dplcD1adNtm}
+		     ,  #{dplcTotlAdmnDdcn}
+		     ,  #{ordrMngmNo}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+			 ,  #{prtxRltnResnVl}               /* 사유코드   */
+			 ,  #{prtxRltnResnCtn}              /* 사유내용   */
+		)
+	</update>
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-updateDurOrdrResn (DUR점검결과사유 저장) 
+        Description :                                           DUR점검결과사유 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-updateDurOrdrResn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-updateDurOrdrResn */ 
+		       MDMEDORDT 
+		   set
+		      DURV_YN = #{durvYn}
+		    , DURV_ORTA_NM = #{durvOrtaNm}
+		    , DURV_RESN_CTN = #{durvResnCtn}
+		    , DURV_ORDR_YMD = to_date(#{durvOrdrYmd},'YYYYMMDD')
+		    , DURV_ORDR_CD = #{durvOrdrCd}
+		 where PTNO = #{ptno}
+		   and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and ORDR_SNO = #{ordrSno} 
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd (DUR사유처방코드 단건조회) 
+        Description :                                           DUR사유처방코드 단건조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDurChupRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDurChupRsltDAO-selectOneDurResnOrdrCd */
+		       ORDR_CD
+		  from MDMEDORDT
+		 where PTNO = #{ptno}
+		   and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+</mapper>

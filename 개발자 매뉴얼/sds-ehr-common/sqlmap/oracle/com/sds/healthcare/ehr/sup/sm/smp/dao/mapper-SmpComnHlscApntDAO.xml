@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmpComnHlscApntDAO_sql.xml 
+    Description :                                      SmpComnHlscApntDAO 클래스
+                  -->
+<mapper namespace="SmpComnHlscApntDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc-result" type="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO">
+	
+		<result property="clsfNm1" column="CLSF_NM_1"/>
+		<result property="clsfNm2" column="CLSF_NM_2"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="clsfEmitNm1" column="CLSF_EMIT_NM_1"/>
+		<result property="allAmt" column="ALL_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc () 
+        Description :                                           건강의학 세부내역서 조회 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc"  parameterType="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc-result" useCache="true" flushCache="false">
+		<![CDATA[ 
+		select  /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc*/
+		         /*+ smd_arsmast_l06#S01_건강의학 세부내역서 조회 DAM */
+		        case 
+		            when e.ORDR_CD is not null then f.PCKG_NM
+		            else case
+		                    when a.EXMN_DVSN_CD in ('0','2') then f.PCKG_NM
+		                    when a.EXMN_DVSN_CD = '1' then '추가검사'
+		                 end
+		        end as CLSF_NM_1
+		     ,  case 
+		            when e.ORDR_CD is not null then '내시경'
+		            else case
+		                    when a.EXMN_DVSN_CD in ('0','2') then '기본검사'
+		                    when a.EXMN_DVSN_CD = '1' then '추가검사'
+		                 end
+		        end as CLSF_NM_2
+		     ,  a.ORDR_CD
+		     ,  c.ORDR_NM as CLSF_EMIT_NM_1 
+		     ,  case 
+		            when e.ORDR_CD is not null then d.HLSC_MDFE_AMT /* 내시경은 원가 그대로 */ -- decode(a.EXMN_DVSN_CD, '1', d.HLSC_MDFE_AMT, 0) /* 내시경 검사 수가 */
+		            else case
+		                    when a.EXMN_DVSN_CD in ('0','2') then ( select  sum(x.ALL_AMT) 
+		                                                              from  SMAPKGMDT x
+		                                                              where x.APNT_NO = a.APNT_NO
+		                                                                and x.CNCL_DT is null 
+		                                                                and x.PCKG_EXMN_DVSN_CD = 'P') + ( select  nvl(sum(y.ALL_AMT), 0)
+		                                                                                                     from  SMAPKGMDT y
+		                                                                                                    where  y.APNT_NO = a.APNT_NO
+		                                                                                                      and  y.CNCL_DT is null
+		                                                                                                      and  y.EXMN_DVSN_CD = '3'
+		                                                                                                      and  y.PCKG_EXMN_DVSN_CD = 'E') - ( select nvl(sum(decode(#{hlscMdfeTypeCd}, '4', z.INNN_MDFE_AMT, '5', z.ORGZ_MDFE_AMT, z.HLSC_MDFE_AMT)), 0) 
+		                                                                                                                                           from  SMMSUGAHT z
+		                                                                                                                                              ,  SMARSORDT z1
+		                                                                                                                                          where  z1.ORDR_CD = z.PCKG_EXMN_CD
+		                                                                                                                                            and  z1.APNT_NO = a.APNT_NO
+																																					and  z1.EXMN_DVSN_CD in ('0','2')
+		                                                                                                                                            and  z1.CNCL_DT is null
+		                                                                                                                                            and  z1.PRVL_ORDR_STTS_CD in ('A','B')
+		                                                                                                                                            and  z1.ORDR_CD in ( select z2.ORDR_CD
+		                                                                                                                                                                   from SMMORDGDT z2
+		                                                                                                                                                                  where z2.HLSC_ORDR_GRP_SNO = 22) )
+		                    when a.EXMN_DVSN_CD = '1' then d.HLSC_MDFE_AMT /* 추가검사수가 */
+		                 end
+		        end  as ALL_AMT
+		  from  SMARSORDT a
+		     ,  MDORDRCMT c
+		     ,  ( select  PCKG_EXMN_CD
+		               ,  HLSC_CLSF_CD
+		               ,  APST_YMD
+		               ,  APFN_YMD
+		               ,  decode(#{hlscMdfeTypeCd}, '4', INNN_MDFE_AMT, '5', ORGZ_MDFE_AMT, HLSC_MDFE_AMT) HLSC_MDFE_AMT
+		            from  SMMSUGAHT) d           
+		     ,  SMMORDGDT e /*처방그룹, 부모는 SMMORDGRT*/
+		     ,  SMMPKGMST f
+		     ,  SMARSMAST g
+		 where  a.APNT_NO = #{apntNo}
+		   and  a.PRVL_ORDR_STTS_CD in ('A','B')
+		   and  a.CNCL_DT is null
+		   and  a.ORDR_CD not like 'SM53%'
+		   and  c.ORDR_CD = a.ORDR_CD
+		   and  d.PCKG_EXMN_CD = a.ORDR_CD
+		   and  d.HLSC_CLSF_CD = #{hlscClsfCd}
+		   and  d.APST_YMD <= trunc(sysdate)
+		   and  d.APFN_YMD >= trunc(sysdate)
+		   and  e.HLSC_ORDR_GRP_SNO(+) = 22 /* 세부내역서내시경검사그룹 */
+		   and  e.ORDR_CD(+) = a.ORDR_CD
+		   and  g.APNT_NO = a.APNT_NO
+		   and  f.PCKG_CD = g.PCKG_CD
+		 order 
+		    by  CLSF_NM_2
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn-result" type="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO">
+	
+		<result property="cct" column="CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn"  parameterType="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-selectOneRernYn */
+		       '1'              as CCT
+		  from SMARSMAST a
+		     , SMEREXAMT b
+		 where a.PTNO           = #{ptno}
+		   and a.ORDR_YMD       = #{ordrYmd}
+		   and a.CNCL_DT        is null
+		   and a.HLSC_CLSF_CD   = #{hlscClsfCd}
+		   and b.APNT_NO        = a.APNT_NO
+		   and b.RERN_DVSN_CD   = '3'
+		   and b.RE_EXMN_CD     = #{ordrCd}
+		   and rownum = 1   
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2-result" type="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO">
+	
+		<result property="clsfNm1" column="CLSF_NM_1"/>
+		<result property="clsfNm2" column="CLSF_NM_2"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="clsfEmitNm1" column="CLSF_EMIT_NM_1"/>
+		<result property="allAmt" column="ALL_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2"  parameterType="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpComnHlscApntDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2-result" useCache="true" flushCache="false">
+		<![CDATA[ 
+		select  /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smp-dao-SmpComnHlscApntDAO-listDtlsBkdc2 */
+		       x.CLSF_NM_1
+		     ,  x.CLSF_NM_2
+		     ,  x.ORDR_CD
+		     ,  x.CLSF_EMIT_NM_1
+		     ,  x.ALL_AMT
+		  from  (
+		select          
+		        case
+		          when a.EXMN_DVSN_CD = '0' then f.PCKG_NM
+		          when a.EXMN_DVSN_CD = '2' then '선택검사'
+		          when a.EXMN_DVSN_CD = '1' then '추가검사'          
+		        end as CLSF_NM_1
+		     ,  case 
+		            when e.ORDR_CD is not null then '내시경'
+		            else case
+		                    when a.EXMN_DVSN_CD = '0' then '기본검사'
+		                    when a.EXMN_DVSN_CD = '2' then '선택검사'
+		                    when a.EXMN_DVSN_CD = '1' then '추가검사'
+		                 end
+		        end as CLSF_NM_2
+		     ,  a.ORDR_CD
+		     ,  c.ORDR_NM as CLSF_EMIT_NM_1 
+		     ,  case
+		            when a.EXMN_DVSN_CD = '0' then ( select  sum(x.ALL_AMT) 
+		                                                              from  SMAPKGMDT x
+		                                                              where x.APNT_NO = a.APNT_NO
+		                                                                and x.CNCL_DT is null 
+		                                                                and x.PCKG_EXMN_DVSN_CD = 'P')
+		            when a.EXMN_DVSN_CD = '2' then 0
+		            when a.EXMN_DVSN_CD = '1' then d.HLSC_MDFE_AMT
+		        end  as ALL_AMT
+		     ,  case
+		          when a.EXMN_DVSN_CD = '0' then 'A'
+		          when a.EXMN_DVSN_CD = '2' then 'B'
+		          when a.EXMN_DVSN_CD = '1' then 'C'
+		        end as SORT_SQNC_1
+		     ,  case 
+		            when e.ORDR_CD is not null then 'B'
+		            else case
+		                    when a.EXMN_DVSN_CD = '0' then 'A'
+		                    when a.EXMN_DVSN_CD = '2' then 'C'
+		                    when a.EXMN_DVSN_CD = '1' then 'D'
+		                 end
+		        end as SORT_SQNC_2
+		  from  SMARSORDT a
+		     ,  MDORDRCMT c
+		     ,  ( select  PCKG_EXMN_CD
+		               ,  HLSC_CLSF_CD
+		               ,  APST_YMD
+		               ,  APFN_YMD
+		               ,  decode(#{hlscMdfeTypeCd}, '4', INNN_MDFE_AMT, '5', ORGZ_MDFE_AMT, HLSC_MDFE_AMT) HLSC_MDFE_AMT
+		            from  SMMSUGAHT) d           
+		     ,  SMMORDGDT e /*처방그룹, 부모는 SMMORDGRT*/
+		     ,  SMMPKGMST f
+		     ,  SMARSMAST g     
+		 where  a.APNT_NO = #{apntNo}
+		   and  a.PRVL_ORDR_STTS_CD in ('A','B')
+		   and  a.CNCL_DT is null
+		   and  a.ORDR_CD not like 'SM53%'
+		   and  c.ORDR_CD = a.ORDR_CD   
+		   and  d.PCKG_EXMN_CD = a.ORDR_CD
+		   and  d.HLSC_CLSF_CD = #{hlscClsfCd}
+		   and  d.APST_YMD <= trunc(sysdate)
+		   and  d.APFN_YMD >= trunc(sysdate)
+		   and  e.HLSC_ORDR_GRP_SNO(+) = 22 /* 세부내역서내시경검사그룹 */
+		   and  e.ORDR_CD(+) = a.ORDR_CD
+		   and  g.APNT_NO = a.APNT_NO
+		   and  f.PCKG_CD = g.PCKG_CD
+		 order 
+		    by  SORT_SQNC_2, SORT_SQNC_1) x
+		]]>
+	</select>
+
+
+
+</mapper>

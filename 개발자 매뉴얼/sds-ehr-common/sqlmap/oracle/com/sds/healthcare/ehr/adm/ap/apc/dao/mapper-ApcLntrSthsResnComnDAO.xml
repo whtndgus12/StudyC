@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcLntrSthsResnComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcLntrSthsResnComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-insertLntrSthsResn (처방장기재원사유추가) 
+        Description :                                           처방장기재원사유추가 apd_mdrcl01_i01
+                                                                개발자 : 이선호
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcLntrSthsResnComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-insertLntrSthsResn"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcLntrSthsResnComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-insertLntrSthsResn */
+		  into  APRCLSRST
+		     (
+		        MDRP_NO
+		     ,  PTNO
+		     ,  ADMS_DT
+		     ,  LNTR_STHS_RESN_CD
+		     ,  LNTR_STHS_REET_CTN
+		     ,  CHDR_CNFR_YMD
+		     ,  LNTR_STHS_RGSR_ID
+		     ,  LNTR_STHS_RGST_YMD
+		     ,  HRFT_MDTE_OPNN_CTN
+		     ,  ANTP_DSCH_YMD
+		     ,  MDTE_PLDC_RGSR_ID
+		     ,  MDTE_PLDC_RGST_DT
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values
+		     (
+		        #{mdrpNo}
+		     ,  #{ptno}
+		     ,  to_date(#{admsDt}, 'yyyymmddhh24miss')
+		     ,  decode(#{dvsnCd1}, 'A', #{lntrSthsResnCd},'')
+		     ,  decode(#{dvsnCd1}, 'A', #{lntrSthsReetCtn},'')
+		     ,  decode(#{dvsnCd1}, 'C', sysdate,'')
+		     ,  decode(#{dvsnCd1}, 'A', #{gvUserId}, '')
+		     ,  decode(#{dvsnCd1}, 'A', sysdate, '')
+		     ,  decode(#{dvsnCd1}, 'I', #{hrftMdteOpnnCtn}, '')
+		     ,  decode(#{dvsnCd1}, 'I', to_date(#{antpDschYmd}, 'yyyymmdd'), '')
+		     ,  decode(#{dvsnCd1}, 'I', #{gvUserId}, '')
+		     ,  decode(#{dvsnCd1}, 'I', sysdate, '')
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-updateLntrSthsResn (처방장기재원사유수정) 
+        Description :                                           처방장기재원사유수정 apd_mdrcl01_u01
+                                                                개발자 : 이선호
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcLntrSthsResnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-updateLntrSthsResn"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcLntrSthsResnComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcLntrSthsResnComnDAO-updateLntrSthsResn */
+		        APRCLSRST
+		   set
+		        LNTR_STHS_RESN_CD      = decode(#{dvsnCd1}, 'U', #{lntrSthsResnCd},  LNTR_STHS_RESN_CD)
+		     ,  LNTR_STHS_REET_CTN     = decode(#{dvsnCd1}, 'U', #{lntrSthsReetCtn}, LNTR_STHS_REET_CTN)
+		     ,  CHDR_CNFR_YMD          = decode(#{dvsnCd1}, 'E', sysdate,            CHDR_CNFR_YMD)
+		     ,  LNTR_STHS_RGSR_ID      = decode(#{dvsnCd1}, 'U', #{gvUserId},        LNTR_STHS_RGSR_ID)
+		     ,  LNTR_STHS_RGST_YMD     = decode(#{dvsnCd1}, 'U', sysdate,            LNTR_STHS_RGST_YMD)
+		     ,  HRFT_MDTE_OPNN_CTN     = decode(#{dvsnCd1}, 'M', #{hrftMdteOpnnCtn}, HRFT_MDTE_OPNN_CTN)
+		     ,  ANTP_DSCH_YMD          = decode(#{dvsnCd1}, 'M', to_date(#{antpDschYmd}, 'yyyymmdd'), ANTP_DSCH_YMD)
+		     ,  MDTE_PLDC_RGSR_ID      = decode(#{dvsnCd1}, 'M', #{gvUserId},        MDTE_PLDC_RGSR_ID)
+		     ,  MDTE_PLDC_RGST_DT      = decode(#{dvsnCd1}, 'M', sysdate,            MDTE_PLDC_RGST_DT)
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        MDRP_NO = #{mdrpNo}
+	</update>
+
+</mapper>

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpPtntAscsMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpPtntAscsMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn (대상 환자에게 상병이 등록되어 있는지 여부 조회) 
+        Description :                                           대상 환자에게 상병이 등록되어 있는지 여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn-result" useCache="true" flushCache="false">
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntScinRgstYn */   /*+ mdd_padiagt_s12$S01_상병등록여부조회 단건조회DAM */
+				   decode(count(*), 0, 'N', 'Y') as YN 
+			 from
+				   MDPADIAGT        /*  환자상병내역 */
+			where
+				   PTNO         = #{ptno}
+			  and  MDRP_NO      = #{mdrpNo}
+			  and  MAIN_SCIN_YN like #{mainScinYn} || '%'
+			  and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinNm" column="SCIN_NM"/>
+		<result property="mainScinYn" column="MAIN_SCIN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList (대상 환자의 상병 목록을 조회한다.) 
+        Description :                                           대상 환자의 상병 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList-result" useCache="true" flushCache="false">
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-listPtntScinList */   /*+ mdd_padiagt_l19$S01_처방중환자상병목록조회 다건조회DAM */
+		  		       a.SCIN_CD as SCIN_CD           /*  상병코드 */
+		            ,  a.SCIN_NM as SCIN_NM           /*  상병명 */
+				    ,  a.MAIN_SCIN_YN as MAIN_SCIN_YN      /*  주상병여부 */
+			 from
+				      MDPADIAGT a  /*  환자상병내역 */
+			where
+				      a.MDRP_NO = #{mdrpNo}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn (대상 환자 52개 차등 상병 여부 조회) 
+        Description :                                           대상 환자 52개 차등 상병 여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		  select  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtnt52GrddScinYn */ /*+ mdd_aprcrpt_s18$S01_진료52개상병차등여부 단건조회DAM */  
+		            'Y' as YN
+		   from
+		             APRCRPTNT    /* 진료접수 */
+		  where
+		             MDRP_NO = #{mdrpNo}
+		     and  MDCR_GR52_YN in ('Y', 'I')		   
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52OrdrScinYn (진료접수 테이블의 52개상병 차등여부 Update) 
+        Description :                                           진료접수 테이블의 52개상병 차등여부 Update
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52OrdrScinYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  >
+		update  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52OrdrScinYn */ /*+ apd_mdrcrpt_u02$I01_진료52개상병차등여부 단건수정DAM */		  
+		                APRCRPTNT        /* 진료접수 */
+		           set
+		                MDCR_GR52_YN           = #{mdcrGr52Yn}		   
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = current_timestamp
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		         where
+		                MDRP_NO = #{mdrpNo}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn (환자 52 차등 질환 메시지 SKIP 여부 insert, update 를 위한 값 체크) 
+        Description :                                           환자 52 차등 질환 메시지 SKIP 여부 insert, update 를 위한 값 체크
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntGrddDissMesgSkipYn */
+		           case when count(ptno) &gt; 0 then 'Y' else 'N' end YN
+		  from  MDSKIPMGT
+		where  MESG_SKIP_DVSN_CD = #{mesgSkipDvsnCd}
+		   and  PTNO = #{ptno}
+		   and  MDDR_ID = #{mddrId}
+		   and  SCIN_CD = #{scinCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-insertPtnt52GrddDissMesgSkip (환자 52 차등 질환 메시지 SKIP insert) 
+        Description :                                           환자 52 차등 질환 메시지 SKIP insert
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-insertPtnt52GrddDissMesgSkip"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  >
+		   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-insertPtnt52GrddDissMesgSkip */   /*+ mdd_skipmgt_i01$I01_52개 차등질환 메세지SKIP목록 등록 */
+			 into MDSKIPMGT
+				  (
+				   MESG_SKIP_DVSN_CD          /*  메시지Skip구분코드 */
+				 , PTNO                       /*  환자번호 */
+				 , MDDR_ID                    /*  진료의사ID */
+				 , SCIN_CD                    /*  상병코드 */
+				 , MDCR_WODV_CD               /*  진료작업구분코드 */
+				 , FRST_RGSR_ID               /*  최초등록자ID */
+				 , FRST_RGST_IP               /*  최초등록IP */
+				 , FRST_RGST_DT               /*  최초등록일시 */
+				 , FRST_RGST_CLNT_PRGM_ID          /*  최초등록SMC클라이언트프로그램ID */
+				 , FRST_RGST_SRVR_PRGM_ID          /*  최초등록SMC서버프로그램ID */
+				 , LAST_UPDR_ID               /*  최종수정자ID */
+				 , LAST_UPDT_IP               /*  최종수정IP */
+				 , LAST_UPDT_DT               /*  최종수정일시 */
+				 , LAST_UPDT_CLNT_PRGM_ID          /*  최종수정SMC클라이언트프로그램ID */
+				 , LAST_UPDT_SRVR_PRGM_ID          /*  최종수정SMC서버프로그램ID */
+				  )
+		   values (
+				   #{mesgSkipDvsnCd}
+				 , #{ptno}
+				 , #{mddrId}
+				 , #{scinCd}
+				 , #{mdcrWodvCd}
+				 , #{gvUserId}
+				 , #{gvUserIp}
+				 , sysdate
+				 , #{gvClntPrgmId}
+				 , #{gvSrvrPrgmId}
+				 , #{gvUserId}
+				 , #{gvUserIp}
+				 , sysdate
+				 , #{gvClntPrgmId}
+				 , #{gvSrvrPrgmId}
+				  )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52GrddDissMesgSkip (환자 52 차등 질환 메시지 SKIP Update) 
+        Description :                                           환자 52 차등 질환 메시지 SKIP Update
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52GrddDissMesgSkip"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-updatePtnt52GrddDissMesgSkip */   /*+ mdd_skipmgt_u02$U01_52개 차등질환 메세지SKIP목록 수정 */
+				  MDSKIPMGT
+			 set  MDCR_WODV_CD       = #{mdcrWodvCd}       /*  진료작업구분코드 */
+				, LAST_UPDR_ID       = #{gvUserId}    /*  최종수정자ID */
+				, LAST_UPDT_IP       = #{gvUserIp}         /*  최종수정IP */
+				, LAST_UPDT_DT       = sysdate             /*  최종수정일시 */
+				, LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}        /*  최종수정SMC클라이언트프로그램ID */
+				, LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}        /*  최종수정SMC서버프로그램ID */
+			where
+				  MESG_SKIP_DVSN_CD  = #{mesgSkipDvsnCd}  /*  메시지Skip구분코드 */
+			  and PTNO               = #{ptno}
+			  and MDDR_ID            = #{mddrId}
+			  and SCIN_CD            = #{scinCd}
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="mdbeIstyCd" column="MDBE_ISTY_CD"/>
+		<result property="mdafIstyCd" column="MDAF_ISTY_CD"/>
+		<result property="mdbeIstyAsstCd" column="MDBE_ISTY_ASST_CD"/>
+		<result property="mdafIstyAsstCd" column="MDAF_ISTY_ASST_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual-result" useCache="true" flushCache="false">
+		   select  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneMdpPtntAscsMngmDual */ 
+		           '' as MDBE_ISTY_CD
+		        ,  '' as MDAF_ISTY_CD
+		        ,  '' as MDBE_ISTY_ASST_CD
+		        ,  '' as MDAF_ISTY_ASST_CD
+		        ,  '' as RMRK_CTN            	   
+		      		 from
+		                   dual	
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn (환자의 환자참고내용을 조회하여 산정특례 거부 여부를 조회한다.) 
+        Description :                                           환자의 환자참고내용을 조회하여 산정특례 거부 여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn-result" useCache="true" flushCache="false">
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntAscsRfslYn_환자체크사항및메모 조회 */
+				   case when PTNT_RFRC_CTN is null then 'N'
+				        else 'Y' end as YN
+			 from
+				   APPTCECKT    /*  환자체크사항 */
+			where
+				   PTNO              = #{ptno}
+			  and  PTNT_RFRC_CLSF_CD = #{ptntRfrcClsfCd}
+			  and  CNCL_DT          is null
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="ascsAplyBaseCd" column="ASCS_APLY_BASE_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="ascsAplyBaseNm" column="ASCS_APLY_BASE_NM"/>
+		<result property="ascsScinClsfCd" column="ASCS_SCIN_CLSF_CD"/>
+		<result property="hlinAplyYn" column="HLIN_APLY_YN"/>
+		<result property="mdadAplyYn" column="MDAD_APLY_YN"/>
+		<result property="strtScinCd" column="STRT_SCIN_CD"/>
+		<result property="fnshScinCd" column="FNSH_SCIN_CD"/>
+		<result property="spsdId" column="SPSD_ID"/>
+		<result property="istyAsstCd" column="ISTY_ASST_CD"/>
+		<result property="hcrdYn" column="HCRD_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="onbrRt" column="ONBR_RT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm (산정특례 적용상병정보를 조회) 
+        Description :                                           산정특례 적용상병정보를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOneAscsAplyScinInfm_산정특례 적용상병정보 조회 */
+				  a.ASCS_APLY_BASE_CD as ASCS_APLY_BASE_CD   /*  산정특례적용기준코드 */
+				, to_char(a.APST_YMD,'yyyymmdd') as APST_YMD            /*  적용시작일자 */
+				, to_char(a.APFN_YMD,'yyyymmdd') as APFN_YMD            /*  적용종료일자 */
+				, a.ASCS_APLY_BASE_NM as ASCS_APLY_BASE_NM   /*  산정특례적용기준명 */
+				, a.ASCS_SCIN_CLSF_CD as ASCS_SCIN_CLSF_CD   /*  산정특례상병분류코드 */
+				, a.HLIN_APLY_YN as HLIN_APLY_YN        /*  건강보험적용여부 */
+				, a.MDAD_APLY_YN as MDAD_APLY_YN        /*  의료급여적용여부 */
+				, a.STRT_SCIN_CD as STRT_SCIN_CD        /*  시작상병코드 */
+				, a.FNSH_SCIN_CD as FNSH_SCIN_CD        /*  종료상병코드 */
+				, a.SPSD_ID as SPSD_ID             /*  특정기호ID */
+				, a.ISTY_ASST_CD as ISTY_ASST_CD        /*  보험유형보조코드 */
+				, a.HCRD_YN as HCRD_YN             /*  H카드여부 */
+				, a.RMRK_CTN as RMRK_CTN            /*  비고내용 */
+				, #{scinCd} as SCIN_CD             /*  상병코드 */
+				, nvl(b.ONBR_RT, 100) as ONBR_RT             /*  본인부담율 */
+			 from AIIMASABT a
+				, AIMFAPRTT b    /*  보험유형별 적용율 */
+			where 1=1
+			  and (((#{ascsScinClsfCd} = 'A') and
+				   (a.ASCS_SCIN_CLSF_CD in ('A', decode(#{codvCd}, 'I','I', 'O','O', ''))))   /*  외래 O, 입원 I 만 대상 */
+				  or
+				  ((#{ascsScinClsfCd} <> 'A') and
+				   (a.ASCS_SCIN_CLSF_CD = #{ascsScinClsfCd})))
+			  and ((#{scinCd} is null) or
+				   (nvl(#{scinCd}, a.STRT_SCIN_CD) >= a.STRT_SCIN_CD))
+			  and ((#{scinCd} is null) or
+				   (nvl(#{scinCd}, a.STRT_SCIN_CD) < a.FNSH_SCIN_CD))
+			  and ((#{spsdId} is null) or
+				   (a.SPSD_ID = #{spsdId}))
+			  and nvl(to_date(#{baseYmd}, 'yyyymmdd'), trunc(sysdate)) between a.APST_YMD
+																							 and a.APFN_YMD
+			  and b.ISTY_CD(+)        = #{istyCd}
+			  and b.ISTY_ASST_CD(+)   = a.ISTY_ASST_CD
+			  and nvl(to_date(#{baseYmd}, 'yyyymmdd'), trunc(sysdate)) between b.APST_YMD(+)
+																							 and b.APFN_YMD(+)
+			  and b.ONBR_APDV_CD(+)   = decode(#{codvCd}, 'I','II', 'O','OO')
+			  and rownum = 1
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn (주상병의 유형에 해당하는 처방여부를 조회) 
+        Description :                                           주상병의 유형에 해당하는 처방여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntAscsMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntAscsMngmDAO-selectOnePtntMainScinTypeOrdrYn_주상병의 유형에 해당하는 처방이 내려졌는지 체크 */
+				   'Y' as YN
+			 from   (
+					 select PTNO  , MDRP_NO, DC_DVSN_CD, ORDR_CD, ORDR_YMD from MDMEDORDT
+					 union
+					 select PTNO  , MDRP_NO, DC_DVSN_CD, ORDR_CD, ORDR_YMD from MDTRTORDT
+					 union
+					 select PTNO  , MDRP_NO, DC_DVSN_CD, ORDR_CD, ORDR_YMD from MDEXMORDT
+					) a
+				,   AIMFMDFET b
+				,   AIIMASABT c    /*  산정특례적용기준코드 */
+			where  1 = 1
+			  and  a.MDRP_NO         = #{mdrpNo}
+			  and  a.DC_DVSN_CD = 'N'	
+			  and  a.ORDR_CD         = b.MDFE_CD
+			  and  a.ORDR_YMD        between b.APST_YMD and b.APFN_YMD
+			  and  c.ASCS_SCIN_CLSF_CD      = #{ascsScinClsfCd}
+			  and  c.SCIN_EDID_CD    = '2' /*  EDI */
+			  and  b.INSR_EDI_CD     = c.EDI_CD
+			  and  a.ORDR_YMD        between nvl(c.APST_YMD, to_date('19950101', 'yyyymmdd'))
+										 and nvl(c.APFN_YMD, to_date('29991231', 'yyyymmdd'))
+			  and  rownum < 2
+			]]>
+	</select>
+
+
+
+</mapper>

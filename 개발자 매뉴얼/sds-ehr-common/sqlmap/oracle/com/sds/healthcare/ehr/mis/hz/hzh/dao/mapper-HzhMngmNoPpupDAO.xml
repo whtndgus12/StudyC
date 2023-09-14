@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhMngmNoPpupDAO_sql.xml 
+    Description :                                      관리번호 목록조회_팝업용 DAO
+                  -->
+<mapper namespace="HzhMngmNoPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="giveTrgtMngmDvsnCd" column="GIVE_TRGT_MNGM_DVSN_CD"/>
+		<result property="giveTrgtMngmDvsnNm" column="GIVE_TRGT_MNGM_DVSN_NM"/>
+		<result property="giveTrgtMngmNo" column="GIVE_TRGT_MNGM_NO"/>
+		<result property="giveTrgtMngmInstNm" column="GIVE_TRGT_MNGM_INST_NM"/>
+		<result property="depstAcntNo" column="DEPST_ACNT_NO"/>
+		<result property="pmntAcntNo" column="PMNT_ACNT_NO"/>
+		<result property="rgstRqstYmd" column="RGST_RQST_YMD"/>
+		<result property="rgstRqprId" column="RGST_RQPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="kornDprtNm1" column="KORN_DPRT_NM_1"/>
+		<result property="rgstRqstDprtCd" column="RGST_RQST_DPRT_CD"/>
+		<result property="kornDprtNm2" column="KORN_DPRT_NM_2"/>
+		<result property="useYn" column="USE_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup (관리번호 목록조회_팝업용) 
+        Description :                                           hzd_gitract_l01$S01_관리번호_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-pagingMngmNoPpup */
+		<![CDATA[
+		select
+		  RNUM                   
+		 ,RNUM as SQNC
+		 ,GIVE_TRGT_MNGM_DVSN_CD
+		 ,GIVE_TRGT_MNGM_DVSN_NM
+		 ,GIVE_TRGT_MNGM_NO      
+		 ,GIVE_TRGT_MNGM_INST_NM 
+		 ,DEPST_ACNT_NO          
+		 ,PMNT_ACNT_NO           
+		 ,RGST_RQST_YMD          
+		 ,RGST_RQPR_ID           
+		 ,USER_NM                
+		 ,KORN_DPRT_NM_1         
+		 ,RGST_RQST_DPRT_CD      
+		 ,KORN_DPRT_NM_2         
+		 ,USE_YN 
+		from(
+		    select  
+		            rownum                   RNUM                    -- 순서
+		         ,  x.GIVE_TRGT_MNGM_DVSN_CD GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		         ,  x.GIVE_TRGT_MNGM_DVSN_NM GIVE_TRGT_MNGM_DVSN_NM -- 지급대상관리구분명
+		         ,  x.GIVE_TRGT_MNGM_NO      GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		         ,  x.GIVE_TRGT_MNGM_INST_NM GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		         ,  x.DEPST_ACNT_NO          DEPST_ACNT_NO          -- 계좌번호(예금)
+		         ,  x.PMNT_ACNT_NO           PMNT_ACNT_NO           -- 계좌번호(어음)
+		         ,  x.RGST_RQST_YMD          RGST_RQST_YMD          -- 등록요청일자
+		         ,  x.RGST_RQPR_ID           RGST_RQPR_ID           -- 등록요청자ID
+		         ,  x.USER_NM                USER_NM                -- 사용자명
+		         ,  x.KORN_DPRT_NM_1         KORN_DPRT_NM_1         -- 사용자부서명
+		         ,  x.RGST_RQST_DPRT_CD      RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		         ,  x.KORN_DPRT_NM_2         KORN_DPRT_NM_2         -- 등록요청부서명
+		         ,  x.USE_YN                 USE_YN                 -- 사용여부
+		      from
+		           (select
+						    m.GIVE_TRGT_MNGM_DVSN_CD GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+						 ,  z.COMN_CD_NM             GIVE_TRGT_MNGM_DVSN_NM -- 지급대상관리구분명
+						 ,  m.GIVE_TRGT_MNGM_NO      GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                 ,  m.GIVE_TRGT_MNGM_INST_NM GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                 ,  m.DEPST_ACNT_NO          DEPST_ACNT_NO          -- 계좌번호(예금)
+		                 ,  m.PMNT_ACNT_NO           PMNT_ACNT_NO           -- 계좌번호(어음)
+		                 ,  m.RGST_RQST_YMD          RGST_RQST_YMD          -- 등록요청일자
+		                 ,  m.RGST_RQPR_ID           RGST_RQPR_ID           -- 등록요청자ID
+		                 ,  m.USER_NM                USER_NM                -- 사용자명
+		                 ,  m.KORN_DPRT_NM_1         KORN_DPRT_NM_1         -- 사용자부서명
+		                 ,  m.RGST_RQST_DPRT_CD      RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                 ,  m.KORN_DPRT_NM_2         KORN_DPRT_NM_2         -- 등록요청부서명
+		                 ,  m.USE_YN                 USE_YN                 -- 사용여부
+		              from
+		                   (select
+		                            a.GIVE_TRGT_MNGM_DVSN_CD            GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		                         ,  a.GIVE_TRGT_MNGM_NO                 GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                         ,  a.GIVE_TRGT_MNGM_INST_NM            GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                         ,  a.DEPST_ACNT_NO                     DEPST_ACNT_NO          -- 계좌번호(예금)
+		                         ,  a.PMNT_ACNT_NO                      PMNT_ACNT_NO           -- 계좌번호(어음)
+		                         ,  to_char(a.FRST_RGST_DT, 'YYYYMMDD') RGST_RQST_YMD          -- 등록요청일자
+		                         ,  a.FRST_RGSR_ID                      RGST_RQPR_ID           -- 등록요청자ID
+		                         ,  '' USER_NM --b.EMPY_NM                           USER_NM                -- 사용자명
+		                         ,  '' KORN_DPRT_NM_1 --d.KORN_DPRT_NM                      KORN_DPRT_NM_1         -- 사용자부서명
+		                         ,  a.RGST_RQST_DPRT_CD                 RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                         ,  c.KORN_DPRT_NM                      KORN_DPRT_NM_2         -- 등록요청부서명
+		                         ,  a.USE_YN                            USE_YN                 -- 사용여부
+		                      from
+		                            HMGITRACT a -- 지급대상계좌번호
+		                         --,  HZUSERMMT b -- (HZ)사원IF
+		                         ,  HZDEPTMMT c -- (HZ)조직IF
+		                         --,  HZDEPTMMT d -- (HZ)조직IF[]
+		                     where
+		                            a.BSPL_CD                   = #{bsplCd}                                -- 사업장코드
+		                       and  a.GIVE_TRGT_MNGM_NO      like '%' || #{srchCdNm} || '%'               -- 지급대상관리번호
+		                       and  a.USE_YN                    = 'Y'                                                        -- 사용여부
+		                       --and  a.DEPST_CNFR_RSLT_CD        = '0000'
+		                       and  decode((select count(*)
+		                                      from hzmicocdt t
+		                                     where t.comn_grp_cd = 'GA933'
+		                                       and t.mis_comn_cd=  a.GIVE_TRGT_MNGM_NO),'0',a.DEPST_CNFR_RSLT_CD
+		                                                                                   ,'0000'
+		                                  ) = '0000'
+		                       and  a.GIVE_TRGT_MNGM_DVSN_CD like #{dvsnVl} || '%'                         -- 지급대상관리구분코드[GA017]]
+		                       --and  b.EMNO                      = a.FRST_RGSR_ID                                             -- 등록요청자ID
+		                       and  c.DPRT_CD                   = a.RGST_RQST_DPRT_CD                                        -- 부서코드
+		                       --and  d.DPRT_CD                   = b.ORGL_BLNG_DPRT_CD                                                  -- 사용자부서코드
+		                       and  #{srchCd} = 'C'                                                        -- 검색코드[C:지급대상관리번호]
+		                       and  ((substr(a.GIVE_TRGT_MNGM_NO, 1, 6) in (select  x.MIS_COMN_CD
+		                                                                      from  HZMICOCDT x
+		                                                                     where  x.COMN_GRP_CD = 'GA944'
+		                                                                   )
+		                              and a.GIVE_TRGT_MNGM_DVSN_CD      = '4')
+		                              or a.GIVE_TRGT_MNGM_DVSN_CD     <> '4')
+		                     union  all
+		                    select
+		                            a.GIVE_TRGT_MNGM_DVSN_CD            GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		                         ,  a.GIVE_TRGT_MNGM_NO                 GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                         ,  a.GIVE_TRGT_MNGM_INST_NM            GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                         ,  a.DEPST_ACNT_NO                     DEPST_ACNT_NO          -- 계좌번호(예금)
+		                         ,  a.PMNT_ACNT_NO                      PMNT_ACNT_NO           -- 계좌번호(어음)
+		                         ,  to_char(a.FRST_RGST_DT, 'YYYYMMDD') RGST_RQST_YMD          -- 등록요청일자
+		                         ,  a.FRST_RGSR_ID                      RGST_RQPR_ID           -- 등록요청자ID
+		                         ,  '' USER_NM --b.EMPY_NM                           USER_NM                -- 사용자명
+		                         ,  '' KORN_DPRT_NM_1 --d.KORN_DPRT_NM                      KORN_DPRT_NM_1         -- 사용자부서명
+		                         ,  a.RGST_RQST_DPRT_CD                 RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                         ,  c.KORN_DPRT_NM                      KORN_DPRT_NM_2         -- 등록요청부서명
+		                         ,  a.USE_YN                            USE_YN                 -- 사용여부
+		                      from
+		                            HMGITRACT a -- 지급대상계좌번호
+		                         --,  HZUSERMMT b -- (HZ)사원IF
+		                         ,  HZDEPTMMT c -- (HZ)조직IF[등록요청부서코드]
+		                         --,  HZDEPTMMT d -- (HZ)조직IF[사용자부서코드]
+		                     where
+		                            a.BSPL_CD                   = #{bsplCd}                                -- 사업장코드
+		                       and  a.GIVE_TRGT_MNGM_INST_NM like '%' || #{srchCdNm} || '%'               -- 지급대상관리번호
+		                       and  a.USE_YN                    = 'Y'                                                        -- 사용여부
+		                       --and  a.DEPST_CNFR_RSLT_CD        = '0000'
+		                       and  decode((select count(*)
+		                                      from hzmicocdt t
+		                                     where t.comn_grp_cd = 'GA933'
+		                                       and t.mis_comn_cd=  a.GIVE_TRGT_MNGM_NO),'0',a.DEPST_CNFR_RSLT_CD
+		                                                                                   ,'0000'
+		                                  ) = '0000'
+		                       and  a.GIVE_TRGT_MNGM_DVSN_CD like #{dvsnVl} || '%'                         -- 지급대상관리구분코드[GA017]]
+		                       --and  b.EMNO                      = a.FRST_RGSR_ID                                             -- 등록요청자ID
+		                       and  c.DPRT_CD                   = a.RGST_RQST_DPRT_CD                                        -- 부서코드
+		                       --and  d.DPRT_CD                   = b.ORGL_BLNG_DPRT_CD                                                  -- 사용자부서코드
+		                       and  #{srchCd} = 'N'                                                        -- 검색코드[N:지급대상관리기관명]
+		                       and  ((substr(a.GIVE_TRGT_MNGM_NO, 1, 6) in (select  x.MIS_COMN_CD
+		                                                                         from  HZMICOCDT x
+		                                                                        where  x.COMN_GRP_CD = 'GA944'
+		                                                                   )
+		                            and a.GIVE_TRGT_MNGM_DVSN_CD      = '4')
+		                            or a.GIVE_TRGT_MNGM_DVSN_CD     <> '4')
+		                   ) m
+		                   , HZMICOCDT z /* MIS공통코드 */
+		             where  z.BSPL_CD    (+) = #{bsplCd}
+		               and  z.COMN_GRP_CD(+) = 'GA017'    /*지급계좌 대상구분 */
+		               and  z.MIS_COMN_CD(+) = m.GIVE_TRGT_MNGM_DVSN_CD
+		             order
+		                by  case #{srchCd} when 'C' then m.GIVE_TRGT_MNGM_NO else m.GIVE_TRGT_MNGM_INST_NM end  asc
+		           ) x
+		)
+		 where RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)
+		    and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup (관리번호 목록조회 개수조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhMngmNoPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhMngmNoPpupDAO-selectOneMngmNoPpup */
+		 count(*) AS TOTAL_DATA_COUNT
+		 from
+		(
+		    select  
+		            rownum                   SQNC                   -- 순서
+		         ,  x.GIVE_TRGT_MNGM_DVSN_CD GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		         ,  x.GIVE_TRGT_MNGM_DVSN_NM GIVE_TRGT_MNGM_DVSN_NM -- 지급대상관리구분명
+		         ,  x.GIVE_TRGT_MNGM_NO      GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		         ,  x.GIVE_TRGT_MNGM_INST_NM GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		         ,  x.DEPST_ACNT_NO          DEPST_ACNT_NO          -- 계좌번호(예금)
+		         ,  x.PMNT_ACNT_NO           PMNT_ACNT_NO           -- 계좌번호(어음)
+		         ,  x.RGST_RQST_YMD          RGST_RQST_YMD          -- 등록요청일자
+		         ,  x.RGST_RQPR_ID           RGST_RQPR_ID           -- 등록요청자ID
+		         ,  x.USER_NM                USER_NM                -- 사용자명
+		         ,  x.KORN_DPRT_NM_1         KORN_DPRT_NM_1         -- 사용자부서명
+		         ,  x.RGST_RQST_DPRT_CD      RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		         ,  x.KORN_DPRT_NM_2         KORN_DPRT_NM_2         -- 등록요청부서명
+		         ,  x.USE_YN                 USE_YN                 -- 사용여부
+		      from
+		           (select
+						    m.GIVE_TRGT_MNGM_DVSN_CD GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+						 ,  z.COMN_CD_NM             GIVE_TRGT_MNGM_DVSN_NM -- 지급대상관리구분명
+						 ,  m.GIVE_TRGT_MNGM_NO      GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                 ,  m.GIVE_TRGT_MNGM_INST_NM GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                 ,  m.DEPST_ACNT_NO          DEPST_ACNT_NO          -- 계좌번호(예금)
+		                 ,  m.PMNT_ACNT_NO           PMNT_ACNT_NO           -- 계좌번호(어음)
+		                 ,  m.RGST_RQST_YMD          RGST_RQST_YMD          -- 등록요청일자
+		                 ,  m.RGST_RQPR_ID           RGST_RQPR_ID           -- 등록요청자ID
+		                 ,  m.USER_NM                USER_NM                -- 사용자명
+		                 ,  m.KORN_DPRT_NM_1         KORN_DPRT_NM_1         -- 사용자부서명
+		                 ,  m.RGST_RQST_DPRT_CD      RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                 ,  m.KORN_DPRT_NM_2         KORN_DPRT_NM_2         -- 등록요청부서명
+		                 ,  m.USE_YN                 USE_YN                 -- 사용여부
+		              from
+		                   (select
+		                            a.GIVE_TRGT_MNGM_DVSN_CD            GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		                         ,  a.GIVE_TRGT_MNGM_NO                 GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                         ,  a.GIVE_TRGT_MNGM_INST_NM            GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                         ,  a.DEPST_ACNT_NO                     DEPST_ACNT_NO          -- 계좌번호(예금)
+		                         ,  a.PMNT_ACNT_NO                      PMNT_ACNT_NO           -- 계좌번호(어음)
+		                         ,  to_char(a.FRST_RGST_DT, 'YYYYMMDD') RGST_RQST_YMD          -- 등록요청일자
+		                         ,  a.FRST_RGSR_ID                      RGST_RQPR_ID           -- 등록요청자ID
+		                         ,  '' USER_NM --b.EMPY_NM                           USER_NM                -- 사용자명
+		                         ,  '' KORN_DPRT_NM_1 --d.KORN_DPRT_NM                      KORN_DPRT_NM_1         -- 사용자부서명
+		                         ,  a.RGST_RQST_DPRT_CD                 RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                         ,  c.KORN_DPRT_NM                      KORN_DPRT_NM_2         -- 등록요청부서명
+		                         ,  a.USE_YN                            USE_YN                 -- 사용여부
+		                      from
+		                            HMGITRACT a -- 지급대상계좌번호
+		                         --,  HZUSERMMT b -- (HZ)사원IF
+		                         ,  HZDEPTMMT c -- (HZ)조직IF
+		                         --,  HZDEPTMMT d -- (HZ)조직IF[]
+		                     where
+		                            a.BSPL_CD                   = #{bsplCd}                                -- 사업장코드
+		                       and  a.GIVE_TRGT_MNGM_NO      like '%' || #{srchCdNm} || '%'               -- 지급대상관리번호
+		                       and  a.USE_YN                    = 'Y'                                                        -- 사용여부
+		                       --and  a.DEPST_CNFR_RSLT_CD        = '0000'
+		                       and  decode((select count(*)
+		                                      from hzmicocdt t
+		                                     where t.comn_grp_cd = 'GA933'
+		                                       and t.mis_comn_cd=  a.GIVE_TRGT_MNGM_NO),'0',a.DEPST_CNFR_RSLT_CD
+		                                                                                   ,'0000'
+		                                  ) = '0000'
+		                       and  a.GIVE_TRGT_MNGM_DVSN_CD like #{dvsnVl} || '%'                         -- 지급대상관리구분코드[GA017]]
+		                       --and  b.EMNO                      = a.FRST_RGSR_ID                                             -- 등록요청자ID
+		                       and  c.DPRT_CD                   = a.RGST_RQST_DPRT_CD                                        -- 부서코드
+		                       --and  d.DPRT_CD                   = b.ORGL_BLNG_DPRT_CD                                                  -- 사용자부서코드
+		                       and  #{srchCd} = 'C'                                                        -- 검색코드[C:지급대상관리번호]
+		                       and  ((substr(a.GIVE_TRGT_MNGM_NO, 1, 6) in (select  x.MIS_COMN_CD
+		                                                                      from  HZMICOCDT x
+		                                                                     where  x.COMN_GRP_CD = 'GA944'
+		                                                                   )
+		                              and a.GIVE_TRGT_MNGM_DVSN_CD      = '4')
+		                              or a.GIVE_TRGT_MNGM_DVSN_CD     <> '4')
+		                     union  all
+		                    select
+		                            a.GIVE_TRGT_MNGM_DVSN_CD            GIVE_TRGT_MNGM_DVSN_CD -- 지급대상관리구분코드
+		                         ,  a.GIVE_TRGT_MNGM_NO                 GIVE_TRGT_MNGM_NO      -- 지급대상관리번호
+		                         ,  a.GIVE_TRGT_MNGM_INST_NM            GIVE_TRGT_MNGM_INST_NM -- 지급대상관리기관명
+		                         ,  a.DEPST_ACNT_NO                     DEPST_ACNT_NO          -- 계좌번호(예금)
+		                         ,  a.PMNT_ACNT_NO                      PMNT_ACNT_NO           -- 계좌번호(어음)
+		                         ,  to_char(a.FRST_RGST_DT, 'YYYYMMDD') RGST_RQST_YMD          -- 등록요청일자
+		                         ,  a.FRST_RGSR_ID                      RGST_RQPR_ID           -- 등록요청자ID
+		                         ,  '' USER_NM --b.EMPY_NM                           USER_NM                -- 사용자명
+		                         ,  '' KORN_DPRT_NM_1 --d.KORN_DPRT_NM                      KORN_DPRT_NM_1         -- 사용자부서명
+		                         ,  a.RGST_RQST_DPRT_CD                 RGST_RQST_DPRT_CD      -- 등록요청부서코드
+		                         ,  c.KORN_DPRT_NM                      KORN_DPRT_NM_2         -- 등록요청부서명
+		                         ,  a.USE_YN                            USE_YN                 -- 사용여부
+		                      from
+		                            HMGITRACT a -- 지급대상계좌번호
+		                         --,  HZUSERMMT b -- (HZ)사원IF
+		                         ,  HZDEPTMMT c -- (HZ)조직IF[등록요청부서코드]
+		                         --,  HZDEPTMMT d -- (HZ)조직IF[사용자부서코드]
+		                     where
+		                            a.BSPL_CD                   = #{bsplCd}                                -- 사업장코드
+		                       and  a.GIVE_TRGT_MNGM_INST_NM like '%' || #{srchCdNm} || '%'               -- 지급대상관리번호
+		                       and  a.USE_YN                    = 'Y'                                                        -- 사용여부
+		                       --and  a.DEPST_CNFR_RSLT_CD        = '0000'
+		                       and  decode((select count(*)
+		                                      from hzmicocdt t
+		                                     where t.comn_grp_cd = 'GA933'
+		                                       and t.mis_comn_cd=  a.GIVE_TRGT_MNGM_NO),'0',a.DEPST_CNFR_RSLT_CD
+		                                                                                   ,'0000'
+		                                  ) = '0000'
+		                       and  a.GIVE_TRGT_MNGM_DVSN_CD like #{dvsnVl} || '%'                         -- 지급대상관리구분코드[GA017]]
+		                       --and  b.EMNO                      = a.FRST_RGSR_ID                                             -- 등록요청자ID
+		                       and  c.DPRT_CD                   = a.RGST_RQST_DPRT_CD                                        -- 부서코드
+		                       --and  d.DPRT_CD                   = b.ORGL_BLNG_DPRT_CD                                                  -- 사용자부서코드
+		                       and  #{srchCd} = 'N'                                                        -- 검색코드[N:지급대상관리기관명]
+		                       and  ((substr(a.GIVE_TRGT_MNGM_NO, 1, 6) in (select  x.MIS_COMN_CD
+		                                                                         from  HZMICOCDT x
+		                                                                        where  x.COMN_GRP_CD = 'GA944'
+		                                                                   )
+		                            and a.GIVE_TRGT_MNGM_DVSN_CD      = '4')
+		                            or a.GIVE_TRGT_MNGM_DVSN_CD     <> '4')
+		                   ) m
+		                   , HZMICOCDT z /* MIS공통코드 */
+		             where  z.BSPL_CD    (+) = #{bsplCd}
+		               and  z.COMN_GRP_CD(+) = 'GA017'    /*지급계좌 대상구분 */
+		               and  z.MIS_COMN_CD(+) = m.GIVE_TRGT_MNGM_DVSN_CD
+		             order
+		                by  case #{srchCd} when 'C' then m.GIVE_TRGT_MNGM_NO else m.GIVE_TRGT_MNGM_INST_NM end  asc
+		           ) x
+		)
+		]]>
+	</select>
+
+
+
+</mapper>

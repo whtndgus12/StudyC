@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsPgexrmtDAO_sql.xml 
+    Description :                                      프로그램 실행권한
+                  -->
+<mapper namespace="CcsPgexrmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsPgexrmtDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="athrCndtId" column="ATHR_CNDT_ID"/>
+		<result property="athrCndtItemId" column="ATHR_CNDT_ITEM_ID"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt () 
+        Description :                                           ASIS : CsdPgexrmtL02DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsPgexrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsPgexrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPgexrmtDAO-listPgexrmt */
+		 select  /*+ csd_pgexrmt_l02$S01_프로그램 실행권한 조건 조회 */
+						   PRGM_ID as PRGM_ID,
+						   ATHR_CNDT_GRP_ID as ATHR_CNDT_ID,
+						   ATHR_CNDT_ITEM_ID as ATHR_CNDT_ITEM_ID,
+						   CNDT_OPRR_CD as CNDT_OPRR_CD,
+						   CNDT_TRGT_ITEM_VL as CNDT_TRGT_ITEM_VL,
+						   CNDT_TRGT_ITEM_CD as CNDT_TRGT_ITEM_CD
+					 from  CSEARCIMT
+					where  PRGM_ID = #{prgmId}
+					  and  APST_DT < sysdate
+					  and  APFN_DT > sysdate
+		]]>
+							  
+					<if test='isHospModule !=null and isHospModule == "Y"'>
+			  		  and  (( nvl(PRGM_ID,'*') = '*') or PRGM_ID in (					  
+							  													select B.PRGM_ID
+										 										 from CSMHSPMOT A
+		    																			,CSMMDPRGT B
+																				where A.MODU_ID = B.MODU_ID
+		  																		   and A.USE_YN = 'Y'
+		  																		   and A.USE_YN = #{isHospModule}   
+		  																		   and B.PRGM_ID = #{prgmId}
+		  																	))
+					</if>
+					  
+				   order by PRGM_ID, ATHR_CNDT_GRP_ID, ATHR_CNDT_ITEM_ID
+
+			
+			
+	</select>
+
+
+
+</mapper>

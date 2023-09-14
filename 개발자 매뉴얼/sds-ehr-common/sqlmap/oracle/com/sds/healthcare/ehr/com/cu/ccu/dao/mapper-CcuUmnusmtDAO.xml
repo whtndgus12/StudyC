@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUmnusmtDAO_sql.xml 
+    Description :                                      사용자 메뉴
+                  -->
+<mapper namespace="CcuUmnusmtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateUmnusmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateUmnusmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateUmnusmt */
+		<![CDATA[
+				/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateUmnusmt */
+				 update  /*+ cud_umnusmt_u01$I01_사용자 메뉴 사용 집계 업데이트 */
+								   CUUMNUSMT
+							  set
+								   SMTN_CCT           = SMTN_CCT + 1
+								 , LAST_UPDR_ID       = #{gvUserId}
+								 , LAST_UPDT_IP       = #{gvUserIp}
+								 , LAST_UPDT_DT       = sysdate
+								 , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+								 , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+							where  LGIN_ID            = #{gvLginId}
+							  and  SMTN_YMD           = trunc(sysdate)
+							  and  MENU_GRP_ID        = nvl(#{menuGrpId}, 'NONE')
+						   /*    and  MENU_ID            = nvl(substr(:cus_umnusmt_001[0].menu_id, 4, 6), 'NONE') */
+							  and  MENU_ID            = decode(length(#{menuId}), 6, #{menuId}, 9, substr(#{menuId}, 4, 6), 'NONE')
+							  and  PRGM_ID            = #{prgmId}
+		]]>
+			
+			
+			
+			
+			
+			
+			
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-insertUmnusmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-insertUmnusmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-insertUmnusmt */
+		 insert  /*+ cud_umnusmt_i01$I01_사용자 메뉴 사용 집계 등록 */
+						   into CUUMNUSMT(LGIN_ID
+											   , SMTN_YMD
+											   , MENU_GRP_ID
+											   , MENU_ID
+											   , PRGM_ID
+											   , SMTN_CCT
+											   , FRST_RGSR_ID
+											   , FRST_RGST_IP
+											   , FRST_RGST_DT
+											   , FRST_RGST_CLNT_PRGM_ID
+											   , FRST_RGST_SRVR_PRGM_ID
+											   , LAST_UPDR_ID
+											   , LAST_UPDT_IP
+											   , LAST_UPDT_DT
+											   , LAST_UPDT_CLNT_PRGM_ID
+											   , LAST_UPDT_SRVR_PRGM_ID
+												)
+										  values(#{gvLginId}
+											   , trunc(sysdate)
+											   , nvl(#{menuGrpId}, 'NONE')
+											  /*  , nvl(substr(:cus_umnusmt_001[0].menu_id, 4, 6), 'NONE') */
+											   , decode(length(#{menuId}), 6, #{menuId}, 9, substr(#{menuId}, 4, 6), 'NONE')
+											   , #{prgmId}
+											   , 1
+											   , #{gvUserId}
+											   , #{gvUserIp}
+											   , sysdate
+											   , #{gvClntPrgmId}
+											   , #{gvSrvrPrgmId}
+											   , #{gvUserId}
+											   , #{gvUserIp}
+											   , sysdate
+											   , #{gvClntPrgmId}
+											   , #{gvSrvrPrgmId}
+												)
+			
+			
+			
+			
+			
+			
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateInitUmnusmt (사용자 메뉴별 사용집계 Clear) 
+        Description :                                           사용자 메뉴별 사용집계 Clear
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateInitUmnusmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnusmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnusmtDAO-updateInitUmnusmt */
+		update  /*+ cud_umnusmt_u02$I01_사용자 메뉴별 사용집계 Clear */
+						   CUUMNUSMT
+				   set
+						   CCT_USE_YN          = 'N'
+						 , LAST_UPDR_ID        = #{gvUserId}
+						 , LAST_UPDT_IP        = #{gvUserIp}
+						 , LAST_UPDT_DT        = sysdate
+						 , LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+						 , LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+				   where   LGIN_ID             = ( select  LGIN_ID
+												   from    CCUSRDPHT
+												   where   USER_ID = #{gvLginId}
+												 )
+			
+	</update>
+
+</mapper>

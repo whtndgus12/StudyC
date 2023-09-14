@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoTbprmmtMstDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoTbprmmtMstDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertCointgtmt (insert COINTGTMT) 
+        Description :                                           Table[COINTGTMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertCointgtmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertCointgtmt */
+		     insert 
+		              into COINTGTMT         -- TO-BE 프로그램의 통합 테스트 목록 및 정보관리
+		            (
+		                           INTG_TEST_ID               --  통합테스트ID
+		                         , INTG_TEST_ID_VL            --  통합테스트ID값
+		                         , INTG_TEST_NM               --  통합테스트명
+		                         , INTG_TEST_CTN              --  통합테스트내용
+		                         , INTG_TEST_DVSN_CD          --  통합테스트구분코드
+		                         , TEST_PSBL_DVSN_CD          --  테스트가능구분코드
+		                         , TEST_PLAN_STRT_YMD         --  테스트계획시작일자
+		                         , TEST_PLAN_FNSH_YMD         --  테스트계획종료일자
+		                         , PRCG_CNDT_CTN              --  선행조건내용
+		                         , FOLW_CNDT_CTN              --  후행조건내용
+		                         , RMRK_CTN                   --  비고내용
+		                         , PRJT_TISS_CD               --  프로젝트조직코드
+		                         , WG_TISS_CD                 --  워킹그룹코드
+		                         , INTG_PRJT_CD               -- 통합프로젝트코드
+		                         , INTG_WG_CD                 -- 통합워킹그룹코드
+		                         , RPRS_TEST_ID               --  대표테스트ID
+		                         , INTG_TEST_WRTR_ID          --  통합테스트작성자ID
+		                         , INTG_TEST_WRTG_DT          --  통합테스트작성일시
+		                         , MNGR_ID                    --  관리자ID
+		                         , MDFC_HX_CTN                --  변경이력내용
+		                         , CLSN_STTS_CD               --  마감상태코드
+		                         , TEST_PTNO_CTN              --  테스트환자번호내용
+		                         , TEST_MCDP_CTN              --  테스트진료과내용
+		                         , TEST_ISTY_CTN              --  테스트보험유형내용
+		                         , TEST_MDDR_CTN             -- 진료의사
+		                         , TEST_DATA_CTN              --  테스트데이터내용
+		                         , CLBR_SYST_CD               --  협력시스템코드
+		                         , TEST_DSCN_YN               --  테스트중단여부
+		                         , DLTN_YN                    --  삭제여부
+		                         , UPDT_CTN                    --
+		                         , DSCN_CTN
+		                         , FRST_RGSR_ID                      -- 최초등록자ID
+		                         , FRST_RGST_IP                      -- 최초등록IP
+		                         , FRST_RGST_DT                      -- 최초등록일시
+		                         , FRST_RGST_CLNT_PRGM_ID            -- 최초등록EMR클라이언트프로그램ID
+		                         , FRST_RGST_SRVR_PRGM_ID            -- 최초등록EMR서버프로그램ID
+		                         , LAST_UPDR_ID                      -- 최종수정자ID
+		                         , LAST_UPDT_IP                      -- 최종수정IP
+		                         , LAST_UPDT_DT                      -- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID            -- 최종수정EMR클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID            -- 최종수정EMR서버프로그램ID
+		                      )
+		                      values(
+		                           (select  trim(nvl(to_char(Max(to_number(INTG_TEST_ID))+1,'0000000000'),'0000000001')) as intg_test_id          --  통합테스트ID
+		                           from  COINTGTMT )           --  통합테스트ID
+		                         ,  #{intgTestIdVl}             --  통합테스트ID값
+		                         ,  #{intgTestNm}                --  통합테스트명
+		                         ,  #{intgTestCtn}               --  통합테스트내용
+		                         ,  #{intgTestDvsnCd}           --  통합테스트구분코드
+		                         ,  #{testPsblDvsnCd}           --  테스트가능구분코드
+		                         , to_date( #{testPlanStrtYmd} , 'YYYYMMDD')   --  테스트계획시작일자
+		                         , to_date( #{testPlanFnshYmd} , 'YYYYMMDD')   --  테스트계획종료일자
+		                         ,  #{prcgCndtCtn}               --  선행조건내용
+		                         ,  #{folwCndtCtn}               --  후행조건내용
+		                         ,  #{rmrkCtn}                    --  비고내용
+		                         , decode( #{intgTestDvsnCd} ,'I1',null,'I3',null,'I6',null, #{prjtTissCd} )               --  프로젝트조직코드
+		                         , decode( #{intgTestDvsnCd} ,'I1',null,'I3',null,'I6',null, #{wgTissCd} )                 --  워킹그룹코드
+		                         , decode( #{intgTestDvsnCd} ,'I1', #{prjtTissCd} ,'I3', #{prjtTissCd} ,'I6', #{prjtTissCd} ,null)               --  통합프로젝트코드
+		                         , decode( #{intgTestDvsnCd} ,'I1', #{wgTissCd} ,'I3', #{prjtTissCd} ,'I6', #{wgTissCd} ,null)                 --  통합워킹그룹코드
+		                         ,  #{rprsTestId}                --  대표테스트ID
+		                         ,  #{intgTestWrtrId}           --  통합테스트작성자ID
+		                         , sysdate
+		                         ,  #{mngrId}                    --  관리자ID
+		                         ,  #{mdfcHxCtn}                 --  변경이력내용
+		                         ,  #{clsnSttsCd}                --  마감상태코드
+		                         ,  #{testPtnoCtn}            --  테스트환자번호내용
+		                         ,  #{testMcdpCtn}            --  테스트진료과내용
+		                         ,  #{testIstyCtn}            --  테스트보험유형내용
+		                         ,  #{testMddrCtn}             -- 진료의사
+		                         ,  #{testDataCtn}            --  테스트데이터내용
+		                         ,  #{clbrSystCd}             --  협력시스템코드
+		                         ,  #{testDscnYn}                --  테스트중단여부
+		                         , 'N'                                            --
+		                         ,  #{updtCtn}                --
+		                         ,  #{dscnCtn} 
+		                         , #{gvUserId}                       -- 최초등록자ID
+		                         , #{gvUserIp}                       -- 최초등록IP
+		                         , sysdate                           -- 최초등록일시
+		                         , #{gvClntPrgmId}                   -- 최초등록EMR클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최초등록EMR서버프로그램ID
+		                         , #{gvUserId}                       -- 최종수정자ID
+		                         , #{gvUserIp}                       -- 최종수정IP
+		                         , sysdate                           -- 최종수정일시
+		                         , #{gvClntPrgmId}                   -- 최종수정EMR클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최종수정EMR서버프로그램ID
+		                     )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmt (update COINTGTMT) 
+        Description :                                           Table[COINTGTMT]'s update method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmt */
+		    update
+		                  COINTGTMT         -- TO-BE 프로그램의 통합 테스트 목록 및 정보관리
+		               set
+		                         INTG_TEST_ID_VL          =  #{intgTestIdVl}          --  통합테스트ID값
+		                       , INTG_TEST_NM             =  #{intgTestNm}             --  통합테스트명
+		                       , INTG_TEST_CTN            =  #{intgTestCtn}            --  통합테스트내용
+		                       , INTG_TEST_DVSN_CD        =  #{intgTestDvsnCd}        --  통합테스트구분코드
+		                       , TEST_PLAN_STRT_YMD       = to_date( #{testPlanStrtYmd} , 'YYYYMMDD')   --  테스트계획시작일자
+		                       , TEST_PLAN_FNSH_YMD       = to_date( #{testPlanFnshYmd} , 'YYYYMMDD')   --  테스트계획종료일자
+		                       , PRCG_CNDT_CTN            =  #{prcgCndtCtn}            --  선행조건내용
+		                       , FOLW_CNDT_CTN            =  #{folwCndtCtn}            --  후행조건내용
+		                       , RMRK_CTN                 =  #{rmrkCtn}                 --  비고내용
+		                       , PRJT_TISS_CD             = decode( #{intgTestDvsnCd} ,'I1',PRJT_TISS_CD,'I3',PRJT_TISS_CD,'I6',PRJT_TISS_CD,  #{prjtTissCd} )            --  프로젝트조직코드
+		                       , WG_TISS_CD               = decode( #{intgTestDvsnCd} ,'I1',WG_TISS_CD,'I3',WG_TISS_CD,'I6',WG_TISS_CD,  #{wgTissCd} )              --  워킹그룹코드
+		                       , INTG_PRJT_CD             = decode( #{intgTestDvsnCd} ,'I1', #{prjtTissCd} ,'I3', #{prjtTissCd} ,'I6', #{prjtTissCd} ,INTG_PRJT_CD)  --  통합프로젝트코드
+		                       , INTG_WG_CD               = decode( #{intgTestDvsnCd} ,'I1', #{wgTissCd} ,'I3', #{wgTissCd} ,'I6', #{wgTissCd} ,INTG_WG_CD)   -- 통합워킹그룹코드
+		                       , RPRS_TEST_ID             =  #{rprsTestId}             --  대표테스트ID
+		                       , INTG_TEST_WRTR_ID        = decode( #{intgTestWrtrId} ,null,INTG_TEST_WRTR_ID,  #{intgTestWrtrId} )      --  통합테스트작성자ID
+		                       , INTG_TEST_WRTG_DT        = decode( #{intgTestWrtgDt} ,null,INTG_TEST_WRTG_DT, to_date( #{intgTestWrtgDt} , 'YYYYMMDD'))   --  통합테스트작성일시
+		                       , MNGR_ID                  =  #{mngrId}                  --  관리자ID
+		                       , MDFC_HX_CTN              =  #{mdfcHxCtn}              --  변경이력내용
+		                       , CLSN_STTS_CD             =  #{clsnSttsCd}             --  마감상태코드
+		                       , TEST_PTNO_CTN            =  #{testPtnoCtn}            --  테스트환자번호내용
+		                       , TEST_MCDP_CTN            =  #{testMcdpCtn}            --  테스트진료과내용
+		                       , TEST_ISTY_CTN            =  #{testIstyCtn}            --  테스트보험유형내용
+		                       , TEST_DATA_CTN            =  #{testDataCtn}            --  테스트데이터내용
+		                       , CLBR_SYST_CD             =  #{clbrSystCd}             --  협력시스템코드
+		                       , TEST_MDDR_CTN            =  #{testMddrCtn}             -- 진료의사
+		                       , TEST_DSCN_YN             =  #{testDscnYn}             --  테스트중단여부
+		                       , DLTN_YN                  =  #{dltnYn}                  --  삭제여부
+		                       , DLTN_DT               = decode(#{dltnYn},'Y', sysdate, DLTN_DT)         -- 삭제일시
+		                       , DLPR_ID               =  decode(#{dltnYn},'Y', #{dlprId} , DLPR_ID )                              -- 삭제자ID                     
+		                       , UPDT_CTN                 =  #{updtCtn}                  --
+		                       , LAST_UPDR_ID                      = #{gvUserId}                            -- 최종수정자ID
+		                       , LAST_UPDT_IP                      = #{gvUserIp}                            -- 최종수정IP
+		                       , LAST_UPDT_DT                      = sysdate                                -- 최종수정일시
+		                       , LAST_UPDT_CLNT_PRGM_ID            = #{gvClntPrgmId}                        -- 최종수정EMR클라이언트프로그램ID
+		                       , LAST_UPDT_SRVR_PRGM_ID            = #{gvSrvrPrgmId}                        -- 최종수정EMR서버프로그램ID               
+		                  where INTG_TEST_ID =  #{intgTestId}  
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-deleteCointgtmt (delete COINTGTMT) 
+        Description :                                           Table[COINTGTMT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-deleteCointgtmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-deleteCointgtmt */
+		  DELETE  FROM COINTGTMT
+		  WHERE INTG_TEST_ID_VL       = #{intgTestIdVl}  
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-mergeCointgtmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-mergeCointgtmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		  /*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-mergeCointgtmt */
+		   merge
+		             into COINTGTMT TM         -- TO-BE 프로그램의 통합 테스트 목록 및 정보관리
+		            using DUAL 
+		               on (INTG_TEST_ID                    = #{intgTestId}
+		                  ) 
+		             when matched then 
+		                  update set
+		                         INTG_TEST_ID_VL          =  #{intgTestIdVl}          --  통합테스트ID값
+		                       , INTG_TEST_NM             =  #{intgTestNm}             --  통합테스트명
+		                       , INTG_TEST_CTN            =  #{intgTestCtn}            --  통합테스트내용
+		                       , INTG_TEST_DVSN_CD        =  #{intgTestDvsnCd}        --  통합테스트구분코드
+		                       , TEST_PLAN_STRT_YMD       = to_date( #{testPlanStrtYmd} , 'YYYYMMDD')   --  테스트계획시작일자
+		                       , TEST_PLAN_FNSH_YMD       = to_date( #{testPlanFnshYmd} , 'YYYYMMDD')   --  테스트계획종료일자
+		                       , PRCG_CNDT_CTN            =  #{prcgCndtCtn}            --  선행조건내용
+		                       , FOLW_CNDT_CTN            =  #{folwCndtCtn}            --  후행조건내용
+		                       , RMRK_CTN                 =  #{rmrkCtn}                 --  비고내용
+		                       , PRJT_TISS_CD             = decode( #{intgTestDvsnCd} ,'I1',PRJT_TISS_CD,'I3',PRJT_TISS_CD,'I6',PRJT_TISS_CD,  #{prjtTissCd} )            --  프로젝트조직코드
+		                       , WG_TISS_CD               = decode( #{intgTestDvsnCd} ,'I1',WG_TISS_CD,'I3',WG_TISS_CD,'I6',WG_TISS_CD,  #{wgTissCd} )              --  워킹그룹코드
+		                       , INTG_PRJT_CD             = decode( #{intgTestDvsnCd} ,'I1', #{prjtTissCd} ,'I3', #{prjtTissCd} ,'I6', #{prjtTissCd} ,INTG_PRJT_CD)  --  통합프로젝트코드
+		                       , INTG_WG_CD               = decode( #{intgTestDvsnCd} ,'I1', #{wgTissCd} ,'I3', #{wgTissCd} ,'I6', #{wgTissCd} ,INTG_WG_CD)   -- 통합워킹그룹코드
+		                       , RPRS_TEST_ID             =  #{rprsTestId}             --  대표테스트ID
+		                       , INTG_TEST_WRTR_ID        = decode( #{intgTestWrtrId} ,null,INTG_TEST_WRTR_ID,  #{intgTestWrtrId} )      --  통합테스트작성자ID
+		                       , INTG_TEST_WRTG_DT        = decode( #{intgTestWrtgDt} ,null,INTG_TEST_WRTG_DT, to_date( #{intgTestWrtgDt} , 'YYYYMMDD'))   --  통합테스트작성일시
+		                       , MNGR_ID                  =  #{mngrId}                  --  관리자ID
+		                       , MDFC_HX_CTN              =  #{mdfcHxCtn}              --  변경이력내용
+		                       , CLSN_STTS_CD             =  #{clsnSttsCd}             --  마감상태코드
+		                       , TEST_PTNO_CTN            =  #{testPtnoCtn}            --  테스트환자번호내용
+		                       , TEST_MCDP_CTN            =  #{testMcdpCtn}            --  테스트진료과내용
+		                       , TEST_ISTY_CTN            =  #{testIstyCtn}            --  테스트보험유형내용
+		                       , TEST_DATA_CTN            =  #{testDataCtn}            --  테스트데이터내용
+		                       , CLBR_SYST_CD             =  #{clbrSystCd}             --  협력시스템코드
+		                       , TEST_MDDR_CTN            =  #{testMddrCtn}             -- 진료의사
+		                       , TEST_DSCN_YN             =  #{testDscnYn}             --  테스트중단여부
+		                       , DLTN_YN                  =  #{dltnYn}                  --  삭제여부
+		                       , DLTN_DT               = decode(#{dltnYn},'Y', sysdate, DLTN_DT)         -- 삭제일시
+		                       , DLPR_ID               =  decode(#{dltnYn},'Y', #{dlprId} , DLPR_ID )                              -- 삭제자ID                     
+		                       , UPDT_CTN                 =  #{updtCtn}                  --
+		                       , LAST_UPDR_ID                      = #{gvUserId}                            -- 최종수정자ID
+		                       , LAST_UPDT_IP                      = #{gvUserIp}                            -- 최종수정IP
+		                       , LAST_UPDT_DT                      = sysdate                                -- 최종수정일시
+		                       , LAST_UPDT_CLNT_PRGM_ID            = #{gvClntPrgmId}                        -- 최종수정EMR클라이언트프로그램ID
+		                       , LAST_UPDT_SRVR_PRGM_ID            = #{gvSrvrPrgmId}                        -- 최종수정EMR서버프로그램ID
+		                  where INTG_TEST_ID =  #{intgTestId} 
+		             when not matched then 
+		                  insert 
+		                         (
+		                           INTG_TEST_ID               --  통합테스트ID
+		                         , INTG_TEST_ID_VL            --  통합테스트ID값
+		                         , INTG_TEST_NM               --  통합테스트명
+		                         , INTG_TEST_CTN              --  통합테스트내용
+		                         , INTG_TEST_DVSN_CD          --  통합테스트구분코드
+		                         , TEST_PSBL_DVSN_CD          --  테스트가능구분코드
+		                         , TEST_PLAN_STRT_YMD         --  테스트계획시작일자
+		                         , TEST_PLAN_FNSH_YMD         --  테스트계획종료일자
+		                         , PRCG_CNDT_CTN              --  선행조건내용
+		                         , FOLW_CNDT_CTN              --  후행조건내용
+		                         , RMRK_CTN                   --  비고내용
+		                         , PRJT_TISS_CD               --  프로젝트조직코드
+		                         , WG_TISS_CD                 --  워킹그룹코드
+		                         , INTG_PRJT_CD               -- 통합프로젝트코드
+		                         , INTG_WG_CD                 -- 통합워킹그룹코드
+		                         , RPRS_TEST_ID               --  대표테스트ID
+		                         , INTG_TEST_WRTR_ID          --  통합테스트작성자ID
+		                         , INTG_TEST_WRTG_DT          --  통합테스트작성일시
+		                         , MNGR_ID                    --  관리자ID
+		                         , MDFC_HX_CTN                --  변경이력내용
+		                         , CLSN_STTS_CD               --  마감상태코드
+		                         , TEST_PTNO_CTN              --  테스트환자번호내용
+		                         , TEST_MCDP_CTN              --  테스트진료과내용
+		                         , TEST_ISTY_CTN              --  테스트보험유형내용
+		                         , TEST_MDDR_CTN             -- 진료의사
+		                         , TEST_DATA_CTN              --  테스트데이터내용
+		                         , CLBR_SYST_CD               --  협력시스템코드
+		                         , TEST_DSCN_YN               --  테스트중단여부
+		                         , DLTN_YN                    --  삭제여부
+		                         , UPDT_CTN                    --
+		                         , DSCN_CTN
+		                         , FRST_RGSR_ID                      -- 최초등록자ID
+		                         , FRST_RGST_IP                      -- 최초등록IP
+		                         , FRST_RGST_DT                      -- 최초등록일시
+		                         , FRST_RGST_CLNT_PRGM_ID            -- 최초등록EMR클라이언트프로그램ID
+		                         , FRST_RGST_SRVR_PRGM_ID            -- 최초등록EMR서버프로그램ID
+		                         , LAST_UPDR_ID                      -- 최종수정자ID
+		                         , LAST_UPDT_IP                      -- 최종수정IP
+		                         , LAST_UPDT_DT                      -- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID            -- 최종수정EMR클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID            -- 최종수정EMR서버프로그램ID
+		                      )
+		                      values(
+		                           (select  trim(nvl(to_char(Max(to_number(INTG_TEST_ID))+1,'0000000000'),'0000000001')) as intg_test_id          --  통합테스트ID
+		                             from  COINTGTMT )               --  통합테스트ID
+		                         ,  #{intgTestIdVl}             --  통합테스트ID값
+		                         ,  #{intgTestNm}                --  통합테스트명
+		                         ,  #{intgTestCtn}               --  통합테스트내용
+		                         ,  #{intgTestDvsnCd}           --  통합테스트구분코드
+		                         ,  #{testPsblDvsnCd}           --  테스트가능구분코드
+		                         , to_date( #{testPlanStrtYmd} , 'YYYYMMDD')   --  테스트계획시작일자
+		                         , to_date( #{testPlanFnshYmd} , 'YYYYMMDD')   --  테스트계획종료일자
+		                         ,  #{prcgCndtCtn}               --  선행조건내용
+		                         ,  #{folwCndtCtn}               --  후행조건내용
+		                         ,  #{rmrkCtn}                    --  비고내용
+		                         , decode( #{intgTestDvsnCd} ,'I1',null,'I3',null,'I6',null, #{prjtTissCd} )               --  프로젝트조직코드
+		                         , decode( #{intgTestDvsnCd} ,'I1',null,'I3',null,'I6',null, #{wgTissCd} )                 --  워킹그룹코드
+		                         , decode( #{intgTestDvsnCd} ,'I1', #{prjtTissCd} ,'I3', #{prjtTissCd} ,'I6', #{prjtTissCd} ,null)               --  통합프로젝트코드
+		                         , decode( #{intgTestDvsnCd} ,'I1', #{wgTissCd} ,'I3', #{prjtTissCd} ,'I6', #{wgTissCd} ,null)                 --  통합워킹그룹코드
+		                         ,  #{rprsTestId}                --  대표테스트ID
+		                         ,  #{intgTestWrtrId}           --  통합테스트작성자ID
+		                         , sysdate
+		                         ,  #{mngrId}                    --  관리자ID
+		                         ,  #{mdfcHxCtn}                 --  변경이력내용
+		                         ,  #{clsnSttsCd}                --  마감상태코드
+		                         ,  #{testPtnoCtn}            --  테스트환자번호내용
+		                         ,  #{testMcdpCtn}            --  테스트진료과내용
+		                         ,  #{testIstyCtn}            --  테스트보험유형내용
+		                         ,  #{testMddrCtn}             -- 진료의사
+		                         ,  #{testDataCtn}            --  테스트데이터내용
+		                         ,  #{clbrSystCd}             --  협력시스템코드
+		                         ,  #{testDscnYn}                --  테스트중단여부
+		                         , 'N'                                            --
+		                         ,  #{updtCtn}                --
+		                         ,  #{dscnCtn} 
+		                         , #{gvUserId}                       -- 최초등록자ID
+		                         , #{gvUserIp}                       -- 최초등록IP
+		                         , sysdate                           -- 최초등록일시
+		                         , #{gvClntPrgmId}                   -- 최초등록EMR클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최초등록EMR서버프로그램ID
+		                         , #{gvUserId}                       -- 최종수정자ID
+		                         , #{gvUserIp}                       -- 최종수정IP
+		                         , sysdate                           -- 최종수정일시
+		                         , #{gvClntPrgmId}                   -- 최종수정EMR클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최종수정EMR서버프로그램ID
+		                     )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateDltnYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateDltnYn"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateDltnYn */
+		            update  
+		                  COINTGTMT         -- TO-BE 프로그램의 통합 테스트 목록 및 정보관리
+		               set
+		                   DLTN_YN               = #{dltnYn}                              -- 삭제여부
+		                 , DLTN_DT               = decode(#{dltnYn},'Y', sysdate, DLTN_DT)         -- 삭제일시
+		                 , DLPR_ID                =  decode(#{dltnYn},'Y', #{dlprId} , DLPR_ID )                              -- 삭제자ID
+		                 , DLTN_RESN_CTN     = decode(#{dltnYn},'Y', #{updtCtn} ,  DLTN_RESN_CTN )
+		                 , LAST_UPDR_ID                      = #{gvUserId}                            -- 최종수정자ID
+		                 , LAST_UPDT_IP                      = #{gvUserIp}                            -- 최종수정IP
+		                 , LAST_UPDT_DT                      = sysdate                                -- 최종수정일시
+		                 , LAST_UPDT_CLNT_PRGM_ID            = #{gvClntPrgmId}                        -- 최종수정EMR클라이언트프로그램ID
+		                 , LAST_UPDT_SRVR_PRGM_ID            = #{gvSrvrPrgmId}                        -- 최종수정EMR서버프로그램ID                
+		            where INTG_TEST_ID                     = #{intgTestId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertTbprmmtSelectCopy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertTbprmmtSelectCopy"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-insertTbprmmtSelectCopy */
+		     <![CDATA[
+			    insert  /*+ cod_tbprmmt_i12$I01_[비대상]TOBO 통합테스트 마스터 목록 복사 */ 
+			        into COINTGTMT(
+			               INTG_TEST_ID               --  통합테스트ID
+			             , INTG_TEST_ID_VL            --  통합테스트ID값
+			             , INTG_TEST_NM               --  통합테스트명
+			             , INTG_TEST_CTN              --  통합테스트내용
+			             , INTG_TEST_DVSN_CD          --  통합테스트구분코드
+			             , TEST_PSBL_DVSN_CD          --  테스트가능구분코드
+			             , TEST_PLAN_STRT_YMD         --  테스트계획시작일자
+			             , TEST_PLAN_FNSH_YMD         --  테스트계획종료일자
+			             , PRCG_CNDT_CTN              --  선행조건내용
+			             , FOLW_CNDT_CTN              --  후행조건내용
+			             , RMRK_CTN                   --  비고내용
+			             , PRJT_TISS_CD               --  프로젝트조직코드
+			             , WG_TISS_CD                 --  워킹그룹코드
+			             , RPRS_TEST_ID               --  대표테스트ID
+			             , INTG_TEST_WRTR_ID          --  통합테스트작성자ID
+			             , INTG_TEST_WRTG_DT          --  통합테스트작성일시
+			             , MNGR_ID                    --  관리자ID
+			             , MDFC_HX_CTN                --  변경이력내용
+			             , CLSN_STTS_CD               --  마감상태코드
+			             , TEST_PTNO_CTN              --  테스트환자번호내용
+			             , TEST_MCDP_CTN              --  테스트진료과내용
+			             , TEST_ISTY_CTN              --  테스트보험유형내용
+			             , TEST_DATA_CTN              --  테스트데이터내용
+			             , CLBR_SYST_CD               --  협력시스템코드
+			             , TEST_DSCN_YN               --  테스트중단여부
+			             , DLTN_YN                    --  삭제여부
+			             , UPDT_CTN                    --
+			             , FRST_RGSR_ID                      -- 최초등록자ID
+			             , FRST_RGST_IP                      -- 최초등록IP
+			             , FRST_RGST_DT                      -- 최초등록일시
+			             , FRST_RGST_CLNT_PRGM_ID            -- 최초등록EMR클라이언트프로그램ID
+			             , FRST_RGST_SRVR_PRGM_ID            -- 최초등록EMR서버프로그램ID
+			             , LAST_UPDR_ID                      -- 최종수정자ID
+			             , LAST_UPDT_IP                      -- 최종수정IP
+			             , LAST_UPDT_DT                      -- 최종수정일시
+			             , LAST_UPDT_CLNT_PRGM_ID            -- 최종수정EMR클라이언트프로그램ID
+			             , LAST_UPDT_SRVR_PRGM_ID            -- 최종수정EMR서버프로그램ID
+			          )
+			       select
+			           trim( #{comnItemChrcVl1} )          --  통합테스트ID
+			         , trim( #{comnItemChrcVl2} )
+			         , '['||  #{userNm}  ||'('|| #{lastUpdrId} || ')] '  || INTG_TEST_NM           --  통합테스트명
+			         , INTG_TEST_CTN              --  통합테스트내용
+			         , INTG_TEST_DVSN_CD          --  통합테스트구분코드
+			         , TEST_PSBL_DVSN_CD          --  테스트가능구분코드
+			         , TEST_PLAN_STRT_YMD         --  테스트계획시작일자
+			         , TEST_PLAN_FNSH_YMD         --  테스트계획종료일자
+			         , PRCG_CNDT_CTN              --  선행조건내용
+			         , FOLW_CNDT_CTN              --  후행조건내용
+			         , RMRK_CTN                   --  비고내용
+			         , PRJT_TISS_CD               --  프로젝트조직코드
+			         , WG_TISS_CD                 --  워킹그룹코드
+			         , RPRS_TEST_ID               --  대표테스트ID
+			         ,  #{afcSrcUserId} 
+			         , sysdate
+			         , MNGR_ID                    --  관리자ID
+			         , ''
+			         , '1'
+			         , TEST_PTNO_CTN              --  테스트환자번호내용
+			         , TEST_MCDP_CTN              --  테스트진료과내용
+			         , TEST_ISTY_CTN              --  테스트보험유형내용
+			         , TEST_DATA_CTN              --  테스트데이터내용
+			         , CLBR_SYST_CD               --  협력시스템코드
+			         , 'N'
+			         , 'N'
+			         , '복사 '||  #{intgTestIdVl}  || '['||  #{lastUpdrId}  ||'('|| #{userNm} || ')]'
+			         , #{gvUserId}                       -- 최초등록자ID
+			         , #{gvUserIp}                       -- 최초등록IP
+			         , sysdate                           -- 최초등록일시
+			         , #{gvClntPrgmId}                   -- 최초등록EMR클라이언트프로그램ID
+			         , #{gvSrvrPrgmId}                   -- 최초등록EMR서버프로그램ID
+			         , #{gvUserId}                       -- 최종수정자ID
+			         , #{gvUserIp}                       -- 최종수정IP
+			         , sysdate                           -- 최종수정일시
+			         , #{gvClntPrgmId}                   -- 최종수정EMR클라이언트프로그램ID
+			         , #{gvSrvrPrgmId}                   -- 최종수정EMR서버프로그램ID
+			   from  COINTGTMT
+			    where INTG_TEST_ID =  #{intgTestId} 
+			]]> 
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO">
+	
+		<result property="comnItemChrcVl1" column="COMN_ITEM_CHRC_VL1"/>
+		<result property="comnItemChrcVl2" column="COMN_ITEM_CHRC_VL2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId-result" useCache="true" flushCache="false">
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-selectOneMaxIntgTestId */
+		    <![CDATA[	
+		         select  /*+ cod_tbprmmt_s11$S01_TOBO 통합테스트 마스터 채번 */
+			            trim(nvl(to_char(Max(to_number(INTG_TEST_ID))+1,'0000000000'),'0000000001')) as COMN_ITEM_CHRC_VL1
+			         ,  max(case
+			                    when ( #{intgTestDvsnCd}  in ('I1', 'I3', 'I6')) then
+			                        case
+			                            when INTG_TEST_ID_VL is null then  'E2E_'|| '000001'
+			                           -- when (substr(INTG_TEST_ID_VL,1,length('E2E_')) =  'E2E_') and (substr(INTG_TEST_ID_VL,length('E2E_')+1,6) < 'A') then
+			                           --     'E2E_'|| trim(to_char(to_number(substr(INTG_TEST_ID_VL,length('E2E_')+1,6))+1, '000000'))
+			                            else 'E2E_000001'
+			                            end
+			                    else
+			                        case
+			                            when trim( #{wgTissCd} ) is null then  'ITS_'|| trim( #{wgTissCd} ) || '_'|| '001'
+			                            when INTG_TEST_ID_VL is null then  'ITS_'|| trim( #{wgTissCd} ) || '_'|| '001'
+			                          --  when substr(INTG_TEST_ID_VL,1,length('ITS_'|| trim( #{wgTissCd} ) || '_')) =  'ITS_'|| trim( #{wgTissCd} ) || '_' then
+			                          --      'ITS_'|| trim( #{wgTissCd} ) || '_' || trim(to_char(to_number(substr(INTG_TEST_ID_VL,length('ITS_'|| trim( #{wgTissCd} ) || '_')+1,3)+1), '000'))
+			                            else null
+			                            end
+			                    end) as COMN_ITEM_CHRC_VL2
+			      from  COINTGTMT
+			    ]]>  
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmtTestYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmtTestYn"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCointgtmtTestYn */
+		      update  /*+ cod_tbprmmt_u11$I01_TOBO 통합테스트 마스터 수정 요청 */
+		            COINTGTMT     
+		         set
+		                 TEST_DSCN_YN             =  #{testDscnYn}        --  테스트중단
+		               , MDFC_HX_CTN              = decode( #{mdfcHxCtn} , null, MDFC_HX_CTN,MDFC_HX_CTN || chr(13) ||  #{mdfcHxCtn} )      --  테스트중단
+		               , TEST_PLAN_STRT_YMD       = to_date( #{testPlanStrtYmd} , 'YYYYMMDD')   --  테스트계획시작일자
+		               , TEST_PLAN_FNSH_YMD       = to_date( #{testPlanFnshYmd} , 'YYYYMMDD')   --  테스트계획종료일자
+		               , INTG_PRJT_CD             = decode(INTG_TEST_DVSN_CD,'I1', #{prjtTissCd} ,'I3', #{prjtTissCd} ,'I6', #{prjtTissCd} ,INTG_PRJT_CD)  --  통합프로젝트코드
+		               , INTG_WG_CD               = decode(INTG_TEST_DVSN_CD,'I1', #{wgTissCd} ,'I3', #{wgTissCd} ,'I6', #{wgTissCd} ,INTG_WG_CD)   -- 통합워킹그룹코드
+		               , LAST_UPDR_ID                      = #{gvUserId}                            -- 최종수정자ID
+		               , LAST_UPDT_IP                      = #{gvUserIp}                            -- 최종수정IP
+		               , LAST_UPDT_DT                      = sysdate                                -- 최종수정일시
+		               , LAST_UPDT_CLNT_PRGM_ID            = #{gvClntPrgmId}                        -- 최종수정EMR클라이언트프로그램ID
+		               , LAST_UPDT_SRVR_PRGM_ID            = #{gvSrvrPrgmId}                        -- 최종수정EMR서버프로그램ID                
+		          where INTG_TEST_ID =  #{intgTestId} 
+		           ;
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCtnMemo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCtnMemo"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMstDAO-updateCtnMemo */
+		    update  /*+ cod_tbprmmt_u26$I01_[비대상]TOBO 통합테스트 마스터 메모저장 */
+		             COINTGTMT
+		     set    RMRK_CTN                 = decode( #{rmrkCtn2} ,'**',RMRK_CTN,  #{rmrkCtn2} )
+		            , DSCN_CTN                 = decode( #{rmrkCtn1} ,'**',DSCN_CTN,  #{rmrkCtn1} )
+		            , TEST_PLAC_NM             = decode( #{rmrkCtn3} ,'**',TEST_PLAC_NM,  #{rmrkCtn3} )
+		            , OPRN_ASGN_CTN            = decode( #{rmrkCtn4} ,'**',OPRN_ASGN_CTN,  #{rmrkCtn4} )
+		            , INTG_TEST_PRFM_DDCN_VL   = decode( #{rmrkCtn5} ,'**',INTG_TEST_PRFM_DDCN_VL,  #{rmrkCtn5} )
+		            , LAST_UPDR_ID          = #{gvUserId}                            -- 최종수정자ID
+		            , LAST_UPDT_IP          = #{gvUserIp}                            -- 최종수정IP
+		            , LAST_UPDT_DT          = sysdate                                -- 최종수정일시
+		            , LAST_UPDT_CLNT_PRGM_ID                    = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+		            , LAST_UPDT_SRVR_PRGM_ID                    = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID
+		      where  INTG_TEST_ID             =  #{intgTestId}                     --  통합테스트ID
+	</update>
+
+</mapper>

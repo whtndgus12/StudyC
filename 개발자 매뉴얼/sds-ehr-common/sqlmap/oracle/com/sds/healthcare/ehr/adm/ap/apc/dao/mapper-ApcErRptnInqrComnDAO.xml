@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcErRptnInqrComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcErRptnInqrComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO">
+	
+		<result property="mcfeRcpcCd" column="MCFE_RCPC_CD"/>
+		<result property="erMainMcdpCd" column="ER_MAIN_MCDP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOne */
+		       MCFE_RCPC_CD
+		     , ER_MAIN_MCDP_CD
+		  from
+		        APRCRPTNT a                 
+		 where  a.PTNO     = #{ptno}            
+		   and  a.CODV_CD  = 'E'
+		   and  a.CNCL_DT is null       
+		   and  trunc(a.DSCH_DT) >= trunc(sysdate)
+		   and MCFE_RCPC_CD != '1'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO">
+	
+		<result property="sthsYn" column="STHS_YN"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ermrRsltCd" column="ERMR_RSLT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr (퇴원당일응급내원 여부 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschThdyEr */
+		select 'Y'             as STHS_YN
+		     , b.MDRP_NO       as MDRP_NO
+		     , nvl(c.ERMR_RSLT_CD,'*')  as ERMR_RSLT_CD
+		  from APRCRPTNT a
+		     , APRCRPTNT b
+		     , MNEERRPAT c
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.CODV_CD = 'E'
+		   and b.PTNO    = a.PTNO
+		   and b.CODV_CD = 'I'
+		   and b.CNCL_DT is null
+		   and a.MDCR_DT between b.MDCR_DT and b.DSCH_DT
+		   /* 퇴원당일 응급내원하여 퇴원취소된 case와, 응급경유하여 입원한 case와 구분하기 위해 병동정보 추가함*/
+		   and b.WARD_CD = (select MCCS_CTRL_CHRC_VL2   /*  병동코드(무의미) */
+		                      from ACCTRLMMT
+		                     where MCCS_CTRL_CD         = 'ACA_107'  /* 퇴원환자 응급내원하여 퇴원취소시 적용할 응급병동정보 */
+		                       and MCCS_DTLS_CTRL_CD    = '00'
+		                       and rownum   = 1
+		                   )
+		   and c.MDRP_NO(+) = a.MDRP_NO
+		   and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschPrrnDt (퇴원당일응급내원환자 입원접수내역 퇴원예정일 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschPrrnDt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschPrrnDt */
+		update  
+			     APRCRPTNT
+		   set DSCH_PRRN_DT = decode(DSCH_PRRN_DT,null,trunc(sysdate),DSCH_PRRN_DT)
+		     , DSCH_CHCK_RQST_YN = decode(nvl(DSCH_CHCK_RQST_YN,'N'),'N','Y',DSCH_CHCK_RQST_YN)     
+		     , WARD_CD = decode(#{wardCd},null,WARD_CD,#{wardCd})
+		     , PTRM_NO = decode(#{ptrmNo},null,PTRM_NO,#{ptrmNo})
+		     , SCKB_NO = decode(#{wardCd},null,SCKB_NO,#{sckbNo})     
+		     , CARE_WARD_CD = decode(#{wardCd},null,CARE_WARD_CD,#{wardCd})
+		     , CARE_PTRM_NO = decode(#{ptrmNo},null,CARE_PTRM_NO,#{ptrmNo})
+		     , CARE_SCKB_NO = decode(#{wardCd},null,CARE_SCKB_NO,#{sckbNo})
+		     -- 심사 요청시 퇴원 예정일시를 입력하고 이걸로 입원 진료비 계산을 합니다. kyj. 2021.08.10.
+		--     , chot_prrn_dt = case
+		--     <![CDATA[
+		--                          when nvl(chot_prrn_dt, trunc(sysdate, 'mi')) <= trunc(sysdate, 'mi') then trunc(sysdate, 'mi')
+		--    ]]>
+		--                          else chot_prrn_dt
+		--                      end
+		       /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where MDRP_NO    = #{mdrpNo}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschChckRqstUpdt (퇴원심사요청여부 수정) 
+        Description :                                           퇴원심사요청여부 미요청으로 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschChckRqstUpdt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  >
+		/*+ SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAdmDschChckRqstUpdt */
+		UPDATE APRCRPTNT
+		  set
+		       DSCH_CHCK_RQST_YN = 'N'
+		    /* 서버 프로그램 전환시 자동 추가된 항목 */
+		    ,  LAST_UPDR_ID      = #{gvUserId}
+		    ,  LAST_UPDT_IP      = #{gvUserIp}
+		    ,  LAST_UPDT_DT      = sysdate
+		    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvClntPrgmId}
+		where  1=1
+		  and  MDRP_NO =  #{mdrpNo}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO">
+	
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="sckbNo" column="SCKB_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd (퇴원시 병동 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-selectOneDschWardCd */
+		select a.WARD_CD
+		     , a.PTRM_NO
+		     , a.SCKB_NO
+		  from APRCDTRHT a
+		 where MDRP_NO = #{mdrpNo}
+		   and a.MDFC_DT = (select max(MDFC_DT)
+		                      from APRCDTRHT
+		                     where MDRP_NO  = #{mdrpNo}
+		                       and WARD_CD != (select MCCS_CTRL_CHRC_VL2   /*  병동코드(무의미) */
+		                                         from ACCTRLMMT
+		                                        where MCCS_CTRL_CD         = 'ACA_107'  /* 퇴원환자 응급내원하여 퇴원취소시 적용할 응급병동정보 */
+		                                          and MCCS_DTLS_CTRL_CD    = '00'
+		                                          and rownum   = 1
+		                                      )
+		                       and APFN_YMD  = to_date('29991231','yyyymmdd')
+		                   )
+		   and a.WARD_CD != (select MCCS_CTRL_CHRC_VL2   /*  병동코드(무의미) */
+		                       from ACCTRLMMT
+		                      where MCCS_CTRL_CD         = 'ACA_107'  /* 퇴원환자 응급내원하여 퇴원취소시 적용할 응급병동정보 */
+		                        and MCCS_DTLS_CTRL_CD    = '00'
+		                        and rownum   = 1
+		                    )
+		   and a.APFN_YMD  = to_date('29991231','yyyymmdd')
+		   and rownum =1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAprcdTrttWardcd (전과전실 병동정보 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAprcdTrttWardcd"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcErRptnInqrComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcErRptnInqrComnDAO-updateAprcdTrttWardcd */
+		update  
+			   APRCDTRTT
+		   set WARD_CD = #{wardCd}
+		     , PTRM_NO = #{ptrmNo}
+		     , SCKB_NO = #{sckbNo}
+		     , MDAF_WARD_CD = #{wardCd}
+		       /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where MDRP_NO    = #{mdrpNo}
+		   and WARD_CD    = (select MCCS_CTRL_CHRC_VL2   /*  병동코드(무의미) */
+		                       from ACCTRLMMT
+		                      where MCCS_CTRL_CD         = 'ACA_107'  /* 퇴원환자 응급내원하여 퇴원취소시 적용할 응급병동정보 */
+		                        and MCCS_DTLS_CTRL_CD    = '00'
+		                        and rownum   = 1
+		                    )
+	</update>
+
+</mapper>

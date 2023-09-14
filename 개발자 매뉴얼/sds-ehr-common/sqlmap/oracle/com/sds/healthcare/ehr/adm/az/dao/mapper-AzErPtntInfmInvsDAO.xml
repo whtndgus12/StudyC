@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzErPtntInfmInvsDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzErPtntInfmInvsDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-updateAdmsDcsnInfo (응급간호 입원결정정보 변경) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzErPtntInfmInvsDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-updateAdmsDcsnInfo"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzErPtntInfmInvsDVO"  >
+		 update  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-updateAdmsDcsnInfo */
+		         MNEERRPAT
+		    set  ADMS_DCSN_YMD     = to_date(#{admsDcsnYmd}, 'yyyymmdd')
+		      ,  ADMS_DCSN_DR_ID   = #{admsDcsnDrId}
+		      ,  LAST_UPDR_ID         = #{gvUserId}
+			  ,  LAST_UPDT_IP         = #{gvUserIp}
+			  ,  LAST_UPDT_DT         = sysdate
+			  ,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+			  ,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		  where  PTNO              = #{ptno}
+		    and  STHS_YN           = 'Y'
+		    and  CHOT_DT          is null
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.az.vo.AzErPtntInfmInvsDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="dschItdrId" column="DSCH_ITDR_ID"/>
+		<result property="dschItdrNm" column="DSCH_ITDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzErPtntInfmInvsDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzErPtntInfmInvsDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzErPtntInfmInvsDAO-selectOne-result" useCache="true" flushCache="false">
+		select a.MCDP_CD
+		     , h.ABRV_DPRT_CD as MCDP_ABRV_CD
+		     , h.KORN_DPRT_NM as MCDP_NM
+		     , a.DSCH_ITDR_ID
+		     , (select s.USER_NM 
+		          from CCUSRDPHT s 
+		         where s.USER_ID = a.DSCH_ITDR_ID ) as DSCH_ITDR_NM               
+		  from MNEERRPAT a
+		     , HZDEPTMMT h
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.MCDP_CD= h.DPRT_CD
+		   and rownum =1 
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpCnosDamtInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpCnosDamtInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="cnosRcrdNo" column="CNOS_RCRD_NO"/>
+		<result property="cnosRckiCd" column="CNOS_RCKI_CD"/>
+		<result property="cnosItemNm" column="CNOS_ITEM_NM"/>
+		<result property="cnosItemSno" column="CNOS_ITEM_SNO"/>
+		<result property="cnosDetlItemSno" column="CNOS_DETL_ITEM_SNO"/>
+		<result property="cnosItemRcrdVl" column="CNOS_ITEM_RCRD_VL"/>
+		<result property="cnosItemRcrdDt" column="CNOS_ITEM_RCRD_DT"/>
+		<result property="cnosSiteCd" column="CNOS_SITE_CD"/>
+		<result property="crtfYn" column="CRTF_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-listCnosRcrd */
+		<![CDATA[
+		SELECT
+		    PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM
+		  ( 
+		SELECT  
+		           DOMT.PTNO,                           
+		           DOMT.CNOS_RCRD_NO,                   
+		           DOMT.CNOS_RCKI_CD,                   
+		           DOMT.CODV_CD,                        
+		           DOMT.MDRP_NO,                        
+		           ITMT.CNOS_ITEM_NM,                   
+		           CASE 
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('N','T','NS','EX','R','V','I','TM') THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL) THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO > 0 ) THEN IRDT.CNOS_ITEM_DETL_RCRD_VL          
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('MC','MNC','MVC','MIC') THEN IRST.CNOS_SITE_RCRD_VL
+		           END AS CNOS_ITEM_RCRD_VL,
+		           IRMT.CNOS_ITEM_RCRD_DT,               
+		           IRMT.CNOS_ITEM_SNO,                  
+		           IRMT.CNOS_ITEM_GRP_SNO,              
+		           IRMT.CNOS_ITEM_STUP_SNO,             
+		           IRMT.CRTF_YN,                        
+		           DOMT.MCDP_CD,                        
+		           IRDT.CNOS_DETL_ITEM_SNO,             
+		           IRST.CNOS_SITE_CD
+		      FROM MECFSDOMT  DOMT, /* 임상관찰기록 */
+		           MECFSIRMT  IRMT, /* 임상관찰항목기록 */
+		           MECFSIRDT  IRDT,  /* 임상관찰항목상세기록*/
+		           MECFSIRST  IRST,  /* 임상관찰기록 부위별 상세 기록 */
+		           MECFSITMT  ITMT,/* 임상관찰항목 */
+		           MECFSDAMT  DAMT/* DAMT편의기능 */
+		     WHERE 1=1
+		           AND DOMT.PTNO = #{ptno}
+		           AND DOMT.CNOS_RCRD_NO = IRMT.CNOS_RCRD_NO           
+		           AND IRMT.CNOS_ITEM_SNO = ITMT.CNOS_ITEM_SNO           
+		           AND IRMT.CNOS_RCRD_NO = IRDT.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO = IRDT.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO = IRDT.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO = IRDT.CNOS_ITEM_STUP_SNO(+)           
+		           AND IRMT.CNOS_ITEM_RCRD_SNO = IRDT.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT  = IRDT.CNOS_ITEM_RCRD_DT(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO      = IRST.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO          = IRST.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_RCRD_NO           = IRST.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_SNO     = IRST.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO     = IRST.CNOS_ITEM_STUP_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT      = IRST.CNOS_ITEM_RCRD_DT(+)                           
+		           AND IRMT.CRTF_YN = NVL(#{crtfYn}, IRMT.CRTF_YN)
+		           AND NVL (IRMT.DLTN_YN, 'N') = 'N'           
+		           AND IRMT.CNOS_ITEM_RCRD_DT BETWEEN TO_DATE (#{inqrStrtYmd}, 'YYYYMMDD') AND TO_DATE (#{inqrFnshYmd}, 'YYYYMMDD') + 0.99999           
+		           AND IRMT.CNOS_ITEM_SNO = DAMT.CNOS_ITEM_SNO           
+		           AND (
+		           ((DAMT.CNOS_DETL_ITEM_SNO <> 0 AND DAMT.CNOS_DETL_ITEM_SNO IS NOT NULL) AND 
+		           (IRST.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO OR IRDT.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO)) 
+		           OR
+		           (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL)
+		              )
+		           AND (
+		           ((DAMT.CNOS_SITE_CD IS NOT NULL) AND 
+		            (IRST.CNOS_SITE_CD = DAMT.CNOS_SITE_CD)) 
+		           OR
+		           (DAMT.CNOS_SITE_CD IS NULL)
+		              )           
+		           AND DAMT.SMSP_ID = #{smspId}
+		           AND DAMT.CNOS_RCRD_ITEM_SYNN_NM = #{cnosRcrdItemSynnNm}
+		)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="cnosRcrdNo" column="CNOS_RCRD_NO"/>
+		<result property="cnosRckiCd" column="CNOS_RCKI_CD"/>
+		<result property="cnosItemNm" column="CNOS_ITEM_NM"/>
+		<result property="cnosItemSno" column="CNOS_ITEM_SNO"/>
+		<result property="cnosDetlItemSno" column="CNOS_DETL_ITEM_SNO"/>
+		<result property="cnosItemRcrdVl" column="CNOS_ITEM_RCRD_VL"/>
+		<result property="cnosItemRcrdDt" column="CNOS_ITEM_RCRD_DT"/>
+		<result property="cnosSiteCd" column="CNOS_SITE_CD"/>
+		<result property="crtfYn" column="CRTF_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMax */
+		<![CDATA[
+		WITH CNOS_RCRD AS
+		(
+			SELECT
+		    PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM
+		  ( 
+			SELECT  
+		           DOMT.PTNO,                           
+		           DOMT.CNOS_RCRD_NO,                   
+		           DOMT.CNOS_RCKI_CD,                   
+		           DOMT.CODV_CD,                        
+		           DOMT.MDRP_NO,                        
+		           ITMT.CNOS_ITEM_NM,                   
+		           CASE 
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('N','T','NS','EX','R','V','I','TM') THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL) THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO > 0 ) THEN IRDT.CNOS_ITEM_DETL_RCRD_VL          
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('MC','MNC','MVC','MIC') THEN IRST.CNOS_SITE_RCRD_VL
+		           END AS CNOS_ITEM_RCRD_VL,
+		           IRMT.CNOS_ITEM_RCRD_DT,               
+		           IRMT.CNOS_ITEM_SNO,                  
+		           IRMT.CNOS_ITEM_GRP_SNO,              
+		           IRMT.CNOS_ITEM_STUP_SNO,             
+		           IRMT.CRTF_YN,                        
+		           DOMT.MCDP_CD,                        
+		           IRDT.CNOS_DETL_ITEM_SNO,             
+		           IRST.CNOS_SITE_CD
+		      FROM MECFSDOMT  DOMT, /* 임상관찰기록 */
+		           MECFSIRMT  IRMT, /* 임상관찰항목기록 */
+		           MECFSIRDT  IRDT,  /* 임상관찰항목상세기록*/
+		           MECFSIRST  IRST,  /* 임상관찰기록 부위별 상세 기록 */
+		           MECFSITMT  ITMT,/* 임상관찰항목 */
+		           MECFSDAMT  DAMT/* DAMT편의기능 */
+		     WHERE 1=1
+		           AND DOMT.PTNO = #{ptno}
+		           AND DOMT.CNOS_RCRD_NO = IRMT.CNOS_RCRD_NO           
+		           AND IRMT.CNOS_ITEM_SNO = ITMT.CNOS_ITEM_SNO           
+		           AND IRMT.CNOS_RCRD_NO = IRDT.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO = IRDT.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO = IRDT.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO = IRDT.CNOS_ITEM_STUP_SNO(+)           
+		           AND IRMT.CNOS_ITEM_RCRD_SNO = IRDT.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT  = IRDT.CNOS_ITEM_RCRD_DT(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO      = IRST.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO          = IRST.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_RCRD_NO           = IRST.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_SNO     = IRST.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO     = IRST.CNOS_ITEM_STUP_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT      = IRST.CNOS_ITEM_RCRD_DT(+)                           
+		           AND IRMT.CRTF_YN = NVL(#{crtfYn}, IRMT.CRTF_YN)
+		           AND NVL (IRMT.DLTN_YN, 'N') = 'N'           
+		           AND IRMT.CNOS_ITEM_RCRD_DT BETWEEN TO_DATE (#{inqrStrtYmd}, 'YYYYMMDD') AND TO_DATE (#{inqrFnshYmd}, 'YYYYMMDD') + 0.99999           
+		           AND IRMT.CNOS_ITEM_SNO = DAMT.CNOS_ITEM_SNO           
+		           AND (
+		           ((DAMT.CNOS_DETL_ITEM_SNO <> 0 AND DAMT.CNOS_DETL_ITEM_SNO IS NOT NULL) AND 
+		           (IRST.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO OR IRDT.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO)) 
+		           OR
+		           (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL)
+		              )
+		           AND (
+		           ((DAMT.CNOS_SITE_CD IS NOT NULL) AND 
+		            (IRST.CNOS_SITE_CD = DAMT.CNOS_SITE_CD)) 
+		           OR
+		           (DAMT.CNOS_SITE_CD IS NULL)
+		              )           
+		           AND DAMT.SMSP_ID = #{smspId}
+		           AND DAMT.CNOS_RCRD_ITEM_SYNN_NM = #{cnosRcrdItemSynnNm}
+		     ) A
+		)
+		SELECT
+			PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM CNOS_RCRD
+		 WHERE 1=1
+		   AND (CNOS_ITEM_RCRD_DT, CNOS_ITEM_RCRD_VL) IN (
+															SELECT
+															    MAX(CNOS_ITEM_RCRD_DT) KEEP (DENSE_RANK FIRST ORDER BY CNOS_ITEM_RCRD_VL DESC, CNOS_ITEM_RCRD_DT),
+															    MAX(CNOS_ITEM_RCRD_VL)
+															  FROM CNOS_RCRD
+													     )
+		   AND ROWNUM = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="cnosRcrdNo" column="CNOS_RCRD_NO"/>
+		<result property="cnosRckiCd" column="CNOS_RCKI_CD"/>
+		<result property="cnosItemNm" column="CNOS_ITEM_NM"/>
+		<result property="cnosItemSno" column="CNOS_ITEM_SNO"/>
+		<result property="cnosDetlItemSno" column="CNOS_DETL_ITEM_SNO"/>
+		<result property="cnosItemRcrdVl" column="CNOS_ITEM_RCRD_VL"/>
+		<result property="cnosItemRcrdDt" column="CNOS_ITEM_RCRD_DT"/>
+		<result property="cnosSiteCd" column="CNOS_SITE_CD"/>
+		<result property="crtfYn" column="CRTF_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMin */
+		<![CDATA[
+		WITH CNOS_RCRD AS
+		(
+			SELECT
+		    PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM
+		  ( 
+			SELECT  
+		           DOMT.PTNO,                           
+		           DOMT.CNOS_RCRD_NO,                   
+		           DOMT.CNOS_RCKI_CD,                   
+		           DOMT.CODV_CD,                        
+		           DOMT.MDRP_NO,                        
+		           ITMT.CNOS_ITEM_NM,                   
+		           CASE 
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('N','T','NS','EX','R','V','I','TM') THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL) THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO > 0 ) THEN IRDT.CNOS_ITEM_DETL_RCRD_VL          
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('MC','MNC','MVC','MIC') THEN IRST.CNOS_SITE_RCRD_VL
+		           END AS CNOS_ITEM_RCRD_VL,
+		           IRMT.CNOS_ITEM_RCRD_DT,               
+		           IRMT.CNOS_ITEM_SNO,                  
+		           IRMT.CNOS_ITEM_GRP_SNO,              
+		           IRMT.CNOS_ITEM_STUP_SNO,             
+		           IRMT.CRTF_YN,                        
+		           DOMT.MCDP_CD,                        
+		           IRDT.CNOS_DETL_ITEM_SNO,             
+		           IRST.CNOS_SITE_CD
+		      FROM MECFSDOMT  DOMT, /* 임상관찰기록 */
+		           MECFSIRMT  IRMT, /* 임상관찰항목기록 */
+		           MECFSIRDT  IRDT,  /* 임상관찰항목상세기록*/
+		           MECFSIRST  IRST,  /* 임상관찰기록 부위별 상세 기록 */
+		           MECFSITMT  ITMT,/* 임상관찰항목 */
+		           MECFSDAMT  DAMT/* DAMT편의기능 */
+		     WHERE 1=1
+		           AND DOMT.PTNO = #{ptno}
+		           AND DOMT.CNOS_RCRD_NO = IRMT.CNOS_RCRD_NO           
+		           AND IRMT.CNOS_ITEM_SNO = ITMT.CNOS_ITEM_SNO           
+		           AND IRMT.CNOS_RCRD_NO = IRDT.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO = IRDT.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO = IRDT.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO = IRDT.CNOS_ITEM_STUP_SNO(+)           
+		           AND IRMT.CNOS_ITEM_RCRD_SNO = IRDT.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT  = IRDT.CNOS_ITEM_RCRD_DT(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO      = IRST.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO          = IRST.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_RCRD_NO           = IRST.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_SNO     = IRST.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO     = IRST.CNOS_ITEM_STUP_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT      = IRST.CNOS_ITEM_RCRD_DT(+)                           
+		           AND IRMT.CRTF_YN = NVL(#{crtfYn}, IRMT.CRTF_YN)
+		           AND NVL (IRMT.DLTN_YN, 'N') = 'N'           
+		           AND IRMT.CNOS_ITEM_RCRD_DT BETWEEN TO_DATE (#{inqrStrtYmd}, 'YYYYMMDD') AND TO_DATE (#{inqrFnshYmd}, 'YYYYMMDD') + 0.99999           
+		           AND IRMT.CNOS_ITEM_SNO = DAMT.CNOS_ITEM_SNO           
+		           AND (
+		           ((DAMT.CNOS_DETL_ITEM_SNO <> 0 AND DAMT.CNOS_DETL_ITEM_SNO IS NOT NULL) AND 
+		           (IRST.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO OR IRDT.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO)) 
+		           OR
+		           (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL)
+		              )
+		           AND (
+		           ((DAMT.CNOS_SITE_CD IS NOT NULL) AND 
+		            (IRST.CNOS_SITE_CD = DAMT.CNOS_SITE_CD)) 
+		           OR
+		           (DAMT.CNOS_SITE_CD IS NULL)
+		              )           
+		           AND DAMT.SMSP_ID = #{smspId}
+		           AND DAMT.CNOS_RCRD_ITEM_SYNN_NM = #{cnosRcrdItemSynnNm}
+			) A
+		)
+		SELECT
+			PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM CNOS_RCRD
+		 WHERE 1=1
+		   AND (CNOS_ITEM_RCRD_DT, CNOS_ITEM_RCRD_VL) IN (
+															SELECT
+															    MIN(CNOS_ITEM_RCRD_DT) KEEP (DENSE_RANK LAST ORDER BY CNOS_ITEM_RCRD_VL DESC, CNOS_ITEM_RCRD_DT),
+															    MIN(CNOS_ITEM_RCRD_VL)
+															  FROM CNOS_RCRD
+													     )
+		AND ROWNUM = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="cnosRcrdNo" column="CNOS_RCRD_NO"/>
+		<result property="cnosRckiCd" column="CNOS_RCKI_CD"/>
+		<result property="cnosItemNm" column="CNOS_ITEM_NM"/>
+		<result property="cnosItemSno" column="CNOS_ITEM_SNO"/>
+		<result property="cnosDetlItemSno" column="CNOS_DETL_ITEM_SNO"/>
+		<result property="cnosItemRcrdVl" column="CNOS_ITEM_RCRD_VL"/>
+		<result property="cnosItemRcrdDt" column="CNOS_ITEM_RCRD_DT"/>
+		<result property="cnosSiteCd" column="CNOS_SITE_CD"/>
+		<result property="crtfYn" column="CRTF_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnosDamtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnosDamtInqrDAO-selectOneCnosRcrdMostRecent */
+		<![CDATA[
+		WITH CNOS_RCRD AS
+		(
+			SELECT
+		    PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM
+		  ( 
+			SELECT  
+		           DOMT.PTNO,                           
+		           DOMT.CNOS_RCRD_NO,                   
+		           DOMT.CNOS_RCKI_CD,                   
+		           DOMT.CODV_CD,                        
+		           DOMT.MDRP_NO,                        
+		           ITMT.CNOS_ITEM_NM,                   
+		           CASE 
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('N','T','NS','EX','R','V','I','TM') THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL) THEN IRMT.CNOS_ITEM_RCRD_VL
+		           	WHEN (ITMT.CNOS_ITEM_INPT_TYP_CD IN ('M','MN','MT','MV','MVS')) AND (DAMT.CNOS_DETL_ITEM_SNO > 0 ) THEN IRDT.CNOS_ITEM_DETL_RCRD_VL          
+		           	WHEN ITMT.CNOS_ITEM_INPT_TYP_CD IN ('MC','MNC','MVC','MIC') THEN IRST.CNOS_SITE_RCRD_VL
+		           END AS CNOS_ITEM_RCRD_VL,
+		           IRMT.CNOS_ITEM_RCRD_DT,               
+		           IRMT.CNOS_ITEM_SNO,                  
+		           IRMT.CNOS_ITEM_GRP_SNO,              
+		           IRMT.CNOS_ITEM_STUP_SNO,             
+		           IRMT.CRTF_YN,                        
+		           DOMT.MCDP_CD,                        
+		           IRDT.CNOS_DETL_ITEM_SNO,             
+		           IRST.CNOS_SITE_CD
+		      FROM MECFSDOMT  DOMT, /* 임상관찰기록 */
+		           MECFSIRMT  IRMT, /* 임상관찰항목기록 */
+		           MECFSIRDT  IRDT,  /* 임상관찰항목상세기록*/
+		           MECFSIRST  IRST,  /* 임상관찰기록 부위별 상세 기록 */
+		           MECFSITMT  ITMT,/* 임상관찰항목 */
+		           MECFSDAMT  DAMT/* DAMT편의기능 */
+		     WHERE 1=1
+		           AND DOMT.PTNO = #{ptno}
+		           AND DOMT.CNOS_RCRD_NO = IRMT.CNOS_RCRD_NO           
+		           AND IRMT.CNOS_ITEM_SNO = ITMT.CNOS_ITEM_SNO           
+		           AND IRMT.CNOS_RCRD_NO = IRDT.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO = IRDT.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO = IRDT.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO = IRDT.CNOS_ITEM_STUP_SNO(+)           
+		           AND IRMT.CNOS_ITEM_RCRD_SNO = IRDT.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT  = IRDT.CNOS_ITEM_RCRD_DT(+)
+		           AND IRMT.CNOS_ITEM_GRP_SNO      = IRST.CNOS_ITEM_GRP_SNO(+)
+		           AND IRMT.CNOS_ITEM_SNO          = IRST.CNOS_ITEM_SNO(+)
+		           AND IRMT.CNOS_RCRD_NO           = IRST.CNOS_RCRD_NO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_SNO     = IRST.CNOS_ITEM_RCRD_SNO(+)
+		           AND IRMT.CNOS_ITEM_STUP_SNO     = IRST.CNOS_ITEM_STUP_SNO(+)
+		           AND IRMT.CNOS_ITEM_RCRD_DT      = IRST.CNOS_ITEM_RCRD_DT(+)                           
+		           AND IRMT.CRTF_YN = NVL(#{crtfYn}, IRMT.CRTF_YN)
+		           AND NVL (IRMT.DLTN_YN, 'N') = 'N'           
+		           AND IRMT.CNOS_ITEM_RCRD_DT BETWEEN TO_DATE (#{inqrStrtYmd}, 'YYYYMMDD') AND TO_DATE (#{inqrFnshYmd}, 'YYYYMMDD') + 0.99999           
+		           AND IRMT.CNOS_ITEM_SNO = DAMT.CNOS_ITEM_SNO           
+		           AND (
+		           ((DAMT.CNOS_DETL_ITEM_SNO <> 0 AND DAMT.CNOS_DETL_ITEM_SNO IS NOT NULL) AND 
+		           (IRST.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO OR IRDT.CNOS_DETL_ITEM_SNO = DAMT.CNOS_DETL_ITEM_SNO)) 
+		           OR
+		           (DAMT.CNOS_DETL_ITEM_SNO = 0 OR DAMT.CNOS_DETL_ITEM_SNO IS NULL)
+		              )
+		           AND (
+		           ((DAMT.CNOS_SITE_CD IS NOT NULL) AND 
+		            (IRST.CNOS_SITE_CD = DAMT.CNOS_SITE_CD)) 
+		           OR
+		           (DAMT.CNOS_SITE_CD IS NULL)
+		              )           
+		           AND DAMT.SMSP_ID = #{smspId}
+		           AND DAMT.CNOS_RCRD_ITEM_SYNN_NM = #{cnosRcrdItemSynnNm}
+			) A
+		)
+		SELECT
+			PTNO,					/* 환자번호 */
+		    CODV_CD,				/* 내원구분코드 */
+		    MCDP_CD,				/* 진료과코드 */
+		    MDRP_NO,				/* 진료접수번호 */
+		    CNOS_RCRD_NO,			/* 임상관찰기록일련번호*/
+		    CNOS_RCKI_CD,			/* 기록종류코드 */    
+		    CNOS_ITEM_NM,			/* 임상관찰항목명 */
+		    CNOS_ITEM_SNO,			/* 임상관찰항목일련번호*/
+		    CNOS_DETL_ITEM_SNO,     /* 임상관찰항목상세일련번호*/
+		    CNOS_ITEM_RCRD_VL,		/* 임상관찰항목기록 */
+		    CNOS_ITEM_RCRD_DT,    	/* 임상관찰항목기록일시 */
+		    CNOS_SITE_CD,			/* 임상관찰부위코드 */    
+		    CRTF_YN					/* 인증저장여부 */
+		  FROM CNOS_RCRD
+		 WHERE 1=1
+		   AND (CNOS_ITEM_RCRD_DT) IN (
+										SELECT
+										    MAX(CNOS_ITEM_RCRD_DT)							
+										  FROM CNOS_RCRD
+		  						      )
+		   AND ROWNUM = 1
+		]]>
+	</select>
+
+
+
+</mapper>

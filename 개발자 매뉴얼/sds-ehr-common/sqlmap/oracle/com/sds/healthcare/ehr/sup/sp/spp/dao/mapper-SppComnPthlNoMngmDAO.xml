@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SppComnPthlNoMngmDAO_sql.xml 
+    Description :                                      병리번호관리 DAO
+                  -->
+<mapper namespace="SppComnPthlNoMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-insertPthlNornInfmRgstPrsg (병리채번정보등록처리) 
+        Description :                                           spd_ipthlno_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlNoMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-insertPthlNornInfmRgstPrsg"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlNoMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-insertPthlNornInfmRgstPrsg */
+		    insert  /*+ spd_ipthlno_i01$I01_병리번호신규등록 */ 
+		    into  SPASEQNOT
+		             (
+		                    PTEX_NORN_LRCL_CD
+		                 ,  PTEX_NORN_YY
+		                 ,  SNO
+		                  /* 서버 프로그램 전환시 자동 추가된 항목 */
+		                  ,  FRST_RGSR_ID
+		                  ,  FRST_RGST_IP
+		                  ,  FRST_RGST_DT
+		                  ,  FRST_RGST_CLNT_PRGM_ID
+		                  ,  FRST_RGST_SRVR_PRGM_ID
+		                  ,  LAST_UPDR_ID
+		                  ,  LAST_UPDT_IP
+		                  ,  LAST_UPDT_DT
+		                  ,  LAST_UPDT_CLNT_PRGM_ID
+		                  ,  LAST_UPDT_SRVR_PRGM_ID
+		             )
+		        values
+		             (
+		                     #{pthlNo}
+		                  , (select to_char(sysdate, 'yyyy')
+		                       from dual)
+		                  ,  decode(nvl(#{sno}, 0), 0, 1, #{sno})
+		                  /* 서버 프로그램 전환시 자동 추가된 항목 */
+		                  ,  #{gvUserId}
+		                  ,  #{gvUserIp}
+		                  ,  sysdate
+		                  ,  #{gvClntPrgmId}
+		                  ,  #{gvSrvrPrgmId}
+		                  ,  #{gvUserId}
+		                  ,  #{gvUserIp}
+		                  ,  sysdate
+		                  ,  #{gvClntPrgmId}
+		                  ,  #{gvSrvrPrgmId}
+		             )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-updatePthlNornInfmUpdtPrsg (병리채번정보수정처리) 
+        Description :                                           spd_upthlno_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlNoMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-updatePthlNornInfmUpdtPrsg"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlNoMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlNoMngmDAO-updatePthlNornInfmUpdtPrsg */
+		update  SPASEQNOT
+		   set  SNO = decode(nvl(#{sno}, 0), 0, (select  SNO + 1
+		                                           from  SPASEQNOT
+		                                          where  PTEX_NORN_LRCL_CD = #{pthlNo}
+		                                            and  PTEX_NORN_YY = (select to_char(sysdate, 'yyyy') from dual)  )
+		                                   , #{sno}) 		/* 일련번호 */
+		     /* 서버 프로그램 전환시 자동 추가된 항목 */
+			 ,  LAST_UPDR_ID = #{gvUserId}
+			 ,  LAST_UPDT_IP = #{gvUserIp}
+			 ,  LAST_UPDT_DT = sysdate
+			 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  PTEX_NORN_LRCL_CD = #{pthlNo}
+		   and  PTEX_NORN_YY = (select to_char(sysdate, 'yyyy') from dual)
+	</update>
+
+</mapper>

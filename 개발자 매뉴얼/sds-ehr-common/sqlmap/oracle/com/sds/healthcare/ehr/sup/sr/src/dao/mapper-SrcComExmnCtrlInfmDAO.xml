@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrcComExmnCtrlInfmDAO_sql.xml 
+    Description :                                      공통) 검사제어코드
+                  -->
+<mapper namespace="SrcComExmnCtrlInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn-result" type="com.sds.healthcare.ehr.sup.sr.src.vo.SrcComExmnCtrlInfmDVO">
+	
+		<result property="exmnCtrlCd" column="EXMN_CTRL_CD"/>
+		<result property="exmnDtlsCtrlCd" column="EXMN_DTLS_CTRL_CD"/>
+		<result property="exmnDtlsCtrlNm" column="EXMN_DTLS_CTRL_NM"/>
+		<result property="exmnCtrlChrcVl1" column="EXMN_CTRL_CHRC_VL1"/>
+		<result property="exmnCtrlChrcVl2" column="EXMN_CTRL_CHRC_VL2"/>
+		<result property="exmnCtrlChrcVl3" column="EXMN_CTRL_CHRC_VL3"/>
+		<result property="ctrlSortSqnc" column="CTRL_SORT_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn (영상의학 portable검사 시간대 정보) 
+        Description :                                           영상의학 portable검사 시간대 정보
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcComExmnCtrlInfmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcComExmnCtrlInfmDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcComExmnCtrlInfmDAO-listPrtbTmzn */
+		  select EXMN_CTRL_CD       /* 대분류코드  */
+		       , EXMN_DTLS_CTRL_CD  /* 소분류코드  */
+		       , EXMN_DTLS_CTRL_NM  /* 시간대 명칭 */
+		       , EXMN_CTRL_CHRC_VL1  /* 시간 (WNTD_DT - hh24:mi:ss) */
+		       , EXMN_CTRL_CHRC_VL2 /* 마감시간 */
+		       , EXMN_CTRL_CHRC_VL3 /* 공휴일 여부 */
+		       , CTRL_SORT_SQNC
+		    from SZCTRLMMT
+		   where EXMN_CTRL_CD = 'SRA_100'
+		   and APLY_PART_CD = 'SR'
+		     and nvl(EXMN_CTRL_CHRC_VL3, 'N') = nvl((select 'Y'
+		                                               from APDSPBHLT
+		                                              where HLDY_YMD =  to_date(#{hldyYmd}, 'yyyyMMdd')
+		                                                and HSPT_MDCR_YN = 'N'), 'N')
+		  order by CTRL_SORT_SQNC
+	</select>
+
+
+
+</mapper>

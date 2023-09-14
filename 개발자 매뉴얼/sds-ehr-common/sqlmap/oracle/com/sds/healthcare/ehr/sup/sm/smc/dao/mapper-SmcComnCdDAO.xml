@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmcComnCdDAO_sql.xml 
+    Description :                                      SmcComnCdDAO 클래스
+                  -->
+<mapper namespace="SmcComnCdDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt () 
+        Description :                                           ACS코멘트조회 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt-result" useCache="true" flushCache="false">
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listAcsCmnt*/
+		<![CDATA[
+		   select  /*+ smd_cmcddmt_l02$S01_ACS코멘트조회 DAM */
+				   max(decode(SCRN_DSPL_SQNC, 1, DETL_CD_NM, 0))  as DETL_CD_NM_1
+				,  max(decode(SCRN_DSPL_SQNC, 2, DETL_CD_NM, 0))  as DETL_CD_NM_2
+				,  max(decode(SCRN_DSPL_SQNC, 3, DETL_CD_NM, 0))  as DETL_CD_NM_3
+			 from  CCCMCDDMT
+			where  COMN_GRP_CD = #{comnGrpCd}
+			union  all
+		   select  max(decode(SCRN_DSPL_SQNC, 4, DETL_CD_NM, 0)) DETL_CD_NM1
+				,  max(decode(SCRN_DSPL_SQNC, 5, DETL_CD_NM, 0)) DETL_CD_NM2
+				,  max(decode(SCRN_DSPL_SQNC, 6, DETL_CD_NM, 0)) DETL_CD_NM3
+			 from  CCCMCDDMT
+			where  COMN_GRP_CD =#{comnGrpCd}
+			union  all
+		   select  max(decode(SCRN_DSPL_SQNC, 7, DETL_CD_NM, 0)) DETL_CD_NM1
+				,  max(decode(SCRN_DSPL_SQNC, 8, DETL_CD_NM, 0)) DETL_CD_NM2
+				,  max(decode(SCRN_DSPL_SQNC, 9, DETL_CD_NM, 0)) DETL_CD_NM3
+			 from  CCCMCDDMT
+			where  COMN_GRP_CD = #{comnGrpCd}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="srchCdNm" column="SRCH_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd () 
+        Description :                                           건진 공통코드 상세코드별 조회 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnCdDetlCd*/
+				   a.COMN_GRP_CD as COMN_GRP_CD /*  공통그룹코드 */
+				,  a.COMN_DTLS_CD as COMN_DTLS_CD /*  공통세부코드 */
+				,  a.DETL_CD_NM as DETL_CD_NM /*  상세코드명 */
+				,  a.SCRN_DSPL_SQNC as SCRN_DSPL_SQNC /*  화면표시순서 */
+				,  a.COMN_DTLS_CD || ' - ' || a.DETL_CD_NM as SRCH_CD_NM /*  검색코드명 */
+			 from  CCCMCDDMT a
+			where  a.COMN_GRP_CD = #{comnGrpCd}
+			  and  a.COMN_DTLS_CD = nvl(#{comnDtlsCd}, a.COMN_DTLS_CD)
+			  and  nvl(#{inqrYmd}, sysdate) between a.APST_YMD and a.APFN_YMD + .99999
+			  and  decode(#{inqrCndtCtn}, '', 1, regexp_instr(#{inqrCndtCtn}, a.COMN_DTLS_CD)) > 0
+			order
+			   by  a.COMN_DTLS_CD
+				,  a.SCRN_DSPL_SQNC
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="grpCdNm" column="GRP_CD_NM"/>
+		<result property="grpCdDscrCtn" column="GRP_CD_DSCR_CTN"/>
+		<result property="listCdTablNm" column="LIST_CD_TABL_NM"/>
+		<result property="asigSystId" column="ASIG_SYST_ID"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="chlscTrgtYn" column="CHLSC_TRGT_YN"/>
+		<result property="ghlscTrgtYn" column="GHLSC_TRGT_YN"/>
+		<result property="shlscTrgtYn" column="SHLSC_TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn */
+		       a.comn_grp_cd
+		     , a.grp_cd_nm
+		     , a.grp_cd_dscr_ctn
+		     , a.list_cd_tabl_nm
+		     , a.asig_syst_id
+		     , b.comn_dtls_cd
+		     , b.detl_cd_nm
+		     , b.detl_cd_dscr_ctn
+		     , b.scrn_dspl_sqnc
+		     , c1.comn_item_chrc_vl as chlsc_trgt_yn
+		     , c2.comn_item_chrc_vl as ghlsc_trgt_yn
+		     , c3.comn_item_chrc_vl as shlsc_trgt_yn
+		  from cccmcdmmt a
+		     , cccmcddmt b
+		     , cccmcdidt c1
+		     , cccmcdidt c2
+		     , cccmcdidt c3
+		 where 1=1
+		   and b.comn_grp_cd = a.comn_grp_cd
+		<choose>
+		    <when test='afiPrsgNm == "comnGrpCd_comnDtlsCd"'>
+		<!-- #{afiPrsgNm} -->
+		   and a.comn_grp_cd = #{comnGrpCd}
+		   and b.comn_dtls_cd = #{comnDtlsCd}
+		    </when>    
+		    <otherwise>
+		        <if test='comnGrpCdListList != null'>
+		        <!-- #{comnGrpCdList} -->
+		   and a.comn_grp_cd in 
+		            <foreach item='item' index='index' collection='comnGrpCdListList' open='(' separator=',' close=')'>
+		                #{item}
+		            </foreach>   
+		        </if>
+		        <if test='comnGrpCdListList == null'>
+		   and a.comn_grp_cd = #{comnGrpCd}
+		        </if>
+		    </otherwise>
+		</choose>
+		   and sysdate between b.apst_ymd and b.apfn_ymd
+		   and c1.comn_grp_cd(+) = b.comn_grp_cd
+		   and c1.comn_dtls_cd(+) = b.comn_dtls_cd
+		   and c1.comn_item_cd(+) = 'CHLSC_TRGT_YN'
+		   and c2.comn_grp_cd(+) = b.comn_grp_cd
+		   and c2.comn_dtls_cd(+) = b.comn_dtls_cd
+		   and c2.comn_item_cd(+) = 'GHLSC_TRGT_YN'
+		   and c3.comn_grp_cd(+) = b.comn_grp_cd
+		   and c3.comn_dtls_cd(+) = b.comn_dtls_cd
+		   and c3.comn_item_cd(+) = 'SHLSC_TRGT_YN'
+		 order by 
+		       a.comn_grp_cd
+		     , b.scrn_dspl_sqnc    
+		     , b.comn_dtls_cd
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComn2 */ 
+		       A.COMN_DTLS_CD                                                   as COMN_DTLS_CD                             /*  공통세부코드       */
+		     , A.DETL_CD_NM                                  as DETL_CD_NM  /*  상세코드명         */
+		     , a.DETL_CD_DSCR_CTN                                               as DETL_CD_DSCR_CTN
+		     , A.COMN_DTLS_CD || ' - ' || A.DETL_CD_NM       as DETL_CD_NM_1
+		  from CCCMCDDMT A                                                  
+		 where A.COMN_GRP_CD = #{comnGrpCd}
+		<choose>
+			<when test='afiPrsgNm == "comnDtlsCd_like"'>
+		    <!-- #{afiPrsgNm} -->
+		   and A.COMN_DTLS_CD like upper(pa_sm.set_ec(#{comnDtlsCd})) || '%' escape pa_sm.ec
+		    </when>
+			<otherwise>
+		        <if test='comnDtlsCd != null'>
+		   and A.COMN_DTLS_CD = #{comnDtlsCd}
+		        </if>
+			</otherwise>
+		</choose>
+		<if test='detlCdNm != null and detlCdNm != "" '>   
+		   and A.DETL_CD_NM like '%' || upper(pa_sm.set_ec(#{detlCdNm} )) || '%' escape pa_sm.ec
+		</if>
+		   and sysdate between A.APST_YMD and A.APFN_YMD   
+		<choose>
+		    <when test='chlscTrgtYn == "Y"'>
+		   <!-- #{chlscTrgtYn} -->
+		   and exists (
+		              select 1 
+		                from cccmcdidt b 
+		               where b.comn_grp_cd = a.comn_grp_cd
+		                 and b.comn_dtls_cd = a.comn_dtls_cd
+		                 and b.comn_item_cd = 'CHLSC_TRGT_YN'
+		                 and b.comn_item_chrc_vl = 'Y'
+		              )
+		    </when>
+		    <when test='ghlscTrgtYn == "Y"'>
+		   <!-- #{ghlscTrgtYn} -->
+		   and exists (
+		              select 1 
+		                from cccmcdidt b 
+		               where b.comn_grp_cd = a.comn_grp_cd
+		                 and b.comn_dtls_cd = a.comn_dtls_cd
+		                 and b.comn_item_cd = 'GHLSC_TRGT_YN'
+		                 and b.comn_item_chrc_vl = 'Y'
+		              )
+		    </when>
+		    <when test='shlscTrgtYn == "Y"'>
+		   <!-- #{shlscTrgtYn} -->
+		   and exists (
+		              select 1 
+		                from cccmcdidt b 
+		               where b.comn_grp_cd = a.comn_grp_cd
+		                 and b.comn_dtls_cd = a.comn_dtls_cd
+		                 and b.comn_item_cd = 'SHLSC_TRGT_YN'
+		                 and b.comn_item_chrc_vl = 'Y'
+		              )
+		    </when>
+		</choose>
+		 order by 
+		       nvl(A.SCRN_DSPL_SQNC, 0)
+		     , A.COMN_DTLS_CD   
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemNm" column="COMN_ITEM_NM"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-listComnItem */
+		       A.COMN_DTLS_CD           as COMN_DTLS_CD
+		     , A.COMN_ITEM_CD           as COMN_ITEM_CD
+		     , B.COMN_ITEM_NM           as COMN_ITEM_NM
+		     , A.COMN_ITEM_CHRC_VL      as COMN_ITEM_CHRC_VL
+		  from CCCMCDIDT A
+		     , CCCMCDIMT B
+		 where A.COMN_GRP_CD  = #{comnGrpCd}
+		   and B.COMN_GRP_CD = A.COMN_GRP_CD
+		   and B.COMN_ITEM_CD = A.COMN_ITEM_CD
+		   and sysdate between B.APST_YMD and B.APFN_YMD
+		<if test='detlCdNm != null and detlCdNm != "" '>   
+		   and A.COMN_ITEM_CHRC_VL like '%' || upper(pa_sm.set_ec(#{detlCdNm} )) || '%' escape pa_sm.ec
+		</if>
+		<if test='comnDtlsCd != null'>
+		   and A.COMN_DTLS_CD = #{comnDtlsCd}
+		</if>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnCdDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnCdDAO-selectOneCccmcdidt */
+		       COMN_GRP_CD as COMN_GRP_CD
+		     , COMN_DTLS_CD as COMN_DTLS_CD
+		     , COMN_ITEM_CD as COMN_ITEM_CD
+		     , COMN_ITEM_CHRC_VL as COMN_ITEM_CHRC_VL
+		  from cccmcdidt
+		 where COMN_GRP_CD = #{comnGrpCd}
+		   and COMN_DTLS_CD = #{comnDtlsCd}
+		   and COMN_ITEM_CD = #{comnItemCd}
+	</select>
+
+
+
+</mapper>

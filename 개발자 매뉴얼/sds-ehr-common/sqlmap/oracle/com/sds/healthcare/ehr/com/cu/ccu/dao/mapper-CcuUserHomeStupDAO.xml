@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUserHomeStupDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcuUserHomeStupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO">
+	
+		<result property="srchYn" column="SRCH_YN"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp (사용자 메뉴그룹별 홈화면 조회) 
+        Description :                                           사용자 메뉴그룹별 홈화면 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeByMenuGrp */
+						   '0' as SRCH_YN
+						 , b.MENU_GRP_ID as MENU_GRP_ID
+						 , b.MENU_ID as MENU_ID
+						 , c.BSIS_LNGG_MENU_NM as MENU_NM
+						 , rownum as INQR_SQNC
+				   from    CSMNUSRMT a
+						 , ( select   xa.MENU_GRP_ID
+									, xa.MENU_ID
+									, xa.INQR_SQNC
+							 from     ( select   a.MENU_GRP_ID
+											   , a.MENU_ID
+											   , a.INQR_SQNC
+											   , nvl(b.MENU_EXRN_YN, 0) as MENU_EXRN_YN
+											   , nvl(b.MENU_ACTV_YN, 0) as MENU_ACTV_YN
+										from     CSMNHOMMT a
+											   , ( select   tta.LGIN_ID
+														  , tta.MENU_GRP_ID
+														  , tta.MENU_ID
+														  , tta.MENU_EXRN_YN
+														  , tta.MENU_ACTV_YN
+												   from     ( select   ta.LGIN_ID
+																	 , ta.MENU_GRP_ID
+																	 , ta.MENU_ID
+																	 , ta.MENU_EXRN_YN
+																	 , ta.MENU_ACTV_YN
+																	 , (select   count(*)
+																		from     CSUOMPRMT d
+																		where    d.APST_DT < sysdate
+																		  and    d.APFN_DT > sysdate
+																		  and    d.MENU_GRP_ID = ta.MENU_GRP_ID
+																		  and    d.LGIN_ID     = ta.LGIN_ID
+																	   ) as CON_CHECK
+															  from     ( select  a.LGIN_ID
+																			   , c.MENU_GRP_ID
+																			   , c.MENU_ID
+																			   , sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN
+																			   , sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+																		 from    CSUOMPRMT a
+																			   , CSMNUATMT b
+																			   , CSMNATIMT c
+																			   , CSMNGRPMT d
+																		 where   a.APST_DT      < sysdate
+																		   and   a.APFN_DT      > sysdate
+																		   and   b.MENU_ATHR_ID = a.MENU_ATHR_ID
+																		   and   b.MENU_GRP_ID  = a.MENU_GRP_ID
+																		   and   b.APST_DT      < sysdate
+																		   and   b.APFN_DT      > sysdate
+																		   and   c.MENU_ATHR_ID = b.MENU_ATHR_ID
+																		   and   c.MENU_GRP_ID  = b.MENU_GRP_ID
+																		   and   c.APST_DT      < sysdate
+																		   and   c.APFN_DT      > sysdate
+																		   and   d.APST_DT      < sysdate
+																		   and   d.APFN_DT      > sysdate
+																		   and   c.MENU_GRP_ID  = d.MENU_GRP_ID(+)
+																		   and   c.MENU_ID      = d.MENU_ID(+)
+																		   and   a.LGIN_ID      = #{lginId}
+																		 group by  a.LGIN_ID
+																				 , c.MENU_GRP_ID
+																				 , c.MENU_ID
+																	   ) ta
+															) tta
+												   where    tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+												 ) b
+										where    a.MENU_GRP_ID = b.MENU_GRP_ID(+)
+										  and    a.MENU_ID     = b.MENU_ID(+)
+										  and    ((nvl(#{srchDvsnVl}, '*') = '1') or ((nvl(#{srchDvsnVl}, '*') = '2') and (nvl(a.PRIN_YN, 'N') <> 'N')))
+									  ) xa
+							 where    xa.MENU_EXRN_YN = 0
+							   and    xa.MENU_ACTV_YN = 0
+						   ) b
+						 , CSMNGRPMT c
+				   where   a.APST_DT      < sysdate
+					 and   a.APFN_DT      > sysdate
+					 and   a.MENU_GRP_ID  = b.MENU_GRP_ID
+					 and   c.APST_DT      < sysdate
+					 and   c.APFN_DT      > sysdate
+					 and   b.MENU_GRP_ID  = c.MENU_GRP_ID
+					 and   b.MENU_ID      = c.MENU_ID
+					 and   a.LGIN_ID      = #{lginId}
+					 and   ((nvl(#{menuNm}, '*') = '*') or
+							(b.MENU_ID like '%' || #{menuNm} || '%') or
+							(c.BSIS_LNGG_MENU_NM like '%' || #{menuNm} || '%'))
+				   order by a.MENU_GRP_APLY_SQNC, b.INQR_SQNC
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO">
+	
+		<result property="srchYn" column="SRCH_YN"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome (사용자 홈화면 조회) 
+        Description :                                           사용자 홈화면 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHome */
+						   '0' as SRCH_YN
+						 , a.MENU_GRP_ID as MENU_GRP_ID
+						 , a.MENU_ID as MENU_ID
+						 , b.BSIS_LNGG_MENU_NM as MENU_NM
+						 , a.INQR_SQNC as INQR_SQNC
+				   from    CSURHOMMT a
+						 , CSMNGRPMT b
+				   where   a.MENU_GRP_ID = b.MENU_GRP_ID
+					 and   a.MENU_ID     = b.MENU_ID
+					 and   b.APST_DT     < sysdate
+					 and   b.APFN_DT     > sysdate
+					 and   a.LGIN_ID = #{lginId}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="bsisLnggMenuNm" column="BSIS_LNGG_MENU_NM"/>
+		<result property="atmtExctYn" column="ATMT_EXCT_YN"/>
+		<result property="menuExrnYn" column="MENU_EXRN_YN"/>
+		<result property="dplcExctPsblYn" column="DPLC_EXCT_PSBL_YN"/>
+		<result property="swmdYn" column="SWMD_YN"/>
+		<result property="exctScopCd" column="EXCT_SCOP_CD"/>
+		<result property="mltxLnggAplyYn" column="MLTX_LNGG_APLY_YN"/>
+		<result property="exctVrabVl" column="EXCT_VRAB_VL"/>
+		<result property="stupFileNm" column="STUP_FILE_NM"/>
+		<result property="scryPrinUseYn" column="SCRY_PRIN_USE_YN"/>
+		<result property="mtsgYn" column="MTSG_YN"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn (사용자 홈화면 조회) 
+        Description :                                           사용자 홈화면 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listUserHomeScrn */
+				              sb.PRGM_ID as PRGM_ID
+				            , sb.BSIS_LNGG_MENU_NM as BSIS_LNGG_MENU_NM
+				            , sb.ATMT_EXCT_YN as ATMT_EXCT_YN
+				            , sb.MENU_EXRN_YN as MENU_EXRN_YN
+				            , sb.DPLC_EXCT_PSBL_YN as DPLC_EXCT_PSBL_YN
+				            , sb.SWMD_YN as SWMD_YN
+				            , sb.EXCT_SCOP_CD as EXCT_SCOP_CD
+				            , sb.MLTX_LNGG_APLY_YN as MLTX_LNGG_APLY_YN
+				            , sb.EXCT_VRAB_VL as EXCT_VRAB_VL
+				            , sb.STUP_FILE_NM as STUP_FILE_NM
+				            , sb.SCRY_PRIN_USE_YN as SCRY_PRIN_USE_YN
+				            , sb.MTSG_YN as MTSG_YN
+				            , sa.INQR_SQNC as INQR_SQNC
+				    from      CSURHOMMT sa
+				            , CSMNGRPMT sb
+				    where     sa.LGIN_ID     = #{lginId}
+				      and     sa.MENU_GRP_ID = sb.MENU_GRP_ID
+				      and     sa.MENU_ID     = sb.MENU_ID
+				      and     sb.APST_DT <![CDATA[<]]> sysdate
+				      and     sb.APFN_DT <![CDATA[>]]> sysdate
+				    order by sa.INQR_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="bsisLnggMenuNm" column="BSIS_LNGG_MENU_NM"/>
+		<result property="atmtExctYn" column="ATMT_EXCT_YN"/>
+		<result property="menuExrnYn" column="MENU_EXRN_YN"/>
+		<result property="dplcExctPsblYn" column="DPLC_EXCT_PSBL_YN"/>
+		<result property="swmdYn" column="SWMD_YN"/>
+		<result property="exctScopCd" column="EXCT_SCOP_CD"/>
+		<result property="mltxLnggAplyYn" column="MLTX_LNGG_APLY_YN"/>
+		<result property="exctVrabVl" column="EXCT_VRAB_VL"/>
+		<result property="stupFileNm" column="STUP_FILE_NM"/>
+		<result property="scryPrinUseYn" column="SCRY_PRIN_USE_YN"/>
+		<result property="mtsgYn" column="MTSG_YN"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn (관리자 홈화면 조회) 
+        Description :                                           관리자 홈화면 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-listMngrHomeScrn */
+				             c.PRGM_ID
+				           , c.BSIS_LNGG_MENU_NM
+				           , c.ATMT_EXCT_YN
+				           , c.MENU_EXRN_YN
+				           , c.DPLC_EXCT_PSBL_YN
+				           , c.SWMD_YN
+				           , c.EXCT_SCOP_CD
+				           , c.MLTX_LNGG_APLY_YN
+				           , c.EXCT_VRAB_VL
+				           , c.STUP_FILE_NM
+				           , c.SCRY_PRIN_USE_YN
+				           , c.MTSG_YN
+				           , rownum as INQR_SQNC
+				     from    CSMNUSRMT a
+				           , ( select   xa.MENU_GRP_ID
+				                      , xa.MENU_ID
+				                      , xa.INQR_SQNC
+				               from     ( select   a.MENU_GRP_ID
+				                                 , a.MENU_ID
+				                                 , a.INQR_SQNC
+				                                 , nvl(b.MENU_EXRN_YN, 0) as MENU_EXRN_YN
+				                                 , nvl(b.MENU_ACTV_YN, 0) as MENU_ACTV_YN
+				                          from     CSMNHOMMT a
+				                                 , ( select   tta.LGIN_ID
+				                                            , tta.MENU_GRP_ID
+				                                            , tta.MENU_ID
+				                                            , tta.MENU_EXRN_YN
+				                                            , tta.MENU_ACTV_YN
+				                                     from     ( select   ta.LGIN_ID
+				                                                       , ta.MENU_GRP_ID
+				                                                       , ta.MENU_ID
+				                                                       , ta.MENU_EXRN_YN
+				                                                       , ta.MENU_ACTV_YN
+				                                                       , (select   count(*)
+				                                                          from     CSUOMPRMT d
+				                                                          where    d.APST_DT <![CDATA[<]]> sysdate
+				                                                            and    d.APFN_DT <![CDATA[>]]> sysdate
+				                                                            and    d.MENU_GRP_ID = ta.MENU_GRP_ID
+				                                                            and    d.LGIN_ID     = ta.LGIN_ID
+				                                                         ) as CON_CHECK
+				                                                from     ( select  a.LGIN_ID
+				                                                                 , c.MENU_GRP_ID
+				                                                                 , c.MENU_ID
+				                                                                 , sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN
+				                                                                 , sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+				                                                           from    CSUOMPRMT a
+				                                                                 , CSMNUATMT b
+				                                                                 , CSMNATIMT c
+				                                                           where   a.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   a.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   b.MENU_ATHR_ID = a.MENU_ATHR_ID
+				                                                             and   b.MENU_GRP_ID  = a.MENU_GRP_ID
+				                                                             and   b.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   b.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   c.MENU_ATHR_ID = b.MENU_ATHR_ID
+				                                                             and   c.MENU_GRP_ID  = b.MENU_GRP_ID
+				                                                             and   c.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   c.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   a.LGIN_ID      = #{lginId}
+				                                                           group by  a.LGIN_ID
+				                                                                   , c.MENU_GRP_ID
+				                                                                   , c.MENU_ID
+				                                                         ) ta
+				                                              ) tta
+				                                     where    tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+				                                   ) b
+				                          where    a.MENU_GRP_ID = b.MENU_GRP_ID(+)
+				                            and    a.MENU_ID     = b.MENU_ID(+)
+				                            and    nvl(a.PRIN_YN, 'N') <![CDATA[<>]]> 'N'
+				                        ) xa
+				               where    xa.MENU_EXRN_YN = 0
+				                 and    xa.MENU_ACTV_YN = 0
+				             ) b
+				           , CSMNGRPMT c
+				    where   a.APST_DT      <![CDATA[<]]> sysdate
+				       and   a.APFN_DT      <![CDATA[>]]> sysdate
+				       and   a.MENU_GRP_ID  = b.MENU_GRP_ID
+				       and   c.APST_DT      <![CDATA[<]]> sysdate
+				       and   c.APFN_DT      <![CDATA[>]]> sysdate
+				       and   b.MENU_GRP_ID  = c.MENU_GRP_ID
+				       and   b.MENU_ID      = c.MENU_ID
+				       and   a.LGIN_ID      = #{lginId}
+				    order by a.MENU_GRP_APLY_SQNC, b.INQR_SQNC
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-deleteUserHomeScrn (사용자 홈화면 설정 삭제) 
+        Description :                                           사용자 홈화면 설정 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-deleteUserHomeScrn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-deleteUserHomeScrn */
+				   from    CSURHOMMT
+				   where   ((nvl(#{menuGrpId}, '*') = '*') or (MENU_GRP_ID = #{menuGrpId}))
+					 and   ((nvl(#{menuId}, '*') = '*')     or (MENU_ID = #{menuId}))
+					 and   ((nvl(#{lginId}, '*') = '*')     or (LGIN_ID = #{lginId}))
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-insertUserHomeScrn (사용자 홈화면 설정 등록) 
+        Description :                                           사용자 홈화면 설정 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-insertUserHomeScrn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserHomeStupDVO"  >
+		<![CDATA[
+					   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserHomeStupDAO-insertUserHomeScrn */
+					   into    CSURHOMMT( LGIN_ID
+											   , MENU_GRP_ID
+											   , MENU_ID
+											   , INQR_SQNC
+											   , FRST_RGSR_ID
+											   , FRST_RGST_IP
+											   , FRST_RGST_DT
+											   , FRST_RGST_CLNT_PRGM_ID
+											   , FRST_RGST_SRVR_PRGM_ID
+											   , LAST_UPDR_ID
+											   , LAST_UPDT_IP
+											   , LAST_UPDT_DT
+											   , LAST_UPDT_CLNT_PRGM_ID
+											   , LAST_UPDT_SRVR_PRGM_ID
+											   )
+										 values( #{lginId}
+											   , #{menuGrpId}
+											   , #{menuId}
+											   , #{inqrSqnc}
+											   , #{gvLginId}
+											   , #{gvUserIp}
+											   , sysdate
+											   , #{gvClntPrgmId}
+											   , #{gvSrvrPrgmId}
+											   , #{gvLginId}
+											   , #{gvUserIp}
+											   , sysdate
+											   , #{gvClntPrgmId}
+											   , #{gvSrvrPrgmId}
+											   )
+		]]>
+	</insert>
+
+</mapper>

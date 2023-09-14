@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmaCrprCardDAO_sql.xml 
+    Description :                                      법인카드 DAO
+                  -->
+<mapper namespace="HmaCrprCardDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaCrprCardDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="giveTrgtMngmNo" column="GIVE_TRGT_MNGM_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard (법인카드_목록조회) 
+        Description :                                           hmd_gitract_l31$S01_법인카드_목록조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaCrprCardDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaCrprCardDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaCrprCardDAO-listCrprCard */
+			   rownum                                                  as SQNC
+			  ,decode(length(z.GIVE_TRGT_MNGM_NO)
+					 , 16,    substr(z.GIVE_TRGT_MNGM_NO, 1, 4)
+						   || '-'
+						   || substr(z.GIVE_TRGT_MNGM_NO, 5, 4)
+						   || '-'
+						   || substr(z.GIVE_TRGT_MNGM_NO, 9, 4)
+						   || '-'
+						   || substr(z.GIVE_TRGT_MNGM_NO, 13, 4)
+					 , 15,    substr(z.GIVE_TRGT_MNGM_NO, 1, 4)
+						   || '-'
+						   || substr(z.GIVE_TRGT_MNGM_NO, 5, 6)
+						   || '-'
+						   || substr(z.GIVE_TRGT_MNGM_NO, 11, 5)
+					 , z.GIVE_TRGT_MNGM_NO
+					 )                                                 as GIVE_TRGT_MNGM_NO
+		   from
+			   (select
+					distinct
+					t.GIVE_TRGT_MNGM_NO
+				from
+					HMGITRACT t /*(HM)지급대상계좌번호 */
+				where
+					t.GIVE_TRGT_MNGM_DVSN_CD           = '4'
+				and substr(t.GIVE_TRGT_MNGM_NO, 1, 6) in (select
+															  ss1.MIS_COMN_CD
+														  from
+															  HZMICOCDT ss1
+														  where
+															  ss1.COMN_GRP_CD = 'GA944'
+														 )
+				and t.USE_YN                           = 'Y'
+				and t.CARD_USER_ID                     = #{cardUserId}
+				order by t.GIVE_TRGT_MNGM_NO asc
+			   ) z
+			]]>
+	</select>
+
+
+
+</mapper>

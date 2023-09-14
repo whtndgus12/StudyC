@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsWksgpmtDAO_sql.xml 
+    Description :                                      작업영역 설정
+                  -->
+<mapper namespace="CcsWksgpmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWksgpmtDVO">
+	
+		<result property="bsisStupYn" column="BSIS_STUP_YN"/>
+		<result property="ptifFxngYn" column="PTIF_FXNG_YN"/>
+		<result property="scrnDvdnVl" column="SCRN_DVDN_VL"/>
+		<result property="asstScrnUseYn" column="ASST_SCRN_USE_YN"/>
+		<result property="asstScrnDvdnVl" column="ASST_SCRN_DVDN_VL"/>
+		<result property="workScopSno" column="WORK_SCOP_SNO"/>
+		<result property="workScopNm" column="WORK_SCOP_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWksgpmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWksgpmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWksgpmtDAO-listWksgpmt */
+				/*SQL_ID: com-sds-healthcare-ehr-com-cs-dao-CsdWksgpmtL01DAO-listCsdWksgpmtL01Main */
+				select  /*+ csd_wksgpmt_l01$S01_작업영역설정 마스터 */ 
+				            nvl(b.BSIS_STUP_YN, 'Y') as BSIS_STUP_YN
+				          , nvl(b.PTIF_FXNG_YN, 'N') as PTIF_FXNG_YN
+				          , nvl(b.SCRN_DVDN_VL, '1') as SCRN_DVDN_VL
+				          , nvl(b.ASST_SCRN_USE_YN, 'N') as ASST_SCRN_USE_YN
+				          , nvl(b.ASST_SCRN_DVDN_VL, '1') as ASST_SCRN_DVDN_VL
+				          , b.WORK_SCOP_SNO as WORK_SCOP_SNO
+				          , b.WORK_SCOP_NM as WORK_SCOP_NM
+				    from    CSMNUSRMT a
+				          , CSWKSGPMT b
+				    where  a.LGIN_ID      = #{gvLginId}
+				      and  a.TLBR_USE_YN  = 'Y'
+				      and  a.APST_DT      <![CDATA[<]]> sysdate
+				      and  a.APFN_DT      <![CDATA[>]]> sysdate
+				      and  a.MENU_GRP_ID  = b.MENU_GRP_ID
+				    order by b.PRIN_SQNC
+			
+			
+	</select>
+
+
+
+</mapper>

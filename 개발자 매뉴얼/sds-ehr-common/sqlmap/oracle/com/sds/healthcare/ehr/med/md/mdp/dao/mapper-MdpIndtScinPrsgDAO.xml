@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpIndtScinPrsgDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpIndtScinPrsgDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-insertPtntScinTmpr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-insertPtntScinTmpr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO"  >
+		<![CDATA[
+			   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-insertPtntScinTmpr */   /*+ mdd_pascint_i01$I01_작업용환자상병내역 다건등록DAM */
+				 into  MDPASCINT
+					   (
+					   PTNO
+					,  RGST_YMD
+					,  MCDP_CD
+					,  PTNT_SCIN_SNO
+					,  CODV_CD
+					,  SCIN_CD
+					,  SCIN_CLNC_DX_NM
+					/*  AUDIT */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					   )
+			   values  (
+					   #{ptno}
+					,  to_date(#{rgstYmd}, 'YYYYMMDD')
+					,  #{mcdpCd}
+					,  (
+					   select  nvl(max(PTNT_SCIN_SNO), 0) + 1
+						 from  MDPASCINT
+						where  PTNO     = #{ptno}
+						  and  RGST_YMD = to_date(#{rgstYmd}, 'YYYYMMDD')
+						  and  MCDP_CD  = #{mcdpCd}
+					   )
+					,  #{codvCd}
+					,  #{scinCd}
+					,  #{scinClncDxNm}
+					/*  AUDIT */
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					   )
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-deletePtntScinTmprSave () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-deletePtntScinTmprSave"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO"  >
+		<![CDATA[
+		   DELETE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-deletePtntScinTmprSave */   /*+ mdd_pascint_d01$D01_작업용환자상병내역 삭제DAM */
+			 from
+				   MDPASCINT        /*  작업용환자상병내역 */
+			where
+				   PTNO         = #{ptno}
+			  and  RGST_YMD     = to_date(#{rgstYmd}, 'YYYYMMDD')
+			  and  FRST_RGSR_ID = #{gvUserId}
+			]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO">
+	
+		<result property="mdcrYn" column="MDCR_YN"/>
+		<result property="totlCct" column="TOTL_CCT"/>
+		<result property="tmprSaveCct" column="TMPR_SAVE_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listPtntRptnAndScinYn_수진여부및상병여부조회 단건조회 */
+				   a.MDCR_YN as MDCR_YN
+				,  (select count(*) from MDPADIAGT where MDRP_NO = a.MDRP_NO) as TOTL_CCT
+		        ,  (select count(*) from MDPACLNTT where MDRP_NO = a.MDRP_NO) as TMPR_SAVE_CCT
+			 from
+				   APRCRPTNT a
+			where
+				   a.MDRP_NO = #{mdrpNo}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="clncDxCd" column="CLNC_DX_CD"/>
+		<result property="clncDxNm" column="CLNC_DX_NM"/>
+		<result property="etcAmt1" column="ETC_AMT_1"/>
+		<result property="etcAmt2" column="ETC_AMT_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listIndtScinTrgtOrdrList */
+		<![CDATA[
+		select  /* 바로가기대상처방 다건조회 */
+		        e.ORDR_CD                           as ORDR_CD
+		     ,  e.CLNC_DX_CD                        as CLNC_DX_CD
+		     ,  e.CLNC_DX_NM                        as CLNC_DX_NM
+		     ,  null                                as ETC_AMT_1
+		     ,  null                                as ETC_AMT_2
+		  from  (   /*  사용자가 등록 */
+		            select  a.ORDR_CD
+		                 ,  b.CLNC_DX_CD
+		                 ,  b.CLNC_DX_NM
+		              from  MDBSIIFBT a      /*  상병안내기본 */
+		                 ,  MDBSIIFDT b      /*  상병안내상세 */
+		                 ,  MDPASCINT c
+		             where  a.USER_DPRT_DVSN_CD =   'U'
+		               and  a.SCIN_INFT_OWNR_CD =   #{gvUserId}
+		               and  a.INFT_DVSN_CD      =   '1'    /*  바로가기 */
+		               and  trunc(sysdate) between a.STRT_YMD and a.FNSH_YMD
+		               and  b.USER_DPRT_DVSN_CD =   a.USER_DPRT_DVSN_CD
+		               and  b.SCIN_INFT_OWNR_CD =   a.SCIN_INFT_OWNR_CD
+		               and  b.ORDR_CD           =   a.ORDR_CD
+		               and  b.STRT_YMD          =   a.STRT_YMD
+		               and  c.PTNO              =   #{ptno}
+		               and  c.RGST_YMD          =   trunc(sysdate)
+		               and  c.MCDP_CD           =   #{dprtCd}
+		               and  c.SCIN_CD is null
+		               and  a.ORDR_CD           =   c.SCIN_CLNC_DX_NM
+		            union
+		            /*  부서에서 등록 */
+		            select  a.ORDR_CD
+		                 ,  b.CLNC_DX_CD
+		                 ,  b.CLNC_DX_NM
+		              from  MDBSIIFBT a      /*  상병안내기본 */
+		                 ,  MDBSIIFDT b      /*  상병안내상세 */
+		                 ,  MDPASCINT c
+		             where  a.USER_DPRT_DVSN_CD =   'D'
+		               and  a.SCIN_INFT_OWNR_CD =   #{dprtCd}
+		               and  a.INFT_DVSN_CD      =   '1'    /*  바로가기 */
+		               and  trunc(sysdate) between a.STRT_YMD and a.FNSH_YMD
+		               and  b.USER_DPRT_DVSN_CD =   a.USER_DPRT_DVSN_CD
+		               and  b.SCIN_INFT_OWNR_CD =   a.SCIN_INFT_OWNR_CD
+		               and  b.ORDR_CD           =   a.ORDR_CD
+		               and  b.STRT_YMD          =   a.STRT_YMD
+		               and  c.PTNO              =   #{ptno}
+		               and  c.RGST_YMD          =   trunc(sysdate)
+		               and  c.MCDP_CD           =   #{dprtCd}
+		               and  c.SCIN_CD is null
+		               and  a.ORDR_CD           =   c.SCIN_CLNC_DX_NM
+		               and  not exists  (   select  'x'
+		                                      from  MDBSIIFBT        /*  상병안내기본 */
+		                                     where  USER_DPRT_DVSN_CD   =   'U'
+		                                       and  SCIN_INFT_OWNR_CD   =   #{gvUserId}
+		                                       and  ORDR_CD             =   a.ORDR_CD
+		                                )
+		        ) e
+		     ,  MDORDRCMT g1
+		     ,  AIMFMDFET t
+		 where  g1.ORDR_CD  =   e.ORDR_CD
+		   and  t.MDFE_CD   =   e.ORDR_CD
+		   and  trunc(sysdate) between nvl(t.APST_YMD, trunc(sysdate))
+		                           and nvl(t.APFN_YMD, trunc(sysdate))
+		 ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="clncDxCd" column="CLNC_DX_CD"/>
+		<result property="clncDxNm" column="CLNC_DX_NM"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="inftDvsnCd" column="INFT_DVSN_CD"/>
+		<result property="scinCd1" column="SCIN_CD_1"/>
+		<result property="scinCd2" column="SCIN_CD_2"/>
+		<result property="scinCd3" column="SCIN_CD_3"/>
+		<result property="scinCd4" column="SCIN_CD_4"/>
+		<result property="scinCd5" column="SCIN_CD_5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIndtScinPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIndtScinPrsgDAO-listOrdrAplyClncDxList */
+		<![CDATA[
+		select  /* 처방별적용임상진단조회 다건조회 */
+		        f.ORDR_CD                                   as ORDR_CD
+		     ,  g1.ORDR_NM                                  as ORDR_NM
+		     ,  f.CLNC_DX_CD                                as CLNC_DX_CD
+		     ,  f.CLNC_DX_NM                                as CLNC_DX_NM
+		     ,  f.SORT_SQNC                                 as SORT_SQNC
+		     ,  decode(f.INFT_DVSN_CD, '3', '*', '')        as INFT_DVSN_CD
+		     ,  max(decode(s.SORT_SQNC, 1, s.SCIN_CD, ''))  as SCIN_CD_1
+		     ,  max(decode(s.SORT_SQNC, 2, s.SCIN_CD, ''))  as SCIN_CD_2
+		     ,  max(decode(s.SORT_SQNC, 3, s.SCIN_CD, ''))  as SCIN_CD_3
+		     ,  max(decode(s.SORT_SQNC, 4, s.SCIN_CD, ''))  as SCIN_CD_4
+		     ,  max(decode(s.SORT_SQNC, 5, s.SCIN_CD, ''))  as SCIN_CD_5
+		  from  (   select  /*  개인설정 */
+		                    b.ORDR_CD
+		                 ,  c.CLNC_DX_CD
+		                 ,  c.CLNC_DX_NM
+		                 ,  c.SORT_SQNC
+		                 ,  b.INFT_DVSN_CD
+		              from  MDPASCINT a      /*  작업용환자상병내역 */
+		                 ,  MDBSIIFBT b      /*  상병안내기본 */
+		                 ,  MDBSIIFDT c      /*  상병안내상세 */
+		             where  a.PTNO              =   #{ptno}
+		               and  a.RGST_YMD          =   trunc(sysdate)
+		               and  a.MCDP_CD           =   #{mcdpCd}
+		               and  a.SCIN_CD is null
+		               and  b.ORDR_CD           =   a.SCIN_CLNC_DX_NM
+		               and  b.USER_DPRT_DVSN_CD =   'U'
+		               and  b.SCIN_INFT_OWNR_CD =   #{gvUserId}
+		               and  b.SCIN_INFT_DVSN_CD =   '2'
+		               and  b.INFT_DVSN_CD in ('2', '3')
+		               and  trunc(sysdate) between b.STRT_YMD and b.FNSH_YMD
+		               and  c.USER_DPRT_DVSN_CD =   b.USER_DPRT_DVSN_CD
+		               and  c.SCIN_INFT_OWNR_CD =   b.SCIN_INFT_OWNR_CD
+		               and  c.ORDR_CD           =   b.ORDR_CD
+		               and  c.STRT_YMD          =   b.STRT_YMD
+		               and  nvl(c.INFT_YN, 'N') != 'N'
+		            /*  ------------------------------------------------------------- */
+		            union
+		            select  /*  부서설정 - 같은 처방이 개인에 있는 경우 제외 */
+		                    b.ORDR_CD
+		                 ,  c.CLNC_DX_CD
+		                 ,  c.CLNC_DX_NM
+		                 ,  c.SORT_SQNC
+		                 ,  b.INFT_DVSN_CD
+		              from  MDPASCINT a
+		                 ,  MDBSIIFBT b
+		                 ,  MDBSIIFDT c
+		             where  a.PTNO              =   #{ptno}
+		               and  a.RGST_YMD          =   trunc(sysdate)
+		               and  a.MCDP_CD           =   #{mcdpCd}
+		               and  a.SCIN_CD is null
+		               and  b.ORDR_CD           =   a.SCIN_CLNC_DX_NM
+		               and  b.USER_DPRT_DVSN_CD =   'D'
+		               and  b.SCIN_INFT_OWNR_CD =   #{mcdpCd}
+		               and  b.SCIN_INFT_DVSN_CD =   '1'
+		               and  b.INFT_DVSN_CD in ('2', '3')
+		               and  trunc(sysdate) between b.STRT_YMD and b.FNSH_YMD
+		               and  c.USER_DPRT_DVSN_CD =   b.USER_DPRT_DVSN_CD
+		               and  c.SCIN_INFT_OWNR_CD =   b.SCIN_INFT_OWNR_CD
+		               and  c.ORDR_CD           =   b.ORDR_CD
+		               and  c.STRT_YMD          =   b.STRT_YMD
+		               and  nvl(c.INFT_YN, 'N') !=  'N'
+		               and  not exists  (   select  ORDR_CD
+		                                      from  MDBSIIFDT
+		                                     where  USER_DPRT_DVSN_CD   =   'U'
+		                                       and  SCIN_INFT_OWNR_CD   =   #{gvUserId}
+		                                       and  ORDR_CD             =   b.ORDR_CD
+		                                )
+		            /*  ------------------------------------------------------------- */
+		            union
+		            select  /*  병원 설정 - 같은 처방이 개인/부서에 있는 경우 제외 */
+		                    b.ORDR_CD
+		                 ,  c.CLNC_DX_CD
+		                 ,  c.CLNC_DX_NM
+		                 ,  c.SORT_SQNC
+		                 ,  b.INFT_DVSN_CD
+		              from  MDPASCINT a
+		                 ,  MDBSIIFBT b
+		                 ,  MDBSIIFDT c
+		             where  a.PTNO              =   #{ptno}
+		               and  a.RGST_YMD          =   trunc(sysdate)
+		               and  a.MCDP_CD           =   #{mcdpCd}
+		               and  a.SCIN_CD is null
+		               and  b.ORDR_CD           =   a.SCIN_CLNC_DX_NM
+		               and  b.USER_DPRT_DVSN_CD =   'C'
+		               and  b.SCIN_INFT_OWNR_CD =   'ALL'
+		               and  b.SCIN_INFT_DVSN_CD =   '3'
+		               and  b.INFT_DVSN_CD in ('2', '3')
+		               and  trunc(sysdate) between b.STRT_YMD and b.FNSH_YMD
+		               and  c.USER_DPRT_DVSN_CD =   b.USER_DPRT_DVSN_CD
+		               and  c.SCIN_INFT_OWNR_CD =   b.SCIN_INFT_OWNR_CD
+		               and  c.ORDR_CD           =   b.ORDR_CD
+		               and  c.STRT_YMD          =   b.STRT_YMD
+		               and  nvl(c.INFT_YN, 'N') !=  'N'
+		               and  not exists  (   select  ORDR_CD
+		                                      from  MDBSIIFDT
+		                                     where  USER_DPRT_DVSN_CD = 'U'
+		                                       and  SCIN_INFT_OWNR_CD = #{gvUserId}
+		                                       and  ORDR_CD           = b.ORDR_CD
+		                                     union
+		                                    select  ORDR_CD
+		                                      from  MDBSIIFDT
+		                                     where  USER_DPRT_DVSN_CD = 'D'
+		                                       and  SCIN_INFT_OWNR_CD = #{mcdpCd}
+		                                       and  ORDR_CD           = b.ORDR_CD
+		                                )
+		        ) f     /*  임시저장처방 + 상병안내 */
+		     ,  MDORDRCMT g1      /*  처방코드기본 */
+		     ,  METRDCTMT g2      /*  용어사전 */
+		     ,  MRBSCLSCT s       /*  임상코드상병 */
+		     ,  AIMFMDFET t
+		 where  g1.ORDR_CD  (+) =   f.ORDR_CD
+		   and  g2.TRMN_ID      =   f.CLNC_DX_CD
+		   and  trunc(sysdate)  >=  nvl(g2.APLY_YMD, to_date('19000101', 'YYYYMMDD'))
+		   and  trunc(sysdate)  <=  nvl(g2.FNSH_YMD, to_date('29991231', 'YYYYMMDD'))
+		   and  g2.MDCR_USE_YN  =   'Y'
+		   and  s.TRMN_ID       =   f.CLNC_DX_CD
+		   and  trunc(sysdate) between s.TRMN_MPNG_STRT_YMD and s.TRMN_MPNG_FNSH_YMD
+		   and  t.MDFE_CD      =    f.ORDR_CD
+		   and  trunc(sysdate) between nvl(t.APST_YMD, trunc(sysdate)) and nvl(t.APFN_YMD, trunc(sysdate))
+		 group
+		    by  f.ORDR_CD
+		     ,  g1.ORDR_NM
+		     ,  f.CLNC_DX_CD
+		     ,  f.CLNC_DX_NM
+		     ,  f.SORT_SQNC
+		     ,  decode(f.INFT_DVSN_CD, '3', '*', '')
+		 order
+		    by  ORDR_CD
+		     ,  SORT_SQNC
+		]]>
+	</select>
+
+
+
+</mapper>

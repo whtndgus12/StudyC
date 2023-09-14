@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuVideoPalyManagementDAO_sql.xml 
+    Description :                                      동영상 파일 정보 관리
+                  -->
+<mapper namespace="CcuVideoPalyManagementDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO">
+	
+		<result property="fileId" column="FILE_ID"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="detlCdNm1" column="DETL_CD_NM1"/>
+		<result property="sbSystId" column="SB_SYST_ID"/>
+		<result property="detlCdNm2" column="DETL_CD_NM2"/>
+		<result property="bswrTn" column="BSWR_TN"/>
+		<result property="manlTitlNm" column="MANL_TITL_NM"/>
+		<result property="vdeoCtn" column="VDEO_CTN"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="fileOgcpNm" column="FILE_OGCP_NM"/>
+		<result property="fileSavNm" column="FILE_SAV_NM"/>
+		<result property="fileExtsnNm" column="FILE_EXTSN_NM"/>
+		<result property="fileSizeNval" column="FILE_SIZE_NVAL"/>
+		<result property="dataStatCd" column="DATA_STAT_CD"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo (동영상 파일 정보 조회) 
+        Description :                                           동영상 파일 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-listFileInfo */
+		<![CDATA[ 
+		           select
+		                   MD.FILE_ID                                -- 파일ID
+		                 , MD.SYST_ID                                -- 시스템ID
+		                 , C1.DETL_CD_NM     							as DETL_CD_NM1	/* 시스템명 */
+		                 , MD.SB_SYST_ID                             -- 서브시스템ID
+		                 , C2.DETL_CD_NM     							as DETL_CD_NM2 	/* 서브시스템명 */
+		                 , MD.BSWR_TN                                -- 업무순번
+		                 , MD.MANL_TITL_NM                           -- 메뉴얼내용
+		                 , MD.VDEO_CTN                               -- 동영상내용
+		                 , MD.FILE_PATH                              -- 파일경로
+		                 , MD.FILE_OGCP_NM                           -- 파일원본명
+		                 , MD.FILE_SAV_NM                            -- 파일저장명
+		                 , MD.FILE_EXTSN_NM                          -- 파일확장자명
+		                 , MD.FILE_SIZE_NVAL                         -- 파일크기수치
+		                 , MD.DATA_STAT_CD                           -- 자료상태코드
+		                 , to_char(MD.FRST_RGST_DT,'YYYYMMDDHH24MISS') as FRST_RGST_DT  -- 최초등록일시
+		                 , to_char(MD.LAST_UPDT_DT,'YYYYMMDDHH24MISS') as LAST_UPDT_DT  -- 최종수정일시
+		              from CCUTMPMDT MD         -- 동영상파일관리
+		                 , CCCMCDDMT C1         /* 시스템 공통코드_T */
+		                 , CCCMCDDMT C2         /* 서브 시스템 공통코드_T */
+		            where nvl(DATA_STAT_CD,'Y') = 'Y'
+			            and  C1.COMN_GRP_CD(+)   		= 'COR_062'
+		              and  MD.SYST_ID          				= C1.COMN_DTLS_CD(+)
+		              and  C2.COMN_GRP_CD(+)   		= 'COR_063'
+		              and  MD.SB_SYST_ID       			= C2.COMN_DTLS_CD(+)            
+		]]>
+		        <if test="systId != null and systId != ''.toString()">
+		               and MD.SYST_ID                    = #{systId}
+		        </if>
+		        <if test="sbSystId != null and sbSystId != ''.toString()">
+		               and MD.SB_SYST_ID                 = #{sbSystId}
+		        </if>
+		        <if test="fileId != null and fileId != ''.toString()">
+		               and MD.FILE_ID                       = #{fileId}
+		        </if>
+		        <if test="fileOgcpNm != null and fileOgcpNm != ''.toString()">
+		<![CDATA[ 
+		               and MD.FILE_OGCP_NM Like  '%' ||  #{fileOgcpNm} || '%'
+		]]>
+		        </if>
+		        <if test="manlTitlNm != null and manlTitlNm != ''.toString()">
+		<![CDATA[ 
+		               and MD.MANL_TITL_NM Like  '%' ||  #{manlTitlNm} || '%'
+		]]>
+		        </if>
+		     order by MD.SYST_ID, MD.SB_SYST_ID, MD.BSWR_TN 
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-mergeFileInfo (파일 정보 수정) 
+        Description :                                           파일 정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-mergeFileInfo"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-mergeFileInfo */
+		            merge /*+ SQLID=com-sds-healthcare-ehr-com-cs-ccs-dao-CcsPramModuleDAO-mergeCcsPramModule0001*/ 
+		             into CCUTMPMDT MD         -- 동영상파일관리
+		            using DUAL 
+		               on (FILE_ID                         = #{fileId}
+		                  ) 
+		             when matched then 
+		                  update set
+		                           SYST_ID                           = #{systId}                              -- 시스템ID
+		                         , SB_SYST_ID                        = #{sbSystId}                            -- 서브시스템ID
+		                         , BSWR_TN                           = #{bswrTn}                              -- 업무순번
+		                         , MANL_TITL_NM                      = #{manlTitlNm}                          -- 메뉴얼내용
+		                         , VDEO_CTN                          = #{vdeoCtn}                             -- 동영상내용
+		                         , FILE_PATH                         = #{filePath}                            -- 파일경로
+		                         , FILE_OGCP_NM                      = #{fileOgcpNm}                          -- 파일원본명
+		                         , FILE_SAV_NM                       = #{fileSavNm}                           -- 파일저장명
+		                         , FILE_EXTSN_NM                     = #{fileExtsnNm}                         -- 파일확장자명
+		                         , FILE_SIZE_NVAL                    = #{fileSizeNval}                        -- 파일크기수치
+		                         , DATA_STAT_CD                      = #{dataStatCd}                          -- 자료상태코드
+		                         , LAST_UPDR_ID                      = #{gvUserId}                            -- 최종수정자ID
+		                         , LAST_UPDT_IP                      = #{gvUserIp}                            -- 최종수정IP
+		                         , LAST_UPDT_DT                      = sysdate                                -- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID            = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID            = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID
+		                    where FILE_ID                            = #{fileId}
+		             when not matched then 
+		                  insert 
+		                    (
+		                           FILE_ID                           -- 파일ID
+		                         , SYST_ID                           -- 시스템ID
+		                         , SB_SYST_ID                        -- 서브시스템ID
+		                         , BSWR_TN                           -- 업무순번
+		                         , MANL_TITL_NM                      -- 메뉴얼내용
+		                         , VDEO_CTN                          -- 동영상내용
+		                         , FILE_PATH                         -- 파일경로
+		                         , FILE_OGCP_NM                      -- 파일원본명
+		                         , FILE_SAV_NM                       -- 파일저장명
+		                         , FILE_EXTSN_NM                     -- 파일확장자명
+		                         , FILE_SIZE_NVAL                    -- 파일크기수치
+		                         , DATA_STAT_CD                      -- 자료상태코드
+		                         , FRST_RGSR_ID                      -- 최초등록자ID
+		                         , FRST_RGST_IP                      -- 최초등록IP
+		                         , FRST_RGST_DT                      -- 최초등록일시
+		                         , FRST_RGST_CLNT_PRGM_ID            -- 최초등록클라이언트프로그램ID
+		                         , FRST_RGST_SRVR_PRGM_ID            -- 최초등록서버프로그램ID
+		                         , LAST_UPDR_ID                      -- 최종수정자ID
+		                         , LAST_UPDT_IP                      -- 최종수정IP
+		                         , LAST_UPDT_DT                      -- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID            -- 최종수정클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID            -- 최종수정서버프로그램ID
+		                    )
+		                    values
+		                    (
+		                           #{fileId}                         -- 파일ID
+		                         , #{systId}                         -- 시스템ID
+		                         , #{sbSystId}                       -- 서브시스템ID
+		                         , #{bswrTn}                         -- 업무순번
+		                         , #{manlTitlNm}                     -- 메뉴얼내용
+		                         , #{vdeoCtn}                        -- 동영상내용
+		                         , #{filePath}                       -- 파일경로
+		                         , #{fileOgcpNm}                     -- 파일원본명
+		                         , #{fileSavNm}                      -- 파일저장명
+		                         , #{fileExtsnNm}                    -- 파일확장자명
+		                         , #{fileSizeNval}                   -- 파일크기수치
+		                         , 'Y'                     -- 자료상태코드
+		                         , #{gvUserId}                       -- 최초등록자ID
+		                         , #{gvUserIp}                       -- 최초등록IP
+		                         , sysdate                           -- 최초등록일시
+		                         , #{gvClntPrgmId}                   -- 최초등록클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최초등록서버프로그램ID
+		                         , #{gvUserId}                       -- 최종수정자ID
+		                         , #{gvUserIp}                       -- 최종수정IP
+		                         , sysdate                           -- 최종수정일시
+		                         , #{gvClntPrgmId}                   -- 최종수정클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   -- 최종수정서버프로그램ID
+		                    )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-deleteUpdateFileInfo (파일삭제 처리) 
+        Description :                                           파일 삭제 처리
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-deleteUpdateFileInfo"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-deleteUpdateFileInfo */
+		           update
+		                  CCUTMPMDT         -- 동영상파일관리
+		           set  DATA_STAT_CD = 'N'
+		                 ,LAST_UPDR_ID         = #{gvUserId}                            -- 최종수정자ID
+		                 ,LAST_UPDT_IP         = #{gvUserIp}                            -- 최종수정IP
+		                 ,LAST_UPDT_DT         = sysdate                                -- 최종수정일시
+		                 ,LAST_UPDT_CLNT_PRGM_ID                   = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+		                 ,LAST_UPDT_SRVR_PRGM_ID                   = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID
+		            where FILE_ID                          = #{fileId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO">
+	
+		<result property="fileId" column="FILE_ID"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="detlCdNm1" column="DETL_CD_NM1"/>
+		<result property="sbSystId" column="SB_SYST_ID"/>
+		<result property="detlCdNm2" column="DETL_CD_NM2"/>
+		<result property="bswrTn" column="BSWR_TN"/>
+		<result property="manlTitlNm" column="MANL_TITL_NM"/>
+		<result property="vdeoCtn" column="VDEO_CTN"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="fileOgcpNm" column="FILE_OGCP_NM"/>
+		<result property="fileSavNm" column="FILE_SAV_NM"/>
+		<result property="fileExtsnNm" column="FILE_EXTSN_NM"/>
+		<result property="fileSizeNval" column="FILE_SIZE_NVAL"/>
+		<result property="dataStatCd" column="DATA_STAT_CD"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuVideoPalyManagementDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuVideoPalyManagementDAO-selectOneFileInfo */
+		      select
+		                   MD.FILE_ID                                -- 파일ID
+		                 , MD.SYST_ID                                -- 시스템ID
+		                 , C1.DETL_CD_NM     							as DETL_CD_NM1	/* 시스템명 */
+		                 , MD.SB_SYST_ID                             -- 서브시스템ID
+		                 , C2.DETL_CD_NM     							as DETL_CD_NM2 	/* 서브시스템명 */
+		                 , MD.BSWR_TN                                -- 업무순번
+		                 , MD.MANL_TITL_NM                           -- 메뉴얼내용
+		                 , MD.VDEO_CTN                               -- 동영상내용
+		                 , MD.FILE_PATH                              -- 파일경로
+		                 , MD.FILE_OGCP_NM                           -- 파일원본명
+		                 , MD.FILE_SAV_NM                            -- 파일저장명
+		                 , MD.FILE_EXTSN_NM                          -- 파일확장자명
+		                 , MD.FILE_SIZE_NVAL                         -- 파일크기수치
+		                 , MD.DATA_STAT_CD                           -- 자료상태코드
+		                 , to_char(MD.FRST_RGST_DT,'YYYYMMDDHH24MISS') as FRST_RGST_DT  -- 최초등록일시
+		                 , to_char(MD.LAST_UPDT_DT,'YYYYMMDDHH24MISS') as LAST_UPDT_DT  -- 최종수정일시
+		              from CCUTMPMDT MD         -- 동영상파일관리
+		                 , CCCMCDDMT C1         /* 시스템 공통코드_T */
+		                 , CCCMCDDMT C2         /* 서브 시스템 공통코드_T */
+		            where  C1.COMN_GRP_CD(+)   		= 'COR_062'
+		              and  MD.SYST_ID          				= C1.COMN_DTLS_CD(+)
+		              and  C2.COMN_GRP_CD(+)   		= 'COR_063'
+		              and  MD.SB_SYST_ID       			= C2.COMN_DTLS_CD(+)            
+		              and MD.FILE_ID        = #{fileId}
+	</select>
+
+
+
+</mapper>

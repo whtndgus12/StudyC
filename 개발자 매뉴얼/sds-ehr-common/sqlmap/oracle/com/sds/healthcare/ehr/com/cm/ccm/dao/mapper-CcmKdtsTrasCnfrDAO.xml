@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmKdtsTrasCnfrDAO_sql.xml 
+    Description :                                      고신닥터스 전송 확인
+                  -->
+<mapper namespace="CcmKdtsTrasCnfrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmKdtsTrasCnfrDVO">
+	
+		<result property="dataTypNm1" column="DATA_TYP_NM_1"/>
+		<result property="dataTypNm2" column="DATA_TYP_NM_2"/>
+		<result property="dataTypNm3" column="DATA_TYP_NM_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr (환자입원확인문자전송조회) 
+        Description :                                           환자입원확인문자전송조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmKdtsTrasCnfrDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmKdtsTrasCnfrDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-listPtntAdmsCnfrSmsTrasInqr */
+		select  a.DATA_TYP_NM_1     as DATA_TYP_NM_1
+		     ,  a.DATA_TYP_NM_2     as DATA_TYP_NM_2
+		     ,  a.DATA_TYP_NM_3     as DATA_TYP_NM_3
+		  from  CCSMSFLGT a
+		 where  a.TYPE_CD   = #{typeCd}
+		   and  a.MDRP_NO   = #{mdrpNo}
+		   and  a.PTNO      = #{ptno}
+		   and  a.ORDR_YMD  = to_date(#{ordrYmd},'yyyymmdd')
+		   and  a.ORDR_SNO  = #{ordrSno}
+		   and  a.ORDR_CD   = #{ordrCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-updatePtntAdmsCnfrSmsTras (환자입원확인문자전송) 
+        Description :                                           환자입원확인문자전송
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmKdtsTrasCnfrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-updatePtntAdmsCnfrSmsTras"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmKdtsTrasCnfrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmKdtsTrasCnfrDAO-updatePtntAdmsCnfrSmsTras */
+		 merge
+		  into  CCSMSFLGT   a
+		 using  DUAL x
+		    on  (
+		            a.TYPE_CD       = #{typeCd}
+		        and a.MDRP_NO       = #{mdrpNo} 
+		        and a.PTNO          = #{ptno} 
+		        and a.ORDR_YMD      = to_date(#{ordrYmd},'yyyymmdd')
+		        and a.ORDR_SNO      = #{ordrSno}
+		        and a.ORDR_CD   = #{ordrCd}
+		        )
+		  when matched then
+		        update
+		           set  DATA_TYP_NM_1         	= #{dataTypNm1}
+				     , 	DATA_TYP_NM_2         	= #{dataTypNm2}
+				     , 	DATA_TYP_NM_3         	= #{dataTypNm3}
+		             ,  LAST_UPDR_ID          	= #{gvUserId}
+		             ,  LAST_UPDT_IP          	= #{gvUserIp}
+		             ,  LAST_UPDT_DT          	= sysdate
+		             ,  LAST_UPDT_CLNT_PRGM_ID	= #{gvClntPrgmId}
+		             ,  LAST_UPDT_SRVR_PRGM_ID	= #{gvSrvrPrgmId}
+		  when not matched then
+		        insert  (
+							TYPE_CD
+						,  	MDRP_NO
+						,  	PTNO
+						,  	ORDR_YMD
+						,  	ORDR_SNO
+		                ,   ORDR_CD
+						,  	DATA_TYP_NM_1
+						,  	DATA_TYP_NM_2
+						,  	DATA_TYP_NM_3
+						,  	FRST_RGSR_ID
+						,  	FRST_RGST_IP
+						,  	FRST_RGST_DT
+						,  	FRST_RGST_CLNT_PRGM_ID
+						,  	FRST_RGST_SRVR_PRGM_ID
+						,  	LAST_UPDR_ID
+						,  	LAST_UPDT_IP
+						,  	LAST_UPDT_DT
+						,  	LAST_UPDT_CLNT_PRGM_ID
+						,  	LAST_UPDT_SRVR_PRGM_ID
+						)
+		        values  (
+							#{typeCd}
+						, 	#{mdrpNo}
+						, 	#{ptno}
+						, 	to_date(#{ordrYmd},'yyyymmdd')
+						, 	#{ordrSno}
+		                ,   #{ordrCd}
+						, 	#{dataTypNm1}
+						, 	#{dataTypNm2}
+						, 	#{dataTypNm3}
+						,  	#{gvUserId}
+						,  	#{gvUserIp}
+						,  	sysdate
+						,  	#{gvClntPrgmId}
+						,  	#{gvSrvrPrgmId}
+						,  	#{gvUserId}
+						,  	#{gvUserIp}
+						,  	sysdate
+						,  	#{gvClntPrgmId}
+						,  	#{gvSrvrPrgmId}
+						)  
+	</update>
+
+</mapper>

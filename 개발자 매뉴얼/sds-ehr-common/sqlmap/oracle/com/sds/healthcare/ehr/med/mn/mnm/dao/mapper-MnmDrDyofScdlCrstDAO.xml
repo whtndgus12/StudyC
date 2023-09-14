@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmDrDyofScdlCrstDAO_sql.xml 
+    Description :                                      의사휴진일정변경현황 관리
+                  -->
+<mapper namespace="MnmDrDyofScdlCrstDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-insertDrMdcrScdlMdfcResn (의사진료일정변경사유관리 저장) 
+        Description :                                           apd_dssmrst_i02
+                                                                의사진료일정변경사유에 의사진료일정변경사유 정보를 저장한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-insertDrMdcrScdlMdfcResn"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  >
+		<![CDATA[
+		   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-insertDrMdcrScdlMdfcResn */   /*+ apd_dssmrst_i02$I01_의사진료일정변경사유관리 저장 */
+		   into  APDSSMRST
+				 (
+				   MCDP_CD             /*  진료과코드                         */
+				 , MDDR_ID             /*  진료의사ID                      */
+				 , ADMS_OTDV_CD        /*  입원외래구분코드                   */
+				 , STRT_YMD            /*  시작일자                           */
+				 , DR_SCDL_MDFC_SNO    /*  의사진료일정일련번호               */
+				 , FNSH_YMD            /*  종료일자                           */
+				 , MDCR_MDRE_CD        /*  진료변경사유코드                   */
+				 , MDCR_MDFC_FVDV_CD   /*  진료변경초재진구분코드             */
+				 , APNT_PTNT_CNT       /*  예약환자수                         */
+				 , FRST_RGSR_ID        /*  최초등록자ID                    */
+				 , FRST_RGST_IP        /*  최초등록IP                      */
+				 , FRST_RGST_DT        /*  최초등록일시                       */
+				 , FRST_RGST_CLNT_PRGM_ID   /*  최초등록SMC클라이언트프로그램ID   */
+				 , FRST_RGST_SRVR_PRGM_ID   /*  최초등록SMC서버프로그램ID        */
+				 , LAST_UPDR_ID        /*  최종수정자ID                    */
+				 , LAST_UPDT_IP        /*  최종수정IP                      */
+				 , LAST_UPDT_DT        /*  최종수정일시                       */
+				 , LAST_UPDT_CLNT_PRGM_ID   /*  최종수정SMC클라이언트프로그램ID   */
+				 , LAST_UPDT_SRVR_PRGM_ID   /*  최종수정SMC서버프로그램ID         */
+				 )
+		   values(
+				   #{mcdpCd}
+				 , #{mddrId}
+				 , #{admsOtdvCd}
+				 , to_date(#{strtYmd}, 'yyyymmddhh24mi')
+				 , nvl((select max(a.DR_SCDL_MDFC_SNO) + 1
+						  from APDSSMRST a
+						 where a.MCDP_CD      = #{mcdpCd}
+						   and a.MDDR_ID      = #{mddrId}
+						   and a.ADMS_OTDV_CD = #{admsOtdvCd}
+						   and a.STRT_YMD     = to_date(#{strtYmd}, 'yyyymmddhh24mi')
+				   ), 1)
+				 , to_date(#{fnshYmd}, 'yyyymmddhh24mi')
+				 , #{mdcrMdreCd}
+				 , decode(#{mdcrMdreCd}, '9' ,#{mdcrMdfcFvdvCd}, null)
+				 , #{apntPtntCnt}
+				 , #{gvUserId}
+				 , #{gvUserIp}
+				 , sysdate
+				 , #{gvClntPrgmId}
+				 , #{gvSrvrPrgmId}
+				 , #{gvUserId}
+				 , #{gvUserIp}
+				 , sysdate
+				 , #{gvClntPrgmId}
+				 , #{gvSrvrPrgmId}
+				 )
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-deleteDrMdcrScdlMdfcResn (의사진료일정변경사유관리 삭제) 
+        Description :                                           apd_dssmrst_d05
+                                                                의사진료일정변경사유에서 데이터를 삭제한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-deleteDrMdcrScdlMdfcResn"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  >
+		<![CDATA[
+		   DELETE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-deleteDrMdcrScdlMdfcResn */   /*+ apd_dssmrst_d05$I01_의사진료일정변경사유관리 삭제 */
+				   APDSSMRST
+			where
+				   MCDP_CD           = #{mcdpCd}
+			  and  MDDR_ID           = #{mddrId}
+			  and  ADMS_OTDV_CD      = #{admsOtdvCd}
+			  and  STRT_YMD          = to_date(#{strtYmd}, 'yyyymmddhh24mi')
+			  /* and  MDCR_MDRE_CD      = nvl(:aps_dssmrst_005[0].mdcr_mdre_cd     , MDCR_MDRE_CD) */
+			  /* and  MDCR_MDFC_FVDV_CD = nvl(:aps_dssmrst_005[0].mdcr_mdfc_fvdv_cd, MDCR_MDFC_FVDV_CD) */
+			]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO">
+	
+		<result property="afiDyofStrtDt" column="AFI_DYOF_STRT_DT"/>
+		<result property="afiDyofFnshDt" column="AFI_DYOF_FNSH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr (의사휴진 CAPA 일시 조회) 
+        Description :                                           mdd_dsscdlt_s01
+                                                                의사휴진 CAPA 일시 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneDrDyofCapaDtInqr */
+					   nvl(to_char(min(dss.MDCR_DT),'yyyymmddHH24MI'), #{mdcrYmd1}||'0000') as AFI_DYOF_STRT_DT
+					 , nvl(to_char(max(dss.MDCR_DT),'yyyymmddHH24MI'), #{mdcrYmd1}||'0000') as AFI_DYOF_FNSH_DT  /*  유효CAPA가 없으면 0000시로 넣어서 인원수 조회되지 않도록 한다 */
+				  from
+						APDSSCDLT dss
+				 where  1=1
+				   and  dss.MCDP_CD      = #{mcdpCd}
+				   and  dss.MDDR_ID      = #{mddrId}
+				   and  dss.MDCR_YMD between to_date(#{mdcrYmd1},'yyyymmdd') and to_date(#{mdcrYmd2},'yyyymmdd')
+		   		and  not (dss.MDCR_YMD     = to_date(#{mdcrYmd1},'yyyymmdd')
+		   				 and dss.AMPM_DVSN_CD = decode(#{strtAmpmDvsnCd},'P','A','N')) /*  시작일자에 오후부터이면 오전예약은 제외한다. */
+		   		and  not (dss.MDCR_YMD     = to_date(#{mdcrYmd2},'yyyymmdd')
+		   				 and dss.AMPM_DVSN_CD = decode(#{fnshAmpmDvsnCd},'A','P','N')) /*  종료일자에 오전까지이면 오후예약은 제외한다. */
+				]]>
+	</select>
+
+
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-executeDyofRgstMdcrScdl (휴진등록시 진료일정반영) 
+        Description : apd_dsscdlt_u08
+휴진등록시 진료일정반영
+
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-executeDyofRgstMdcrScdl"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-executeDyofRgstMdcrScdl */
+		{
+		call SEHRFUN.SP_AP_UPDATE_APDSSCDLT
+		    (
+		        #{dvsnCd}
+		     ,  #{mcdpCd}
+		     ,  #{mddrId}
+		     ,  #{strtYmd}
+		     ,  #{strtHhDvsnCd}
+		     ,  #{fnshYmd}
+		     ,  #{fnshHhDvsnCd}
+		     ,  #{dyofResnCd}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  #{errYn}
+		     ,  #{errMesgCtn}
+		     )
+		}
+	</select>	
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO">
+	
+		<result property="apntCct" column="APNT_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr (진료접수에서 진료 예약환자 수 조회) 
+        Description :                                           apd_rcrptnt_s09
+                                                                 진료접수에서 진료 예약환자 수를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-selectOneMdcrApntPtntCntInqr */
+		<![CDATA[
+		   select  /*+ INDEX(a APRCRPTNT_I22) */
+		           count(*)     as APNT_CCT
+		     from
+		           APRCRPTNT a
+		    where
+		           a.MDCR_YMD      between to_date(#{mdcrYmd1}, 'yyyymmdd')          /* 시작시간*/
+		                               and to_date(#{mdcrYmd2}, 'yyyymmdd')          /* 종료시간*/
+		      and  a.MCDP_CD       = #{mcdpCd}
+		      and  a.MDDR_ID       = #{mddrId}
+		      and  a.MDCR_DT       between to_date(#{mdcrDt1}, 'yyyymmddhh24mi')   /* 시작시간*/
+		                               and to_date(#{mdcrDt2}, 'yyyymmddhh24mi')   /* 종료시간*/
+		      and  a.CNCL_DT       is null
+		      and  a.MDCR_ANDV_CD  not in ('8', '9', 'A')
+		    ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO">
+	
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr (기간내 진료일자 조회) 
+        Description :                                           mdd_ptptntt_l05
+                                                                기간내 진료일자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listPerdMdcrYmdInqr */
+		<![CDATA[
+		   select  /*+ INDEX(a APRCRPTNT_I22) */
+		           distinct to_char(trunc(a.MDCR_DT),'YYYYMMDD') as MDCR_YMD
+		     from
+		           APRCRPTNT a
+		    where  a.MDCR_YMD      between to_date(substr(#{mdstDt},1,8), 'yyyymmdd')          /* 시작시간*/
+		                               and to_date(substr(#{mdfnDt},1,8), 'yyyymmdd')          /* 종료시간*/
+		      and  a.MCDP_CD       = #{mcdpCd}
+		      and  a.MDDR_ID       = #{mddrId}
+		      and  a.CODV_CD       = 'O'  /*  :mds_ptptntt_010[0].codv_cd */
+		      and  a.MDCR_DT       between to_date(#{mdstDt}, 'yyyymmddhh24mi')   /* 시작시간*/
+		                               and to_date(#{mdfnDt}, 'yyyymmddhh24mi')   /* 종료시간*/
+		      and  a.CNCL_DT       is null
+		      and  a.MDCR_ANDV_CD  not in ('8', '9', 'A')
+		    order
+		       by  1
+		    ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr (사용자 이중사번 조회) 
+        Description :                                           mdo_usrdpht_l03
+                                                                사용자 이중사번 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlCrstDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlCrstDAO-listUserDpltListInqr */
+		           usr.USER_ID as USER_ID
+		        ,  usr.MDCR_DPRT_CD as MDCR_DPRT_CD
+		     from  CCUSRDPHT usr
+		    where  usr.LGIN_ID =
+		        (
+		           select  a.LGIN_ID
+		             from  CCUSRDPHT a
+		            where  1=1
+		              and  a.USER_ID = #{userId}
+		              and  rownum < 2
+		        )
+		      and  usr.USER_ID != #{userId}
+		      and  sysdate between nvl(usr.APST_YMD, sysdate - 1) and nvl(usr.APFN_YMD, sysdate + 1)
+		    ]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AibChckMemoComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AibChckMemoComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-insertChckMemo1 () 
+        Description :                                           [공통용]통합심사 메모 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-insertChckMemo1"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO"  >
+		  insert /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-insertChckMemo1 */
+					 into  AIIRCHMMT
+						(
+		   				    PTNO               /*  환자번호 */
+		   				 ,  CHCK_DVSN_CD       /*  작업구분(AI088) */
+		   				 ,  INTG_CHCK_MEMO_SNO /*  통합심사메모일련번호 */
+		   				 ,  MDRP_NO
+		                 ,  CODV_CD
+		   				 ,  MDST_YMD           /*  진료개시일시 */
+		   				 ,  MDFE_CD            /*  수가코드 */
+		   				 ,  ORTA_NM            /*  처방테이블 */
+		   				 ,  ORPR_VL            /*  처방KEY */
+		   				 ,  MEMO_DVSN_CD       /*  메모구분코드 */
+		   				 ,  EDI_RMRK_CTN1      /*  EDI비고1 */
+		   				 ,  EDI_RMRK_CTN2      /*  EDI비고2 */
+						,  FRST_RGSR_ID
+						,  FRST_RGST_IP
+						,  FRST_RGST_DT
+						,  FRST_RGST_CLNT_PRGM_ID
+						,  FRST_RGST_SRVR_PRGM_ID
+						,  LAST_UPDR_ID
+						,  LAST_UPDT_IP
+						,  LAST_UPDT_DT
+						,  LAST_UPDT_CLNT_PRGM_ID
+						,  LAST_UPDT_SRVR_PRGM_ID
+						)
+				   values
+						(
+		   					   #{ptno}                                 /*  환자번호 */
+							,  #{chckDvsnCd}                         /*  작업구분(AI088) */
+							,  ( select
+		   							   nvl( max( INTG_CHCK_MEMO_SNO), 0 ) + 1
+		   						 from
+		   							   AIIRCHMMT
+		   						where  PTNO         = #{ptno}
+		   						  and  CHCK_DVSN_CD = #{chckDvsnCd}
+							   )
+						 ,  #{mdrpNo}
+		                 , #{codvCd}
+		   				 ,  to_date(#{ordrYmd}, 'yyyymmdd')        /*  진료개시일시 */
+		   				 ,  #{mdfeCd}                              /*  수가코드 */
+		   				 ,  #{ortaNm}                              /*  처방테이블 */
+		   				 ,  #{ptno}||to_char(to_date(#{ordrYmd},'yyyymmdd'), 'yyyy-mm-dd')||lpad(to_char(#{ordrSno}), 22, '0')  /* 처방KEY */
+		   				 ,  #{memoDvsnCd}                         /*  메모구분코드 */
+		   				 ,  #{ediRmrkCtn1}                       /*  EDI비고1 */
+		   				 ,  #{ediRmrkCtn2}                       /*  EDI비고2 */
+							,  #{gvUserId}
+							,  #{gvUserIp}
+							,  sysdate
+							,  #{gvClntPrgmId}
+							,  #{gvSrvrPrgmId}
+							,  #{gvUserId}
+							,  #{gvUserIp}
+							,  sysdate
+							,  #{gvClntPrgmId}
+							,  #{gvSrvrPrgmId}
+						)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-updateChckMemo1 () 
+        Description :                                           [공통용] 통합심사 메모 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-updateChckMemo1"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO"  >
+		  update  /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-updateChckMemo1 */
+					  AIIRCHMMT
+				  set
+					  EDI_RMRK_CTN1   =  #{ediRmrkCtn1}              /*  EDI비고1 */
+				   /*  서버 프로그램 전환시 자동 추가된 항목 */
+				   ,  LAST_UPDR_ID = #{gvUserId}
+				   ,  LAST_UPDT_IP = #{gvUserIp}
+				   ,  LAST_UPDT_DT = sysdate
+				   ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				   ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			   where  
+		                   MDRP_NO =  #{mdrpNo}
+		           and  PTNO = #{ptno}
+		           and  CHCK_DVSN_CD = #{chckDvsnCd} /* 5 */
+				   and  MEMO_DVSN_CD    =  #{memoDvsnCd}               /* J  */
+				   and  MDFE_CD         =  #{mdfeCd}             /* 처방코드   */
+		           and  CODV_CD        = #{codvCd}
+		           and  MDST_YMD         = to_date(#{ordrYmd},'yyyymmdd')
+				   and  ORTA_NM         =  #{ortaNm}           /*  처방테이블 */
+				   and  ORPR_VL         =  #{ptno}||to_char(to_date(#{ordrYmd},'yyyymmdd'), 'yyyy-mm-dd')||lpad(to_char(#{ordrSno}), 22, '0')             /*  처방KEY */
+				   and  EDI_RMRK_CTN2   =  #{ediRmrkCtn2}               /*  JT015 */
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1-result" type="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO">
+	
+		<result property="inqrYn" column="INQR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneChckMemoYn1 */
+		          decode(count(1),0,'N','Y') as INQR_YN
+		  from
+				   AIIRCHMMT a
+		 where
+		             a.MDRP_NO =  #{mdrpNo}
+		     and  a.PTNO = #{ptno}
+		     and  a.CHCK_DVSN_CD = #{chckDvsnCd} /* 5 */
+		     and  a.MEMO_DVSN_CD    =  #{memoDvsnCd}               /* J  */
+		     and  a.MDFE_CD         =  #{mdfeCd}             /* 처방코드   */
+		     and  a.CODV_CD        = #{codvCd}
+		     and  a.MDST_YMD         = to_date(#{ordrYmd},'yyyymmdd')
+		     and  a.ORTA_NM         =  #{ortaNm}           /*  처방테이블 */
+		     and  a.ORPR_VL         =  #{ptno}||to_char(to_date(#{ordrYmd},'yyyymmdd'), 'yyyy-mm-dd')||lpad(to_char(#{ordrSno}), 22, '0')             /*  처방KEY */
+		     and  a.EDI_RMRK_CTN2   =  #{ediRmrkCtn2}               /*  JT015 */
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO">
+	
+		<result property="ordrSno" column="ORDR_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy () 
+        Description :                                           Dummy
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibChckMemoComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibChckMemoComnDAO-selectOneDummy */
+		select ordr_sno as ORDR_SNO
+		  from acclmcclt
+		where rownum = 1
+	</select>
+
+
+
+</mapper>

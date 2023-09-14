@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SzpAtcTranMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="SzpAtcTranMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpAtcTranMngmDVO">
+	
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="updtBemdNo" column="UPDT_BEMD_NO"/>
+		<result property="mdtnNo" column="MDTN_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="atcTrnmYn" column="ATC_TRNM_YN"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="ordrDt" column="ORDR_DT"/>
+		<result property="mdtnNoDvsnCd" column="MDTN_NO_DVSN_CD"/>
+		<result property="phdpCmmdBndlNo" column="PHDP_CMMD_BNDL_NO"/>
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+		<result property="kornPdctNm" column="KORN_PDCT_NM"/>
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="mdtnDdcn" column="MDTN_DDCN"/>
+		<result property="mdnt" column="MDNT"/>
+		<result property="pcknUnadQty" column="PCKN_UNAD_QTY"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="bsisCmmdPlacCd" column="BSIS_CMMD_PLAC_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran (atc 처방전송) 
+        Description :                                           atc 처방전송
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpAtcTranMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpAtcTranMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-listAtcTran */
+		<![CDATA[
+		     select  /*+ sdd_atc1001_l01$S01_외래약국 환자 조회 쿼리문 */
+				           to_char( a.ORDR_YMD ,'YYYYMMDD' ) as ORDR_YMD
+				         ,  a.UPDT_BEMD_NO as UPDT_BEMD_NO     /* 병실 */
+				         ,  a.MDTN_NO as MDTN_NO
+				         ,  d.PTNO as PTNO
+				         ,  d.GEND_CD as GEND_CD
+				         ,  d.PTNT_NM  as PTNT_NM
+				         ,  a.ATC_TRNM_YN as ATC_TRNM_YN
+				         ,  a.ODDR_ID as ODDR_ID
+				         ,  a1.ABRV_DPRT_CD as ABRV_DPRT_CD
+				         ,  a2.ABRV_DPRT_CD as DPRT_CD
+				         ,  to_char( b.DRUG_ORDR_INPT_DT ,'YYYYMMDDHH24MISS' ) as ORDR_DT
+				         ,  b.MDTN_NO_DVSN_CD as MDTN_NO_DVSN_CD
+				         ,  b.PHDP_CMMD_BNDL_NO as PHDP_CMMD_BNDL_NO
+				         ,  b.MDPR_CD as MDPR_CD
+				         ,  c.SMRY_MDPR_NM as MDPR_NM
+				         ,  c.KORN_PDCT_NM as KORN_PDCT_NM
+				         ,  b.DRUS_CD as DRUS_CD
+				         ,  b.MDTN_DDCN as MDTN_DDCN
+				         ,  b.MDNT as MDNT
+				         ,  b.PCKN_UNAD_QTY  as PCKN_UNAD_QTY
+		                 ,  b.MDPR_CLSF_CD
+		                 ,  b.BSIS_CMMD_PLAC_CD
+				      from 
+		                    (
+		                       select  *
+		                         from 
+		                               (  select 
+		            		                        a.ORDR_YMD
+				    		             	     ,   a.MDTN_NO_DVSN_CD
+				      			                 ,   a.MDTN_NO
+				    		                      ,   a.MDTN_LCDV_CD		
+		                      			         ,   a.PTNO
+		                     			          ,   a.MCDP_CD
+		                     			          ,   a.WARD_CD
+		                     			          ,   a.ORDR_DT
+		                                          ,   lpad(to_char(j.PTRM_NO) ,5, '0')        UPDT_BEMD_NO
+		                                          ,   a.ATC_TRNM_YN
+		                                          ,   a.ODDR_ID    
+		                  			          from SDPORDBAT a
+		                   			                 , SDPORDDET b
+		                                             ,  SDDDGCDMT c
+		                       			            ,  HZDEPTMMT a2
+		                                            ,  APPTPTNTV d
+		                      			            ,  MDMEDORDT h /* 약처방 */
+		                     			             ,  APRCRPTNT j /* 진료접수 */
+		                                     where 
+		                           				           a.ORDR_YMD between to_date(  trim(  #{ordrYmd1} ) ,'yyyymmdd')  /* 어제 날짜(금일-1 */
+				                        			                                 and to_date( trim( #{ordrYmd2} ) ,'yyyymmdd') + .99999
+				                  			     and (       ( nvl(  #{etcYn} , '1' )  = '1'     and   ( nvl( a.ATC_TRNM_YN,'N' ) in (  'P' , 'J' ,'N' )  ) ) 
+		                                 		       or     (  nvl(   #{etcYn}  , '1' )  = 'R'   and   nvl( a.ATC_TRNM_YN,'N' ) = 'Y' ) 
+		                                               or     (  nvl(   #{etcYn}  , '1' )  = 'N'   and   nvl( a.ATC_TRNM_YN,'N' ) = 'Y' 
+		                                                                                                  and  substr( #{gvUserId}, 1, 1 ) =  a.MDTN_NO_DVSN_CD 
+		                                                                                                  and  trim( substr( #{gvUserId}, 2, 5 )  ) =   a.MDTN_NO )
+		                                		       )
+				                 			      and  (
+		                                    		          (( trim( #{wodvCd}  ) = 'I' ) and instr( 'ABCEIS' , a.MDTN_NO_DVSN_CD ) > 0   and  ( b.BSIS_CMMD_PLAC_CD in (   '3' ,'5' ) or ( b.BSIS_CMMD_PLAC_CD='1' and c.DGFR_CD in ('01','02' ) )  )  )
+		                                		         or  (( trim( #{wodvCd}  ) = 'O' ) and instr( 'OPQTZDFGH' , a.MDTN_NO_DVSN_CD ) > 0   and ( b.BSIS_CMMD_PLAC_CD in (   '3' ,'5' ) or ( b.BSIS_CMMD_PLAC_CD='1' and c.DGFR_CD in ('01','02' ) )  ) )
+		                                        		 or  (( trim(  #{wodvCd}  ) = 'P' ) and instr( 'ABCDEFGHISOPQTZ' , a.MDTN_NO_DVSN_CD ) > 0 and  b.BSIS_CMMD_PLAC_CD in ( '5' )  )
+		                                   			     )
+		                       			      /*   and  (   ( instr( 'OTZ' , a.MDTN_NO_DVSN_CD ) > 0  and b.SDPF_EXRE_CD is not null )
+		                                		          or ( instr( 'ABCDEFGHISPQ' , a.MDTN_NO_DVSN_CD ) > 0   )
+		                                     		     )		
+		                                      */
+		                           			     and  a.RPTN_DT <= sysdate 
+		                           			     and  b.ORDR_YMD = a.ORDR_YMD
+				                 			       and  b.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD
+				                  			      and  b.MDTN_NO = a.MDTN_NO
+				                  			      and  b.MDTN_LCDV_CD = a.MDTN_LCDV_CD		
+		                             			   and  b.PTNO = a.PTNO
+		                                          and (     ( b.MDTN_NO_DVSN_CD  in ('O' ,'Z' )   and  b.RCPC_DT is not null      )       
+		                                                   or ( b.MDTN_NO_DVSN_CD not in ( 'O','Z' )   and  b.CMMD_STTS_CD  in ('1', '2'  ,'3', '4', '5' ) )       
+		                                                  )	
+		                                           and  c.MDPR_CD = b.MDPR_CD
+		                             			   and  a2.DPRT_CD(+) = a.WARD_CD
+		                                          and  d.PTNO = a.PTNO
+		                              			  and h.PTNO             = b.PTNO
+				                   			     and h.ORDR_YMD         = b.ORDR_YMD
+				                   			     and h.ORDR_SNO         = b.ORDR_SNO
+		                          			      and j.MDRP_NO          = h.MDRP_NO                   
+		                                           /* 조제정보 생성 전 반납*/
+		                                          and nvl((select /*+ index ( a1 mdmedordt_pk )
+		                                                                       index ( b1 sdjdgrtnt_pk ) */
+		                                                                 'Y'
+		                                                       from
+		                                                               MDMEDORDT a1,
+		                                                               SDJDGRTNT b1
+		                                                     where
+		                                                                a1.PTNO     = b.PTNO
+		                                                        and a1.ORDR_YMD = b.ORDR_YMD
+		                                                         and a1.ORDR_SNO = b.ORDR_SNO
+		                                                         and a1.DRUG_ORDR_PRSS_CD <> '0'
+		                                                         and (nvl(a1.DC_DVSN_CD, 'N') = 'Y' or nvl(a1.CMMD_BEFR_RTRN_DVSN_CD,'N') = 'Y')
+		                                                         and a1.ORDR_YMD = b1.ORDR_YMD
+		                                                         and a1.PTNO = b1.PTNO
+		                                                         and a1.ORDR_SNO = b1.ORDR_SNO
+		                                                        and b1.DRUG_RTRE_CD = '7'
+		                                                         and rownum = 1
+		                                                ), 'N') <> 'Y'
+		                                               /* 미수령 반납 : 조제정보 생성 불출 처리 전 반납 */
+		                                              and  not exists ( select  'Y'
+		      									                                 from  SDJDGRTNT s
+		            								                          where  s.ORDR_YMD        = b.ORDR_YMD
+		            								                            and  s.MDTN_NO_DVSN_CD = b.MDTN_NO_DVSN_CD
+		               									                         and  s.MDTN_NO         = b.MDTN_NO
+		                								                        and  s.MDTN_LCDV_CD    = b.MDTN_LCDV_CD
+		              									                          and  s.ORDR_SNO        = b.ORDR_SNO
+		                  									                      and  s.MDPR_CD         = b.MDPR_CD
+		                   									                     and  nvl(s.MDPR_RTRN_NTM, -1) != 0
+		                                								        and  b.INVN_TOTL_QTY <= (select  sum(RTRN_RQST_CQY)
+		                           												                                        from  SDJDGRTNT t
+		                                     											                             where  s.ORDR_YMD         = t.ORDR_YMD
+		                                      											                              and  s.MDTN_NO_DVSN_CD  = t.MDTN_NO_DVSN_CD
+		                         											                                           and  s.MDTN_NO          = t.MDTN_NO
+		                             											                                       and  s.ORDR_SNO         = t.ORDR_SNO
+		                                											                                    and  s.MDTN_LCDV_CD     = t.MDTN_LCDV_CD
+		                                             											                       and  s.MDPR_CD          = t.MDPR_CD
+		                                             											                       and  t.RTRN_DETL_DVSN_CD = 'B' /* A 수령반납, B 미수령반납, Z 잔량반납 */
+		                                        											                            and  nvl(t.MDPR_RTRN_NTM, -1) != 0)
+		                                                                          )                       
+		                   			        group by
+		                                             a.ORDR_DT
+		                            		     ,   a.ORDR_YMD
+				              		             ,   a.MDTN_NO_DVSN_CD
+				            		             ,   a.MDTN_NO
+				              		             ,   a.MDTN_LCDV_CD		
+		                    		             ,   a.PTNO
+		                     		             ,   a.MCDP_CD
+		                       			          ,   a.WARD_CD
+		                        		         ,   a.ORDR_DT
+		                                   ---      ,    c.MDPR_CLSF_CD
+		                                  ---       ,    b.BSIS_CMMD_PLAC_CD
+		                                         ,    a2.PHDP_CMMD_SQNC_VL
+		                                         ,   a2.ABRV_DPRT_CD
+		                                         ,   j.PTRM_NO
+		                                         ,   d.PTNT_NM
+		                                         ,   a.UPDT_BEMD_NO 
+		                                         ,   a.ATC_TRNM_YN
+		                                         ,   a.ODDR_ID
+		                                    order by 
+		                                                 a.ORDR_DT
+		                                              ,  a.MDTN_NO_DVSN_CD
+		                           			--          , case when a.MDTN_NO_DVSN_CD  in  ( 'A' ,'B' ) then
+		                             		 --                     case when c.MDPR_CLSF_CD = '2' then '2' /* 약품분류코드 2 향정신성의약품, 3 마약 그외 일반 */
+		                              		--                             when c.MDPR_CLSF_CD = '3' then '3'
+		                              		--                             else '1'
+		                               		--                       end
+		                               		----		    	         || case when   b.BSIS_CMMD_PLAC_CD = '5' then '1'  else   '9'  end
+		                                  --          	 	  else 
+		                                  --               		   '20'
+		                                  --    			  end  
+		                                             ,  lpad(to_char( a2.PHDP_CMMD_SQNC_VL ), 10, '0' )
+		                                                || rpad(a2.ABRV_DPRT_CD, 7,'0' )
+				                        		        || lpad(to_char(j.PTRM_NO) ,5, '0')
+				                              		    || d.PTNT_NM
+				                         		        || a.PTNO
+				                             		    || to_char(a.ORDR_YMD, 'yyyymmdd')
+		                                                || a.MDTN_LCDV_CD
+				                                        || a.MDTN_NO_DVSN_CD
+				                                        || lpad(to_char( a.MDTN_NO), 4, '0')
+		                                      )
+		                              where 
+		                                         rownum < 20
+		                        ) a
+		                 ,  SDPORDDET  b 
+				         ,  HZDEPTMMT a1
+				         ,  HZDEPTMMT a2
+				         ,  SDDDGCDMT c
+				         ,  APPTPTNTV d
+		                 ,  MDMEDORDT h /* 약처방 */
+		                 ,  APRCRPTNT j /* 진료접수 */
+				     where  
+		                      b.ORDR_YMD = a.ORDR_YMD
+				       and  b.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD
+				       and  b.MDTN_NO = a.MDTN_NO
+				       and  b.MDTN_LCDV_CD = a.MDTN_LCDV_CD		
+		               and  b.PTNO = a.PTNO
+		                and (       ( nvl(  #{etcYn} , '1' )  = '1'     and   ( nvl( a.ATC_TRNM_YN,'N' ) in ( 'P' , 'J' , 'N' )  ) ) 
+		                      or     (  nvl(   #{etcYn}  , '1' )  = 'R'   and   nvl( a.ATC_TRNM_YN,'N' ) = 'Y' ) 
+		                      or     (  nvl(   #{etcYn}  , '1' )  = 'N'   and   nvl( a.ATC_TRNM_YN,'N' ) = 'Y' 
+		                                                                         and  substr( #{gvUserId}, 1, 1 ) =  a.MDTN_NO_DVSN_CD 
+		                                                                         and  trim( substr( #{gvUserId}, 2, 5 )  ) =   a.MDTN_NO )
+		                                		       )
+				        and  (
+		                              (( trim( #{wodvCd}  ) = 'I' ) and instr( 'ABCEIS' , a.MDTN_NO_DVSN_CD ) > 0                and ( b.BSIS_CMMD_PLAC_CD in (   '3' ,'5' ) or ( b.BSIS_CMMD_PLAC_CD='1' and c.DGFR_CD in ('01','02' ) )  ) )
+		                         or  (( trim( #{wodvCd}  ) = 'O' ) and instr( 'OPQTZDFGH' , a.MDTN_NO_DVSN_CD ) > 0                     and (  b.BSIS_CMMD_PLAC_CD in (   '3' ,'5' ) or ( b.BSIS_CMMD_PLAC_CD='1' and c.DGFR_CD in ('01','02' ) )  )  )
+		                      	 or  (( trim(  #{wodvCd}  ) = 'P' ) and instr( 'ABCDEFGHISOPQTZ' , a.MDTN_NO_DVSN_CD ) > 0     and  b.BSIS_CMMD_PLAC_CD in ( '5' )  )
+		                        )
+		                and (     ( b.MDTN_NO_DVSN_CD  in ('O' ,'Z' )   and  b.RCPC_DT is not null    )         
+		                        or ( b.MDTN_NO_DVSN_CD not in ( 'O','Z' )   and  b.CMMD_STTS_CD  in ( '1', '2'  ,'3', '4', '5' ) )       
+		                       )			               
+				       and  c.MDPR_CD = b.MDPR_CD
+				       and  d.PTNO = a.PTNO
+				       and  a1.DPRT_CD(+) = a.MCDP_CD
+				       and  a2.DPRT_CD(+) = a.WARD_CD
+		               and h.PTNO             = b.PTNO
+				       and h.ORDR_YMD         = b.ORDR_YMD
+				       and h.ORDR_SNO         = b.ORDR_SNO
+		               and j.MDRP_NO          = h.MDRP_NO      
+		               /* 조제정보 생성 전 반납*/
+		               and nvl((select /*+ index ( a1 mdmedordt_pk )
+		                                         index ( b1 sdjdgrtnt_pk ) */
+		                                     'Y'
+		                            from
+		                                       MDMEDORDT a1,
+		                                       SDJDGRTNT b1
+		                          where
+		                                       a1.PTNO     = b.PTNO
+		                             and a1.ORDR_YMD = b.ORDR_YMD
+		                            and a1.ORDR_SNO = b.ORDR_SNO
+		                            and a1.DRUG_ORDR_PRSS_CD <> '0'
+		                           and (nvl(a1.DC_DVSN_CD, 'N') = 'Y' or nvl(a1.CMMD_BEFR_RTRN_DVSN_CD,'N') = 'Y')
+		                           and a1.ORDR_YMD = b1.ORDR_YMD
+		                           and a1.PTNO = b1.PTNO
+		                           and a1.ORDR_SNO = b1.ORDR_SNO
+		                           and b1.DRUG_RTRE_CD = '7'
+		                           and rownum = 1
+		                    ), 'N') <> 'Y'
+		                   /* 미수령 반납 : 조제정보 생성 불출 처리 전 반납 */
+		                  and  not exists ( select  'Y'
+		      		                               from  SDJDGRTNT s
+		                                          where  s.ORDR_YMD        = b.ORDR_YMD
+		            	                            and  s.MDTN_NO_DVSN_CD = b.MDTN_NO_DVSN_CD
+		               	                            and  s.MDTN_NO         = b.MDTN_NO
+		                	                        and  s.MDTN_LCDV_CD    = b.MDTN_LCDV_CD
+		              		                        and  s.ORDR_SNO        = b.ORDR_SNO
+		                  	                        and  s.MDPR_CD         = b.MDPR_CD
+		                   		                    and  nvl(s.MDPR_RTRN_NTM, -1) != 0
+		                            		        and  b.INVN_TOTL_QTY <= (select  sum(RTRN_RQST_CQY)
+		                           					                                        from  SDJDGRTNT t
+		                            						                             where  s.ORDR_YMD         = t.ORDR_YMD
+		                             						                                 and  s.MDTN_NO_DVSN_CD  = t.MDTN_NO_DVSN_CD
+		                         											                 and  s.MDTN_NO          = t.MDTN_NO
+		                             											             and  s.ORDR_SNO         = t.ORDR_SNO
+		                                											        and  s.MDTN_LCDV_CD     = t.MDTN_LCDV_CD
+		                                             									    and  s.MDPR_CD          = t.MDPR_CD
+		                                             									    and  t.RTRN_DETL_DVSN_CD = 'B' /* A 수령반납, B 미수령반납, Z 잔량반납 */
+		                                        										    and  nvl(t.MDPR_RTRN_NTM, -1) != 0)
+		                                                                          )                      
+				     order
+				        by 
+		                     a.ORDR_DT
+		                  ,  b.MDTN_NO_DVSN_CD
+		       --           , case when b.MDTN_NO_DVSN_CD  in  ( 'A' ,'B' ) then
+		       ----                     case when c.MDPR_CLSF_CD = '2' then '2' /* 약품분류코드 2 향정신성의약품, 3 마약 그외 일반 */
+		      --                             when c.MDPR_CLSF_CD = '3' then '3'
+		     ----                            else '1'
+		    ----                        end
+		     ----                    || case when   b.BSIS_CMMD_PLAC_CD = '5' then '1'  else   '9'  end
+		     --                    else 
+		     --                        '20'
+		     --                end  
+		                  ,
+		                      lpad(to_char(a2.PHDP_CMMD_SQNC_VL ), 10, '0' )
+		                   || rpad(a2.ABRV_DPRT_CD, 7,'0' )
+				           || lpad(to_char(j.PTRM_NO) ,5, '0')
+				           || d.PTNT_NM
+				           || a.PTNO
+				           || to_char(b.ORDR_YMD, 'yyyymmdd')
+				           || b.MDTN_LCDV_CD
+				           || b.MDTN_NO_DVSN_CD
+				           || lpad(to_char(b.MDTN_NO), 4, '0')
+				           || case when c.DRAP_DVSN_CD = '1' then '1' /* 약적용구분코드 SD002 1 내복약 B2 2 주사약 B1 3 외용약 B3 9 기타 B9 */
+				                    when c.DRAP_DVSN_CD = '3' then '2'
+				                    when c.DRAP_DVSN_CD = '9' then '3'
+				                    else '4'
+				              end
+				            || case when c.KPNG_PLAC_CD = '1' then '1' /* 보관장소코드 1, 7 인 경우 냉장, 3 냉동 */
+				                     when c.KPNG_PLAC_CD = '7' then '1'
+				                     when c.KPNG_PLAC_CD = '3' then '2'
+				                     else '3'
+				               end
+				            || b.BSIS_CMMD_PLAC_CD
+		                    || rpad(b.MDNT,3,' ')
+		                    || rpad(b.DRUS_CD,3,' ')
+		                    || rpad(b.MDPR_CD,10,' ')
+				            || lpad( to_char(b.PHDP_CMMD_BNDL_NO ), 4,'0')
+				            || lpad(to_char(b.ORDR_SNO), 10, '0')
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-updateAtcRecvPtnt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpAtcTranMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-updateAtcRecvPtnt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpAtcTranMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpAtcTranMngmDAO-updateAtcRecvPtnt */
+		<![CDATA[
+		        update  /*+ sdd_atc0001_u02$U01_atc용 수신환자 처리 */
+				            SDPORDBAT 
+				       set  ATC_TRNM_YN = #{atcTrnmYn2}
+		                 ,  ATC_TRAS_DT = sysdate 
+				        /* 서버 프로그램 전환시 자동 추가된 항목 */
+				         , LAST_UPDR_ID = #{gvUserId}      /* 최종수정자ID */
+				       	 , LAST_UPDT_IP  = #{gvUserIp}      /* 최종수정IP */
+				         ,  LAST_UPDT_DT = sysdate
+				         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}  /* 최종수정클라이언트프로그램ID */ 
+				        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}  /* 최종수정서버프로그램ID */ 
+				     where ORDR_YMD between to_date(#{ordrYmd1},'yyyymmdd')  /* 프로그램에서 입력 */
+				                     and to_date(#{ordrYmd1},'yyyymmdd') + .99999
+				       and  MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}         -- 프로그램에서 입력
+				       and  MDTN_NO         = #{mdtnNo}            -- 프로그램에서 입력
+				       and  MDTN_LCDV_CD    = #{mdtnLcdvCd}         -- 프로그램에서 입력
+				       /* and  ATC_TRNM_YN     =  atcTrnmYn  */
+				]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzaBsplInfmDAO_sql.xml 
+    Description :                                      사업장정보 DAO
+                  -->
+<mapper namespace="HzaBsplInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm-result" type="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+		<result property="bsrn" column="BSRN"/>
+		<result property="crprNo" column="CRPR_NO"/>
+		<result property="crprNm" column="CRPR_NM"/>
+		<result property="bsplToacCd" column="BSPL_TOAC_CD"/>
+		<result property="acnsAsigDprtCd" column="ACNS_ASIG_DPRT_CD"/>
+		<result property="acnsBgnnYm" column="ACNS_BGNN_YM"/>
+		<result property="stacClsnYm" column="STAC_CLSN_YM"/>
+		<result property="lastAcmtYm" column="LAST_ACMT_YM"/>
+		<result property="lastCstCrtnYm" column="LAST_CST_CRTN_YM"/>
+		<result property="fbBankCd" column="FB_BANK_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="fbTnsfAcntNo" column="FB_TNSF_ACNT_NO"/>
+		<result property="fbTnsfAcntPwd" column="FB_TNSF_ACNT_PWD"/>
+		<result property="fbTrncId" column="FB_TRNC_ID"/>
+		<result property="fbBgnnTlgrRecvYmd" column="FB_BGNN_TLGR_RECV_YMD"/>
+		<result property="clsnWorkPerdYn" column="CLSN_WORK_PERD_YN"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="hsptRprsZpcd" column="HSPT_RPRS_ZPCD"/>
+		<result property="hsptRprsAdrsNm" column="HSPT_RPRS_ADRS_NM"/>
+		<result property="hsptRprsDeadNm" column="HSPT_RPRS_DEAD_NM"/>
+		<result property="hsptRprsTlno" column="HSPT_RPRS_TLNO"/>
+		<result property="hsptRprsFxno" column="HSPT_RPRS_FXNO"/>
+		<result property="hsptCeoNm" column="HSPT_CEO_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm (공통 사업장정보 단건 조회) 
+        Description :                                           hmd_bsplint_s72$S01_공통_사업장정보_HZBSPLINT_조회_단건_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneBsplInfm */
+		            a.BSPL_CD                               BSPL_CD                 -- 사업장코드
+		         ,  a.BSPL_NM                               BSPL_NM                 -- 사업장명
+		         ,  a.BSRN                                  BSRN                    -- 사업자등록번호
+		         ,  a.CRPR_NO                               CRPR_NO                 -- 법인번호
+		         ,  a.CRPR_NM                               CRPR_NM                 -- 법인명
+		         ,  a.BSPL_TOAC_CD                          BSPL_TOAC_CD            -- 사업장계정과목코드
+		         ,  a.ACNS_ASIG_DPRT_CD                     ACNS_ASIG_DPRT_CD       -- 회계담당부서코드
+		         ,  a.ACNS_BGNN_YM                          ACNS_BGNN_YM            -- 회계개시년월
+		         ,  a.STAC_CLSN_YM                          STAC_CLSN_YM            -- 결산마감년월
+		         ,  a.LAST_ACMT_YM                          LAST_ACMT_YM            -- 최종감가상각년월
+		         ,  a.LAST_CST_CRTN_YM                      LAST_CST_CRTN_YM        -- 최종경비생성년월
+		         ,  a.FB_BANK_CD                            FB_BANK_CD              -- FB은행코드
+		         ,  h.COMN_CD_NM                            COMN_CD_NM              -- FB은행명
+		         ,  case when #{gvClntPrgmId} = 'HZS230F1'
+		                 then a.FB_TNSF_ACNT_NO
+		                 else replace(a.FB_TNSF_ACNT_NO, '-', '')
+		            end                                     FB_TNSF_ACNT_NO         -- FB이체계좌번호
+		         ,  a.FB_TNSF_ACNT_PWD                      FB_TNSF_ACNT_PWD        -- FB이체계좌패스워드
+		         ,  a.FB_TRNC_ID                            FB_TRNC_ID              -- FB거래ID
+		         ,  a.FB_BGNN_TLGR_RECV_YMD                 FB_BGNN_TLGR_RECV_YMD   -- FB개시전문수신일자
+		         ,  a.CLSN_WORK_PERD_YN                     CLSN_WORK_PERD_YN       -- 마감작업기간여부
+		         ,  a.HSPT_CD                               HSPT_CD                 -- 병원코드
+		         ,  a.HSPT_NM                               HSPT_NM                 -- 병원명
+		         ,  a.HSPT_RPRS_ZPCD                        HSPT_RPRS_ZPCD          -- 병원대표우편번호
+		         ,  a.HSPT_RPRS_ADRS_NM                     HSPT_RPRS_ADRS_NM       -- 병원대표주소명
+		         ,  a.HSPT_RPRS_DEAD_NM                     HSPT_RPRS_DEAD_NM       -- 병원대표상세주소명
+		         ,  a.HSPT_RPRS_TLNO                        HSPT_RPRS_TLNO          -- 병원대표전화번호
+		         ,  a.HSPT_RPRS_FXNO                        HSPT_RPRS_FXNO          -- 병원대표팩스번호
+		         ,  a.HSPT_CEO_NM                           HSPT_CEO_NM             -- 병원원장명
+		      from
+		            HZBSPLINT a
+		         ,  HZMICOCDT h                                              -- MIS공통코드[FB_BANK_CD,    GA036  ]
+		     where
+		            a.BSPL_CD        = #{bsplCd}
+		    -- FB은행명
+		       and  h.BSPL_CD    (+) = a.BSPL_CD
+		       and  h.COMN_GRP_CD(+) = 'GA036'
+		       and  h.MIS_COMN_CD(+) = a.FB_BANK_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd-result" type="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd (사업장정보 코드 목록 조회) 
+        Description :                                           hzd_bsplint_l01$S01_사업장정보_코드_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfmCd */
+		            BSPL_CD                                                 /* 사업장코드                     */
+		         ,  BSPL_NM                                                 /* 사업장명                       */
+		      from  HZBSPLINT
+		     order
+		        by  BSPL_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm-result" type="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO">
+	
+		<result property="bsplId" column="BSPL_ID"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+		<result property="bsrn" column="BSRN"/>
+		<result property="crprNo" column="CRPR_NO"/>
+		<result property="crprNm" column="CRPR_NM"/>
+		<result property="bsplToacCd" column="BSPL_TOAC_CD"/>
+		<result property="toacNm" column="TOAC_NM"/>
+		<result property="acnsAsigDprtCd" column="ACNS_ASIG_DPRT_CD"/>
+		<result property="dprtNm" column="DPRT_NM"/>
+		<result property="fbTrncId" column="FB_TRNC_ID"/>
+		<result property="acnsBgnnYm" column="ACNS_BGNN_YM"/>
+		<result property="stacClsnYm" column="STAC_CLSN_YM"/>
+		<result property="lastAcmtYm" column="LAST_ACMT_YM"/>
+		<result property="lastCstCrtnYm" column="LAST_CST_CRTN_YM"/>
+		<result property="fbBankCd" column="FB_BANK_CD"/>
+		<result property="afiFbBankNm" column="AFI_FB_BANK_NM"/>
+		<result property="fbTnsfAcntNo" column="FB_TNSF_ACNT_NO"/>
+		<result property="fbTnsfAcntPwd" column="FB_TNSF_ACNT_PWD"/>
+		<result property="fbBgnnTlgrRecvYmd" column="FB_BGNN_TLGR_RECV_YMD"/>
+		<result property="depstCnfrRsltCd" column="DEPST_CNFR_RSLT_CD"/>
+		<result property="depstCnfrRsltNm" column="DEPST_CNFR_RSLT_NM"/>
+		<result property="clsnWorkPerdYn" column="CLSN_WORK_PERD_YN"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="hsptRprsZpcd" column="HSPT_RPRS_ZPCD"/>
+		<result property="hsptRprsAdrsNm" column="HSPT_RPRS_ADRS_NM"/>
+		<result property="hsptRprsDeadNm" column="HSPT_RPRS_DEAD_NM"/>
+		<result property="hsptRprsTlno" column="HSPT_RPRS_TLNO"/>
+		<result property="hsptRprsFxno" column="HSPT_RPRS_FXNO"/>
+		<result property="hsptCeoNm" column="HSPT_CEO_NM"/>
+		<result property="bstyCd" column="BSTY_CD"/>
+		<result property="taxUserId" column="TAX_USER_ID"/>
+		<result property="vatPaymTypeNm" column="VAT_PAYM_TYPE_NM"/>
+		<result property="vatDclrTypeNm" column="VAT_DCLR_TYPE_NM"/>
+		<result property="vatBsnsTypeNm" column="VAT_BSNS_TYPE_NM"/>
+		<result property="taxPrxyNm" column="TAX_PRXY_NM"/>
+		<result property="taxPrxyBddDate" column="TAX_PRXY_BDD_DATE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm (사업장정보 정보 목록 조회) 
+        Description :                                           hzd_bsplint_l02$S01_사업장정보_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-listBsplInfm */
+		        a.BSPL_ID                BSPL_ID                /* 사업장ID             */
+		     ,  a.BSPL_CD                BSPL_CD                /* 사업장코드           */
+		     ,  a.BSPL_NM                BSPL_NM                /* 사업장명             */
+		     ,  a.BSRN                   BSRN                   /* 사업자등록번호       */
+		     ,  a.CRPR_NO                CRPR_NO                /* 법인코드             */
+		     ,  a.CRPR_NM                CRPR_NM                /* 법인명               */
+		     ,  a.BSPL_TOAC_CD           BSPL_TOAC_CD           /* 사업장계정과목코드   */
+		     ,  b.STTM_JRNZ_NM           TOAC_NM                /* 계정과목명           */
+		     ,  a.ACNS_ASIG_DPRT_CD      ACNS_ASIG_DPRT_CD      /* 회계담당부서코드     */
+		     ,  c.KORN_DPRT_NM           DPRT_NM                /* 부서명               */
+		     ,  a.FB_TRNC_ID             FB_TRNC_ID             /* FB거래ID             */
+		     ,  a.ACNS_BGNN_YM           ACNS_BGNN_YM           /* 회계개시년월         */
+		     ,  a.STAC_CLSN_YM           STAC_CLSN_YM           /* 결산마감년월         */
+		     ,  a.LAST_ACMT_YM           LAST_ACMT_YM           /* 최종감가상각년월     */
+		     ,  a.LAST_CST_CRTN_YM       LAST_CST_CRTN_YM       /* 최종경비생성년월     */
+		     ,  a.FB_BANK_CD             FB_BANK_CD             /* FB은행코드           */
+		     ,  d.COMN_CD_NM             AFI_FB_BANK_NM         /* FB은행명             */
+		     ,  a.FB_TNSF_ACNT_NO        FB_TNSF_ACNT_NO        /* FB이체계좌번호       */
+		     ,  a.FB_TNSF_ACNT_PWD       FB_TNSF_ACNT_PWD       /* FB이체계좌패스워드   */
+		     ,  a.FB_BGNN_TLGR_RECV_YMD  FB_BGNN_TLGR_RECV_YMD  /* 수신일자             */
+		     ,  a.DEPST_CNFR_RSLT_CD     DEPST_CNFR_RSLT_CD     /* 예금확인결과코드     */
+		     ,  e.COMN_CD_NM             DEPST_CNFR_RSLT_NM     /* 예금확인결과명       */
+		     ,  a.CLSN_WORK_PERD_YN      CLSN_WORK_PERD_YN      /* 마감작업기간여부     */
+		     ,  a.HSPT_NM                HSPT_NM                /* 병원명               */
+		     ,  a.HSPT_RPRS_ZPCD         HSPT_RPRS_ZPCD         /* 병원 대표 우편번호   */
+		     ,  a.HSPT_RPRS_ADRS_NM      HSPT_RPRS_ADRS_NM      /* 병원 대표 주소명     */
+		     ,  a.HSPT_RPRS_DEAD_NM      HSPT_RPRS_DEAD_NM      /* 병원 대표 상세주소명 */
+		     ,  a.HSPT_RPRS_TLNO         HSPT_RPRS_TLNO         /* 병원 대표 전화번호   */
+		     ,  a.HSPT_RPRS_FXNO         HSPT_RPRS_FXNO         /* 병원 대표 Fax번호    */
+		     ,  a.HSPT_CEO_NM            HSPT_CEO_NM            /* 병원장명             */
+		     ,  a.BSTY_CD                BSTY_CD                /*업종코드*/
+		     ,  a.TAX_USER_ID            TAX_USER_ID            /*홈텍스사용자번호 ID*/
+		     ,  a.VAT_PAYM_TYPE_NM       VAT_PAYM_TYPE_NM       /*부가세납부유형명*/
+		     ,  a.VAT_DCLR_TYPE_NM       VAT_DCLR_TYPE_NM       /*부가세납부유형명*/
+		     ,  a.VAT_BSNS_TYPE_NM       VAT_BSNS_TYPE_NM       /*부가세사업유형명*/
+		     ,  a.TAX_PRXY_NM            TAX_PRXY_NM            /*세무대리인이름*/
+		     ,  a.TAX_PRXY_BDD_DATE      TAX_PRXY_BDD_DATE      /*세무대리인생년월일*/
+		  from
+		        HZBSPLINT a -- 사업장정보
+		     ,  HZTOACCDT b -- 계정과목
+		     ,  HZDEPTMMT c -- 조직IF
+		     ,  HZMICOCDT d -- MIS공통코드
+			 ,  HZMICOCDT e -- MIS공통코드
+		 where
+		        b.TOAC_CD     (+) = a.BSPL_TOAC_CD      -- 계정과목코드
+		   and  c.DPRT_CD     (+) = a.ACNS_ASIG_DPRT_CD -- 부서코드
+		   and  to_char(trunc(sysdate),'yyyymmdd') between b.USE_STRT_YMD(+) and b.USE_FNSH_YMD(+)
+		   and  d.MIS_COMN_CD (+) = a.FB_BANK_CD
+		   and  d.COMN_GRP_CD (+) = 'GA036'             -- 은행
+		   and  e.MIS_COMN_CD (+) = a.DEPST_CNFR_RSLT_CD
+		   and  e.COMN_GRP_CD (+) = 'GA033'             -- 펌뱅킹 결과(오류) 코드
+		   and  b.BSPL_CD     (+) = a.BSPL_CD
+		   and  d.BSPL_CD     (+) = a.BSPL_CD
+		   and  e.BSPL_CD     (+) = a.BSPL_CD	
+		 order  by  a.BSPL_CD  asc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn-result" type="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO">
+	
+		<result property="acmtYm" column="ACMT_YM"/>
+		<result property="acmtYn" column="ACMT_YN"/>
+		<result property="fbBankCd" column="FB_BANK_CD"/>
+		<result property="fbTnsfAcntNo" column="FB_TNSF_ACNT_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn (공통 감가상각 여부조회) 
+        Description :                                           hmd_bsplint_s02$S01_감가상각여부 조회 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn-result" useCache="true" flushCache="false">
+		    select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-selectOneAcmtYn */
+		            LAST_ACMT_YM    as ACMT_YM                                                                                            -- VC2( 6)최종감가상각년월
+		         ,  decode(sign(to_number(substr(#{sttmYmd}, 1, 6)) - to_number(LAST_ACMT_YM)), 1, 'Y', 'N') as ACMT_YN -- VC2( 1)감가상각여부
+		         ,  FB_BANK_CD    as FB_BANK_CD                                                                                              -- VC2( 4)FB은행코드
+		         ,  FB_TNSF_ACNT_NO    as FB_TNSF_ACNT_NO                                                                                         -- VC2(30)FB이체계좌번호
+		      from
+		            HZBSPLINT    -- (HZ)사업장정보(MDM연계)
+		     where
+		            BSPL_CD = #{bsplCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-updateBsplInfm (사업장정보 수정) 
+        Description :                                           변경된 사업장정보를 업데이트한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-updateBsplInfm"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-updateBsplInfm */
+		update HZBSPLINT
+		   set BSPL_NM                = #{bsplNm}  				/* 사업장명             */
+		     , BSRN                   = #{bsrn}    				/* 사업자등록번호       */
+		     , CRPR_NO                = #{crprNo}  				/* 법인등록번호         */
+		     , CRPR_NM                = #{crprNm}  				/* 법인명               */
+		     , BSPL_TOAC_CD           = #{bsplToacCd}  			/* 사업장계정과목코드   */
+		     , ACNS_ASIG_DPRT_CD      = #{acnsAsigDprtCd}  		/* 회계담당부서코드     */
+			 , ACNS_BGNN_YM           = #{acnsBgnnYm}           /* 회계개시년월         */
+			 , STAC_CLSN_YM           = #{stacClsnYm}           /* 결산마감년월         */
+		     , FB_BANK_CD             = #{fbBankCd}  			/* F/B은행코드          */
+		     , FB_TNSF_ACNT_NO        = #{fbTnsfAcntNo}   		/* F/B이체 계좌번호     */
+		     , FB_TNSF_ACNT_PWD       = #{fbTnsfAcntPwd}  		/* F/B이체 비밀번호     */
+		     , FB_TRNC_ID             = #{fbTrncId}  			/* F/B거래ID            */
+		     , CLSN_WORK_PERD_YN      = #{clsnWorkPerdYn}  		/* 마감작업기간 여부    */
+			 , HSPT_CD                = #{hsptCd}               /* 병원코드             */
+		     , HSPT_NM                = #{hsptNm}  				/* 병원명               */
+		     , HSPT_RPRS_ZPCD         = #{hsptRprsZpcd}  		/* 병원대표 우편번호    */
+		     , HSPT_RPRS_ADRS_NM      = #{hsptRprsAdrsNm}  		/* 병원대표 주소명      */
+		     , HSPT_RPRS_DEAD_NM      = #{hsptRprsDeadNm}  		/* 병원대표 상세주소명  */
+		     , HSPT_RPRS_TLNO         = #{hsptRprsTlno}         /* 병원대표 전화번호    */
+		     , HSPT_RPRS_FXNO         = #{hsptRprsFxno}         /* 병원대표 팩스번호    */
+		     , HSPT_CEO_NM            = #{hsptCeoNm}   			/* 병원장명             */
+		     , BSTY_CD                = #{bstyCd}               /*업종코드 부가가치세 작업 2023.04.21 K2*/
+		     , TAX_USER_ID            = #{taxUserId}            /*홈텍스사용자번호 ID*/  
+		     , VAT_PAYM_TYPE_NM       = #{vatPaymTypeNm}        /*부가세납부유형명*/
+		     , VAT_DCLR_TYPE_NM       = #{vatDclrTypeNm}        /*부가세신고유형명*/
+		     , VAT_BSNS_TYPE_NM       = #{vatBsnsTypeNm}        /*부가세사업유형명*/
+		     , TAX_PRXY_NM            = #{taxPrxyNm}            /*세무대리인이름*/
+		     , TAX_PRXY_BDD_DATE      = #{taxPrxyBddDate}       /*세무대리인생년월일*/
+		     , LAST_UPDR_ID           = #{gvUserId}
+		     , LAST_UPDT_IP           = #{gvUserIp}
+		     , LAST_UPDT_DT           = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where BSPL_ID = #{bsplId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-insertBsplInfm (사업장정보 등록) 
+        Description :                                           사업장정보를 신규 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-insertBsplInfm"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-insertBsplInfm */
+		insert 
+		  into HZBSPLINT ( BSPL_ID                   /* 사업장ID             */
+		                ,  BSPL_CD                   /* 사업장코드           */
+		                ,  BSPL_NM                   /* 사업장명             */
+		                ,  BSRN                      /* 사업자등록번호       */
+		                ,  CRPR_NO                   /* 법인코드             */
+		                ,  CRPR_NM                   /* 법인명               */
+		                ,  BSPL_TOAC_CD              /* 사업장계정과목코드   */
+		                ,  ACNS_ASIG_DPRT_CD         /* 회계담당부서코드     */
+		                ,  ACNS_BGNN_YM              /* 회계개시년월         */
+		                ,  STAC_CLSN_YM              /* 결산마감년월         */
+		                ,  FB_BANK_CD                /* FB은행코드           */
+		                ,  FB_TNSF_ACNT_NO           /* FB이체계좌번호       */
+		                ,  FB_TNSF_ACNT_PWD          /* FB이체계좌패스워드   */
+						,  FB_TRNC_ID                /* FB거래ID             */
+		                ,  CLSN_WORK_PERD_YN         /* 마감작업기간여부     */
+						,  HSPT_CD                   /* 병원코드             */
+		                ,  HSPT_NM                   /* 병원명               */
+		                ,  HSPT_RPRS_ZPCD            /* 병원 대표 우편번호   */
+		                ,  HSPT_RPRS_ADRS_NM         /* 병원 대표 주소명     */
+		                ,  HSPT_RPRS_DEAD_NM         /* 병원 대표 상세주소명 */
+		                ,  HSPT_RPRS_TLNO            /* 병원 대표 전화번호   */
+		                ,  HSPT_RPRS_FXNO            /* 병원 대표 Fax번호    */
+		                ,  HSPT_CEO_NM               /* 병원장명             */
+		                ,  BSTY_CD                   /* 업종코드 */
+		                ,  TAX_USER_ID               /* 홈텍스사용자번호 ID */
+		                ,  VAT_PAYM_TYPE_NM          /* 부가세납부유형명 */
+		                ,  VAT_DCLR_TYPE_NM          /* 부가세신고유형명 */
+		                ,  VAT_BSNS_TYPE_NM          /* 부가세사업유형명*/
+		                ,  TAX_PRXY_NM               /* 세무대리인이름 */
+		                ,  TAX_PRXY_BDD_DATE         /* 세무대리인생년월일*/
+						,  FRST_RGSR_ID              /* 최초 등록자ID                   */
+		                ,  FRST_RGST_IP              /* 최초 등록자IP                   */
+		                ,  FRST_RGST_DT              /* 최초등록일시                    */
+		                ,  FRST_RGST_CLNT_PRGM_ID    /* 최초 등록 클라이언트 프로그램ID */
+		                ,  FRST_RGST_SRVR_PRGM_ID    /* 최초 등록 서버 프로그램ID       */
+		                ,  LAST_UPDR_ID              /* 최종 수정자ID                   */
+		                ,  LAST_UPDT_IP              /* 최종 수정자IP                   */
+		                ,  LAST_UPDT_DT              /* 최종 수정일시                   */
+		                ,  LAST_UPDT_CLNT_PRGM_ID    /* 최종 수정 클라이언트 프로그램ID */
+		                ,  LAST_UPDT_SRVR_PRGM_ID    /* 최종 수정 서버 프로그램ID       */
+			             ) 
+		       select  'BP' || trim(to_char(to_number(substr(max(bspl_id), 3)) + 1, '099999'))
+			        ,  #{bsplCd}
+					,  #{bsplNm}
+					,  #{bsrn}
+					,  #{crprNo}
+					,  #{crprNm}
+					,  #{bsplToacCd}
+					,  #{acnsAsigDprtCd}
+					,  #{acnsBgnnYm}
+					,  #{stacClsnYm}
+					,  #{fbBankCd}
+					,  #{fbTnsfAcntNo}
+					,  #{fbTnsfAcntPwd}
+					,  #{fbTrncId}
+					,  #{clsnWorkPerdYn}
+					,  #{hsptCd}
+					,  #{hsptNm}
+					,  #{hsptRprsZpcd}
+					,  #{hsptRprsAdrsNm}
+					,  #{hsptRprsDeadNm}
+					,  #{hsptRprsTlno}
+					,  #{hsptRprsFxno}
+					,  #{hsptCeoNm}
+					,  #{bstyCd}
+					,  #{taxUserId}
+					,  #{vatPaymTypeNm}
+					,  #{vatDclrTypeNm}
+					,  #{vatBsnsTypeNm}
+					,  #{taxPrxyNm}
+					,  #{taxPrxyBddDate}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+			     from  HZBSPLINT
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-deleteBsplInfm (사업장 정보 삭제) 
+        Description :                                           사업장 정보를 삭제한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-deleteBsplInfm"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaBsplInfmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaBsplInfmDAO-deleteBsplInfm */
+		delete 
+		  from  HZBSPLINT
+		 where  BSPL_ID = #{bsplId}
+	</delete>
+
+</mapper>

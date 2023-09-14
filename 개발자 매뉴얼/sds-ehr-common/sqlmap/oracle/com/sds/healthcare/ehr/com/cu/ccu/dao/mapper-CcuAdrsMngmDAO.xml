@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuAdrsMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcuAdrsMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrs (노티 주소록목록 삭제) 
+        Description :                                           노티 주소록목록 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrs"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrs */
+					 from  CUNOTIAMT
+					where  RGSR_ID       = #{rgsrId}
+					  and  ADRS_GRP_NO   = #{adrsGrpNo}
+					  and  RCVR_ID       = #{rcvrId}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByRcvrId (노티 주소록목록 삭제) 
+        Description :                                           노티 주소록목록 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByRcvrId"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByRcvrId */
+					 from  CUNOTIAMT
+					where  RGSR_ID       = #{rgsrId}
+					  and  ADRS_GRP_NO   = #{adrsGrpNo}
+					  and  RCVR_ID       = #{rcvrId}
+					  and  RCVR_ID is not null
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrs (노티 주소록목록 등록) 
+        Description :                                           노티 주소록목록 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrs"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrs */
+					 into  CUNOTIAMT (ADRS_GRP_NO,
+						   RGSR_ID,
+						   RCVR_ID,
+						   DLTN_YN,
+						   DLTN_DT,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID,
+						   INQR_SQNC)
+				   values  (#{adrsGrpNo},
+						   #{rgsrId},
+						   #{rcvrId},
+						   #{dltnYn},
+						   null, /* decode( :cus_addrlst_001[0].dltn_yn,'Y', sysdate, null ) , */
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{inqrSqnc})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrs (주소록목록 수정) 
+        Description :                                           주소록목록 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrs"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrs */
+						   CUNOTIAMT
+					  set  DLTN_YN           = #{dltnYn},
+						   INQR_SQNC         = #{inqrSqnc},
+						   /* DLTN_DT           = decode( :cus_addrlst_001[0].dltn_yn,'Y', sysdate, null ) , */
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  ADRS_GRP_NO = #{adrsGrpNo}
+					  and  RGSR_ID     = #{rgsrId}
+					  and  RCVR_ID     = #{rcvrId}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsAsgn (주소록목록 담당자 일괄변경) 
+        Description :                                           주소록목록 담당자 일괄변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsAsgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsAsgn */
+						   CUNOTIAMT
+					  set  RGSR_ID           = #{rcpoId},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  ADRS_GRP_NO = #{adrsGrpNo}
+					  and  RGSR_ID     = #{rgsrId}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByGrpNo (주소록그룹관리버튼 삭제(목록)) 
+        Description :                                           주소록그룹관리버튼 삭제(목록)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByGrpNo"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsByGrpNo */
+			   	  from  CUNOTIAMT
+			   	 where  RGSR_ID     = #{rgsrId}
+			   	   and  ADRS_GRP_NO = #{adrsGrpNo}
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="adrsGrpNo" column="ADRS_GRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq (주소그룹 max 주소그룹번호 조회) 
+        Description :                                           주소그룹 max 주소그룹번호 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneNotcAdrsGrpSeq */
+						   nvl(max(to_number(ADRS_GRP_NO)),0) + 1 as ADRS_GRP_NO
+					 from  CUNOTIGMT
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsGrp (노티 주소록그룹 삭제) 
+        Description :                                           노티 주소록그룹 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsGrp"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+			   	delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-deleteNotcAdrsGrp */
+			   	  from  CUNOTIGMT
+			   	 where  RGSR_ID     = #{rgsrId}
+			   	   and  ADRS_GRP_NO = #{adrsGrpNo}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrsGrp (노티 주소록그룹 등록) 
+        Description :                                           노티 주소록그룹 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrsGrp"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-insertNotcAdrsGrp */
+					 into   CUNOTIGMT
+						   (RGSR_ID,
+							ADRS_GRP_NO,
+							ADRS_GRP_NM,
+							INQR_SQNC,
+							FRST_RGSR_ID,
+							FRST_RGST_IP,
+							FRST_RGST_DT,
+							FRST_RGST_CLNT_PRGM_ID,
+							FRST_RGST_SRVR_PRGM_ID,
+							LAST_UPDR_ID,
+							LAST_UPDT_IP,
+							LAST_UPDT_DT,
+							LAST_UPDT_CLNT_PRGM_ID,
+							LAST_UPDT_SRVR_PRGM_ID,
+							ADRS_GRP_DVSN_CD,
+							DLTN_YN,
+							DLTN_DT)
+				   values  (#{rgsrId},
+						   /*  nvl( :cus_addrgrp_012[0].adrs_grp_no, ( select  nvl(max(to_number(ADRS_GRP_NO)),0) + 1 */
+						   /* 		                                   from  CUNOTIGMT ) */
+						   /* 	), */
+							#{adrsGrpNo},
+							#{adrsGrpNm},
+							#{inqrSqnc},
+							#{gvLginId},
+							#{gvUserIp},
+							 sysdate,
+							#{gvClntPrgmId},
+							#{gvSrvrPrgmId},
+							#{gvLginId},
+							#{gvUserIp},
+							 sysdate,
+							#{gvClntPrgmId},
+							#{gvSrvrPrgmId},
+							nvl(#{adrsGrpDvsnCd},'P'), null, null)
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrp (노티 주소록그룹 수정) 
+        Description :                                           노티 주소록그룹 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrp"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrp */
+						   CUNOTIGMT
+					  set  ADRS_GRP_NM       = #{adrsGrpNm},
+						   INQR_SQNC         = #{inqrSqnc},
+						   ADRS_GRP_DVSN_CD  = #{adrsGrpDvsnCd},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGSR_ID     = #{rgsrId}
+					  and  ADRS_GRP_NO = #{adrsGrpNo}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrpAsgn (주소그룹 담당자 일괄변경) 
+        Description :                                           주소그룹 담당자 일괄변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrpAsgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-updateNotcAdrsGrpAsgn */
+						   CUNOTIGMT
+					  set  RGSR_ID           = #{rcpoId},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGSR_ID     = #{rgsrId}
+					  and  ADRS_GRP_NO = #{adrsGrpNo}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="adrsGrpNo" column="ADRS_GRP_NO"/>
+		<result property="adrsGrpNm" column="ADRS_GRP_NM"/>
+		<result property="reptNtm1" column="REPT_NTM_1"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="adrsGrpDvsnCd" column="ADRS_GRP_DVSN_CD"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs (주소록목록조회) 
+        Description :                                           주소록목록조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrs */
+						   A.RGSR_ID as RGSR_ID,
+						   A.ADRS_GRP_NO as ADRS_GRP_NO,
+						   A.ADRS_GRP_NM as ADRS_GRP_NM,
+						   0 as REPT_NTM_1,
+						   B.RCVR_ID as RCVR_ID,
+						   D.USER_NM   as RTUR_VL,
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = C.OCFM_CD) as RTUR_VL_1,  /*  직위 OCPS_CD GP008=>직종 OCFM_CD GP170 */
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP009' and COMN_DTLS_CD = C.OCDT_CD) as RTUR_VL_2,  /*  직무 */
+						   C.USER_STTS_CD as RTUR_VL_3,   /* 사용자상태코드 8:휴직 9:퇴직 */
+						   (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD  =  D.MDCR_DPRT_CD) as RTUR_VL_4,  /*  부서명  */
+						   B.DLTN_YN as DLTN_YN,
+						   B.DLTN_DT as DLTN_DT,
+						   A.FRST_RGSR_ID as FRST_RGSR_ID,
+						   A.ADRS_GRP_DVSN_CD as ADRS_GRP_DVSN_CD,
+						   C.HSPT_CD as HSPT_CD, -- 병원코드
+		                   C.ORGL_HSPT_CD as ORGL_HSPT_CD, -- 원병원코드
+		                   C.HSPT_OCFM_CD as HSPT_OCFM_CD, -- 병원직종코드
+		                   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CCC_009' and COMN_DTLS_CD = C.ORGL_HSPT_CD) as HSPT_NM -- 원병원코드명
+					 from  CUNOTIGMT A, CUNOTIAMT B, CCUSERAMV C, CCUSRDPHT D
+					where  A.RGSR_ID = B.RGSR_ID
+					 and  A.ADRS_GRP_NO = B.ADRS_GRP_NO
+					 and  ( (#{rgsrId} is null) or (A.RGSR_ID = #{rgsrId}) )                    /*  등록자                 */
+					 and  ( (#{adrsGrpNo} is null) or (A.ADRS_GRP_NO = #{adrsGrpNo}) )        /*  주소그룹번호           */
+					 and  ( (#{adrsGrpNm} is null) or (A.ADRS_GRP_NM = trim(#{adrsGrpNm})) )   /*  주소그룹명             */
+					 and  ( (#{adrsGrpDvsnCd} is null) or (A.ADRS_GRP_DVSN_CD = #{adrsGrpDvsnCd} ) ) /*  주소그룹구분   */
+					 and  ( ( A.DLTN_YN is null) or (A.DLTN_YN <> 'Y' ) )        /*  삭제여부       */
+					 and  B.RCVR_ID = D.USER_ID
+					 and  C.LGIN_ID = D.LGIN_ID
+				   order  by B.INQR_SQNC
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="adrsGrpNo" column="ADRS_GRP_NO"/>
+		<result property="adrsGrpNm" column="ADRS_GRP_NM"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rgsrNm" column="RGSR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp (주소록그룹조회) 
+        Description :                                           주소록그룹조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listNotcAdrsGrp */
+			   			A.RGSR_ID as RGSR_ID,
+			   			A.ADRS_GRP_NO as ADRS_GRP_NO,
+			   			A.ADRS_GRP_NM as ADRS_GRP_NM,
+			   			'0' as RTUR_VL_1,
+			   			B.USER_NM as RGSR_NM
+			   	  from  CUNOTIGMT A, CCUSRDPHT B
+			   	 where  A.ADRS_GRP_DVSN_CD = nvl(#{adrsGrpDvsnCd},'P') /* (개인 :P, 공용 :G) => 조회조건 없으면 기본은 개인주소록 */
+			   	   and  (   ( nvl(#{inqrDvsnCd},'0') = '0'  and    /*  본인등록 개인(공용)주소록     */
+			   												   ( A.RGSR_ID = #{rgsrId}) )
+			   				 or
+			   				( nvl(#{inqrDvsnCd},'0') = '1' and   /*  공용주소록 본인포함     */
+			   								   (  A.RGSR_ID||A.ADRS_GRP_NO  in ( select B.RGSR_ID||B.ADRS_GRP_NO
+			   																	   from CUNOTIAMT B
+			   																	  where B.RCVR_ID = #{rgsrId} )))
+			   				 or
+			   				( nvl(#{inqrDvsnCd},'0') = '2' and   /*  ,공용주소록 전체     */
+			   												   ( A.RGSR_ID  like '%') )
+			   			 )
+			   	   and  ( (#{adrsGrpNm} is null) or (A.ADRS_GRP_NM like #{adrsGrpNm}||'%') )  /* 주소그룹명 Like 검색*/
+			   	   and  A.RGSR_ID = B.USER_ID
+			   	 order by  ADRS_GRP_NO
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001 (주소록조회) 
+        Description :                                           주소록조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr001 */
+						   A.LGIN_ID as LGIN_ID,
+						   A.USER_NM as USER_NM,
+						   A.MDCR_DPRT_CD as DPRT_CD,
+						   C.KORN_DPRT_NM as KORN_DPRT_NM ,
+						   B.OCFM_CD as OCPS_CD,   /* 직위(OCPS_CD)GP008=>직종(OCFM_CD)GP170 */
+						   B.OCDT_CD as OCDT_CD,   /* 직무 */
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = B.OCFM_CD) as RTUR_VL_1,
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP009' and COMN_DTLS_CD = B.OCDT_CD) as RTUR_VL_2,
+						   B.USER_STTS_CD as RTUR_VL_3,
+		                   B.HSPT_CD as HSPT_CD, -- 병원코드
+		                   B.ORGL_HSPT_CD as ORGL_HSPT_CD, -- 원병원코드
+		                   B.HSPT_OCFM_CD as HSPT_OCFM_CD -- 병원직종코드
+					 from  CCUSRDPHT A, CCUSERAMV B, HZDEPTMMT C
+					where  ( ( A.USER_NM = #{userNm}) or ( A.USER_ID = #{userNm} ) )
+				   and  A.LGIN_ID = B.LGIN_ID
+				   /*  and  nvl(B.USER_STTS_CD, '9') <> '9' </* - 원 소스 : 아래로 수정함. 최성태. 2016-05-22 */
+				   and  nvl(B.USER_STTS_CD, '1') <> '9'
+				   and  A.MDCR_DPRT_CD = C.DPRT_CD(+)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+		<result property="selCount" column="SEL_COUNT"/>
+		<result property="chk" column="CHK"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr002 */
+						   A.LGIN_ID as LGIN_ID,
+						   A.USER_NM as USER_NM,
+						   '0' as RTUR_VL,
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP008' and COMN_DTLS_CD = B.OCPS_CD) as RTUR_VL_1,
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'GP009' and COMN_DTLS_CD = B.OCDT_CD) as RTUR_VL_2,
+						   C.KORN_DPRT_NM as RTUR_VL_3,
+						   B.USER_STTS_CD as RTUR_VL_4,
+		                   0 as SEL_COUNT,
+		                   '' as CHK,
+						   B.HSPT_CD as HSPT_CD, -- 병원코드
+		                   B.ORGL_HSPT_CD as ORGL_HSPT_CD, -- 원병원코드
+		                   B.HSPT_OCFM_CD as HSPT_OCFM_CD, -- 병원직종코드
+		                   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CCC_009' and COMN_DTLS_CD = B.ORGL_HSPT_CD ) as HSPT_NM -- 원병원코드명
+					 from  CCUSRDPHT A, CCUSERAMV B, HZDEPTMMT C
+					where  (A.USER_ID like nvl(#{userNm},'x') || '%'
+					   or  A.USER_NM like nvl(#{userNm},'x') || '%')
+					  and  A.LGIN_ID = B.LGIN_ID
+					  and  nvl(B.USER_STTS_CD, '9') <> '9'
+					  and  A.MDCR_DPRT_CD = C.DPRT_CD(+)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003 (노티 수신자 목록 조회) 
+        Description :                                           노티 수신자 목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-listAdrsInqr003 */
+		<![CDATA[
+		select 
+						   A.LGIN_ID as LGIN_ID,
+		                   B.ORGL_HSPT_CD as ORGL_HSPT_CD, -- 원병원코드
+		                   B.HSPT_OCFM_CD as HSPT_OCFM_CD -- 병원직종코드
+					 from  CCUSRDPHT A, CCUSERAMV B
+					where  A.USER_ID IN ${userIdStr}
+				   and  A.LGIN_ID = B.LGIN_ID
+				   and  A.LGIN_ID = B.LGIN_ID;
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck (주소그룹 주소그룹명 중복체크) 
+        Description :                                           주소그룹 주소그룹명 중복체크 CcuGetAdrsGrpNmDplcCeckCSID
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAdrsMngmDAO-selectOneAdrsGrpNmDplcCeck */
+						   decode(count(*),1,'Y','N') as RTUR_VL
+					 from  CUNOTIGMT
+					where  ADRS_GRP_NM = #{adrsGrpNm}
+					  and  ADRS_GRP_DVSN_CD = 'G'
+					  and  (DLTN_YN is null or DLTN_YN = 'N')
+					  and  rownum = 1
+		]]>
+	</select>
+
+
+
+</mapper>

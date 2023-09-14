@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsRulScreenAuthDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsRulScreenAuthDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulScreenAuthDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="cpntId" column="CPNT_ID"/>
+		<result property="fnctExrnYn" column="FNCT_EXRN_YN"/>
+		<result property="fnctActvYn" column="FNCT_ACTV_YN"/>
+		<result property="checkValue" column="CHECK_VALUE"/>
+		<result property="itemDvsnCd" column="ITEM_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth (화면 권한 리스트) 
+        Description :                                           로그인 시점에서 화면 권한을 다운로드
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulScreenAuthDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulScreenAuthDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulScreenAuthDAO-listRulScreenAuth */
+		<![CDATA[
+		 -- 기능권한 판별쿼리
+		 SELECT 
+		         		RA.PRGM_ID
+		       		  , RA.CPNT_ID
+		       		  , RA.FNCT_EXRN_YN 
+		       		  , RA.FNCT_ACTV_YN 
+		        	  , decode(min(RA.CHECK_VALUE),'0','1','0') 	as CHECK_VALUE
+					  , RA.ITEM_DVSN_CD    	 
+		  FROM   (
+		        		select 
+		               				AA.PRGM_ID
+		             			  , AA.CPNT_ID
+		             			  , AA.FNCT_EXRN_YN 
+		             			  , AA.FNCT_ACTV_YN 
+		             			  , AA.ATHR_CNDT_GRP_ID
+								  , AA.ITEM_DVSN_CD 
+			                      ,	max(case 	when AA.CNDT_TRGT_ITEM_CD = 'R001' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.MDCR_DPRT_CD then '1'
+		        			     				when AA.CNDT_TRGT_ITEM_CD = 'R001' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.MDCR_DPRT_CD then '2'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R002' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.EXCF_CD then '3'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R002' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.EXCF_CD then '4'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R003' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.USER_ID then '5'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R003' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.USER_ID then '6'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R004' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.OCFM_CD then '7'  -- 직종코드
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R004' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.OCFM_CD then '8'
+		        			   	 				when AA.CNDT_TRGT_ITEM_CD = 'R005' and BB.CRTF_ATHR_USE_YN = 'Y' then '9'
+		        				 				when AA.CNDT_TRGT_ITEM_CD = 'R005' and BB.AFI_SRCH_CNDT_CTNC ='N' then 'A'
+				        				 		when ((AA.CNDT_TRGT_ITEM_CD = 'R008' and AA.CNDT_OPRR_CD = 'C001' and AA.NCNT = 0))  then  'B'
+						          				when ((AA.CNDT_TRGT_ITEM_CD = 'R008') and (AA.CNDT_OPRR_CD = 'C002') and (AA.NCNT <> 0)) then  'C'
+		  					  					when AA.CNDT_TRGT_ITEM_CD = 'R010' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.OCCL_CD then 'D'  -- 직급코드(GP005)
+		                   				  		when AA.CNDT_TRGT_ITEM_CD = 'R010' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.OCCL_CD then 'E'
+		                   				  		when AA.CNDT_TRGT_ITEM_CD = 'R011' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.OCRS_CD then 'F'  -- 직책코드(GP007)
+		                   				 		when AA.CNDT_TRGT_ITEM_CD = 'R011' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.OCRS_CD then 'G'
+		                   				  		when AA.CNDT_TRGT_ITEM_CD = 'R012' and AA.CNDT_OPRR_CD = 'C001' and AA.CNDT_TRGT_ITEM_VL <> BB.OCDT_CD then 'H'  -- 직무코드(GP009)
+		                   				  		when AA.CNDT_TRGT_ITEM_CD = 'R012' and AA.CNDT_OPRR_CD = 'C002' and AA.CNDT_TRGT_ITEM_VL = BB.OCDT_CD then 'I'
+		              						else  '0'
+		          					end) as CHECK_VALUE
+		       			  from ( 
+				                  	select  /*+ LEADING(A, B) USE_NL(B) csd_fnexrmt_l02$S01_기능권한 조건 조회 */
+											   	a.PRGM_ID 						as PRGM_ID,	-- 프로그램ID
+										   		a.CPNT_ID 						as CPNT_ID,	-- 컴포넌트ID
+										   		b.CPNT_NM,
+										   		DECODE(c.ITEM_DVSN_CD,'AT','N','BT','Y',decode(instr(b.CPNT_NM, 'BUTTON'), 0, decode(instr(b.CPNT_NM, 'PANEL'), 0, 'N', 'Y'), 'N')) as FNCT_EXRN_YN,	-- PANEL 여부
+										   		DECODE(c.ITEM_DVSN_CD,'AT','Y','BT','N',decode(instr(b.CPNT_NM, 'BUTTON'), 0, 'N', 'Y'))	as FNCT_ACTV_YN,	-- BUTTON 여부
+										   		decode(a.ATHR_CNDT_GRP_ID,'T000001', Trim(a.ATHR_CNDT_ITEM_ID || a.CNDT_TRGT_ITEM_CD || a.CNDT_TRGT_ITEM_VL), a.ATHR_CNDT_GRP_ID) 		as ATHR_CNDT_GRP_ID,	-- 권한조건그룹ID
+										   		a.ATHR_CNDT_ITEM_ID 	as ATHR_CNDT_ITEM_ID,	-- 권한조건항목ID
+										   		a.CNDT_OPRR_CD 			as CNDT_OPRR_CD,			-- 조건연산자코드
+										   		a.CNDT_TRGT_ITEM_VL 		as CNDT_TRGT_ITEM_VL,	-- 조건대상항목값
+										   		a.CNDT_TRGT_ITEM_CD 	as CNDT_TRGT_ITEM_CD,	-- 조건대상항목코드
+												c.ITEM_DVSN_CD      		as ITEM_DVSN_CD,        	-- ENABLED
+												(select Count(*)
+						                				   from CCUSRDPHT a1,		-- NEXMED-EHR 사용자 역할정보_T
+															    CSAGCIDMT d1		-- 권한그룹조건항목상세_T
+						               					  Where a1.LGIN_ID      				= d1.ATHR_GRP_CNDT_ITEM_VL
+						                             		and nvl(a1.MDCR_DPRT_CD, 'NONE') 	= d1.ATHR_GRP_CNDT_DPRT_CD
+						                             		and d1.ATHR_GRP_CNDT_ID 			= a.CNDT_TRGT_ITEM_VL
+						                             		and a1.LGIN_ID      				= #{lginId}
+														) as NCNT	
+									  from  	CSFARCIMT a,			-- 기능권한RULE조건항목_T
+										   		CSPRCPRMT b,		-- 메뉴그룹프로그램컴포넌트관계_T
+												CSFARCGMT c  	 	-- 기능권한RULE조건그룹_T
+									where  a.APST_DT < sysdate
+									  	and  a.APFN_DT > sysdate
+									  	and  a.PRGM_ID = b.PRGM_ID
+									  	and  a.CPNT_ID = b.CPNT_ID
+										and  a.PRGM_ID = c.PRGM_ID
+						   				and  a.CPNT_ID = c.CPNT_ID
+						   				and  a.ATHR_CNDT_GRP_ID = c.ATHR_CNDT_GRP_ID
+						   				and  c.APST_DT < sysdate
+						   				and  c.APFN_DT > sysdate
+								   	 order 
+										 by a.PRGM_ID,a.CPNT_ID, a.ATHR_CNDT_GRP_ID, a.ATHR_CNDT_ITEM_ID
+								) AA
+					  		  , (		   
+		                 			select  /*+ csd_useramt_l03$S01_실행권한 및 기능권한 대상자 조건 조회 */
+								   				a.LGIN_ID 								as LGIN_ID,							-- 로그인ID
+								   				a.USER_ID 								as USER_ID,						-- 사용자ID
+								   				a.USER_NM 							as USER_NM,						-- 사용자명
+								   				nvl(a.MDCR_DPRT_CD, 'NONE') 	as MDCR_DPRT_CD,				-- 진료부서코드
+								   				c.KORN_DPRT_NM 					as KORN_DPRT_NM,				-- 한글부서명
+								   				nvl(b.OCFM_CD, 'NONE')	 		as OCFM_CD,						-- 직종코드
+								   				nvl(a.EXCF_CD, 'NONE') 			as EXCF_CD,						-- 검사분류코드
+								   				nvl(b.CRTF_ATHR_USE_YN, 'N') 	as CRTF_ATHR_USE_YN,		-- 인증권한사용여부 	
+								   				'Y'											as AFI_SRCH_CNDT_CTNC,   	--	Y로 클라이언트에서 정하였음.  
+												nvl(b.OCCL_CD, 'NONE')        	as OCCL_CD,           			-- 직급코드(GP005)
+		                        				nvl(b.OCRS_CD, 'NONE')        	as OCRS_CD,           			-- 직책코드(GP007)
+		                        				nvl(b.OCDT_CD, 'NONE')        	as OCDT_CD            			-- 직무코드(GP009)
+							 		  from  	CCUSRDPHT a,	-- NEXMED-EHR 사용자 역할정보_T
+								   				CCUSERAMT b,	-- NEXMED-EHR 사용자_T
+								   				HZDEPTMMT c	-- 조직Master I/F(MDM연계)_T
+		                           where  	a.USER_ID      = #{lginId}
+							  		   and  	b.LGIN_ID      = a.LGIN_ID
+							  		   and  	c.DPRT_CD    = a.MDCR_DPRT_CD						   
+						  	) BB		   
+		         	group 
+						 by AA.PRGM_ID, AA.CPNT_ID, AA.FNCT_EXRN_YN, AA.FNCT_ACTV_YN, AA.ATHR_CNDT_GRP_ID, AA.ITEM_DVSN_CD
+		           ) RA
+		  GROUP 
+		        BY RA.PRGM_ID, RA.CPNT_ID, RA.FNCT_EXRN_YN, RA.FNCT_ACTV_YN, RA.ITEM_DVSN_CD 		  
+		  HAVING min(RA.CHECK_VALUE) <> '0'
+		  ORDER
+		        BY RA.PRGM_ID,RA.CPNT_ID 
+		]]>
+	</select>
+
+
+
+</mapper>

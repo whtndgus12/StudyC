@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MssBldordsDAO_sql.xml 
+    Description : -->
+<mapper namespace="MssBldordsDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1-result" type="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO">
+	
+		<result property="afiSrchYn" column="AFI_SRCH_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO
+		resultMap : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1"  parameterType="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO"  resultMap="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords1 */
+		<![CDATA[
+		select  /*+ mdd_bldords_s01$S01_수혈처방 상세정보 입력여부 체크 DAM */ 
+		           decode(count(*),0,'N', 'Y') as afi_srch_yn
+		      from
+		           MNIBLOODT a
+		     where
+		           a.PTNO     = #{ptno}
+		       and a.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		       and a.ORDR_SNO = #{ordrSno}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2-result" type="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO">
+	
+		<result property="afiSrchYn" column="AFI_SRCH_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO
+		resultMap : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2"  parameterType="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO"  resultMap="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-selectOneBldords2 */
+		<![CDATA[
+		select  /*+ mdd_bldords_s02$S01_수혈처방 상세정보 입력여부 체크 DAM */ 
+		           nvl(TRNF_ORDR_PRSS_CD,'N') as afi_srch_yn
+		      from
+		           MDBLDORDT a
+		     where
+		           a.PTNO     = #{ptno}
+		       and a.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		       and a.ORDR_SNO = #{ordrSno}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-deleteBldords1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-deleteBldords1"  parameterType="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-deleteBldords1 */
+		<![CDATA[
+		delete MNIBLOODT /*+ mdd_bldords_d01$d01_수혈처방 상세내역 삭제 */
+		     where PTNO              = #{ptno}
+		       and ORDR_YMD          = to_date(#{ordrYmd},'yyyymmdd')
+		       and ORDR_SNO          = #{ordrSno}
+		       and TRNF_ORDR_PRSS_CD is null
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-insertBldords1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-insertBldords1"  parameterType="com.sds.healthcare.ehr.med.ms.mss.vo.MssBldordsDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-ms-mss-dao-MssBldordsDAO-insertBldords1 */
+		<![CDATA[
+		insert into MNIBLOODT /*+ mdd_bldords_i01$I01_수혈처방 상세내역 입력 DAM */
+		               (
+		                 PTNO
+		               , ORDR_YMD
+		               , ORDR_SNO
+		               , BLOD_NO_SNO
+		               , MDRP_NO
+		               , PRPN_RQST_DT
+		               , PREP_ORDR_YN
+		               ,  FRST_RGSR_ID
+			   			,  FRST_RGST_IP
+			   			,  FRST_RGST_DT
+			   			,  FRST_RGST_CLNT_PRGM_ID
+			   			,  FRST_RGST_SRVR_PRGM_ID
+			   			,  LAST_UPDR_ID
+			   			,  LAST_UPDT_IP
+			   			,  LAST_UPDT_DT
+			   			,  LAST_UPDT_CLNT_PRGM_ID
+			   			,  LAST_UPDT_SRVR_PRGM_ID
+		               )
+		            select
+		                 PTNO
+		               , ORDR_YMD
+		               , ORDR_SNO
+		               , b.LV
+		               , #{mdrpNo}
+		               , (case when #{prepOrdrYn} = 'Y' then null else ORDR_YMD end)
+		               , (case when #{saveDvsnCd} = 'I' then a.PREP_ORDR_YN
+		                       else #{prepOrdrYn} end)
+		               ,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+						,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+		            from
+		                MDBLDORDT a
+		             , (
+		                 select level as LV
+		                   from DUAL
+		                connect
+		                     by level <= (select
+		                                         (case when #{saveDvsnCd} = 'I' then DR_IDCT_CQY
+		                                               else to_number(#{drIdctCqy}) end)
+		                                    from
+		                                         MDBLDORDT xx
+		                                   where
+		                                         xx.PTNO     = #{ptno}
+		                                     and xx.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		                                     and xx.ORDR_SNO = #{ordrSno})
+		               ) b
+		            where
+		                a.PTNO     = #{ptno}
+		            and a.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		            and a.ORDR_SNO = #{ordrSno}
+		]]>
+	</insert>
+
+</mapper>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhAsetPpupDAO_sql.xml 
+    Description :                                      자산_팝업 DAO
+                  -->
+<mapper namespace="HzhAsetPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="asetCd" column="ASET_CD"/>
+		<result property="asetNm" column="ASET_NM"/>
+		<result property="dvsnVl" column="DVSN_VL"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="asetAcqsYmd" column="ASET_ACQS_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup (HZH010F2_1_Popup_자산목록_조회) 
+        Description :                                           hzd_hzh010f_l01$S01_HZH010F2_1_Popup_자산목록_조회_DAM(현재 이 메소드대신
+                                                                pagingAsetPpup를 사용하여 그리드 Appending모드를 사용함, 이 메소드는 쿼리의
+                                                                기본틀이기때문에 삭제하지 않고 남겨놓음)
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-listAsetPpup */
+				   rownum              as SQNC          /* ******* 순서 */
+				,  z.ASET_CD           as ASET_CD       /* VC2(10) 자산코드 */
+				,  z.ASET_NM           as ASET_NM       /* VC2(1H) 자산명 */
+				,  z.ASET_ACON_DVSN_VL as DVSN_VL       /* VC2( 1) 자산계정구분값 */
+				,  z.COMN_CD_NM        as COMN_CD_NM    /* VC2(3H) 공통코드명 */
+				,  z.ASET_ACQS_YMD     as ASET_ACQS_YMD /* VC2(10) 자산취득일자 */
+			 from
+				  (select
+						   m.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+						,  m.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+						,  m.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+						,  m.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+						,  m.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+					 from
+						  (select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_CD                like '%' || #{srchCdNm} || '%' /* 자산코드 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}           /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                               /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                   /* MIS공통코드 */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:자산코드] */
+							union  all
+						   select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_NM                like '%' || #{srchCdNm} || '%' /* 자산명 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}                  /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                                      /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                          /* MIS공통코드 */
+							  and  #{srchCd} = 'N'                                          /* 검색코드[N:자산명] */
+						  ) m
+					order  by  case #{srchCd} when 'C' then m.ASET_CD else m.ASET_NM end  asc
+							,  m.ASET_CD asc
+							,  m.ASET_NM asc
+				  ) z
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="asetCd" column="ASET_CD"/>
+		<result property="asetNm" column="ASET_NM"/>
+		<result property="dvsnVl" column="DVSN_VL"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="asetAcqsYmd" column="ASET_ACQS_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup (HZH010F2_1_Popup_자산목록_조회) 
+        Description :                                           hzd_hzh010f_l01$S01_HZH010F2_1_Popup_자산목록_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-pagingAsetPpup */
+				RNUM
+			,   RNUM              as SQNC          /* ******* 순서 */
+			,   ASET_CD       /* VC2(10) 자산코드 */
+			,   ASET_NM       /* VC2(1H) 자산명 */
+			,   DVSN_VL       /* VC2( 1) 자산계정구분값 */
+			,   COMN_CD_NM    /* VC2(3H) 공통코드명 */
+			,   ASET_ACQS_YMD /* VC2(10) 자산취득일자 */
+		from(
+				
+		   select  
+				   rownum              as RNUM          /* ******* 순서 */
+				,  z.ASET_CD           as ASET_CD       /* VC2(10) 자산코드 */
+				,  z.ASET_NM           as ASET_NM       /* VC2(1H) 자산명 */
+				,  z.ASET_ACON_DVSN_VL as DVSN_VL       /* VC2( 1) 자산계정구분값 */
+				,  z.COMN_CD_NM        as COMN_CD_NM    /* VC2(3H) 공통코드명 */
+				,  z.ASET_ACQS_YMD     as ASET_ACQS_YMD /* VC2(10) 자산취득일자 */
+			 from
+				  (select
+						   m.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+						,  m.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+						,  m.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+						,  m.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+						,  m.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+					 from
+						  (select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_CD                like '%' || #{srchCdNm} || '%' /* 자산코드 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}           /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                               /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                   /* MIS공통코드 */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:자산코드] */
+							union  all
+						   select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_NM                like '%' || #{srchCdNm} || '%' /* 자산명 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}                  /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                                      /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                          /* MIS공통코드 */
+							  and  #{srchCd} = 'N'                                          /* 검색코드[N:자산명] */
+						  ) m
+					order  by  case #{srchCd} when 'C' then m.ASET_CD else m.ASET_NM end  asc
+							,  m.ASET_CD asc
+							,  m.ASET_NM asc
+				  ) z
+			)
+		 where RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)
+		    and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup (HZH010F2_1_Popup_자산목록 개수 조회) 
+        Description :                                           hzd_hzh010f_l01$S01_HZH010F2_1_Popup_자산목록_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAsetPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAsetPpupDAO-selectOneAsetPpup */
+			count(*) AS TOTAL_DATA_COUNT
+		 from(
+		 
+		   select  
+				   rownum              as SQNC          /* ******* 순서 */
+				,  z.ASET_CD           as ASET_CD       /* VC2(10) 자산코드 */
+				,  z.ASET_NM           as ASET_NM       /* VC2(1H) 자산명 */
+				,  z.ASET_ACON_DVSN_VL as DVSN_VL       /* VC2( 1) 자산계정구분값 */
+				,  z.COMN_CD_NM        as COMN_CD_NM    /* VC2(3H) 공통코드명 */
+				,  z.ASET_ACQS_YMD     as ASET_ACQS_YMD /* VC2(10) 자산취득일자 */
+			 from
+				  (select
+						   m.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+						,  m.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+						,  m.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+						,  m.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+						,  m.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+					 from
+						  (select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_CD                like '%' || #{srchCdNm} || '%' /* 자산코드 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}           /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                               /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                   /* MIS공통코드 */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:자산코드] */
+							union  all
+						   select
+								   s.ASET_CD           ASET_CD           /* VC2(10) 자산코드 */
+								,  s.ASET_NM           ASET_NM           /* VC2(1H) 자산명 */
+								,  s.ASET_ACON_DVSN_VL ASET_ACON_DVSN_VL /* VC2( 1) 자산계정구분값 */
+								,  a.COMN_CD_NM        COMN_CD_NM        /* VC2(3H) 공통코드명 */
+								,  s.ASET_ACQS_YMD     ASET_ACQS_YMD     /* VC2(10) 자산취득일자 */
+							 from
+								   HSASMASTT s /* (HS)자산마스터 */
+								,  HZMICOCDT a /* (HZ)MIS공통코드[자산계정구분] */
+							where
+								   s.ASET_NM                like '%' || #{srchCdNm} || '%' /* 자산명 */
+							  and  s.ASET_ACON_DVSN_VL         = decode(#{dvsnVl}, null, s.ASET_ACON_DVSN_VL, #{dvsnVl}) /* 자산계정구분 */
+							  and  a.BSPL_CD                   = #{bsplCd}                  /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = 'GA038'                                      /* 공통그룹코드[GA038:자산계정구분] */
+							  and  a.MIS_COMN_CD               = s.ASET_ACON_DVSN_VL                          /* MIS공통코드 */
+							  and  #{srchCd} = 'N'                                          /* 검색코드[N:자산명] */
+						  ) m
+					order  by  case #{srchCd} when 'C' then m.ASET_CD else m.ASET_NM end  asc
+							,  m.ASET_CD asc
+							,  m.ASET_NM asc
+				  ) z
+		)		  
+			]]>
+	</select>
+
+
+
+</mapper>

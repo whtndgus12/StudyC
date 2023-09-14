@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmChmePmtDAO_sql.xml 
+    Description :                                      문자메시지문구 관리
+                  -->
+<mapper namespace="CcmChmePmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="chmeDvsnCd" column="CHME_DVSN_CD"/>
+		<result property="sno" column="SNO"/>
+		<result property="chrcPhrsCtn" column="CHRC_PHRS_CTN"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="dprtName" column="DPRT_NAME"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL_3"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL_4"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList (문자메시지문구 목록조회) 
+        Description :                                           문자메시지문구 목록조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-listChmePmtList */
+		select  /*+ cmd_chmepmt_l01$S01_문자메시지문구조회 */ 
+		            DPRT_CD,
+		            CHME_DVSN_CD,
+		            SNO,
+		            CHRC_PHRS_CTN,
+		            USE_YN,
+		            FRST_RGSR_ID,
+		            (select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = A.DPRT_CD and rownum = 1) as DPRT_NAME,
+		            ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUX_004' and COMN_DTLS_CD = CHME_DVSN_CD ) as AFI_RTUR_VL_2,
+		            '' as AFI_RTUR_VL_3,
+		            DPRT_CD as AFI_RTUR_VL_4
+		      from
+		            CCCHMEPMT A
+		     where
+		     	    CHME_DVSN_CD like nvl(#{chmeDvsnCd}, '%')
+		  order by
+		            CHME_DVSN_CD ASC, DPRT_CD ASC, SNO ASC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemTypeCd" column="COMN_ENVR_STUP_ITEM_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt (문자메시지문구 조회) 
+        Description :                                           문자메시지문구 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneChmePmt */
+		select  /*+ cmd_chmepmt_s01$S01_문자메시지문구 권한 체크 */
+		    	    COMN_ENVR_STUP_GRP_CD,
+		        	COMN_ENVR_STUP_ITEM_CD,
+		        	COMN_ENVR_STUP_ITEM_TYPE_CD
+		      from
+		            CCENSTIMT
+		     where
+		     	    COMN_ENVR_STUP_GRP_CD = 'CMS_SMS_EXAMPLE_AUTH'
+		       and  COMN_ENVR_STUP_ITEM_CD = #{dprtCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-insertChmePmt (문자메시지문구 등록) 
+        Description :                                           문자메시지문구 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-insertChmePmt"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-insertChmePmt */
+		insert  /*+ cmd_chmepmt_i01$I01_문자메시지문구저장 */ 
+		      into  CCCHMEPMT
+		            (
+		            DPRT_CD,
+		            CHME_DVSN_CD,
+		            SNO,
+		            CHRC_PHRS_CTN,
+		            USE_YN,
+		            FRST_RGSR_ID, 
+		            FRST_RGST_IP, 
+		            FRST_RGST_DT, 
+		            FRST_RGST_CLNT_PRGM_ID, 
+		            FRST_RGST_SRVR_PRGM_ID, 
+		            LAST_UPDR_ID, 
+		            LAST_UPDT_IP, 
+		            LAST_UPDT_DT, 
+		            LAST_UPDT_CLNT_PRGM_ID, 
+		            LAST_UPDT_SRVR_PRGM_ID
+		            )
+		    values  (
+		    		#{dprtCd}
+		    		,  #{chmeDvsnCd}
+		    		, #{sno}
+		    		, #{chrcPhrsCtn}
+		    		, #{useYn}
+		 			, #{gvUserId}
+		            , #{gvUserIp}
+					, sysdate
+					, #{gvClntPrgmId}
+					, #{gvSrvrPrgmId}
+					, #{gvUserId}
+					, #{gvUserIp}
+					, sysdate
+					, #{gvClntPrgmId}
+					, #{gvSrvrPrgmId}
+		            )
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-updateChmePmt (문자메시지문구 수정) 
+        Description :                                           문자메시지문구 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-updateChmePmt"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-updateChmePmt */
+		update  /*+ cmd_chmepmt_u01$I01_문자메시지문구수정 */
+		            CCCHMEPMT
+		       set  CHRC_PHRS_CTN      = nvl(#{chrcPhrsCtn}, CHRC_PHRS_CTN)
+		            , USE_YN             = #{useYn}
+		            , LAST_UPDR_ID     = #{gvUserId}  /*  최종수정자ID      */
+		            , LAST_UPDT_IP     = #{gvUserIp}       /*  최종수정IP        */
+					, LAST_UPDT_DT     = sysdate           /*  최종수정일시      */
+					, LAST_UPDT_CLNT_PRGM_ID= #{gvClntPrgmId}
+					, LAST_UPDT_SRVR_PRGM_ID= #{gvSrvrPrgmId}
+		     where  DPRT_CD            = #{dprtCd}
+		       and  CHME_DVSN_CD       = #{chmeDvsnCd}
+		       and  SNO                = #{sno}
+			
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-deleteChmePmt (문자메시지문구 삭제) 
+        Description :                                           문자메시지문구 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-deleteChmePmt"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-deleteChmePmt */
+		delete  /*+ cmd_chmepmt_d01$I01_문자메시지문구삭제 */
+		      from  CCCHMEPMT
+		     where  DPRT_CD      = #{dprtCd}
+		       and  CHME_DVSN_CD = #{chmeDvsnCd}
+		       and  SNO          = #{sno}
+			
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO">
+	
+		<result property="sno" column="SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno (sno 채번) 
+        Description :                                           sno 채번
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmePmtDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmePmtDAO-selectOneSno */
+		SELECT decode( #{sno}, 0, ( select  nvl( max(sno) + 1, 1)
+														    from  CCCHMEPMT
+														   where  DPRT_CD = #{dprtCd}
+															 and  CHME_DVSN_CD = #{chmeDvsnCd} ), #{sno} ) AS "SNO"
+		  FROM DUAL
+			
+	</select>
+
+
+
+</mapper>

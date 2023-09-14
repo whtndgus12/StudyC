@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhRsrcAchmPpupDAO_sql.xml 
+    Description :                                      연구업적_팝업 DAO
+                  -->
+<mapper namespace="HzhRsrcAchmPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="misComnCd" column="MIS_COMN_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup (HZH010F5, HZH010FC_1_Popup_연구업적공통코드_조회_DAM) 
+        Description :                                           hzd_micocdt_l02$S01_MIS공통코드_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmComnCdPpup */
+				   rownum        as SQNC        /* 순서 */
+				,  x.MIS_COMN_CD as MIS_COMN_CD /* MIS공통코드 */
+				,  x.COMN_CD_NM  as COMN_CD_NM  /* 공통코드명 */
+			 from
+				  (select
+						   m.MIS_COMN_CD       MIS_COMN_CD /* MIS공통코드 */
+						,  m.COMN_CD_NM        COMN_CD_NM  /* 공통코드명 */
+						,  m.COMN_INQR_SQNC
+					 from
+						  (select
+								   a.MIS_COMN_CD MIS_COMN_CD /* MIS공통코드 */
+								,  a.COMN_CD_NM  COMN_CD_NM  /* 공통코드명 */
+								,  a.COMN_INQR_SQNC
+							 from
+								   HZMICOCDT a /* (HZ)MIS공통코드 */
+							where
+								   a.BSPL_CD                   = #{bsplCd}                  /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = #{comnGrpCd}              /* 공통그룹코드 */
+							  and  a.MIS_COMN_CD            like '%' || #{srchCdNm} || '%' /* MIS공통코드 */
+							  and  #{srchCd} = 'C'                                          /* 검색코드[C:MIS공통코드] */
+		                      and  trunc(sysdate) between nvl(a.APLY_YMD, sysdate - 1) and nvl(a.FNSH_YMD, sysdate + 1)
+							union  all
+						   select
+								   a.MIS_COMN_CD MIS_COMN_CD /* MIS공통코드 */
+								,  a.COMN_CD_NM  COMN_CD_NM  /* 공통코드명 */
+								,  a.COMN_INQR_SQNC
+							 from
+								   HZMICOCDT a /* (HZ)MIS공통코드 */
+							where
+								   a.BSPL_CD                   = #{bsplCd}                  /* 사업장코드 */
+							  and  a.COMN_GRP_CD               = #{comnGrpCd}              /* 공통그룹코드 */
+							  and  a.COMN_CD_NM             like '%' || #{srchCdNm} || '%' /* MIS공통코드 */
+							  and  #{srchCd} = 'N'                                          /* 검색코드[N:공통코드명] */
+		                      and  trunc(sysdate) between nvl(a.APLY_YMD, sysdate - 1) and nvl(a.FNSH_YMD, sysdate + 1)
+						  ) m
+					order  by  m.COMN_INQR_SQNC, decode(#{srchCd}, 'C', m.MIS_COMN_CD, 'N', m.COMN_CD_NM, m.COMN_INQR_SQNC)
+				  ) x
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="chrcCdVl2" column="CHRC_CD_VL_2"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup (HZH010F9_1_Popup_연구업적관리부서_조회_DAM) 
+        Description :                                           hzd_micocdt_l01$S01_연구업적관리부서_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrcAchmPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrcAchmPpupDAO-listRsrcAchmMngmDprtPpup */
+				   rownum         as SQNC         /* 순서 */
+				,  x.CHRC_CD_VL02 as CHRC_CD_VL_2 /* 문자코드값02[구분] */
+				,  x.COMN_CD_NM   as COMN_CD_NM   /* 공통코드명 */
+			 from
+				  (select
+						   CHRC_CD_VL02 /* 문자코드값02[구분] */
+						,  COMN_CD_NM   /* 공통코드명 */
+					 from
+						   HZMICOCDT /* MIS공통코드 */
+					where
+						   BSPL_CD       = #{bsplCd}                                                         /* 사업장코드 */
+					  and  COMN_GRP_CD   = 'GA919'                                                                             /* 공통그룹코드 */
+					  and  CHRC_CD_VL01  = decode(#{srchCd}, '*', CHRC_CD_VL01, #{srchCd}) /* 문자코드값01[구분] */
+					  and  COMN_CD_NM like '%' || #{srchCdNm} || '%'                                        /* 공통코드명 */
+					order
+					   by  COMN_CD_NM   asc
+						,  CHRC_CD_VL01 asc
+				  ) x
+			]]>
+	</select>
+
+
+
+</mapper>

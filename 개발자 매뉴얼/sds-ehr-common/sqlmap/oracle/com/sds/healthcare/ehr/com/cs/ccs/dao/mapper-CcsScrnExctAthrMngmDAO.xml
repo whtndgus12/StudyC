@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsScrnExctAthrMngmDAO_sql.xml 
+    Description :                                      화면실행권한관리
+                  -->
+<mapper namespace="CcsScrnExctAthrMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup (실행권한 설정 조회) 
+        Description :                                           csd_prmltmt_l05
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrStup_실행권한 설정 조회 */
+						a.PRGM_ID as PRGM_ID,
+						a.PRGM_NM as PRGM_NM,
+						case when EXISTS(	select	b.PRGM_ID
+													from		CSEARCGMT b
+													where	b.PRGM_ID = a.PRGM_ID
+													and		b.APST_DT < sysdate
+													and		b.APFN_DT > sysdate
+												)
+								then 'Y'
+								else 'N'
+						end as RTUR_VL
+		from			CSPRMLTMT a
+		where		a.PRGM_TYP_CD  = 'B'
+		]]>
+		<if test="menuGrpId != null and menuGrpId != ''">
+		and			a.MENU_GRP_ID = #{menuGrpId}
+		</if>
+		<![CDATA[
+		and			((nvl(#{prgmNm}, '*') = '*') or (upper(a.PRGM_ID) like upper(#{prgmNm}) || '%') or
+							(upper(a.PRGM_NM) like '%' || upper(#{prgmNm}) || '%')
+						   )
+		and  			(
+			   			   (nvl(#{prgmMngrId}, '*') = '*') or
+			   			   (a.PRGM_MNGR_ID = #{prgmMngrId}) or
+			   			   (a.ACWR_ASGN_ID = #{prgmMngrId}) )
+		and  			nvl(DLTN_YN, 'N') = 'N'
+		order by a.PRGM_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO">
+	
+		<result property="athrCndtGrpId" column="ATHR_CNDT_GRP_ID"/>
+		<result property="athrCndtGrpNm" column="ATHR_CNDT_GRP_NM"/>
+		<result property="athrCndtItemId" column="ATHR_CNDT_ITEM_ID"/>
+		<result property="athrCndtItemNm" column="ATHR_CNDT_ITEM_NM"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemNm" column="CNDT_TRGT_ITEM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt (실행권한 조건 조회) 
+        Description :                                           csd_earcgmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthrCndt_실행권한 조건 조회 */
+						   ta.ATHR_CNDT_GRP_ID 		as ATHR_CNDT_GRP_ID
+						 , ta.ATHR_CNDT_GRP_NM 	as ATHR_CNDT_GRP_NM
+						 , ta.ATHR_CNDT_ITEM_ID 		as ATHR_CNDT_ITEM_ID
+						 , ta.ATHR_CNDT_ITEM_NM 	as ATHR_CNDT_ITEM_NM
+						 , ta.CNDT_TRGT_ITEM_CD 	as CNDT_TRGT_ITEM_CD
+						 , ta.CNDT_OPRR_CD 			as CNDT_OPRR_CD
+						 , ta.COMN_CD_NM 			as COMN_CD_NM
+						 , ta.CNDT_TRGT_ITEM_VL		as CNDT_TRGT_ITEM_VL
+						 , ta.CNDT_TRGT_ITEM_NM 	as CNDT_TRGT_ITEM_NM
+						 , ta.LV 								as RTUR_VL
+						 , ta.INQR_SQNC 					as INQR_SQNC
+		FROM   		( 	
+							select	a.ATHR_CNDT_GRP_ID,												-- 권한조건그룹ID
+										'' 									as ATHR_CNDT_GRP_NM,		-- 권한조건그룹명
+										a.ATHR_CNDT_ITEM_ID,												-- 권한조건항목ID
+										b.DETL_CD_NM 				as ATHR_CNDT_ITEM_NM,		-- 권한조건항목명(조건대상항목코드)
+										a.CNDT_TRGT_ITEM_CD,											-- 조건대상항목코드
+										a.CNDT_OPRR_CD,													-- 조건연산자코드
+										c.DETL_CD_NM 				as COMN_CD_NM,				-- 조건연산자코드명(조건연산자코드)
+										a.CNDT_TRGT_ITEM_VL,												-- 	조건대상항목값
+										a.CNDT_TRGT_ITEM_NM,											-- 조건대상항목명
+										'1' 								as LV,
+										ATHR_CNDT_ITEM_SQNC 	as INQR_SQNC					-- 권한조건항목순서
+							  from  	CSEARCIMT 	a,	-- 실행권한RULE조건항목_T
+			   					   		CCCMCDDMT b,	-- 공통코드값(CSM_003, 조건대상항목코드)
+										CCCMCDDMT c,	-- 공통코드값(CSM_002, 조건연산자코드)
+										CSEARCGMT   d	-- 실행권한RULE조건그룹_T
+							where  	a.PRGM_ID  = #{prgmId}
+							   and  	a.APST_DT < sysdate
+							   and  	a.APFN_DT > sysdate
+							   and  	b.COMN_GRP_CD(+) = 'CSM_003'  /*  조건대상항목코드 */
+							   and  	b.COMN_DTLS_CD(+) = a.CNDT_TRGT_ITEM_CD
+							   and  	c.COMN_GRP_CD(+) = 'CSM_002'  /*  조건연산자코드 */
+							   and  	c.COMN_DTLS_CD(+) = a.CNDT_OPRR_CD
+							   and    a.PRGM_ID = d.PRGM_ID
+							   and    a.ATHR_CNDT_GRP_ID = d.ATHR_CNDT_GRP_ID
+							   and  	d.APST_DT < sysdate
+							   and  	d.APFN_DT > sysdate    
+							union all
+							select  	a.ATHR_CNDT_GRP_ID,
+										a.ATHR_CNDT_GRP_NM,
+										a.ATHR_CNDT_GRP_ID as ATHR_CNDT_ITEM_ID,
+										a.ATHR_CNDT_GRP_NM as ATHR_CNDT_ITEM_NM,
+										'' as CNDT_TRGT_ITEM_CD,
+										'' as CNDT_OPRR_CD,
+										'' as COMN_CD_NM,
+										'' as CNDT_TRGT_ITEM_VL,
+										'' as CNDT_TRGT_ITEM_NM,
+										'0' as LV,
+										ATHR_CNDT_GRP_APLY_SQNC as INQR_SQNC
+							  from  	CSEARCGMT a		-- 실행권한RULE조건그룹_T
+							 where  a.PRGM_ID  = #{prgmId}
+							   and  	substr(a.ATHR_CNDT_GRP_ID, 1, 1) = 'G'
+							   and  	a.APST_DT < sysdate
+							   and  	a.APFN_DT > sysdate
+						  ) ta
+		ORDER
+		      BY ta.INQR_SQNC
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp (실행권한 Rule 조건그룹 수정) 
+        Description :                                           csd_earcgmt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+		update  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp_실행권한RULE조건그룹 수정 */
+					CSEARCGMT
+		set
+					APFN_DT            = sysdate
+				,	LAST_UPDR_ID       = #{gvUserId}
+				,	LAST_UPDT_IP       = #{gvUserIp}
+				,	LAST_UPDT_DT       = sysdate
+				,	LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,	LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		where	PRGM_ID            = #{prgmId}
+		and		APST_DT < sysdate
+		and		APFN_DT > sysdate
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem (실행권한 Rule 조건항목 수정) 
+        Description :                                           csd_earcimt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+		update  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem_실행권한RULE조건항목 수정 */
+						CSEARCIMT
+		set
+						APFN_DT            = sysdate
+					,	LAST_UPDR_ID       = #{gvUserId}
+					,	LAST_UPDT_IP       = #{gvUserIp}
+					,	LAST_UPDT_DT       = sysdate
+					,	LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+					,	LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		where		PRGM_ID            = #{prgmId}
+		and			APST_DT < sysdate
+		and			APFN_DT > sysdate
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl (권한그룹조건항목상세) 
+        Description :                                           csd_agcidmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItemDetl_권한그룹조건항목상세 */
+					a.ATHR_GRP_CNDT_ITEM_VL as USER_ID,
+					b.USER_NM as USER_NM,
+					a.ATHR_GRP_CNDT_DPRT_CD as MDCR_DPRT_CD,
+					c.KORN_DPRT_NM as KORN_DPRT_NM
+		from		CSAGCIDMT a,
+					CCUSRDPHT b,
+					HZDEPTMMT c
+		where	a.ATHR_GRP_CNDT_ID = #{athrGrpCndtId}
+		and		b.USER_ID = a.ATHR_GRP_CNDT_ITEM_VL
+		and		b.MDCR_DPRT_CD = a.ATHR_GRP_CNDT_DPRT_CD
+		and		c.DPRT_CD(+) = b.MDCR_DPRT_CD
+		order by b.USER_ID
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp (실행권한 Rule 조건그룹 저장) 
+        Description :                                           csd_earcgmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp_실행권한RULE조건그룹 저장 */
+		into			 CSEARCGMT( PRGM_ID
+										   , ATHR_CNDT_GRP_ID
+										   , APST_DT
+										   , APFN_DT
+										   , ATHR_CNDT_GRP_APLY_SQNC
+										   , ATHR_CNDT_GRP_NM
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{prgmId}
+										   , #{athrCndtGrpId}
+										   , sysdate
+										   , to_date('29991231', 'YYYYMMDD')
+										   , #{athrCndtGrpAplySqnc}
+										   , #{athrCndtGrpNm}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem (실행권한 Rule 조건항목 저장) 
+        Description :                                           csd_earcimt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem_실행권한RULE조건항목 */
+		into			   CSEARCIMT( PRGM_ID
+										   , ATHR_CNDT_GRP_ID
+										   , ATHR_CNDT_ITEM_ID
+										   , APST_DT
+										   , APFN_DT
+										   , ATHR_CNDT_ITEM_SQNC
+										   , CNDT_OPRR_CD
+										   , CNDT_TRGT_ITEM_VL
+										   , CNDT_TRGT_ITEM_NM
+										   , CNDT_TRGT_ITEM_CD
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{prgmId}
+										   , #{athrCndtGrpId}
+										   , #{athrCndtItemId}
+										   , sysdate
+										   , to_date('29991231', 'YYYYMMDD')
+										   , #{athrCndtItemSqnc}
+										   , #{cndtOprrCd}
+										   , #{cndtTrgtItemVl}
+										   , #{cndtTrgtItemNm}
+										   , #{cndtTrgtItemCd}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO">
+	
+		<result property="bsdvCd" column="BSDV_CD"/>
+		<result property="athrGrpCndtId" column="ATHR_GRP_CNDT_ID"/>
+		<result property="athrGrpCndtNm" column="ATHR_GRP_CNDT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem (권한그룹조건항목 조회) 
+        Description :                                           csd_agcitmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listAthrGrpCndtItem_권한그룹조건항목 조회 */
+						BSDV_CD as BSDV_CD,
+						ATHR_GRP_CNDT_ID as ATHR_GRP_CNDT_ID,
+						ATHR_GRP_CNDT_NM as ATHR_GRP_CNDT_NM
+		from			CSAGCITMT
+		where		((nvl(#{bsdvCd}, '*') = '*') or (BSDV_CD = #{bsdvCd}))
+					  and  ((nvl(#{athrGrpCndtNm}, '*') = '*') or
+						   (ATHR_GRP_CNDT_ID = #{athrGrpCndtNm}) or
+						   (ATHR_GRP_CNDT_NM like '%' || #{athrGrpCndtNm} || '%'))
+					  and  ((nvl(#{athrGrpCndtItemVl}, '*') = '*') or
+						   (ATHR_GRP_CNDT_ID in ( 	select	ATHR_GRP_CNDT_ID
+																from  	CSAGCIDMT
+												   				where	ATHR_GRP_CNDT_ITEM_VL = #{athrGrpCndtItemVl}
+												))
+						  )
+		order by ATHR_GRP_CNDT_ID 
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr (실행권한 조회) 
+        Description :                                           csd_earcgmt_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-listExctAthr_실행권한 조회 */
+					a.PRGM_ID as PRGM_ID,
+					b.PRGM_NM as PRGM_NM
+		from		CSEARCGMT a,
+					CSPRMLTMT b
+		where	a.APST_DT < sysdate
+		and		a.APFN_DT > sysdate
+		and		a.PRGM_ID = b.PRGM_ID
+		and		((nvl(#{prgmNm},'*') = '*') or (upper(a.PRGM_ID) like upper(#{prgmNm}) || '%') or
+					(upper(b.PRGM_NM) like '%' || upper(#{prgmNm}) || '%'))
+		and  		((nvl(#{menuGrpId}, '*') = '*') or (b.MENU_GRP_ID = #{menuGrpId}))
+		and		(
+			   			(nvl(#{prgmMngrId}, '*') = '*') or
+			   			(b.PRGM_MNGR_ID = #{prgmMngrId}) or
+			   			(b.ACWR_ASGN_ID = #{prgmMngrId}) )
+		and		nvl(b.DLTN_YN, 'N') = 'N'
+		group by a.PRGM_ID, b.PRGM_NM
+				   order by a.PRGM_ID
+					]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp2 (실행권한 RULE 조건그룹 조건 복사 삭제) 
+        Description :                                           csd_earcgmt_u02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp2"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+		update  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtGrp2_실행권한RULE조건그룹 조건 복사 삭제 */
+					CSEARCGMT
+		set
+					APFN_DT            				= sysdate
+				,	LAST_UPDR_ID       				= #{gvUserId}
+				,	LAST_UPDT_IP       				= #{gvUserIp}
+				,	LAST_UPDT_DT       				= sysdate
+				,	LAST_UPDT_CLNT_PRGM_ID  	= #{gvClntPrgmId}
+				,	LAST_UPDT_SRVR_PRGM_ID 	= #{gvSrvrPrgmId}
+		where	PRGM_ID = #{workPrgmId}
+		and		APST_DT < sysdate
+		and		APFN_DT > sysdate
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp2 (실행권한 RULE 조건그룹 저장) 
+        Description :                                           csd_earcgmt_i02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp2"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtGrp2_실행권한RULE조건그룹 저장 */
+		into    CSEARCGMT( PRGM_ID
+								   , ATHR_CNDT_GRP_ID
+								   , APST_DT
+								   , APFN_DT
+								   , ATHR_CNDT_GRP_APLY_SQNC
+								   , ATHR_CNDT_GRP_NM
+								   , FRST_RGSR_ID
+								   , FRST_RGST_IP
+								   , FRST_RGST_DT
+								   , FRST_RGST_CLNT_PRGM_ID
+								   , FRST_RGST_SRVR_PRGM_ID
+								   , LAST_UPDR_ID
+								   , LAST_UPDT_IP
+								   , LAST_UPDT_DT
+								   , LAST_UPDT_CLNT_PRGM_ID
+								   , LAST_UPDT_SRVR_PRGM_ID
+								   )
+						 select  #{workPrgmId}
+								   , ATHR_CNDT_GRP_ID
+								   , sysdate
+								   , to_date('29991231', 'YYYYMMDD')
+								   , ATHR_CNDT_GRP_APLY_SQNC
+								   , ATHR_CNDT_GRP_NM
+								   , #{gvUserId}
+								   , #{gvUserIp}
+								   , sysdate
+								   , #{gvClntPrgmId}
+								   , #{gvSrvrPrgmId}
+								   , #{gvUserId}
+								   , #{gvUserIp}
+								   , sysdate
+								   , #{gvClntPrgmId}
+								   , #{gvSrvrPrgmId}
+					 	from    CSEARCGMT
+						where  PRGM_ID = #{prgmId}
+						and   	APST_DT < sysdate
+						and   	APFN_DT > sysdate
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem2 (실행권한 RULE 조건항목 조건 복사 삭제) 
+        Description :                                           csd_earcimt_u02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem2"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+				   update  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-updateExctAthrRulCndtItem2_실행권한RULE조건항목 조건 복사 삭제 */
+						   CSEARCIMT
+				   set
+						   APFN_DT            = sysdate
+						 , LAST_UPDR_ID       = #{gvUserId}
+						 , LAST_UPDT_IP       = #{gvUserIp}
+						 , LAST_UPDT_DT       = sysdate
+						 , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+						 , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+				   where   PRGM_ID            = #{workPrgmId}
+					 and   APST_DT < sysdate
+					 and   APFN_DT > sysdate
+					]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem2 (실행권한 RULE 조건항목 조건 복사) 
+        Description :                                           csd_earcimt_i02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem2"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnExctAthrMngmDVO"  >
+		<![CDATA[
+				   insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnExctAthrMngmDAO-insertExctAthrRulCndtItem2_실행권한RULE조건항목 조건 복사 */
+				   into    CSEARCIMT( PRGM_ID
+										   , ATHR_CNDT_GRP_ID
+										   , ATHR_CNDT_ITEM_ID
+										   , APST_DT
+										   , APFN_DT
+										   , ATHR_CNDT_ITEM_SQNC
+										   , ATHR_CNDT_ITEM_NM
+										   , CNDT_OPRR_CD
+										   , CNDT_TRGT_ITEM_VL
+										   , CNDT_TRGT_ITEM_NM
+										   , CNDT_TRGT_ITEM_CD
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 select  #{workPrgmId}
+										   , ATHR_CNDT_GRP_ID
+										   , ATHR_CNDT_ITEM_ID
+										   , sysdate
+										   , to_date('29991231', 'YYYYMMDD')
+										   , ATHR_CNDT_ITEM_SQNC
+										   , ATHR_CNDT_ITEM_NM
+										   , CNDT_OPRR_CD
+										   , CNDT_TRGT_ITEM_VL
+										   , CNDT_TRGT_ITEM_NM
+										   , CNDT_TRGT_ITEM_CD
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+									 from    CSEARCIMT
+									 where   PRGM_ID = #{prgmId}
+									   and   APST_DT < sysdate
+									   and   APFN_DT > sysdate
+					]]>
+	</insert>
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMenuautDAO_sql.xml 
+    Description :                                      메뉴
+                  -->
+<mapper namespace="CcsMenuautDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuautDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="mnsbYn" column="MNSB_YN"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuautDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuautDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuautDAO-listMenuaut */
+				<![CDATA[
+				   select  /*+ csd_menuaut_l23$S01_역할정보 */
+						   a.USER_ID as USER_ID
+						 , a.MNSB_YN as MNSB_YN
+						 , b.DPRT_CD as DPRT_CD
+						 , b.ABRV_DPRT_CD as ABRV_DPRT_CD
+						 , b.KORN_DPRT_NM as KORN_DPRT_NM
+				   from    CCUSRDPHT a
+						 , HZDEPTMMT b
+				   where   a.MDCR_DPRT_CD  = b.DPRT_CD
+					 and   ((a.LGIN_ID     = #{gvLginId}) or
+							(a.USER_ID     = #{gvUserId}))
+					 and   a.APST_YMD < sysdate
+					 and   a.APFN_YMD > sysdate
+				   order by a.MNSB_YN desc, b.DPRT_CD asc
+					]]>
+			
+			
+			
+	</select>
+
+
+
+</mapper>

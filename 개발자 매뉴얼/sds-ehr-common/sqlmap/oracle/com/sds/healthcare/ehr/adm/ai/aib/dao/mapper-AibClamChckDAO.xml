@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AibClamChckDAO_sql.xml 
+    Description : -->
+<mapper namespace="AibClamChckDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-insertChckMemo (심사메모입력) 
+        Description :                                           심사메모입력 aid_irchmmt_i02
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibClamChckDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-insertChckMemo"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibClamChckDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-insertChckMemo */
+		<![CDATA[
+				   insert  /*+ aid_irchmmt_i02$I01_심사메모입력 */
+						 into  AIIRCHMMT
+							(
+			   					   PTNO               /*  환자번호 */
+			   				 ,  CHCK_DVSN_CD       /*  작업구분(AI088) */
+			   				 ,  INTG_CHCK_MEMO_SNO /*  통합심사메모일련번호 */
+			   				 ,  MDRP_NO
+			   				 ,  ISTY_CD            /*  환자유형(AI003) */
+			   				 ,  ISTY_ASST_CD       /*  유형보조(AI004) */
+			   				 ,  CODV_CD            /*  환자구분(AP025) */
+			   				 ,  MDST_YMD           /*  진료개시일시 */
+			   				 ,  MCDP_CD            /*  진료과 */
+			   				 ,  CRFR_YMD           /*  이월일자 */
+			   				 ,  RFLC_YMD           /*  반영일자 */
+			   				 ,  MDFE_CD            /*  수가코드 */
+			   				 ,  ORTA_NM            /*  처방테이블 */
+			   				 ,  ORPR_VL            /*  처방KEY */
+			   				 ,  MEMO_DVSN_CD       /*  메모구분코드 */
+			   				 ,  EDI_RMRK_CTN1      /*  EDI비고1 */
+			   				 ,  EDI_RMRK_CTN2      /*  EDI비고2 */
+			   				 ,  CHCK_RMRK_CTN      /*  심사비고 */
+			   				 ,  ADJS_RMRK_CTN      /*  조정비고 */
+								 , FRST_RGSR_ID
+								 , FRST_RGST_IP
+								 , FRST_RGST_DT
+								 , FRST_RGST_CLNT_PRGM_ID
+								 , FRST_RGST_SRVR_PRGM_ID
+								 , LAST_UPDR_ID
+								 , LAST_UPDT_IP
+								 , LAST_UPDT_DT
+								 , LAST_UPDT_CLNT_PRGM_ID
+								 , LAST_UPDT_SRVR_PRGM_ID
+							)
+					   values
+							(
+			   					   #{ptno}                                 /*  환자번호 */
+								,  #{chckDvsnCd}                         /*  작업구분(AI088) */
+								,  ( select
+			   							   nvl( max( INTG_CHCK_MEMO_SNO), 0 ) + 1
+			   						 from
+			   						          AIIRCHMMT
+			   						where  PTNO         = #{ptno}
+			   						  and  CHCK_DVSN_CD = #{chckDvsnCd}
+								   )
+								,  #{mdrpNo}
+								,  #{istyCd}                              /*  환자유형(AI003) */
+			   				 ,  #{istyAsstCd}                         /*  유형보조(AI004) */
+			   				 ,  #{codvCd}                              /*  환자구분(AP025) */
+			   				 ,  to_date(#{mdstYmd}, 'yyyymmdd')        /*  진료개시일시 */
+			   				 ,  #{mcdpCd}                              /*  진료과 */
+			   				 ,  to_date(#{crfrYmd}, 'yyyymmdd')        /*  이월일자 */
+			   				 ,  to_date(#{rflcYmd}, 'yyyymmddhh24miss')/*  반영일자 */
+			   				 ,  #{mdfeCd}                              /*  수가코드 */
+			   				 ,  #{ortaNm}                              /*  처방테이블 */
+			   				 ,  #{orprVl}                              /*  처방KEY */
+			   				 ,  #{memoDvsnCd}                         /*  메모구분코드 */
+			   				 ,  #{ediRmrkCtn1}                       /*  EDI비고1 */
+			   				 ,  #{ediRmrkCtn2}                       /*  EDI비고2 */
+			   				 ,  #{chckRmrkCtn}                        /*  심사비고 */
+			   				 ,  #{adjsRmrkCtn}                        /*  조정비고 */
+								 ,  #{gvUserId}                             
+						     ,  #{gvUserIp}        
+						     ,  sysdate            
+						     ,  #{gvClntPrgmId}    
+						     ,  #{gvSrvrPrgmId}    
+						     ,  #{gvUserId}        
+						     ,  #{gvUserIp}        
+						     ,  sysdate            
+						     ,  #{gvClntPrgmId}    
+						     ,  #{gvSrvrPrgmId}    
+							)
+					]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-deleteChckMemo (심사메모 삭제) 
+        Description :                                           심사메모 삭제 aid_irchmmt_d02
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibClamChckDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-deleteChckMemo"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibClamChckDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibClamChckDAO-deleteChckMemo */
+		delete  /*+ AibClamChckDAO-deleteChckMemo_심사메모삭제 */
+		        AIIRCHMMT a
+		 where  a.MDRP_NO       = #{mdrpNo}         /* 진료접수번호 */
+		   and  a.CHCK_DVSN_CD  = #{chckDvsnCd}     /* 심사구분코드 */
+	</delete>
+
+</mapper>

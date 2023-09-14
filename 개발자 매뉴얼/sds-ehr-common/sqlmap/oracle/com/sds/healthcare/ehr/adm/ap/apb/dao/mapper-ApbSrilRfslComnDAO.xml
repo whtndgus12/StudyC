@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbSrilRfslComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbSrilRfslComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbSrilRfslComnDVO">
+	
+		<result property="srilRfslClsfCd" column="SRIL_RFSL_CLSF_CD"/>
+		<result property="l3scCd" column="L3SC_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl (환자중증거부리스트조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbSrilRfslComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbSrilRfslComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-listPtntSrilRfsl */
+		       a.SRIL_RFSL_CLSF_CD as SRIL_RFSL_CLSF_CD                               /*  중증거부내용 */    
+		    ,  L3SC_CD as L3SC_CD                                        /* 3단상병코드 */
+		   from  APSRRFSLT a   
+		  where  a.PTNO     = #{ptno}
+		    and  a.CNCR_ID is  null
+		    and  a.CNCL_DT is  null
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-insertSrilRfsl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbSrilRfslComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-insertSrilRfsl"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbSrilRfslComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbSrilRfslComnDAO-insertSrilRfsl */
+		     into  APSRRFSLT
+		      (
+		           PTNO
+		        ,  SRIL_RFSL_SNO
+		        ,  SRIL_RFSL_RGST_YMD
+		        ,  SRIL_RFSL_CLSF_CD
+		        ,  SRIL_RFSL_CTN
+		        ,  L3SC_CD
+		        ,  FRST_RGSR_ID
+		        ,  FRST_RGST_IP
+		        ,  FRST_RGST_DT
+		        ,  FRST_RGST_CLNT_PRGM_ID
+		        ,  FRST_RGST_SRVR_PRGM_ID
+		        ,  LAST_UPDR_ID
+		        ,  LAST_UPDT_IP
+		        ,  LAST_UPDT_DT
+		        ,  LAST_UPDT_CLNT_PRGM_ID
+		        ,  LAST_UPDT_SRVR_PRGM_ID
+		      )
+		    values
+		      (
+		           #{ptno}
+		        ,  (select nvl(max(SRIL_RFSL_SNO), 0) + 1
+		             from APSRRFSLT
+		            where ptno = #{ptno})
+		        ,  sysdate
+		        ,  #{srilRfslClsfCd}
+		        ,  #{srilRfslCtn}
+		        ,  #{l3scCd}
+		        ,  #{gvUserId}
+		        ,  #{gvUserIp}
+		        ,  sysdate
+		        ,  #{gvClntPrgmId}
+		        ,  #{gvSrvrPrgmId}
+		        ,  #{gvUserId}
+		        ,  #{gvUserIp}
+		        ,  sysdate
+		        ,  #{gvClntPrgmId}
+		        ,  #{gvSrvrPrgmId}
+		      )
+	</insert>
+
+</mapper>

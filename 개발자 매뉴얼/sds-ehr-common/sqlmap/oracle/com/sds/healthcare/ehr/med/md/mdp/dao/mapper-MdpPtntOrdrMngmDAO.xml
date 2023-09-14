@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpPtntOrdrMngmDAO_sql.xml 
+    Description :                                      환자처방관리 (처방저장 이외 각종 처리)
+                  -->
+<mapper namespace="MdpPtntOrdrMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateDrugOrdrBsis (약처방 수정 (기본)) 
+        Description :                                           약처방 수정 (기본)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateDrugOrdrBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateDrugOrdrBsis */
+		update  /*+ MdpPtntOrdrMngmDAO-updateDrugOrdrBsis_약처방 수정 기본 */
+		        MDMEDORDT
+		   set  LAST_UPDR_ID            =   #{gvUserId}                 /* 최종수정자ID */
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}                 /* 최종수정IP */
+		     ,  LAST_UPDT_DT            =   sysdate                     /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID */
+		 <if test='vatTrgtYn != null'>
+		     ,  VAT_TRGT_YN             =   #{vatTrgtYn}                /* 부가세대상여부 */
+		 </if>
+		 where  PTNO                    =   #{ptno}
+		 <if test='mdrpNo != null and mdrpNo &gt; 0'>
+		   and  MDRP_NO                 =   #{mdrpNo}
+		 </if>
+		 <if test='ordrYmd != null and ordrYmd != ""'>
+		   and  ORDR_YMD                =   to_date(#{ordrYmd}, 'yyyymmdd')
+		 </if>
+		 <if test='vatTrgtYn != null'>
+		   and  nvl(RCST_CD, 'N')       =   decode(#{codvCd}, 'I', nvl(RCST_CD, 'N')
+		                                                    , 'D', nvl(RCST_CD, 'N')
+		                                                         , 'N')
+		 </if>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateExmnOrdrBsis (검사처방 수정 (기본)) 
+        Description :                                           검사처방 수정 (기본)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateExmnOrdrBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateExmnOrdrBsis */
+		update  /*+ MdpPtntOrdrMngmDAO-updateExmnOrdrBsis_검사처방 수정 기본 */
+		        MDEXMORDT
+		   set  LAST_UPDR_ID            =   #{gvUserId}                 /* 최종수정자ID */
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}                 /* 최종수정IP */
+		     ,  LAST_UPDT_DT            =   sysdate                     /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID */
+		 <if test='vatTrgtYn != null'>
+		     ,  VAT_TRGT_YN             =   #{vatTrgtYn}                /* 부가세대상여부 */
+		 </if>
+		 <if test='endrId != null'>
+		     ,  ENDR_ID                 =   #{endrId}                   /* 시행의사ID */
+		 </if>
+		 <if test='exorPrssCd != null'>
+		     ,  EXOR_PRSS_CD            =   #{exorPrssCd}               /* 검사진행상태코드 */
+		 </if>
+		 <if test='exrmRptnDt != null'>
+		     ,  EXRM_RPTN_DT            =   to_date(#{exrmRptnDt}, 'yyyymmddhh24miss')          /* 접수일시 */
+		 </if>
+		 <if test='enfrDt != null'>
+		     ,  ENFR_DT                 =   to_date(#{enfrDt}, 'yyyymmddhh24miss')              /* 실시일시 */
+		 </if>
+		 <if test='rprpDt != null'>
+		     ,  RPRT_DT                 =   to_date(#{rprpDt}, 'yyyymmddhh24miss')              /* 보고일시 */
+		 </if>
+		 <if test='paclYmd != null'>
+		     ,  PACL_YMD                =   to_date(#{paclYmd}, 'yyyymmdd')                     /* 원무계산일자 */
+		 </if>
+		 <if test='spcmNo1 != null'>
+		     ,  SPCM_NO1                =   #{spcmNo1}                                          /* 검체번호1 */
+		 </if>
+		 where  PTNO                    =   #{ptno}
+		 <if test='ordrYmd != null and ordrYmd != ""'>
+		   and  ORDR_YMD                =   to_date(#{ordrYmd}, 'yyyymmdd')
+		 </if>
+		 <if test='ordrSno != null and ordrSno != 0'>
+		   and  ORDR_SNO                =   #{ordrSno}
+		 </if>
+		 <if test='mdrpNo != null and mdrpNo != 0'>
+		   and  MDRP_NO                 =   #{mdrpNo}
+		 </if>
+		 <if test='vatTrgtYn != null'>
+		   and  nvl(RCST_CD, 'N')       =   decode(#{codvCd}, 'I', nvl(RCST_CD, 'N')
+		                                                    , 'D', nvl(RCST_CD, 'N')
+		                                                         , 'N')
+		 </if>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateTxOrdrBsis (처치처방 수정 (기본)) 
+        Description :                                           처치처방 수정 (기본)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateTxOrdrBsis"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntOrdrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntOrdrMngmDAO-updateTxOrdrBsis */
+		update  /*+ MdpPtntOrdrMngmDAO-updateTxOrdrBsis_처치처방 수정 기본 */
+		        MDTRTORDT
+		   set  LAST_UPDR_ID            =   #{gvUserId}                 /* 최종수정자ID */
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}                 /* 최종수정IP */
+		     ,  LAST_UPDT_DT            =   sysdate                     /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID */
+		 <if test='vatTrgtYn != null'>
+		     ,  VAT_TRGT_YN             =   #{vatTrgtYn}                /* 부가세대상여부 */
+		 </if>
+		 where  PTNO                    =   #{ptno}
+		 <if test='mdrpNo != null and mdrpNo &gt; 0'>
+		   and  MDRP_NO                 =   #{mdrpNo}
+		 </if>
+		 <if test='ordrYmd != null and ordrYmd != ""'>
+		   and  ORDR_YMD                =   to_date(#{ordrYmd}, 'yyyymmdd')
+		 </if>
+		 <if test='vatTrgtYn != null'>
+		   and  nvl(RCST_CD, 'N')       =   decode(#{codvCd}, 'I', nvl(RCST_CD, 'N')
+		                                                    , 'D', nvl(RCST_CD, 'N')
+		                                                         , 'N')
+		 </if>  
+	</update>
+
+</mapper>

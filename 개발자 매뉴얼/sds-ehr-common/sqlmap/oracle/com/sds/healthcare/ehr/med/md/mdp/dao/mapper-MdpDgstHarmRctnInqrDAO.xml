@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDgstHarmRctnInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpDgstHarmRctnInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="totlCct" column="TOTL_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn (NSAID계 유해반응 약품여부를 조회한다.) 
+        Description :                                           입력한 약품에 대해 NSAID계 성분이 있는지 조회한다..
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+			WITH T01 AS ( select  t.RPMD_ID from sdddgcdmt t where instr(#{etcCtn}, '|' || t.mdpr_cd || '|') > 0 and t.MDPR_CD not like 'SELF%' )
+			SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listNsaidHarmRctnMdprYn_NSAID계유해반응약품여부 단건조회 */
+			     count(1) as TOTL_CCT
+			  from
+			     (select RPMD_ID
+			              from SDRPMDDET  a
+			             where RPMD_ID in ( select RPMD_ID from T01 )
+			             union
+			            select INGR_DETL_ID
+			              from SDRPMDDET  a
+			             where RPMD_ID IN ( select RPMD_ID from T01 )
+			           )         a      /*  약품성분list */
+			  ,  SDDATGRPT c      /*  약효성분분류 */
+			 where
+			        c.MDEF_CLSF_5_CD = a.RPMD_ID
+			   and  c.MDEF_CLSF_1_CD = '28'
+			   and  c.MDEF_CLSF_2_CD = '08'
+			   and  c.MDEF_CLSF_3_CD = '04'
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+		<result property="rpmdId" column="RPMD_ID"/>
+		<result property="ingrDetlId" column="INGR_DETL_ID"/>
+		<result property="etcYn" column="ETC_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList (대표약품 ID목록을 조회) 
+        Description :                                           입력한 약품에 대한 성분 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    With T01 AS ( select   RPMD_ID from sdddgcdmt t where instr(#{etcCtn}, '|' || t.mdpr_cd || '|') > 0 and t.DGMT_RGST_TYPE_CD <> '3' /*지참약제외*/  )
+			SELECT  /*+ INDEX(A, SDMDISCRT_PK) SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listRprsMdprIdList */
+			     distinct
+			     a.MDPR_CD as MDPR_CD           /*  약품코드 */
+			  ,  a.MDPR_NM as MDPR_NM
+			  ,  a.RPMD_ID as RPMD_ID
+			  ,  b.INGR_DETL_ID as INGR_DETL_ID /*   2020058 taebum 성분상세ID 추가 */
+			  ,  case when exists
+			     (
+			     select  'X'
+			      from  (select RPMD_ID
+			                      from SDRPMDDET  a
+			                     where RPMD_ID in (select RPMD_ID from T01 )
+			                     union
+			                    select INGR_DETL_ID
+			                      from SDRPMDDET  a
+			                     where RPMD_ID in (select RPMD_ID from T01 )
+			             ) y
+			            ,  SDDATGRPT z
+			     where z.MDEF_CLSF_5_CD = y.RPMD_ID
+			       and z.MDEF_CLSF_1_CD = '28'
+			       and z.MDEF_CLSF_2_CD = '08'
+			       and z.MDEF_CLSF_3_CD = '04'
+			     ) then 'Y' else 'N' end as ETC_YN     /*  NSAID계열 여부 */
+			  from
+			     sdddgcdmt a        /*  약품식별   */
+			    ,SDRPMDDET b        /* 성분관리상세 */
+			 where
+			     /*  instr(:mds_sdmdisc_004[0].etc_ctn, '|' || MDPR_CD || '|') > 0 */
+			     /*  튜닝팀 요청 반영 20160805, 문자열을 잘라 PK조인을 할 수 있도록 처리 */
+			     a.MDPR_CD in (
+			                  select  substr(#{etcCtn},
+			                                instr(#{etcCtn}, '|', 1, rownum) + 1,
+			                                instr(#{etcCtn}, '|', 1, rownum + 1) - instr(#{etcCtn}, '|', 1, rownum) - 1
+			                          ) as MDPR_CD
+			                 from  dual
+			                 connect  by
+			                    level <= length(#{etcCtn}) - length(replace(#{etcCtn}, '|', '')) - 1
+			                 )
+			    and a.RPMD_ID = b.RPMD_ID
+		                and b.USE_YN  = 'Y'
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="adrpYmd" column="ADRP_YMD"/>
+		<result property="adrpSno" column="ADRP_SNO"/>
+		<result property="ssdgSno" column="SSDG_SNO"/>
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+		<result property="trmnNm1" column="TRMN_NM_1"/>
+		<result property="sympMnfsDegrCd" column="SYMP_MNFS_DEGR_CD"/>
+		<result property="afiSympMnfsDegrNm" column="AFI_SYMP_MNFS_DEGR_NM"/>
+		<result property="rpmdId" column="RPMD_ID"/>
+		<result property="rpmdNm" column="RPMD_NM"/>
+		<result property="ingrDetlId" column="INGR_DETL_ID"/>
+		<result property="ingrDetlIdNm" column="INGR_DETL_ID_NM"/>
+		<result property="ordrPblcLmttYn" column="ORDR_PBLC_LMTT_YN"/>
+		<result property="ordrWrnnWndwOcrnYn" column="ORDR_WRNN_WNDW_OCRN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList (환자별 유해약품 목록조회) 
+        Description :                                           대상 환자에게 처방된 약품 중 유해반응이 있었던 약품의 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		  SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listPtntHarmMdprListInqrList */   /*+ mdd_sdcadra_l01$S01_환자별유해약품목록조회 다건조회DAM */
+				   distinct
+				   a.PTNO as PTNO
+				,  to_char(a.ADRP_YMD, 'YYYYMMDD') as ADRP_YMD
+				,  a.ADRP_SNO as ADRP_SNO
+				,  a.SSDG_SNO as SSDG_SNO
+				,  a.MDPR_CD as MDPR_CD
+				,  a.MDPR_NM as MDPR_NM
+				,  e.TRMN_NM1 as TRMN_NM_1
+				,  g.SYMP_MNFS_DEGR_CD as SYMP_MNFS_DEGR_CD
+				,  (select DETL_CD_NM
+					  from CCCMCDDMT
+					 where COMN_GRP_CD = 'SD646'
+					   and COMN_DTLS_CD = g.SYMP_MNFS_DEGR_CD
+				   ) as AFI_SYMP_MNFS_DEGR_NM
+				,  b.RPMD_ID as RPMD_ID
+				,  (select RPMD_NM
+					  from SDRPMDIDT
+					 where RPMD_ID = b.RPMD_ID
+				   ) as RPMD_NM
+				,  h.INGR_DETL_ID
+		                ,  (select x.RPMD_NM
+		                      from SDRPMDIDT x
+		                     where x.RPMD_ID = h.INGR_DETL_ID
+		                       and rownum = 1
+		                   ) as INGR_DETL_ID_NM
+		        , g.ORDR_PBLC_LMTT_YN as ORDR_PBLC_LMTT_YN
+		        , g.ORDR_WRNN_WNDW_OCRN_YN as ORDR_WRNN_WNDW_OCRN_YN
+			 from
+				   SDCADRADT a      /*  ADR평가서의심약물                */
+				,  SDMDISCRT b      /*  약품식별                               */
+				,  SDCADRAMT c      /*  ADR평가서                            */
+				,  SDCADRAST d      /*  ADR평가서유해반응증상           */
+				,  SDCADRSCT e      /*  ADR평가서유해반응증상코드      */
+				,  SDCADRDGT g      /*  ADR평가서유해반응증상의심약물 */
+				,  SDRPMDDET h      /*  성분관리상세                           */
+			where
+				   a.PTNO = #{ptno}
+			  and  b.MDPR_CD = a.MDPR_CD
+			  and a.MDPR_CD in (  select x.mdpr_cd
+		                                    from sdddgcdmt x
+		                                   where x.rpmd_id in (
+		                                                       select t.rpmd_Id
+		                                                         from SDRPMDDET t
+		                                                        where t.ingr_detl_id in (
+		                                                                                  select z.INGR_DETL_ID
+		                                                                                    from SDRPMDDET z
+		                                                                                   where z.rpmd_id in (select tt.rpmd_id  from sdddgcdmt tt where instr(#{etcCtn2}, '|' || tt.MDPR_CD || '|') > 0  )
+		                                                                                 )
+		                                                       )
+		                                 )
+			  and  c.PTNO = a.PTNO
+			  and  c.ADRP_YMD = a.ADRP_YMD
+			  and  c.ADRP_SNO = a.ADRP_SNO
+			  and  c.SCND_ASSR_ID is not null
+			  and  d.PTNO = a.PTNO
+			  and  d.ADRP_YMD = a.ADRP_YMD
+			  and  d.ADRP_SNO = a.ADRP_SNO
+			  and  e.ARRN_NO(+) = d.ARRN_NO
+			  and  e.ADR_HARC_SNO(+) = d.ADR_HARC_SNO
+			  and  g.PTNO = a.PTNO
+			  and  g.ADRP_YMD = d.ADRP_YMD
+			  and  g.ADRP_SNO = d.ADRP_SNO
+			  and  g.ARRN_NO = d.ARRN_NO
+			  and  g.ADR_HARC_SNO = d.ADR_HARC_SNO
+			  and  g.SSDG_SNO = a.SSDG_SNO
+		      and  g.ORDR_WRNN_WNDW_OCRN_YN = 'Y'
+			  and  not exists
+				   (
+				   select 1
+					 from SDDATGRPT f
+					where f.MDEF_CLSF_1_CD = '28'
+					  and f.MDEF_CLSF_2_CD = '08'
+					  and f.MDEF_CLSF_3_CD = '04'
+					  and f.MDEF_CLSF_5_CD = b.RPMD_ID
+					  and b.MDPR_CD not like 'SELF%'
+					  and b.MDPR_CD <> '*'
+				   union
+		            select 1
+				      from  SDDATGRPT f
+				           ,SDRPMDDET t
+				     where t.RPMD_ID = b.RPMD_ID
+				       and f.MDEF_CLSF_1_CD = '28'
+				       and f.MDEF_CLSF_2_CD = '08'
+				       and f.MDEF_CLSF_3_CD = '04'
+				       and f.MDEF_CLSF_5_CD = t.INGR_DETL_ID
+				       and b.MDPR_CD not like 'SELF%'
+				       and b.MDPR_CD <> '*'
+				   )
+			    and b.RPMD_ID = h.RPMD_ID
+		   /*  ---------------------------------------------------------------- */
+			union
+		   select  a.PTNO
+				,  to_char(a.ADRP_YMD, 'YYYYMMDD') as ADRP_YMD
+				,  a.ADRP_SNO
+				,  1
+				,  b.MDPR_CD
+				,  b.MDPR_NM
+				,  FN_SD_GET_HARMFULREACT(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)
+				,  null
+				,  null
+				,  null
+				,  null
+				,  null
+		        ,  null
+		        ,  null
+		        ,  null
+			 from  SDCADRRMT a      /*  ADR보고서 */
+				,  SDCADRRDT b      /*  ADR보고서의심약물 */
+				,  MDORDRCMT c      /*  처방코드기본 */
+			where  a.PTNO     = #{ptno}
+			  and  a.ADR_PRSS_CD not in ('**', '05')
+			  and  b.PTNO     = a.PTNO
+			  and  b.ADRP_YMD = a.ADRP_YMD
+			  and  b.ADRP_SNO = a.ADRP_SNO
+			  and  b.MDPR_CD in (  select x.mdpr_cd
+		                                 from sdddgcdmt x
+		                                where x.rpmd_id in (
+		                                                        select t.rpmd_Id
+		                                                          from SDRPMDDET t
+		                                                         where t.ingr_detl_id in (
+		                                                                                   select z.INGR_DETL_ID
+		                                                                                     from SDRPMDDET z
+		                                                                                    where z.rpmd_id in (select tt.rpmd_id  from sdddgcdmt tt where instr(#{etcCtn2}, '|' || tt.MDPR_CD || '|') > 0  )
+		                                                                                  )
+		                                                   )
+		                            )
+			  and  c.ORDR_CD = b.MDPR_CD
+		   /*  ---------------------------------------------------------------- */
+			union
+		   select  a.PTNO
+				  ,  to_char(a.ADRP_YMD, 'YYYYMMDD') as ADRP_YMD
+				  ,  a.ADRP_SNO
+				  ,  a.SSDG_SNO
+				  ,  a.MDPR_CD
+				  ,  a.MDPR_NM
+				  ,  e.TRMN_NM1
+				  ,  g.SYMP_MNFS_DEGR_CD
+				  ,  ( select DETL_CD_NM
+					     from CCCMCDDMT
+					    where COMN_GRP_CD = 'SD646'
+					      and COMN_DTLS_CD = g.SYMP_MNFS_DEGR_CD
+				     ) as AFI_SYMP_MNFS_DEGR_NM
+				  ,  'NSAID'
+				  ,  '동일 계열의 비스테로이드성(NSAID)'
+				  ,  'NSAID'
+		          , null
+		          , null
+		          , null
+			  from  SDCADRADT a      /*  ADR평가서의심약물 */
+				  ,  sdddgcdmt b      /*  약품마스터 */
+				  ,  SDCADRAMT c      /*  ADR평가서 */
+				  ,  SDCADRAST d      /*  ADR평가서유해반응증상 */
+				  ,  SDCADRSCT e      /*  ADR평가서유해반응증상코드 */
+				  ,  SDCADRDGT g      /*  ADR평가서유해반응증상의심약물 */
+			 where  #{totlCct} > 0
+			   and  a.PTNO = #{ptno}
+			   and  b.MDPR_CD = a.MDPR_CD
+			   and  b.MDPR_CD not like 'SELF%'
+			   and  b.MDPR_CD <> '*'
+			   and  c.PTNO = a.PTNO
+			   and  c.ADRP_YMD = a.ADRP_YMD
+			   and  c.ADRP_SNO = a.ADRP_SNO
+			   and  c.SCND_ASSR_ID is not null
+			   and  d.PTNO = a.PTNO
+			   and  d.ADRP_YMD = a.ADRP_YMD
+			   and  d.ADRP_SNO = a.ADRP_SNO
+			   and  e.ARRN_NO(+) = d.ARRN_NO
+			   and  e.ADR_HARC_SNO(+) = d.ADR_HARC_SNO
+			   and  g.PTNO = a.PTNO
+			   and  g.ADRP_YMD = d.ADRP_YMD
+			   and  g.ADRP_SNO = d.ADRP_SNO
+			   and  g.ARRN_NO = d.ARRN_NO
+			   and  g.ADR_HARC_SNO = d.ADR_HARC_SNO
+			   and  g.SSDG_SNO = a.SSDG_SNO
+		       and  g.ORDR_WRNN_WNDW_OCRN_YN = 'Y'
+			   and  exists
+			     (
+				     select 1
+					   from SDDATGRPT f
+					  where f.MDEF_CLSF_1_CD = '28'
+					    and f.MDEF_CLSF_2_CD = '08'
+					    and f.MDEF_CLSF_3_CD = '04'
+					    and f.MDEF_CLSF_5_CD = b.RPMD_ID
+					    and b.MDPR_CD not like 'SELF%'
+					    and b.MDPR_CD <> '*'
+				      union
+				     select 1
+				       from  SDDATGRPT f
+				            ,SDRPMDDET t
+				      where t.RPMD_ID = b.RPMD_ID
+				        and f.MDEF_CLSF_1_CD = '28'
+				        and f.MDEF_CLSF_2_CD = '08'
+				        and f.MDEF_CLSF_3_CD = '04'
+				        and f.MDEF_CLSF_5_CD = t.INGR_DETL_ID
+				        and b.MDPR_CD not like 'SELF%'
+				        and b.MDPR_CD <> '*'
+			     )
+			order by 1,2,3,4,5,6,7
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="scinYn" column="SCIN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn (조영제 처방전 확인사항 화면에서 사용) 
+        Description :                                           조영제 처방전 확인사항 화면에서 사용
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneRnfnAbnrRltdScinExstYn */
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmInqrDAO-selectOnernfnAbnrRltdScinExstYn */
+		select (case when count(SCIN_CD) &gt; 0
+		                  then 'Y'
+		                  else 'N'
+		            end) as SCIN_YN
+		  from MDPADIAGT a
+		 where MDRP_NO = #{mdrpNo}
+		   and exists (select 1
+		                 from MZCTRLMMT
+		                where MDCR_CTRL_CD = 'MDP_286'
+		                  and MDCR_DTLS_CTRL_CD = a.SCIN_CD)
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="afiMdprClsfNm" column="AFI_MDPR_CLSF_NM"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+		<result property="rpmdNm" column="RPMD_NM"/>
+		<result property="ordrCtn" column="ORDR_CTN"/>
+		<result property="adrpYmd" column="ADRP_YMD"/>
+		<result property="afiAdpaNm" column="AFI_ADPA_NM"/>
+		<result property="infmCtn" column="INFM_CTN"/>
+		<result property="harcCtn" column="HARC_CTN"/>
+		<result property="afiSeraIncrDcrsGradNm" column="AFI_SERA_INCR_DCRS_GRAD_NM"/>
+		<result property="adrPrssCd" column="ADR_PRSS_CD"/>
+		<result property="afiAdrPrssNm" column="AFI_ADR_PRSS_NM"/>
+		<result property="tmprSaveYn" column="TMPR_SAVE_YN"/>
+		<result property="rprrId" column="RPRR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="rprtYmd" column="RPRT_YMD"/>
+		<result property="adrpSno" column="ADRP_SNO"/>
+		<result property="dsplSqnc" column="DSPL_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList (조영제 약물부작용 이력 조회) 
+        Description :                                           조영제 처방전 확인사항 화면에서 사용
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCnmnAdrHxList */
+		with ORDR_TB as (
+		select  trim(regexp_substr(#{ordrCtn}, '[^,]+', 1, level)) as ORDR_CD
+		 from dual
+		 connect by instr(#{ordrCtn}, ',', 1, level-1) &gt; 0
+		)
+		   select
+		           decode(instr(adr.ETC_CTN2, '조영제'),0,'일반약','조영제') as AFI_MDPR_CLSF_NM
+		        ,  adr.MDPR_NM as MDPR_NM
+		        ,  (select RPMD_NM from SDRPMDIDT where RPMD_ID = m.RPMD_ID) RPMD_NM /* 대표성분명 */
+		        ,  (select listagg(sa.EXMN_CD, ',') within group (order by sa.EXMN_CD) as ORDR_CTN
+		   	         from SWEXMATCT sa
+		                   , SDDDGCDMT sb
+		                   , MDORDRCMT sc
+		           where sa.MTER_CD = sb.MDPR_CD
+		              and sb.MDPR_CD = sc.ORDR_CD
+		              and sc.MDPR_CLSF_CD = '7'
+		              and sa.EXMN_CD in (select ORDR_CD from ORDR_TB)
+		              and sb.RPMD_ID = m.RPMD_ID) as ORDR_CTN
+		        ,  to_char(adr.ADRP_YMD, 'yyyymmdd') as ADRP_YMD /* 발생일 */
+		        ,  adr.AFI_ADPA_NM as AFI_ADPA_NM
+		        ,  nvl(adr.REACTION2, adr.REACTION1) as INFM_CTN /* 유해반응정보 =&gt;  nvl( ADR평가서 유해반응증상, nvl(ADR평가서유해반응, ADR보고서유해반응)) */
+		        ,  adr.HARC_CTN                                  /* ADR보고서 유해반응내용 */
+		        ,  SEVEREFG as AFI_SERA_INCR_DCRS_GRAD_NM        /* ADR평가서 증상발현정도 */
+		        ,  adr.ADR_PRSS_CD as ADR_PRSS_CD                /* ADR진행상태코드 */
+		        ,  adr.AFI_ADR_PRSS_NM as AFI_ADR_PRSS_NM        /* ADR진행상태명 */
+		        ,  adr.TMPR_SAVE_YN as TMPR_SAVE_YN
+		        ,  adr.RPRR_ID as RPRR_ID                        /* 보고자ID */
+		        ,  (select USER_NM from CCUSRDPHT where USER_ID = adr.RPRR_ID) as USER_NM
+		        ,  to_char(adr.RPRT_YMD, 'yyyymmdd') as RPRT_YMD                      /* 보고일자 */
+		        ,  adr.ADRP_SNO as ADRP_SNO
+		        ,  adr.SUN as DSPL_SQNC
+		     from
+		        (
+		          select
+		                    d.MDPR_CD
+		                  , d.MDPR_NM
+		                  , a.ADRP_YMD
+		                  , ( select nvl(B.DETL_CD_NM, A.DETL_CD_NM)
+		                        from CCCMCDDMT A
+		                              , CCCMCDDLT B
+		                      where A.COMN_GRP_CD = B.COMN_GRP_CD(+)
+		                          and A.COMN_DTLS_CD = B.COMN_DTLS_CD(+)
+		                          and A.COMN_GRP_CD = 'SD640'
+		                          and A.COMN_DTLS_CD = d.ADPA_CD
+		                          and B.LNGG_CD(+) = '' ) as AFI_ADPA_NM
+		                  , nvl(fn_sd_get_harmfulreact_eval(a.PTNO, a.ADRP_YMD, a.ADRP_SNO), fn_sd_get_harmfulreact(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)) as REACTION1   /* nvl(ADR평가서유해반응, ADR보고서유해반응) */
+		                  , fn_sd_get_harmfulsymp(a.PTNO, a.ADRP_YMD, a.ADRP_SNO) as REACTION2  /* ADR평가서 유해반응증상 */
+		                  , a.HARC_CTN              /* ADR보고서 유해반응내용 */
+		                  , fn_sd_get_symp_mnfs_degr_cd_s(a.PTNO, a.ADRP_YMD, a.ADRP_SNO) as SEVEREFG   /* ADR평가서 증상발현정도 */
+		                  , a.ADR_PRSS_CD
+		                  , ( select nvl(B.DETL_CD_NM, A.DETL_CD_NM)
+		                        from CCCMCDDMT A
+		                              , CCCMCDDLT B
+		                      where A.COMN_GRP_CD = B.COMN_GRP_CD(+)
+		                          and A.COMN_DTLS_CD = B.COMN_DTLS_CD(+)
+		                          and A.COMN_GRP_CD = 'SD641'
+		                          and A.COMN_DTLS_CD = a.ADR_PRSS_CD
+		                          and B.LNGG_CD(+) = nvl('', '*') ) as AFI_ADR_PRSS_NM
+		                  , nvl(c.TMPR_SAVE_YN, 'N') as TMPR_SAVE_YN
+		                  , c.RPRR_ID as RPRR_ID
+		                  , a.ADRP_YMD as RPRT_YMD
+		                  , a.ADRP_SNO as ADRP_SNO
+		                  , case
+		                          when c.SCND_VLTN_DT is not null then '1'
+		                          when c.PRMR_VLTN_DT is not null then '2'
+		                           else '3'
+		                    end as SUN
+		                  , c.CNMD_DVSN_CD as CNMD_DVSN_CD
+		                  , nvl(fn_sd_get_susdrug_eval(c.PTNO, c.ADRP_YMD, c.ADRP_SNO),
+		                         fn_sd_get_susdrug(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)) as ETC_CTN2 /* 의심약물(콤마로 연결)  우선은 AS_IS그냥 감, sdd_cadramt_l05보고 참고함, 추후확인할것 */
+		            from
+		                    SDCADRRMT a
+		                  , SDCADRRDT d
+		                  , SDCADRAMT c
+		          where a.PTNO = #{ptno}
+		              and a.ADR_PRSS_CD <![CDATA[ <> ]]> '**' /* 삭제 제외 */
+		              and a.PTNO = d.PTNO(+)
+		              and a.ADRP_YMD = d.ADRP_YMD(+)
+		              and a.ADRP_SNO = d.ADRP_SNO(+)
+		              and a.PTNO = c.PTNO (+)
+		              and a.ADRP_YMD = c.ADRP_YMD (+)
+		              and a.ADRP_SNO = c.ADRP_SNO(+)
+		           )  adr
+		         , SDDDGCDMT m
+		         , MDORDRCMT a
+		 where adr.MDPR_CD = m.MDPR_CD
+		   and m.MDPR_CD = a.ORDR_CD
+		   and a.MDPR_CLSF_CD = '7' /* 조영제 */
+		   and exists (select 1
+		                 from SDRPMDDET sa
+		                where sa.RPMD_ID = m.RPMD_ID
+		                  and sa.INGR_DETL_ID in (
+		                                          /* 검사코드(영상검사)로 해당 검사에 사용되는 조영제의 성분코드를 구한 */
+		                                          select  c.INGR_DETL_ID
+		                                            from  SWEXMATCT a   /* 검사별2차처방재료코드 */
+		                                               ,  SDDDGCDMT b
+		                                               ,  SDRPMDDET c
+		                                               ,  MDORDRCMT d
+		                                           where  a.EXMN_CD in (select ORDR_CD from ORDR_TB)
+		                                             and  a.EXCF_CD = 'SR'      /* 영상검사만   */
+		                                             and  d.MDPR_CLSF_CD = '7'  /* 조영제       */
+		                                             and  a.MTER_CD = b.MDPR_CD
+		                                             and  b.RPMD_ID = c.RPMD_ID
+		                                             and  b.MDPR_CD = d.ORDR_CD
+		                                         )
+		              )
+		 order by DSPL_SQNC, ADRP_YMD desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="dvsnCd" column="DVSN_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="enfrDt" column="ENFR_DT"/>
+		<result property="exrsNcvlVl" column="EXRS_NCVL_VL"/>
+		<result property="exrsUnitNm" column="EXRS_UNIT_NM"/>
+		<result property="mdcrCtrlChrcVl2" column="MDCR_CTRL_CHRC_VL2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt (최근 Creatinin 검사결과 조회) 
+        Description :                                           조회기간은 크레아틴 검사코드를 관리하는 제어코드 MDP_287에서 관리
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneCrExmnRslt */
+		select  DVSN_CD
+		     ,  PTNO
+		     ,  ORDR_YMD
+		     ,  ORDR_SNO
+		     ,  ENFR_DT
+		     ,  EXRS_NCVL_VL
+		     ,  EXRS_UNIT_NM
+		     ,  MDCR_CTRL_CHRC_VL2
+		  from  (
+		        select  
+				        '1' as DVSN_CD
+		             ,  a.PTNO
+		             ,  to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD
+		             ,  a.ORDR_SNO
+		             ,  to_char(a.ENFR_DT, 'yyyymmddhh24mi') as ENFR_DT
+		             ,  b.EXRS_NCVL_VL
+		             ,  b.EXRS_UNIT_NM
+		             ,  c.MDCR_CTRL_CHRC_VL2
+		             ,  b.EXRS_FRMT_CD
+		          from  MDEXMORDT a
+		             ,  SZRESULMT b
+		             ,  MZCTRLMMT c
+		             ,  SZSETEXMT d
+		         where  a.PTNO = b.PTNO
+		           and  a.ORDR_YMD = b.ORDR_YMD
+		           and  a.ORDR_SNO = b.ORDR_SNO
+		           and  c.MDCR_CTRL_CD = 'MDP_287'
+		           and  c.MDCR_DTLS_CTRL_CD = NVL(d.EXMN_CD, a.ORDR_CD)
+		           and  a.ORDR_CD = d.SET_EXOR_CD(+)
+		           and  b.EXMN_CD = nvl(c.MDCR_CTRL_CHRC_VL3, c.MDCR_DTLS_CTRL_CD)
+		           --and  b.EXRS_FRMT_CD = 'N' /* 수치결과 */
+		           and  a.DC_DVSN_CD = 'N'
+		           and  a.TMPR_ORDR_YN = 'N'
+		           and  a.ENFR_DT is not null
+		           and  a.PTNO = #{ptno}           
+		 		   and  a.ENFR_DT between to_date(#{ordrYmd},'yyyymmdd') - to_number(c.MDCR_CTRL_CHRC_VL2) and to_date(#{ordrYmd}, 'yyyymmdd') + 0.99999	/* 2023.04.26 일수로 변경, 23:59:59까지 비교하도록 추가 */
+		         union  all
+		        select 
+				        '2' as DVSN_CD
+		             ,  a.PTNO
+		             ,  to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD
+		             ,  a.ORDR_SNO
+		             ,  to_char(a.ORDR_YMD, 'yyyymmdd') as ENFR_DT
+		             ,  '' as EXRS_NCVL_VL
+		             ,  '' as EXRS_UNIT_NM
+		             ,  c.MDCR_CTRL_CHRC_VL2
+		             ,  '' as EXRS_FRMT_CD
+		          from  MDEXMORDT a
+		             ,  MZCTRLMMT c
+		             ,  SZSETEXMT d
+		         where  c.MDCR_CTRL_CD = 'MDP_287'
+		           and  c.MDCR_DTLS_CTRL_CD = NVL(d.EXMN_CD, a.ORDR_CD)
+		           and  a.ORDR_CD = d.SET_EXOR_CD(+)
+		           and  a.DC_DVSN_CD = 'N'
+		           and  a.TMPR_ORDR_YN = 'N'
+		           and  a.ENFR_DT is null
+		           and  a.PTNO = #{ptno}
+				   and  a.ORDR_YMD between to_date(#{ordrYmd},'yyyymmdd') - to_number(c.MDCR_CTRL_CHRC_VL2) and to_date(#{ordrYmd}, 'yyyymmdd') /* 2023.04.26 일수로 변경 */
+		         order  by DVSN_CD, ENFR_DT desc, decode(EXRS_FRMT_CD, 'N', 1, 2) 
+		        )
+		 where  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="ordrPsblDvsnCd" column="ORDR_PSBL_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-listCrExmnCdList */
+		select  a.ORDR_CD
+		     ,  a.ORDR_NM
+		     ,  a.ORDR_CLTY_CD
+		     ,  a.SLIP_CD
+		     ,  a.ORDR_PSBL_DVSN_CD
+		  from  MDORDRCMT a
+		     ,  MZCTRLMMT b
+		 where  a.ORDR_CD = b.MDCR_DTLS_CTRL_CD
+		   and  b.MDCR_CTRL_CD = 'MDP_287'
+		   and  a.ORDR_PSBL_DVSN_CD = 'Y'
+		   and  b.MDCR_CTRL_CHRC_VL1 like '%' || #{codvCd} || '%'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO">
+	
+		<result property="mtfrTkngYn" column="MTFR_TKNG_YN"/>
+		<result property="drugOrdrCtn" column="DRUG_ORDR_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn (처방일자 기준 메트포민 복용여부 조회) 
+        Description :                                           쿼리는 메트포민 또는 당뇨약 복용여부를 조회할 수 있지만 현재 메트포민 복용여부만 'Y'로 조회함.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDgstHarmRctnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDgstHarmRctnInqrDAO-selectOneMtfrTkngYn */
+		select  decode(DVSN_CD, '1', decode(sign(LAST_YMD - to_date(#{ordrYmd},'yyyymmdd')), -1, 'N', 'Y'), 'N') as MTFR_TKNG_YN
+				     ,  DRUG_ORDR_CTN
+				  from  (
+				        select  1 as DVSN_CD
+				             ,  b.ORDR_NM || '처방일:' || to_char(a.ORDR_YMD, 'yyyy-mm-dd') || ')' as DRUG_ORDR_CTN
+				             ,  a.ORDR_YMD + a.DDCN as LAST_YMD
+				          from  MDMEDORDT a
+				             ,  MDORDRCMT b
+				             ,  SDDDGCDMT c
+				         where  a.ORDR_CD = b.ORDR_CD
+				           and  b.ORDR_CD = c.MDPR_CD
+				           and  a.PTNO = #{ptno}
+				           and  a.ORDR_YMD between add_months(to_date(#{ordrYmd}, 'yyyymmdd'), -36) and to_date(#{ordrYmd}, 'yyyymmdd')
+				           and  a.DC_DVSN_CD = 'N'
+				           and  a.TMPR_ORDR_YN = 'N'
+				           and  c.RPMD_ID in ('MFM','MFMGCZ','GMM','ACTO','RGTM','SGTNM','GVSMT')  /*metformin 성분 처방*/
+				         union  all
+				        select  2 as DVSN_CD
+				             ,  b.ORDR_NM || '처방일:' || to_char(a.ORDR_YMD, 'yyyy-mm-dd') || ')'
+				             ,  a.ORDR_YMD + a.DDCN as LAST_YMD
+				          from  MDMEDORDT a
+				             ,  MDORDRCMT b
+				             ,  SDDDGCDMT c
+				         where  a.ORDR_CD = b.ORDR_CD
+				           and  b.ORDR_CD = c.MDPR_CD
+				           and  a.PTNO = #{ptno}
+				           and  a.ORDR_YMD between add_months(to_date(#{ordrYmd}, 'yyyymmdd'), -36) and to_date(#{ordrYmd}, 'yyyymmdd')
+				           and  a.DC_DVSN_CD = 'N'
+				           and  a.TMPR_ORDR_YN = 'N'
+				           and  exists (select 1 from MZCTRLMMT where MDCR_CTRL_CD = 'MDP_282' and MDCR_DTLS_CTRL_CD = a.ORDR_CD)
+				         order
+				            by  DVSN_CD, LAST_YMD desc
+				        )
+				 where  rownum = 1
+	</select>
+
+
+
+</mapper>

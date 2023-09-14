@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SlpTrnfAtmtOrdrDAO_sql.xml 
+    Description : -->
+<mapper namespace="SlpTrnfAtmtOrdrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpTrnfAtmtOrdrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="exmnCtrlChrcVl3" column="EXMN_CTRL_CHRC_VL3"/>
+		<result property="dvsnCd" column="DVSN_CD"/>
+		<result property="dvsnCd2" column="DVSN_CD2"/>
+		<result property="dvsnCd3" column="DVSN_CD3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpTrnfAtmtOrdrDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpTrnfAtmtOrdrDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpTrnfAtmtOrdrDAO-listTrnfAtmtOrdr */
+		<![CDATA[
+		select a.EXMN_CD                  as ORDR_CD
+		     , a.EXMN_CTRL_CHRC_VL3
+		     , case a.EXMN_CTRL_CHRC_VL3 when 'ABO'  then decode(b.EXMN_CD, null, 'Y', 'N') 
+		                                 when 'ANTI' then decode(c.EXMN_CD, null, 'Y', 'N') 
+		        end as DVSN_CD
+		     , d.DVSN_CD2
+		     , e.DVSN_CD3
+		  from (select EXMN_DTLS_CTRL_CD  as EXMN_CD    /* 처방코드 */
+		             , EXMN_CTRL_CHRC_VL3               /* 자동처방 구분 */ 
+				  from SZCTRLMMT
+				 where EXMN_CTRL_CD       = 'SFA_112'  /* 접수시 보관검체 생성 검사코드 */
+				   and EXMN_CTRL_CHRC_VL1 = 'Y'        /* 처방가능여부 */) a
+			 , (select max(trunc(a.RPTN_DT)) as RPTN_DT
+			         , max(EXMN_CD)          as EXMN_CD
+				  from SFASPCMDT a
+				     , SFASPEXDT b
+				     , SZCTRLMMT c
+				 where a.SPCM_NO = b.SPCM_NO
+				   and a.PTNO    = #{ptno}
+				   and a.RPTN_DT  < trunc(sysdate) + 0.99999                         
+				   and a.RPTN_DT >= trunc(sysdate) - to_number(c.EXMN_CTRL_CHRC_VL2) + 0.99999
+				   and b.SCEX_PRSS_CD = 'G'
+				   and c.EXMN_CTRL_CD       = 'SFA_112'  /* 접수시 보관검체 생성 검사코드 */
+				   and b.EXMN_CD            = c.EXMN_DTLS_CTRL_CD
+				   and c.EXMN_CTRL_CHRC_VL1 = 'Y'        /* 접수시 보관검체 생성 검사코드 */
+				   and c.EXMN_CTRL_CHRC_VL3 = 'ABO') b
+		     , (select max(trunc(a.RPTN_DT)) as RPTN_DT
+			         , max(EXMN_CD)          as EXMN_CD
+				  from SFASPCMDT a
+				     , SFASPEXDT b
+				     , SZCTRLMMT c
+				 where a.SPCM_NO = b.SPCM_NO
+				   and a.PTNO    = #{ptno}
+				   and a.RPTN_DT  < trunc(sysdate) + 0.99999
+				   and a.RPTN_DT >= trunc(sysdate) - to_number(c.EXMN_CTRL_CHRC_VL2) + 0.99999
+				   and b.SCEX_PRSS_CD = 'G'
+				   and c.EXMN_CTRL_CD       = 'SFA_112'  /* 접수시 보관검체 생성 검사코드 */
+				   and b.EXMN_CD            = c.EXMN_DTLS_CTRL_CD
+				   and c.EXMN_CTRL_CHRC_VL1 = 'Y'        /* 접수시 보관검체 생성 검사코드 */
+				   and c.EXMN_CTRL_CHRC_VL3 = 'ANTI') C
+		     , (select decode(count(PTNO), 0, 'N', 'Y') as DVSN_CD2  /* 보관검체 존재여부  N 일경우  보관검체가 없는 신환 환자  */
+		          from SLBBRESVT
+		         where PTNO    = #{ptno}
+		        ) d
+		     , (select (case when count(*) > 0 then 'N' else 'Y' end) as DVSN_CD3 /* 유효 보관검체 존재여부  N 일경우  유효한 보관검체가 있는 환자  */
+				  from SLBBRESVT
+				 where PTNO   = #{ptno}
+				   and KPNG_SPCM_RPTN_DT < sysdate
+				   and KPNG_SPCM_DISC_DT > sysdate
+				   and nvl(SPCM_INSF_YN, 'N') = 'N' 
+			    ) e
+		 where a.EXMN_CD = b.EXMN_CD(+)
+		   and a.EXMN_CD = c.EXMN_CD(+)
+		]]>
+	</select>
+
+
+
+</mapper>

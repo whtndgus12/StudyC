@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpAcdgRgmnOrdrScdlDAO_sql.xml 
+    Description :                                      항암제레지먼처방일정DAO
+                  -->
+<mapper namespace="MdpAcdgRgmnOrdrScdlDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdl (처방SET 상세 항암일정을 삭제) 
+        Description :                                           처방SET 상세 항암일정을 삭제 mdo_osetbst_m01$D17
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcdgRgmnOrdrScdlDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdl"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcdgRgmnOrdrScdlDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdl */
+		  from  MEACRGSDT
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+		   and  OSET_SNO in 
+		        (
+		        select  OSET_SNO
+		          from  (
+		                select
+		                        OSET_SNO
+		                     ,  HGRN_OSET_SNO
+		                  from
+		                        MDOSETBST
+		                 where
+		                        OSET_CD      = #{osetCd}
+		                   and  OSET_DVSN_CD = #{osetDvsnCd}
+		                 ) x
+		         start
+		          with  OSET_SNO = #{osetSno}
+		        connect
+		            by  prior OSET_SNO = HGRN_OSET_SNO
+		         )
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdlByPK (항암제 일정 삭제) 
+        Description :                                           항암제 일정 삭제 mdo_osetbst_m01$D02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcdgRgmnOrdrScdlDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdlByPK"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcdgRgmnOrdrScdlDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcdgRgmnOrdrScdlDAO-deleteAcdgRgmnOrdrScdlByPK */
+		  from  MEACRGSDT
+		 where
+		        OSET_CD      = #{osetCd}              /* SET 모음코드 */
+		   and  OSET_SNO     = #{osetSno}             /* SET 모음순번 */
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+		<if test="osetDetlSno != null and osetDetlSno != 0">
+		   and  OSET_DETL_SNO = #{osetDetlSno}
+		</if>
+	</delete>
+
+</mapper>

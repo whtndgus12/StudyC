@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaDrMccnComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaDrMccnComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaDrMccnComnDVO">
+	
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="abrvMccnCd" column="ABRV_MCCN_CD"/>
+		<result property="mccnNm" column="MCCN_NM"/>
+		<result property="mltdMdcrDvsnCd" column="MLTD_MDCR_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaDrMccnComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaDrMccnComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaDrMccnComnDAO-listValidMccn */
+				   a.MCCN_CD                     as MCCN_CD
+				,  max(x.ABRV_DPRT_CD)           as ABRV_MCCN_CD
+				,  max(x.KORN_DPRT_NM)           as MCCN_NM		
+				,  max(case when x.MLTD_CNTR_DVSN_CD in ('I', 'O') then 'Y'
+															   else ''
+					   end)                      as MLTD_MDCR_DVSN_CD		
+			 from
+				   (
+				   select
+						   a.MCCN_CD               MCCN_CD				
+						,  a.CECK_SBJC_CTN         CECK_SBJC_CTN
+					 from
+						   APDSDRCNT a
+					where
+						   a.MDDR_ID               = #{mddrId}
+					  and  a.MCDP_CD               = nvl(#{mcdpCd}, a.MCDP_CD)			  						 
+					  and case when (#{wodvCd} = 'A') and a.APFN_YMD >= to_date(#{mdcrYmd}, 'yyyymmdd') then  'T'
+					           when (#{wodvCd} = 'B') and to_date(#{mdcrYmd}, 'yyyymmdd') between a.APST_YMD
+							                                                        		  and a.APFN_YMD   then   'T'
+					            else 'F'
+						   end = 'T'
+					  and  nvl(a.MDCR_YN, 'N')     = 'Y'
+				   ) a
+				,  HZDEPTMMT x		
+			where
+				   x.DPRT_CD       = a.MCCN_CD	  
+			  and  x.ABRV_DPRT_CD is not null
+			group
+			   by
+				   a.MCCN_CD
+				,  x.HRAF_BASE_SORT_SQNC		
+			order
+			   by  HRAF_BASE_SORT_SQNC
+			]]>
+	</select>
+
+
+
+</mapper>

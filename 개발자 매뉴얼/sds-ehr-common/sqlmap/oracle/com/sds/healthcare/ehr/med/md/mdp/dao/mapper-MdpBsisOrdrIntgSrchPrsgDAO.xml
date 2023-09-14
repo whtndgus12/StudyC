@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpBsisOrdrIntgSrchPrsgDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpBsisOrdrIntgSrchPrsgDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="fvrtAdtnYn" column="FVRT_ADTN_YN"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList (기본처방 통합 목록을 조회) 
+        Description :                                           기본처방 통합 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrIntgList */   /*+ mdd_ordrcmt_l24$S01_기본처방코드목록조회_즐겨찾기_DAM */
+				   a.ORDR_CD as ORDR_CD                                                                   /*  처방코드               */
+				,  a.ORDR_NM as ORDR_NM                                                                   /*  처방명                 */
+				,  a.SLIP_CD as SLIP_CD
+				,  c.SLIP_NM as SLIP_NM
+				,  decode(b.ORDR_CD, '', 'N', 'Y') as FVRT_ADTN_YN
+				,  a.ORDR_CLTY_CD as ORDR_CLTY_CD
+			 from
+				   MDORDRCMT a                                                         /*  처방코드               */
+				,  MDDRBAOFT b
+				,  MDBSLIPCT c
+			where
+				   upper(a.ORDR_CD) like upper(#{ordrCd})||'%'
+			  and  a.ORDR_CLTY_CD like 'A%'                          /*  처방구별               */
+			  and  a.APST_YMD  <= trunc(sysdate)
+			  and  a.APFN_YMD    >= trunc(sysdate)
+			  and  a.ORDR_PSBL_DVSN_CD = 'Y'
+			  and  a.SLIP_CD = c.SLIP_CD
+			  /* SLIP조건은 mdd_ordrcmt_l23과 동일하게 적용*/
+			  and  c.ORDR_CLTY_CD = 'A1'
+			  and  c.SLIP_CD1 = '*'
+			  and  c.SLIP_CD2 = (select SLIP_CD from MDBSLIPCT where ORDR_CLTY_CD = 'A1' and SLIP_CD1 = '*' and SLIP_CD2 = '*' and rownum = 1)
+			  and  c.SCRN_DSPL_YN = 'Y'
+			  and  c.USE_YN = 'Y'
+			  /*  기본처방은 진료과 별로 검색가능한 처방 관리(mdd_ordrcmt_l01 동일) */
+			  and  'TRUE' = case when MCDP_CD1 is null
+								  and MCDP_CD2 is null
+								  and MCDP_CD3 is null then 'TRUE'
+								 else case when MCDP_CD1 = #{mcdpCd}
+											 or MCDP_CD2 = #{mcdpCd}
+											 or MCDP_CD3 = #{mcdpCd} then 'TRUE'
+										   else 'FALSE'
+									  end
+							end
+			  and  b.DR_ID(+) = #{oddrId}
+			  and  b.ORDR_CD(+) = a.ORDR_CD
+			  and  b.FVRT_DVSN_CD(+) = 'O'  /*  'S' SLIP_CD / 'O' ORDR_CD */
+			order
+			   by  a.SLIP_CD, nvl(a.SORT_SQNC, 0), a.ORDR_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO">
+	
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="fvrtAdtnYn" column="FVRT_ADTN_YN"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList (기본처방 SLIP코드 처방목록을 조회) 
+        Description :                                           기본처방 SLIP코드 처방목록을 조회한다.(사용자 처방선택처방목록 포함)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrSlipList */   /*+ mdd_ordrcmt_l23$S01_기본처방_SLIP코드_조회_DAM */
+				   distinct
+				   a.SLIP_CD as SLIP_CD
+				,  a.SLIP_NM as SLIP_NM
+				,  decode(b.ORDR_CD, '', 'N', 'Y') as FVRT_ADTN_YN
+				,  a.SORT_SQNC as SORT_SQNC
+			 from  MDBSLIPCT a
+				 , MDDRBAOFT b
+			where  1 = 1
+			  and  a.ORDR_CLTY_CD = 'A1'
+			  and  a.SLIP_CD1 = '*'
+			  and  a.SLIP_CD2 = (select SLIP_CD from MDBSLIPCT where ORDR_CLTY_CD = 'A1' and SLIP_CD1 = '*' and SLIP_CD2 = '*' and rownum = 1)
+			  and  a.SCRN_DSPL_YN = 'Y'
+			  and  a.USE_YN = 'Y'
+			  and  b.DR_ID(+)   = #{drId}
+			  and  b.ORDR_CD(+) = a.SLIP_CD
+			  and  b.FVRT_DVSN_CD(+) = 'S'
+			order
+			   by  SORT_SQNC
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-insertBsisOrdrFvrt (기본처방 통합검색 선택처방목록 등록) 
+        Description :                                           사용자 ID별로 기본처방 통합검색에서 자동으로 선택하기위해 선택처방목록을 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-insertBsisOrdrFvrt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO"  >
+		<![CDATA[
+			   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-insertBsisOrdrFvrt */   /*+ mdd_drbaoft_i01$I01_기본처방통합검색즐겨찾기_등록_DAM */
+				 into  MDDRBAOFT
+					   (
+					   DR_ID
+					,  ORDR_CD
+					,  FVRT_DVSN_CD
+					,  FRST_RGSR_ID               /*  최초등록자ID             */
+					,  FRST_RGST_IP               /*  최초등록IP                */
+					,  FRST_RGST_DT               /*  최초등록일시            */
+					,  FRST_RGST_CLNT_PRGM_ID          /*  최초등록SMC클라이언트프로그램ID*/
+					,  FRST_RGST_SRVR_PRGM_ID          /*  최초등록SMC서버프로그램ID*/
+					,  LAST_UPDR_ID               /*  최종수정자ID             */
+					,  LAST_UPDT_IP               /*  최종수정IP                */
+					,  LAST_UPDT_DT               /*  최종수정일시            */
+					,  LAST_UPDT_CLNT_PRGM_ID          /*  최종수정SMC클라이언트프로그램ID*/
+					,  LAST_UPDT_SRVR_PRGM_ID          /*  최종수정SMC서버프로그램ID*/
+					   )
+			   values
+					   (
+					   #{oddrId}
+					,  #{ordrCd}
+					,  #{fvrtDvsnCd}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					   )
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-deleteBsisOrdrFvrt (기본처방 통합검색 선택처방목록 삭제) 
+        Description :                                           사용자ID별로 기본처방통합검색에서 자동으로 선택하기위해 저장된 선택처방목록을 삭제한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-deleteBsisOrdrFvrt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO"  >
+		<![CDATA[
+		   DELETE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-deleteBsisOrdrFvrt */   /*+ mdd_drbaoft_d01$I01_기본처방통합검색즐겨찾기_삭제_DAM */
+			 from  MDDRBAOFT
+			where  DR_ID = #{oddrId}
+			]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO">
+	
+		<result property="saveDvsnCd" column="SAVE_DVSN_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="lwrnOrdrSno" column="LWRN_ORDR_SNO"/>
+		<result property="lwrnOrdrCd" column="LWRN_ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="detlIdctCtn" column="DETL_IDCT_CTN"/>
+		<result property="lwrnOrdrGrpYn" column="LWRN_ORDR_GRP_YN"/>
+		<result property="lwrnOrdrGrpNm" column="LWRN_ORDR_GRP_NM"/>
+		<result property="lwrnOrdrCltyCd" column="LWRN_ORDR_CLTY_CD"/>
+		<result property="ordrPsblDvsnCd" column="ORDR_PSBL_DVSN_CD"/>
+		<result property="orclCd" column="ORCL_CD"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="cnntOrdrBndlNo" column="CNNT_ORDR_BNDL_NO"/>
+		<result property="bsisOrdrVrsnVl" column="BSIS_ORDR_VRSN_VL"/>
+		<result property="bsisOrdrIdctEndYn" column="BSIS_ORDR_IDCT_END_YN"/>
+		<result property="bsisOrdrAplyPlacCd" column="BSIS_ORDR_APLY_PLAC_CD"/>
+		<result property="ordrAgdcNeedYn" column="ORDR_AGDC_NEED_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList (기본처방 PACK 코드를 조회조건으로 기본처방 PACK 하위정보를 조회) 
+        Description :                                           기본처방 PACK 코드를 조회조건으로 기본처방 PACK 하위정보를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBsisOrdrIntgSrchPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBsisOrdrIntgSrchPrsgDAO-listBsisOrdrPackMstrInfmList */   /*+ mdd_dbopkbt_l00$S01_처방 PACK 마스터 조회 */
+			   'I' as SAVE_DVSN_CD                  /*  저장구분코드                     */
+				,  a.ORDR_CD as ORDR_CD                      /*  처방코드                         */
+				,  a.LWRN_ORDR_SNO as LWRN_ORDR_SNO                /*  하위처방일련번호                 */
+				,  a.LWRN_ORDR_CD as LWRN_ORDR_CD                 /*  하위처방코드                     */
+				,  DECODE ( B.ORDR_CD, 'C0000000', '', TRIM ( replace ( replace ( b.ORDR_NM , '[', '' ), ']', '' ))) || DETL_IDCT_CTN as ORDR_NM /*  처방명 ( 처방 PACK 은 처방명 [] 제외 처리 )*/
+				,  a.DETL_IDCT_CTN as DETL_IDCT_CTN                /*  상세지시내용                     */
+				,  a.LWRN_ORDR_GRP_YN as LWRN_ORDR_GRP_YN             /*  하위처방그룹여부                 */
+				,  a.LWRN_ORDR_GRP_NM as LWRN_ORDR_GRP_NM             /*  하위처방그룹명                   */
+				,  a.LWRN_ORDR_CLTY_CD as LWRN_ORDR_CLTY_CD            /*  하위처방분류유형코드             */
+				,  b.ORDR_PSBL_DVSN_CD as ORDR_PSBL_DVSN_CD            /*  처방가능구분코드                 */
+				,  b.ORCL_CD as ORCL_CD                      /*  처방분류코드                     */
+				,  b.ORDR_CLTY_CD as ORDR_CLTY_CD                 /*  처방분류유형코드                 */
+				,  b.SLIP_CD as SLIP_CD                      /*  SLIP코드                        */
+				,  0 as CNNT_ORDR_BNDL_NO            /*  동시처방묶음번호                 */
+				,  b.BSIS_ORDR_VRSN_VL as BSIS_ORDR_VRSN_VL            /*  기본처방버전값                   */
+				,  b.BSIS_ORDR_IDCT_END_YN as BSIS_ORDR_IDCT_END_YN        /*  기본처방지시완결여부             */
+				,  b.BSIS_ORDR_APLY_PLAC_CD as BSIS_ORDR_APLY_PLAC_CD       /*  기본처방적용장소코드             */
+				,  b.ORDR_AGDC_NEED_YN as ORDR_AGDC_NEED_YN            /*  처방동의서필요여부               */
+			 from  MDDBOPKBT a,
+				   MDORDRCMT b
+			where  a.ORDR_CD = nvl(#{ordrCd}, a.ORDR_CD)
+			  and  a.LWRN_ORDR_USE_YN = 'Y'
+			  and  a.LWRN_ORDR_CD = b.ORDR_CD
+			  and  b.ORDR_PSBL_DVSN_CD = 'Y'
+			order by a.LWRN_ORDR_SNO
+			]]>
+	</select>
+
+
+
+</mapper>

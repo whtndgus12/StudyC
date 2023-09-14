@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpInfmPrtcTrgtDAO_sql.xml 
+    Description :                                      정보보보대상DAO
+                  -->
+<mapper namespace="MdpInfmPrtcTrgtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="dsgnStrtYmd" column="DSGN_STRT_YMD"/>
+		<result property="dsgnResnCd" column="DSGN_RESN_CD"/>
+		<result property="dsgnReetCtn" column="DSGN_REET_CTN"/>
+		<result property="releYmd" column="RELE_YMD"/>
+		<result property="athrYn" column="ATHR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn (정보보호여부조회) 
+        Description :                                           정보보호여부조회 mdd_bprtcbt_s03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-selectOneInfmPrtcYn */
+		<![CDATA[
+		select  a.PTNO
+		     ,  to_char(a.DSGN_STRT_YMD, 'YYYYMMDD') as DSGN_STRT_YMD	-- 지정시작일자
+		     ,  a.DSGN_RESN_CD                          				-- 지정사유코드
+		     ,  a.DSGN_REET_CTN                         				-- 지정사유기타내용
+		     ,  to_char(a.DSGN_FNSH_YMD, 'YYYYMMDD') as RELE_YMD 		-- 해제일자
+		     ,  FN_MR_CHK_AUTH_PRCT(a.PTNO, #{gvUserId}, #{mdcrDprtCd}) as ATHR_YN
+		  from	MDBPRTCBT a
+		 where	a.PTNO = #{ptno}
+		   and	a.APRL_STTS_CD in ('03', '04', '05') -- 03: 등록, 04: 철회신청, 05: 철회승인(진료과장)
+		   and	trunc(sysdate) between a.DSGN_STRT_YMD and nvl(a.DSGN_FNSH_YMD, to_date('29991231', 'yyyymmdd'))
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="dsgnStrtYmd" column="DSGN_STRT_YMD"/>
+		<result property="dsgnResnCd" column="DSGN_RESN_CD"/>
+		<result property="dsgnReetCtn" column="DSGN_REET_CTN"/>
+		<result property="releYmd" column="RELE_YMD"/>
+		<result property="athrYn" column="ATHR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInfmPrtcTrgtDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInfmPrtcTrgtDAO-listInfmPrtcYn */
+		<![CDATA[
+		select  a.PTNO
+		     ,  to_char(a.DSGN_STRT_YMD, 'YYYYMMDD') as DSGN_STRT_YMD	-- 지정시작일자
+		     ,  a.DSGN_RESN_CD                          				-- 지정사유코드
+		     ,  a.DSGN_REET_CTN                         				-- 지정사유기타내용
+		     ,  to_char(a.DSGN_FNSH_YMD, 'YYYYMMDD') as RELE_YMD 		-- 해제일자
+		     ,  FN_MR_CHK_AUTH_PRCT(a.PTNO, #{gvUserId}, #{mdcrDprtCd}) as ATHR_YN
+		  from	MDBPRTCBT a
+		 where	a.PTNO = #{ptno}
+		   and	a.APRL_STTS_CD in ('03', '04', '05') -- 03: 등록, 04: 철회신청, 05: 철회승인(진료과장)
+		   and	trunc(sysdate) between a.DSGN_STRT_YMD and nvl(a.DSGN_FNSH_YMD, to_date('29991231', 'yyyymmdd'))
+		]]>
+	</select>
+
+
+
+</mapper>

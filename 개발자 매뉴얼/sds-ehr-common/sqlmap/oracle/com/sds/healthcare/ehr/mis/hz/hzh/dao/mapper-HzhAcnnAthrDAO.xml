@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhAcnnAthrDAO_sql.xml 
+    Description :                                      경리권한 DAO
+                  -->
+<mapper namespace="HzhAcnnAthrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnnAthrDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+		<result property="acnsUseUserId" column="ACNS_USE_USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="acnsUseDprtCd" column="ACNS_USE_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck (경리권한 목록조회 DAO) 
+        Description :                                           hzd_acsyatt_l01$S01_경리권한체크_목록조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnnAthrDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnnAthrDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnnAthrDAO-listAcnnAthrCeck */
+			   SQNC
+		     , BSPL_CD
+		     -- 충무병원 적용 2022.11.28 K2
+			 --'고려대학교안암병원'과 같이 길게 나올필요 없으므로 병원명은 간략하게 하드코딩 처리
+		     , case when BSPL_CD = '1A' then '천안'
+		           -- when BSPL_CD = '1B' then '의료원'
+		            when BSPL_CD = '2A' then '아산'
+		           -- when BSPL_CD = '3A' then '안산'
+		             end
+		              as BSPL_NM
+		     , ACNS_USE_USER_ID
+		     , USER_NM
+		     , ACNS_USE_DPRT_CD    
+		     --100150 재무팀이 안암서버에서는 의료원이고, 구로, 안산도 100150임. 
+		     --안암서버에서 구로 재무팀 조회시 재무팀(의료원) 으로 보이는 것을 방지하고
+		     --구로/안산 서버에서 의료원재무팀이 그냥 재무팀으로 보이는 것을 방지하기위해 아래처림 case when 하드코딩 처리
+		     , case when ACNS_USE_DPRT_CD = '100150' and BSPL_CD = '1B' then '재무팀(의료원)'
+		            when ACNS_USE_DPRT_CD = '100150' and BSPL_CD <> '1B' then '재무팀'
+		            else KORN_DPRT_NM
+		             end
+		              as KORN_DPRT_NM
+		     , USE_YN
+		     , ABRV_DPRT_CD  /* 약어 부서 코드 */
+		  from (		
+				select
+				       rownum                              SQNC
+				     , BSPL_CD
+				     , ACNS_USE_USER_ID                    ACNS_USE_USER_ID    /* 소속사용자ID */
+				     , (select
+				               ss1.EMPY_NM
+				          from
+				               HZUSERMMT ss1 --(CC)OCS사용자
+				         where
+				               ss1.EMNO = ACNS_USE_USER_ID
+				       )                                   USER_NM             /* 소속사용자명 */
+				     , ACNS_USE_DPRT_CD                    ACNS_USE_DPRT_CD    /* 사용부서코드 */
+				     , (select
+				               ss2.KORN_DPRT_NM
+				          from
+				               HZDEPTMMT ss2 --(HZ)조직Master I/F(MDM연계)
+				         where
+				               ss2.DPRT_CD = ACNS_USE_DPRT_CD
+				       )                                   KORN_DPRT_NM        /* 사용부서명 */
+				     , USE_YN                              USE_YN              /* 부서 사용여부 */
+		             , (SELECT ABRV_DPRT_CD FROM HZDEPTMMT SS3 WHERE SS3.DPRT_CD = ACNS_USE_DPRT_CD) AS ABRV_DPRT_CD /* 약어 부서 코드 */
+				  from
+				       (select
+				               BSPL_CD
+				             , ACNS_USE_USER_ID    ACNS_USE_USER_ID
+				             , ACNS_USE_DPRT_CD    ACNS_USE_DPRT_CD
+				             , USE_YN              USE_YN
+				          from
+				               ( /* 조회구분:D or Z / 사용부서:* / 회계사용부서체크 : True */
+							    select 
+				                       BSPL_CD
+				                     , ''         ACNS_USE_USER_ID
+				                     , DPRT_CD    ACNS_USE_DPRT_CD
+				                     , USE_YN     USE_YN
+				                  from
+				                       HZDEPTMMT --(HZ)조직Master I/F(MDM연계)
+				                 where
+				                       #{dvsnCd}   <> 'U' --(Z:전체 / D:부서 / U:사용자)  
+				                   and USE_YN        like replace(#{useYn}, 'A', '') || '%'
+				                   and ACNN_DPRT_YN  = 'Y'
+				                   and exists        (select
+				                                             1
+				                                        from
+				                                             HZACSYATT --(HZ)회계시스템권한
+				                                       where
+				                                             ACNS_PRGM_ID      in ('*', #{acnsPrgmId})
+				                                         and ACNS_MNGM_USER_ID in ('*', #{acnsMngmUserId})
+				                                         and ACNS_MNGM_DPRT_CD in (select
+				                                                                          '*'
+				                                                                     from
+				                                                                          DUAL
+				                                                                   union all
+				                                                                   select
+				                                                                          ORGL_BLNG_DPRT_CD
+				                                                                     from
+				                                                                          HZUSERMMT
+				                                                                    where
+				                                                                          EMNO = #{acnsMngmUserId}
+				                                                                  )
+				                                         and ACNS_USE_DPRT_CD  = '*'
+				                                     )
+				                   and (   ( #{srchCd} = 'C' and DPRT_CD      like #{srchCdNm} || '%' )
+				                        or ( #{srchCd} = 'N' and KORN_DPRT_NM like '%' || #{srchCdNm} || '%' )
+				                       )
+				               union all
+				               /* 조회구분:D or Z / 사용부서:특정부서 / 회계사용부서체크 : False  */
+							   select 
+				                      a.BSPL_CD
+				                    , ''           ACNS_USE_USER_ID
+				                    , a.DPRT_CD    ACNS_USE_DPRT_CD
+				                    , a.USE_YN
+				                 from
+				                      HZACSYATT t --(HZ)회계시스템권한
+				                    , HZDEPTMMT a --(HZ)조직Master I/F(MDM연계)
+				                where
+				                      #{dvsnCd}   <> 'U' --(Z:전체 / D:부서 / U:사용자)
+				                  and t.ACNS_PRGM_ID      in ('*', #{acnsPrgmId})
+				                  and t.ACNS_MNGM_USER_ID in ('*', #{acnsMngmUserId})
+				                  and t.ACNS_MNGM_DPRT_CD in (select
+				                                                     '*'
+				                                                from
+				                                                     DUAL
+				                                              union all
+				                                              select
+				                                                     ORGL_BLNG_DPRT_CD
+				                                                from
+				                                                     HZUSERMMT
+				                                               where
+				                                                     EMNO = #{acnsMngmUserId}
+				                                             )
+				                  and t.ACNS_USE_USER_ID  =    '*'
+				                  and t.ACNS_USE_DPRT_CD  <>   '*'
+				                  and a.DPRT_CD           =    t.ACNS_USE_DPRT_CD
+				                  and a.USE_YN            like replace(#{useYn}, 'A', '') || '%'
+				                  and (   ( #{srchCd} = 'C' and a.DPRT_CD      like #{srchCdNm} || '%' )
+				                       or ( #{srchCd} = 'N' and a.KORN_DPRT_NM like '%' || #{srchCdNm} || '%' )
+				                      )
+				                 union all
+								 /* 조회구북: D or Z  / 사용부서: *  / 회계사용부서체크: True  */
+				                 select
+				                        c.BSPL_CD
+				                      , ''           ACNS_USE_USER_ID
+				                      , c.DPRT_CD    ACNS_USE_DPRT_CD
+				                      , c.USE_YN     USE_YN
+				                   from
+				                        HZDEPTMMT a --(HZ)조직Master I/F(MDM연계)
+				                      , HZUSERMMT b --(HZ)사원Master I/F(MDM연계)
+				                      , HZDEPTMMT c --(HZ)조직Master I/F(MDM연계)
+				                  where
+				                        #{dvsnCd}   <> 'U' --(Z:전체 / D:부서 / U:사용자)
+				                    and b.EMNO                         = #{gvUserId}
+				                    and a.DPRT_CD                      = b.ORGL_BLNG_DPRT_CD
+				                    /* 
+									  인사대표부서코드 사용하지 않음 -> DPRT_CD 가 인사대표부서코드 임
+									  and c.HRAF_RPRS_DPRT_CD            = a.HRAF_RPRS_DPRT_CD 
+									*/
+									and c.DPRT_CD                      = a.DPRT_CD
+				                    and c.USE_YN                       like replace(#{useYn}, 'A', '') || '%'
+				                    and c.ACNN_DPRT_YN                 = 'Y'
+				                    and (   ( #{srchCd} = 'C' and c.DPRT_CD      like #{srchCdNm} || '%' )
+				                         or ( #{srchCd} = 'N' and c.KORN_DPRT_NM like '%' || #{srchCdNm} || '%')
+				                        )
+				                 union all
+								 /* 조회구분:U or Z / 사용부서:* */
+				                 select 
+				                        BSPL_CD
+				                      , EMNO                 ACNS_USE_USER_ID
+				                      , ORGL_BLNG_DPRT_CD    ACNS_USE_DPRT_CD
+				                      , 'Y'                  USE_YN
+				                   from
+				                        HZUSERMMT --(HZ)사원Master I/F(MDM연계)
+				                  where
+				                        #{dvsnCd} <> 'D' --(Z:전체 / D:부서 / U:사용자)
+				                    and sysdate <= case when #{useYn} = '1'
+				                                        then to_date('29991231', 'YYYYMMDD')
+				                                        else nvl(RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD'))
+				                                   end
+				                    and exists  (select
+				                                        1
+				                                   from
+				                                        HZACSYATT --(HZ)회계시스템권한
+				                                  where
+				                                        ACNS_PRGM_ID      in ('*', #{acnsPrgmId})
+				                                    and ACNS_MNGM_USER_ID in ('*', #{acnsMngmUserId})
+				                                    and ACNS_MNGM_DPRT_CD in (select
+				                                                                     '*'
+				                                                                from
+				                                                                     DUAL
+				                                                              union all
+				                                                              select
+				                                                                     ORGL_BLNG_DPRT_CD
+				                                                                from
+				                                                                     HZUSERMMT
+				                                                              where
+				                                                                     EMNO = #{acnsMngmUserId}
+				                                                             )
+				                                    and ACNS_USE_DPRT_CD  = '*'
+				                                )
+				                    and (   ( #{srchCd} = 'C' and EMNO    like #{srchCdNm} || '%' )
+				                         or ( #{srchCd} = 'N' and EMPY_NM like '%' || #{srchCdNm} || '%' )
+				                        )
+				                 union all
+								 /* 조회구분:U or Z / 사용부서:특정부서 / 사용자:*  */
+								 /* 사용자의 원소속부서 사용자 */
+				                 select 
+				                        a.BSPL_CD
+				                      , a.EMNO    ACNS_USE_USER_ID
+				                      , a.ORGL_BLNG_DPRT_CD ACNS_USE_DPRT_CD
+				                      , 'Y'       USE_YN
+				                   from
+				                        HZACSYATT t --(HZ)회계시스템권한
+				                      , HZUSERMMT a --(HZ)사원Master I/F(MDM연계)
+				                  where
+				                        #{dvsnCd} <> 'D' --(Z:전체 / D:부서 / U:사용자)
+				                    and t.ACNS_USE_DPRT_CD   = a.ORGL_BLNG_DPRT_CD
+				                    and t.ACNS_PRGM_ID      in ('*', #{acnsPrgmId})
+				                    and t.ACNS_MNGM_USER_ID in ('*', #{acnsMngmUserId})
+				                    and t.ACNS_MNGM_DPRT_CD in (select
+				                                                       '*'
+				                                                  from
+				                                                       DUAL
+				                                                union all
+				                                                select
+				                                                       ORGL_BLNG_DPRT_CD
+				                                                  from
+				                                                       HZUSERMMT
+				                                                 where
+				                                                       EMNO = #{acnsMngmUserId}
+				                                               )
+				                    and t.ACNS_USE_USER_ID  =  '*'
+				                    and t.ACNS_USE_DPRT_CD  <> '*'
+				                    and sysdate             <= case when #{useYn} = '1'
+				                                                    then to_date('29991231', 'YYYYMMDD')
+				                                                    else nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD'))
+				                                               end
+				                    and (   ( #{srchCd} = 'C' and a.EMNO    like #{srchCdNm} || '%' )
+				                         or ( #{srchCd} = 'N' and a.EMPY_NM like '%' || #{srchCdNm} || '%')
+				                        )
+				                 union all
+								 /* 조회구분:U or Z / 사용부서:특정부서 / 사용자:특정 사용자 */
+				                 select 
+				                        a.BSPL_CD
+				                      , a.EMNO    ACNS_USE_USER_ID
+				                      , a.ORGL_BLNG_DPRT_CD ACNS_USE_DPRT_CD
+				                      , 'Y'       USE_YN
+				                   from
+				                        HZACSYATT t --(HZ)회계시스템권한
+				                      , HZUSERMMT a --(HZ)사원Master I/F(MDM연계)
+				                  where
+				                        #{dvsnCd} <> 'D'
+				                    and t.ACNS_PRGM_ID      in ('*', #{acnsPrgmId})
+				                    and t.ACNS_MNGM_USER_ID in ('*', #{acnsMngmUserId})
+				                    and t.ACNS_MNGM_DPRT_CD in (select
+				                                                       '*'
+				                                                  from
+				                                                       DUAL
+				                                                union all
+				                                                select
+				                                                       ORGL_BLNG_DPRT_CD
+				                                                  from
+				                                                       HZUSERMMT
+				                                                 where
+				                                                       EMNO = #{acnsMngmUserId}
+				                                               )
+				                    and t.ACNS_USE_USER_ID  <> '*'
+				                    and sysdate             <= case when #{useYn} = '1'
+				                                                    then to_date('29991231', 'YYYYMMDD')
+				                                                    else nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD'))
+				                                               end
+				                    and a.EMNO              = t.ACNS_USE_USER_ID
+				                    and (   ( #{srchCd} = 'C' and EMNO     like #{srchCdNm} || '%' )
+				                         or ( #{srchCd} = 'N' and EMPY_NM  like '%' || #{srchCdNm} || '%' )
+				                        )
+				                 union all
+								 /* 사용자와 원소속부서가 같은 사용자 */
+				                 select
+				                        a.BSPL_CD
+				                      , a.EMNO              ACNS_USE_USER_ID
+				                      , a.ORGL_BLNG_DPRT_CD ACNS_USE_DPRT_CD
+				                      , 'Y'                 USE_YN
+				                   from
+				                        HZUSERMMT t --(HZ)사원Master I/F(MDM연계)
+				                      , HZUSERMMT a --(HZ)사원Master I/F(MDM연계)
+				                  where
+				                        #{dvsnCd} <> 'D' --(Z:전체 / D:부서 / U:사용자)
+				                    and t.EMNO              = #{gvUserId}
+				                    and a.ORGL_BLNG_DPRT_CD = t.ORGL_BLNG_DPRT_CD
+				                    and sysdate             <= case when #{useYn} = '1'
+				                                                    then to_date('29991231', 'YYYYMMDD')
+				                                                    else nvl(a.RTRM_PRAP_DD, to_date('29991231', 'YYYYMMDD'))
+				                                               end
+				                    and (   ( #{srchCd} = 'C' and a.EMNO    like #{srchCdNm} || '%' )
+				                         or ( #{srchCd} = 'N' and a.EMPY_NM like '%' || #{srchCdNm} || '%' )
+				                        )
+				               )
+				         group by  BSPL_CD
+				                 , ACNS_USE_DPRT_CD
+				                 , ACNS_USE_USER_ID
+				                 , USE_YN
+				         order by  ACNS_USE_DPRT_CD
+				                 , ACNS_USE_USER_ID
+				       )
+		     )
+		 order by SQNC
+				]]>
+	</select>
+
+
+
+</mapper>

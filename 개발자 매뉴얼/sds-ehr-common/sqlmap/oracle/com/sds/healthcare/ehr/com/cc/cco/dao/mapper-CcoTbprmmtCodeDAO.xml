@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoTbprmmtCodeDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoTbprmmtCodeDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listProcjetCodeSelect */
+		    select  /*+ cod_tbprmmt_l03$S01_프로젝트조직코드 조회 */ 
+		            a.COMN_DTLS_CD
+		          , a.DETL_CD_NM
+		          , b.COMN_ITEM_CD
+		          , b.COMN_ITEM_CHRC_VL
+		    from    CCCMCDDMT a
+		          , CCCMCDIDT b
+		    where   a.COMN_GRP_CD  in  ( #{comnGrpCd},#{comnGrpCd2} )
+		      and   a.COMN_GRP_CD  = b.COMN_GRP_CD
+		      and   a.COMN_DTLS_CD = b.COMN_DTLS_CD
+		      and   b.COMN_ITEM_CD =  #{comnItemCd} 
+		    order by a.SCRN_DSPL_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO">
+	
+		<result property="workCount" column="WORK_COUNT"/>
+		<result property="aftCount" column="AFT_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-selectOneTbprmmtWokDay */
+		 <![CDATA[  
+		   select  /*+ cod_tbprmmt_s03$S01_작업일자 설정 */ 
+				            ( select count(*)
+				              from   ( select  trunc(a.rdate) as RDATE
+				                       from    ( select  sdate + level -1 as rdate
+				                                       , to_char(sdate + level -1, 'd') as Dayofweek
+				                                 from    ( select  to_date( #{srchStrtYmd} , 'yyyymmdd') sdate
+				                                                 , to_date( #{srchFnshYmd} , 'yyyymmdd') edate
+				                                           from    dual
+				                                         )
+				                                 connect by level <= edate - sdate +1
+				                               ) a
+				                       where   a.Dayofweek not in ('1', '7')
+				                       minus
+				                       select  trunc(HLDY_YMD) as RDATE
+				                       from    APDSPBHLT
+				                       where   trunc(HLDY_YMD) >=  to_date( #{srchStrtYmd} , 'YYYYMMDD')
+				                         and   trunc(HLDY_YMD) <=  to_date( #{srchFnshYmd} , 'YYYYMMDD')
+				                     )
+				            ) as WORK_COUNT
+				          , ( select count(*)
+				              from   ( select  trunc(a.rdate) as RDATE
+				                       from    ( select  sdate + level -1 as rdate
+				                                       , to_char(sdate + level -1, 'd') as Dayofweek
+				                                 from    ( select  to_date( #{srchStrtYmd} , 'yyyymmdd') sdate
+				                                                 , to_date( #{baseYmd} , 'yyyymmdd') edate
+				                                           from    dual
+				                                         )
+				                                 connect by level <= edate - sdate +1
+				                               ) a
+				                       where   a.Dayofweek not in ('1', '7')
+				                       minus
+				                       select  trunc(HLDY_YMD) as RDATE
+				                       from    APDSPBHLT
+				                       where   trunc(HLDY_YMD) >=  to_date( #{srchStrtYmd} , 'YYYYMMDD')
+				                         and   trunc(HLDY_YMD) <=  to_date( #{baseYmd} , 'YYYYMMDD')
+				                     )
+				            ) as AFT_COUNT
+				    from    dual
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO">
+	
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="useCqy" column="USE_CQY"/>
+		<result property="useCqy01" column="USE_CQY_01"/>
+		<result property="useCqy02" column="USE_CQY_02"/>
+		<result property="useCqy03" column="USE_CQY_03"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtCodeDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtCodeDAO-listAfcpmmt01 */
+		<![CDATA[
+		    select  /*+ cod_afcpmmt_l01$S01_서버부문 개발현황 */ 
+		            a.DETL_CD_NM
+		          , a.DETL_CD_NM_1
+		          , nvl(b.SVC, 0) as USE_CQY
+		          , nvl(b.BAM, 0) as USE_CQY_01
+		          , nvl(b.DAM, 0) as USE_CQY_02
+		          , nvl(b.SVC, 0) + nvl(b.BAM, 0) + nvl(b.DAM, 0) as USE_CQY_03
+		    from    ( select  a.COMN_DTLS_CD
+		                    , a.DETL_CD_NM
+		                    , a.SCRN_DSPL_SQNC
+		                    , b.COMN_DTLS_CD as COMN_DTLS_CD_1
+		                    , b.DETL_CD_NM   as DETL_CD_NM_1
+		                    , b.SCRN_DSPL_SQNC  as SCRN_DSPL_SQNC_1
+		              from    CCCMCDDMT a
+		                    , CCCMCDDMT b
+		              where   a.COMN_GRP_CD  = 'COR_025'
+		                and   Length(a.COMN_DTLS_CD) = 1
+		                and   b.COMN_GRP_CD  = 'COR_025'
+		                and   Length(b.COMN_DTLS_CD) = 2
+		                and   a.COMN_DTLS_CD = substr(b.COMN_DTLS_CD, 1, 1)
+		              union
+		              select  COMN_DTLS_CD
+		                    , DETL_CD_NM
+		                    , SCRN_DSPL_SQNC
+		                    , COMN_DTLS_CD as COMN_DTLS_CD_1
+		                    , '소계' as DETL_CD_NM_1
+		                    , 99 as SCRN_DSPL_SQNC_1
+		              from    CCCMCDDMT
+		              where   COMN_GRP_CD  = 'COR_025'
+		                and   Length(COMN_DTLS_CD) = 1
+		              union
+		              select  '9'
+		                    , '미매핑'
+		                    , 999
+		                    , '99'
+		                    , ''
+		                    , 999
+		              from    dual
+		            ) a
+		          , ( select  xa.PRJT_TISS_CD
+		                    , sum(xa.SVC) as SVC
+		                    , sum(xa.BAM) as BAM
+		                    , sum(xa.DAM) as DAM
+		              from   ( select  nvl(PRJT_TISS_CD, '99') as PRJT_TISS_CD
+		                             , decode(SMSP_TYP_CD, 'SVC', 1, 0) as SVC
+		                             , decode(SMSP_TYP_CD, 'BAM', 1, 0) as BAM
+		                             , decode(SMSP_TYP_CD, 'DAM', 1, 0) as DAM
+		                       from    COAFCPMMT
+		                       where   USE_YN = 'Y'
+		                         and   nvl(PRJT_TISS_CD, '99') <> 'XX'
+		                         and   SMSP_TYP_CD in ('BAM', 'SVC', 'DAM')
+		                       union all
+		                       select  substr(PRJT_TISS_CD, 1, 1) as PRJT_TISS_CD
+		                             , decode(SMSP_TYP_CD, 'SVC', 1, 0) as SVC
+		                             , decode(SMSP_TYP_CD, 'BAM', 1, 0) as BAM
+		                             , decode(SMSP_TYP_CD, 'DAM', 1, 0) as DAM
+		                       from    COAFCPMMT
+		                       where   USE_YN = 'Y'
+		                         and   nvl(PRJT_TISS_CD, 'XX') <> 'XX'
+		                         and   SMSP_TYP_CD in ('BAM', 'SVC', 'DAM')
+		                     ) xa
+		              group by xa.PRJT_TISS_CD
+		            ) b
+		    where a.COMN_DTLS_CD_1 = b.PRJT_TISS_CD(+)
+		    order by a.SCRN_DSPL_SQNC, a.SCRN_DSPL_SQNC_1
+		]]>
+	</select>
+
+
+
+</mapper>

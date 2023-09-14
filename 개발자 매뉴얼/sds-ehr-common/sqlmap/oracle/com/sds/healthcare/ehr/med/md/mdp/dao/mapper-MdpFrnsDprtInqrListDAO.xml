@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpFrnsDprtInqrListDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpFrnsDprtInqrListDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO">
+	
+		<result property="afiPadvVl" column="AFI_PADV_VL"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="mdcrCtrlChrcVl1" column="MDCR_CTRL_CHRC_VL_1"/>
+		<result property="mdcrCtrlChrcVl2" column="MDCR_CTRL_CHRC_VL_2"/>
+		<result property="mdcrCtrlChrcVl3" column="MDCR_CTRL_CHRC_VL_3"/>
+		<result property="mdcrCtrlChrcVl4" column="MDCR_CTRL_CHRC_VL_4"/>
+		<result property="mdcrCtrlChrcVl5" column="MDCR_CTRL_CHRC_VL_5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList (불출장소 조회) 
+        Description :                                           환자구분이 외래일 때의 불출장소목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listOtptFrnsDprtList */   /*+ mzd_ctrlmmt_l06$S01_불출장소 조회 외래 */
+				   AFI_PADV_VL as AFI_PADV_VL
+				,  DPRT_CD as DPRT_CD
+				,  KORN_DPRT_NM as KORN_DPRT_NM
+				,  ABRV_DPRT_CD as ABRV_DPRT_CD
+				,  MDCR_CTRL_CHRC_VL1 as MDCR_CTRL_CHRC_VL_1
+				,  MDCR_CTRL_CHRC_VL2 as MDCR_CTRL_CHRC_VL_2
+				,  MDCR_CTRL_CHRC_VL3 as MDCR_CTRL_CHRC_VL_3
+				,  MDCR_CTRL_CHRC_VL4 as MDCR_CTRL_CHRC_VL_4
+				,  MDCR_CTRL_CHRC_VL5 as MDCR_CTRL_CHRC_VL_5
+				/*EHR_MOD ,  CTRL_SORT_SQNC as INDEX OF(10) ERROR */
+			 from
+		   ( select  /*+ mzd_ctrlmmt_l06$S01_불출장소 조회 외래 */
+					  max(FLAG)                as AFI_PADV_VL          /*  장소 구분 */
+				   ,  DPRT_CD                                          /*  부서 코드 */
+				   ,  max(MDCR_CTRL_CHRC_VL7||KORN_DPRT_NM)        as KORN_DPRT_NM         /*  부서명    */
+				   ,  max(ABRV_DPRT_CD)        as ABRV_DPRT_CD         /*  부서약어코드 */
+				   ,  max(MDCR_CTRL_CHRC_VL1)  as MDCR_CTRL_CHRC_VL1   /*  암센터전환   */
+				   ,  max(MDCR_CTRL_CHRC_VL2)  as MDCR_CTRL_CHRC_VL2   /*  화면표시     */
+				   ,  max(MDCR_CTRL_CHRC_VL3)  as MDCR_CTRL_CHRC_VL3   /*  암센터화면표시 */
+				   ,  max(MDCR_CTRL_CHRC_VL4)  as MDCR_CTRL_CHRC_VL4   /*  환자가야할곳변경 */
+				   ,  max(MDCR_CTRL_CHRC_VL5)  as MDCR_CTRL_CHRC_VL5   /*  암센터조회제외 */
+				   ,  max(CTRL_SORT_SQNC)      as CTRL_SORT_SQNC
+			   from (
+					 /*  본원/센터 에 따라 주사실 목록 조회 */
+					 /*  특정진료과 시 목록 제거 MDCR_CTRL_CHRC_VL6 (PED는 소아청소년 관련 주사실로 변경해야함, 아래쿼리 참조) */
+					 /*  PED/NS + 센터 만 031 조회 */
+					 select
+							 '주사실' as FLAG
+						 ,   h.DPRT_CD as DPRT_CD /*  무의미 부서코드 */
+						 ,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', a.MDCR_DTLS_CTRL_NM, h.KORN_DPRT_NM ) as KORN_DPRT_NM /*  외래불출부서 */
+						 ,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', 'DEP', h.ABRV_DPRT_CD ) as ABRV_DPRT_CD /*  외래불출부서 */
+						 ,   a.MDCR_CTRL_CHRC_VL1 /*  암센터전환   */
+						 ,   a.MDCR_CTRL_CHRC_VL2 /*  화면표시     */
+						 ,   a.MDCR_CTRL_CHRC_VL3 /*  암센터화면표시 */
+						 ,   a.MDCR_CTRL_CHRC_VL4 /*  환자가야할곳변경 */
+						 ,   a.MDCR_CTRL_CHRC_VL5 /*  암센터조회제외 */
+						 ,   a.MDCR_CTRL_CHRC_VL7 /*  장소명 추가 */
+						 ,   a.CTRL_SORT_SQNC
+					  from MZCTRLMMT a
+						 , HZDEPTMMT h
+					  where a.MDCR_CTRL_CD = 'MM167'
+						and nvl(a.MDCR_CTRL_CHRC_VL6, 'X') <> nvl(#{mcdpCd}, 'XX') /*  특정진료과시 제거되는 목록 */
+						and a.MDCR_CTRL_CHRC_VL5 is null
+						and h.DPRT_CD = case #{hslcDvsnCd} when 'M' then a.MDCR_DTLS_CTRL_CD
+																				  when 'C' then nvl(a.MDCR_CTRL_CHRC_VL1, a.MDCR_DTLS_CTRL_CD)
+																						   else a.MDCR_DTLS_CTRL_CD end
+						and 1 = case when (#{mcdpCd} <> fn_cc_get_dprt_cd('DPRT_PED'))   /*  PED */
+										  and
+										  (#{mcdpCd} <> fn_cc_get_dprt_cd('DPRT_NS'))   /*  NS */
+										  and
+										  (#{hslcDvsnCd} <> 'C')
+										  and
+										  a.MDCR_DTLS_CTRL_CD = '201139'              /*  031 PED/NS + 센터 만 031 조회 */
+										  then 0
+										  else 1 end
+						and trunc(sysdate) between nvl(a.APST_YMD, to_date('19000101', 'YYYYMMDD'))
+											   and nvl(a.APFN_YMD, to_date('29991231', 'YYYYMMDD'))
+				  union
+					/*  DEP */
+					/*  DEP 진료과 추가 */
+				   select
+						   '주사실' as FLAG
+					   ,   'DEP' as DPRT_CD /*  무의미 부서코드 */
+					   ,   a.MDCR_DTLS_CTRL_NM as KORN_DPRT_NM /*  외래불출부서 */
+					   ,   a.MDCR_DTLS_CTRL_CD as ABRV_DPRT_CD /*  외래불출부서 */
+					   ,   a.MDCR_CTRL_CHRC_VL1 /*  암센터전환   */
+					   ,   a.MDCR_CTRL_CHRC_VL2 /*  화면표시     */
+					   ,   a.MDCR_CTRL_CHRC_VL3 /*  암센터화면표시 */
+					   ,   a.MDCR_CTRL_CHRC_VL4 /*  환자가야할곳변경 */
+					   ,   a.MDCR_CTRL_CHRC_VL5 /*  암센터조회제외 */
+					   ,   a.MDCR_CTRL_CHRC_VL7 /*  장소명 추가 */
+					   ,   a.CTRL_SORT_SQNC
+					from MZCTRLMMT a
+					where a.MDCR_CTRL_CD = 'MM167'
+					  and nvl(a.MDCR_CTRL_CHRC_VL6, 'X') <> nvl(#{mcdpCd}, 'XX') /*  특정진료과시 제거되는 목록 */
+					  and a.MDCR_CTRL_CHRC_VL5 is null
+					  and a.MDCR_DTLS_CTRL_CD = 'DEP'
+					  and trunc(sysdate) between nvl(a.APST_YMD, to_date('19000101', 'YYYYMMDD'))
+											 and nvl(a.APFN_YMD, to_date('29991231', 'YYYYMMDD'))
+					 union
+					 /*  특정진료과(PED) 인 경우 소아청소년 관련 주사실로 변경 (예 외래항암치료실(통원치료센터) -> 소아청소년통원치료센터) */
+					 /*  MDCR_CTRL_CHRC_VL5 */
+					 select
+							  '주사실' as FLAG
+						  ,   h.DPRT_CD as DPRT_CD /*  무의미 부서코드 */
+						  ,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', a.MDCR_DTLS_CTRL_NM, h.KORN_DPRT_NM ) as KORN_DPRT_NM /*  외래불출부서 */
+						  ,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', 'DEP', h.ABRV_DPRT_CD ) as ABRV_DPRT_CD /*  외래불출부서 */
+						  ,   a.MDCR_CTRL_CHRC_VL1 /*  암센터전환   */
+						  ,   a.MDCR_CTRL_CHRC_VL2 /*  화면표시     */
+						  ,   a.MDCR_CTRL_CHRC_VL3 /*  암센터화면표시 */
+						  ,   a.MDCR_CTRL_CHRC_VL4 /*  환자가야할곳변경 */
+						  ,   a.MDCR_CTRL_CHRC_VL5 /*  암센터조회제외 */
+						  ,   a.MDCR_CTRL_CHRC_VL7 /*  장소명 추가 */
+						  ,   a.CTRL_SORT_SQNC
+					   from MZCTRLMMT a
+						  , HZDEPTMMT h
+					  where a.MDCR_CTRL_CD = 'MM167'
+						and a.MDCR_CTRL_CHRC_VL5 = #{mcdpCd} /*  특정진료과시 보여지는 목록 ex) PED */
+						and nvl(a.MDCR_CTRL_CHRC_VL6, 'X') <> nvl(#{mcdpCd}, 'XX')
+						and h.DPRT_CD = a.MDCR_DTLS_CTRL_CD
+						and trunc(sysdate) between nvl(a.APST_YMD, to_date('19000101', 'YYYYMMDD'))
+											   and nvl(a.APFN_YMD, to_date('29991231', 'YYYYMMDD'))
+					  union
+					  /*  처방전 수정에서는 본원/센터 구분없이 모두 조회(수정필요) */
+					  select
+								'주사실' as FLAG
+							,   h.DPRT_CD as DPRT_CD /*  무의미 부서코드 */
+							,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', a.MDCR_DTLS_CTRL_NM, h.KORN_DPRT_NM ) as KORN_DPRT_NM /*  외래불출부서 */
+							,   decode ( a.MDCR_DTLS_CTRL_CD, 'DEP', 'DEP', h.ABRV_DPRT_CD ) as ABRV_DPRT_CD /*  외래불출부서 */
+							,   a.MDCR_CTRL_CHRC_VL1 /*  암센터전환   */
+							,   a.MDCR_CTRL_CHRC_VL2 /*  화면표시     */
+							,   a.MDCR_CTRL_CHRC_VL3 /*  암센터화면표시 */
+							,   a.MDCR_CTRL_CHRC_VL4 /*  환자가야할곳변경 */
+							,   a.MDCR_CTRL_CHRC_VL5 /*  암센터조회제외 */
+							,   a.MDCR_CTRL_CHRC_VL7 /*  장소명 추가 */
+							,   a.CTRL_SORT_SQNC
+						 from MZCTRLMMT a
+							, HZDEPTMMT h
+						 where #{hslcDvsnCd} = 'X'    /*  외래 - 처방전수정 */
+						   and a.MDCR_CTRL_CD = 'MM167'
+						   and nvl(a.MDCR_CTRL_CHRC_VL6, 'X') <> nvl(#{mcdpCd}, 'XX') /*  특정진료과시 제거되는 목록 */
+						   and a.MDCR_CTRL_CHRC_VL5 is null
+						   and h.DPRT_CD = nvl(a.MDCR_CTRL_CHRC_VL1, 'X')
+						   and trunc(sysdate) between nvl(a.APST_YMD, to_date('19000101', 'YYYYMMDD'))
+												  and nvl(a.APFN_YMD, to_date('29991231', 'YYYYMMDD'))
+					 )
+				 group by DPRT_CD
+				 )
+			   order by CTRL_SORT_SQNC, DPRT_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ensnDprtNm" column="ENSN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="hrafDprtYn" column="HRAF_DPRT_YN"/>
+		<result property="acnnDprtYn" column="ACNN_DPRT_YN"/>
+		<result property="mterFrnsYn" column="MTER_FRNS_YN"/>
+		<result property="asetLctnYn" column="ASET_LCTN_YN"/>
+		<result property="sbdpRprsDprtCd" column="SBDP_RPRS_DPRT_CD"/>
+		<result property="hrafHgrnDprtCd" column="HRAF_HGRN_DPRT_CD"/>
+		<result property="hrafBaseLvelNo" column="HRAF_BASE_LVEL_NO"/>
+		<result property="hrafBaseSortSqnc" column="HRAF_BASE_SORT_SQNC"/>
+		<result property="lctnBaseHgrnDprtCd" column="LCTN_BASE_HGRN_DPRT_CD"/>
+		<result property="lctnBaseLvelNo" column="LCTN_BASE_LVEL_NO"/>
+		<result property="lctnBaseSortSqnc" column="LCTN_BASE_SORT_SQNC"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="tissMdfcYmd" column="TISS_MDFC_YMD"/>
+		<result property="gnrlDrDprtDvsnCd" column="GNRL_DR_DPRT_DVSN_CD"/>
+		<result property="mdcrTissDvsnCd" column="MDCR_TISS_DVSN_CD"/>
+		<result property="lcdvCd" column="LCDV_CD"/>
+		<result property="florNo" column="FLOR_NO"/>
+		<result property="drcnDvsnCd" column="DRCN_DVSN_CD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="phdpCmmdSqncVl" column="PHDP_CMMD_SQNC_VL"/>
+		<result property="inftDprtCd" column="INFT_DPRT_CD"/>
+		<result property="ststDprtCd" column="STST_DPRT_CD"/>
+		<result property="cntrDvsnYn" column="CNTR_DVSN_YN"/>
+		<result property="mltdCntrDvsnCd" column="MLTD_CNTR_DVSN_CD"/>
+		<result property="spznCntrDvsnYn" column="SPZN_CNTR_DVSN_YN"/>
+		<result property="cancCureCntrYn" column="CANC_CURE_CNTR_YN"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList (진료부서목록 조회) 
+        Description :                                           구분별 진료부서목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listMdcrDprtList */   /*+ RESULT_CACHE NO_EXPAND FULL(A) mzd_deptmmt_l02$S01_진료부서목록 조회 */
+					   a.DPRT_CD as DPRT_CD                       /*  부서코드 */
+					,  a.KORN_DPRT_NM as KORN_DPRT_NM                  /*  한글부서명 */
+					,  a.ENSN_DPRT_NM as ENSN_DPRT_NM                  /*  영문부서명 */
+					,  a.ABRV_DPRT_CD as ABRV_DPRT_CD                  /*  약어부서코드 */
+					,  a.HRAF_DPRT_YN as HRAF_DPRT_YN                  /*  인사부서여부 */
+					,  a.ACNN_DPRT_YN as ACNN_DPRT_YN                  /*  경리부서여부 */
+					,  a.MTER_FRNS_YN as MTER_FRNS_YN                  /*  재료불출여부 */
+					,  a.ASET_LCTN_YN as ASET_LCTN_YN                  /*  자산위치여부 */
+					,  a.SBDP_RPRS_DPRT_CD as SBDP_RPRS_DPRT_CD             /*  분과대표부서코드 */
+					,  a.HRAF_HGRN_DPRT_CD as HRAF_HGRN_DPRT_CD             /*  인사상위부서코드 */
+					,  a.HRAF_BASE_LVEL_NO as HRAF_BASE_LVEL_NO             /*  인사기준레벨번호 */
+					,  a.HRAF_BASE_SORT_SQNC as HRAF_BASE_SORT_SQNC           /*  인사기준정렬순서 */
+					,  a.LCTN_BASE_HGRN_DPRT_CD as LCTN_BASE_HGRN_DPRT_CD        /*  위치기준상위부서코드 */
+					,  a.LCTN_BASE_LVEL_NO as LCTN_BASE_LVEL_NO             /*  위치기준레벨번호 */
+					,  a.LCTN_BASE_SORT_SQNC as LCTN_BASE_SORT_SQNC           /*  위치기준정렬순서 */
+					,  a.APST_YMD as APST_YMD                      /*  적용시작일자 */
+					,  a.APFN_YMD as APFN_YMD                      /*  적용종료일자 */
+					,  a.USE_YN as USE_YN                        /*  사용여부 */
+					,  a.TISS_MDFC_YMD as TISS_MDFC_YMD                 /*  조직변경일자 */
+					,  a.GNRL_DR_DPRT_DVSN_CD as GNRL_DR_DPRT_DVSN_CD          /*  일반의사부서구분코드 */
+					,  a.MDCR_TISS_DVSN_CD as MDCR_TISS_DVSN_CD             /*  진료조직구분코드 */
+					,  a.LCDV_CD as LCDV_CD                       /*  위치구분코드 */
+					,  a.FLOR_NO as FLOR_NO                       /*  층번호 */
+					,  a.DRCN_DVSN_CD as DRCN_DVSN_CD                  /*  방향구분코드 */
+					,  a.BSPL_CD as BSPL_CD                       /*  사업장코드 */
+					,  a.PHDP_CMMD_SQNC_VL as PHDP_CMMD_SQNC_VL             /*  약제부조제순서값 */
+					,  a.INFT_DPRT_CD as INFT_DPRT_CD                  /*  안내부서코드 */
+					,  a.STST_DPRT_CD as STST_DPRT_CD                  /*  통계부서코드 */
+					,  a.CNTR_DVSN_YN as CNTR_DVSN_YN					/*  위치별센터여부 */
+					,  a.MLTD_CNTR_DVSN_CD as MLTD_CNTR_DVSN_CD				/*  다학제센터구분코드 */
+					,  a.SPZN_CNTR_DVSN_YN as SPZN_CNTR_DVSN_YN				/*  특성화센터여부 */
+					,  a.CANC_CURE_CNTR_YN as CANC_CURE_CNTR_YN				/*  암치유센터여부 */
+					,  case #{dvsnNm}
+						 when 'WARD' then
+						   case a.LCDV_CD
+							 when '2' then 'A'
+							 when '6' then 'C'
+							 else 'M'
+						   end
+						 else a.HSLC_DVSN_CD
+					   end as HSLC_DVSN_CD   /*  병원위치구분코드 */
+				 from
+					   HZDEPTMMT a
+				 where
+					   case
+						   when #{dvsnNm} = 'MCDP'	   and a.MDCR_TISS_DVSN_CD  = 'M01'        then 'TRUE'		/*  진료과 */
+						   when #{dvsnNm} = 'MCDP_SET'   and ((a.MDCR_TISS_DVSN_CD = 'M01') or
+																				(a.DPRT_CD           = fn_cc_get_dprt_cd('DPRT_HHC')))  then 'TRUE'		/*  진료과SET (가정간호 172700 포함) */
+						   when #{dvsnNm} = 'CPSET_USR'  and ((a.MDCR_TISS_DVSN_CD = 'M01') or
+																				(a.DPRT_CD           = fn_cc_get_dprt_cd('DPRT_HHC')))  then 'TRUE'		/*  진료과SET (가정간호 172700 포함) */
+						   when #{dvsnNm} = 'WARD'	   and a.MDCR_TISS_DVSN_CD  = 'W01'        then 'TRUE'		/*  병동 */
+						   when #{dvsnNm} = 'MCSBDP'	   and
+		   					 (	a.MDCR_TISS_DVSN_CD in ('M01', 'P01')	)	                                    then 'TRUE'		/*  진료과 + 분과 */
+						   when #{dvsnNm} = 'SBDP_IM'	and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_IM')	     then 'TRUE'		/*  내과계(IM) */
+						   when #{dvsnNm} = 'SBDP_OM'	and a.HRAF_HGRN_DPRT_CD = '201296'	     then 'TRUE'		/*  외과계(OM) */
+						   when #{dvsnNm} = 'DNDP'	   and a.MDCR_TISS_DVSN_CD = 'D01'         then 'TRUE'		/*  치과분과 (기사용자때문에 못지움) */
+						   when #{dvsnNm} = 'SBDP_DEN'	and a.MDCR_TISS_DVSN_CD = 'D01'	     then 'TRUE'		/*  치과분과 */
+						   when #{dvsnNm} = 'SBDP_GS'	and a.MDCR_TISS_DVSN_CD = 'P01'
+		   																and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_GS')		 then 'TRUE'		/*  GS분과 */
+						   when #{dvsnNm} = 'SBDP_TS'	and a.MDCR_TISS_DVSN_CD = 'P01'
+		   																and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_TS')		 then 'TRUE'		/*  TS분과 */
+						   when #{dvsnNm} = 'SBDP_OBGY'	and a.MDCR_TISS_DVSN_CD = 'P01'
+		   																and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_OBGY')		 then 'TRUE'		/*  OBGY분과 */
+						   when #{dvsnNm} = 'SBDP_PED'	and a.MDCR_TISS_DVSN_CD = 'P01'
+		   																and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_PED')		 then 'TRUE'		/*  PED분과 */
+						   when #{dvsnNm} = 'SBDP_PSY'	and a.MDCR_TISS_DVSN_CD = 'P01'
+		   																and a.HRAF_HGRN_DPRT_CD = fn_cc_get_dprt_cd('DPRT_PSY')		 then 'TRUE'		/*  PSY분과 */
+						   when #{dvsnNm} = 'CACHE'  and
+		   					 (	a.MDCR_TISS_DVSN_CD in ('M01', 'W01') or
+		   						a.DPRT_CD in (fn_cc_get_dprt_cd('DPRT_HHC'), fn_cc_get_dprt_cd('DPRT_HD'), fn_cc_get_dprt_cd('DPRT_PDRM'), fn_cc_get_dprt_cd('DPRT_DIET'))
+		   					 )	/*  '172700' 가정간호, '172619' 투석실, '201257' 복막투석실, '11211A' 본관마취간호파트, '11211B' 암병원마취간호파트, '112200'   임상영양팀 */
+		   																										then 'TRUE'		/*  진료과 + 병동 + 특정과 */
+						   when #{dvsnNm} = 'CNTR'   and a.MDCR_TISS_DVSN_CD = 'C01'				then 'TRUE'		/*  전체센터 */
+						   when #{dvsnNm} = 'CNTR_A' and a.MDCR_TISS_DVSN_CD = 'C01'
+		   															and a.CNTR_DVSN_YN = 'Y'					then 'TRUE'		/*  센터(위치별) */
+						   when #{dvsnNm} = 'CNTR_B' and a.MDCR_TISS_DVSN_CD = 'C01'
+		   															and a.MLTD_CNTR_DVSN_CD is not null			then 'TRUE'		/*  다학제 */
+						   when #{dvsnNm} = 'CMBN_A'	and
+		   					(   (a.MDCR_TISS_DVSN_CD = 'M01') or
+		   						(a.MDCR_TISS_DVSN_CD = 'C01' and a.CNTR_DVSN_YN = 'Y')		)					then 'TRUE'		/*  결합조건(Combination) A : 진료과 + 센터(위치별) */
+						   else 'FALSE'
+						   end     =   'TRUE'
+				  and  trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+				  and  case
+						 when nvl(#{kornDprtNm}, '*') = '*'            then 'TRUE'
+						 when a.DPRT_CD      =   #{kornDprtNm}         then 'TRUE'
+						 when a.ABRV_DPRT_CD =   #{kornDprtNm}         then 'TRUE'
+						 when a.KORN_DPRT_NM like #{kornDprtNm} || '%' then 'TRUE'
+						 else 'FALSE'
+					   end = 'TRUE'
+				order
+				   by
+					   case #{dvsnNm}
+						 when 'WARD' then
+						   case a.LCDV_CD
+							 when '2' then 2
+							 when '6' then 3
+							 else 1
+						   end
+						 else 9
+					   end
+					,  a.ABRV_DPRT_CD
+					,  a.MCDP_SQNC_VL
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ensnDprtNm" column="ENSN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="hrafDprtYn" column="HRAF_DPRT_YN"/>
+		<result property="acnnDprtYn" column="ACNN_DPRT_YN"/>
+		<result property="mterFrnsYn" column="MTER_FRNS_YN"/>
+		<result property="asetLctnYn" column="ASET_LCTN_YN"/>
+		<result property="sbdpRprsDprtCd" column="SBDP_RPRS_DPRT_CD"/>
+		<result property="hrafHgrnDprtCd" column="HRAF_HGRN_DPRT_CD"/>
+		<result property="hrafBaseLvelNo" column="HRAF_BASE_LVEL_NO"/>
+		<result property="hrafBaseSortSqnc" column="HRAF_BASE_SORT_SQNC"/>
+		<result property="lctnBaseHgrnDprtCd" column="LCTN_BASE_HGRN_DPRT_CD"/>
+		<result property="lctnBaseLvelNo" column="LCTN_BASE_LVEL_NO"/>
+		<result property="lctnBaseSortSqnc" column="LCTN_BASE_SORT_SQNC"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="tissMdfcYmd" column="TISS_MDFC_YMD"/>
+		<result property="gnrlDrDprtDvsnCd" column="GNRL_DR_DPRT_DVSN_CD"/>
+		<result property="mdcrTissDvsnCd" column="MDCR_TISS_DVSN_CD"/>
+		<result property="lcdvCd" column="LCDV_CD"/>
+		<result property="florNo" column="FLOR_NO"/>
+		<result property="drcnDvsnCd" column="DRCN_DVSN_CD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="phdpCmmdSqncVl" column="PHDP_CMMD_SQNC_VL"/>
+		<result property="inftDprtCd" column="INFT_DPRT_CD"/>
+		<result property="ststDprtCd" column="STST_DPRT_CD"/>
+		<result property="cntrDvsnYn" column="CNTR_DVSN_YN"/>
+		<result property="mltdCntrDvsnCd" column="MLTD_CNTR_DVSN_CD"/>
+		<result property="spznCntrDvsnYn" column="SPZN_CNTR_DVSN_YN"/>
+		<result property="cancCureCntrYn" column="CANC_CURE_CNTR_YN"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl (부서코드상세조회) 
+        Description :                                           부서세부항목을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listDprtCdDetl */  /*+ mdd_deptmmt_l04$S01_부서코드상세조회 DAMs */
+				  a.DPRT_CD as DPRT_CD                       /*  부서코드 */
+				, a.KORN_DPRT_NM as KORN_DPRT_NM                  /*  한글부서명 */
+				, a.ENSN_DPRT_NM as ENSN_DPRT_NM                  /*  영문부서명 */
+				, a.ABRV_DPRT_CD as ABRV_DPRT_CD                  /*  약어부서코드 */
+				, a.HRAF_DPRT_YN as HRAF_DPRT_YN                  /*  인사부서여부 */
+				, a.ACNN_DPRT_YN as ACNN_DPRT_YN                  /*  경리부서여부 */
+				, a.MTER_FRNS_YN as MTER_FRNS_YN                  /*  재료불출여부 */
+				, a.ASET_LCTN_YN as ASET_LCTN_YN                  /*  자산위치여부 */
+				, a.SBDP_RPRS_DPRT_CD as SBDP_RPRS_DPRT_CD             /*  분과대표부서코드 */
+				, a.HRAF_HGRN_DPRT_CD as HRAF_HGRN_DPRT_CD             /*  인사상위부서코드 */
+				, a.HRAF_BASE_LVEL_NO as HRAF_BASE_LVEL_NO             /*  인사기준레벨번호 */
+				, a.HRAF_BASE_SORT_SQNC as HRAF_BASE_SORT_SQNC           /*  인사기준정렬순서 */
+				, a.LCTN_BASE_HGRN_DPRT_CD as LCTN_BASE_HGRN_DPRT_CD        /*  위치기준상위부서코드 */
+				, a.LCTN_BASE_LVEL_NO as LCTN_BASE_LVEL_NO             /*  위치기준레벨번호 */
+				, a.LCTN_BASE_SORT_SQNC as LCTN_BASE_SORT_SQNC           /*  위치기준정렬순서 */
+				, a.APST_YMD as APST_YMD                      /*  적용시작일자 */
+				, a.APFN_YMD as APFN_YMD                      /*  적용종료일자 */
+				, a.USE_YN as USE_YN                        /*  사용여부 */
+				, a.TISS_MDFC_YMD as TISS_MDFC_YMD                 /*  조직변경일자 */
+				, a.GNRL_DR_DPRT_DVSN_CD as GNRL_DR_DPRT_DVSN_CD          /*  일반의사부서구분코드 */
+				, a.MDCR_TISS_DVSN_CD as MDCR_TISS_DVSN_CD             /*  진료조직구분코드 */
+				, a.LCDV_CD as LCDV_CD                       /*  위치구분코드 */
+				, a.FLOR_NO as FLOR_NO                       /*  층번호 */
+				, a.DRCN_DVSN_CD as DRCN_DVSN_CD                  /*  방향구분코드 */
+				, a.BSPL_CD as BSPL_CD                       /*  사업장코드 */
+				, a.PHDP_CMMD_SQNC_VL as PHDP_CMMD_SQNC_VL             /*  약제부조제순서값 */
+				, a.INFT_DPRT_CD as INFT_DPRT_CD                  /*  안내부서코드 */
+				, a.STST_DPRT_CD as STST_DPRT_CD                  /*  통계부서코드 */
+				, a.CNTR_DVSN_YN as CNTR_DVSN_YN				   /*  위치별센터여부 */
+				, a.MLTD_CNTR_DVSN_CD as MLTD_CNTR_DVSN_CD			   /*  다학제센터구분코드 */
+				, a.SPZN_CNTR_DVSN_YN as SPZN_CNTR_DVSN_YN			   /*  특성화센터여부 */
+				, a.CANC_CURE_CNTR_YN as CANC_CURE_CNTR_YN			   /*  암치유센터여부 */
+				, a.HSLC_DVSN_CD as HSLC_DVSN_CD				   /*  병원위치구분코드 */
+			 from
+				  HZDEPTMMT a
+			where
+				  a.DPRT_CD = #{dprtCd}
+			  and trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+			order
+			   by
+				  a.ABRV_DPRT_CD
+				, a.MCDP_SQNC_VL
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="frnsPsblDprtCd" column="FRNS_PSBL_DPRT_CD"/>
+		<result property="injcImplPadvVl" column="INJC_IMPL_PADV_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac (실시장소 목록 조회) 
+        Description :                                           수혈실시장소, 주사실시장소, 처치재료실시장소
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFrnsDprtInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFrnsDprtInqrListDAO-listImplPlac */
+		         a.DPRT_CD
+		     ,   a.KORN_DPRT_NM
+		     ,   a.ABRV_DPRT_CD
+		     ,   a.FRNS_PSBL_DPRT_CD   -- 처방 유효성 체크용도 
+		     ,   a.INJC_IMPL_PADV_VL as INJC_IMPL_PADV_VL
+		  from  HZDEPTMMT a
+		 where  1=1
+		 <if test="dvsnNm == 'TRNF'">
+		   and  TRNF_IMPL_PADV_VL like '%'||#{codvCd}||'%'
+		 </if>
+		 <if test="dvsnNm == 'INJC'">
+		   and  INJC_IMPL_PADV_VL like '%'||#{codvCd}||'%'
+		 </if>
+		 <if test="dvsnNm == 'TX'">
+		   and  TX_MTER_IMPL_PADV_VL like '%'||#{codvCd}||'%'
+		 </if>
+		 <if test="dvsnNm == 'DRUG_O'">
+		   and  ( FRNS_PSBL_DPRT_CD like '%'||#{codvCd}||'%' or INJC_IMPL_PADV_VL like '%'||#{codvCd}||'%' )
+		 </if>		 
+		 <if test="dvsnNm == 'DRUG_I'">
+		   and  FRNS_PSBL_DPRT_CD like '%'||#{codvCd}||'%'
+		 </if>
+		 <if test="dvsnNm == 'DRUG_E'">
+		   and  FRNS_PSBL_DPRT_CD like '%'||#{codvCd}||'%'
+		 </if>		
+		 <if test="dvsnNm == 'DRUG_ALL'">
+		   and  (FRNS_PSBL_DPRT_CD is not null or INJC_IMPL_PADV_VL is not null)
+		 </if>
+		 order
+		    by  a.ABRV_DPRT_CD
+	</select>
+
+
+
+</mapper>

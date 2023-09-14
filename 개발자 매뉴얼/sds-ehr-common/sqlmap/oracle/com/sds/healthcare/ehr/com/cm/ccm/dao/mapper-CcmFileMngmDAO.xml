@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmFileMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcmFileMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO">
+	
+		<result property="fileGrpId" column="FILE_GRP_ID"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="filePathNm" column="FILE_PATH_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		 select  /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-listFileInfo */
+			       FILE_GRP_ID
+			    ,  FILE_ID
+			    ,  FILE_NM
+			    ,  FILE_PATH_NM
+			    ,  FLDV_NM
+			    ,  FILE_SIZE_VL
+		  from  SEHRMGR.CSFILEMMT
+		where  FILE_GRP_ID  is not null
+		]]>
+		<if test="fileGrpId != null and fileGrpId != ''">
+		and  FILE_GRP_ID = #{fileGrpId}
+		 </if>   
+		<if test="fileId != null and fileId != ''">
+		<![CDATA[
+		and  FILE_ID  in ( select trim(regexp_substr(replace(#{fileId},',',', '),'[^,]+',1,level)) str
+		                            from Dual
+		                       connect by level <= length(regexp_replace(#{fileId},'[^,]')) + 1 )
+		]]>
+		 </if>   
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-insertFileInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-insertFileInfo"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO"  >
+		<![CDATA[
+		   insert  /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-insertFileInfo */
+		   into   CSFILEMMT(  FILE_GRP_ID
+								   , FILE_ID
+								   , FILE_NM
+								   , FILE_PATH_NM
+								   , FLDV_NM
+								   , FILE_SIZE_VL
+								   ,  FRST_RGSR_ID
+								   ,  FRST_RGST_IP
+								   ,  FRST_RGST_DT
+								   ,  FRST_RGST_CLNT_PRGM_ID
+								   ,  FRST_RGST_SRVR_PRGM_ID
+								   ,  LAST_UPDR_ID
+								   ,  LAST_UPDT_IP
+								   ,  LAST_UPDT_DT
+								   ,  LAST_UPDT_CLNT_PRGM_ID
+								   ,  LAST_UPDT_SRVR_PRGM_ID
+								  )
+							values(  #{fileGrpId}
+								   , #{fileId}
+								   , #{fileNm}
+								   , #{filePathNm}
+								   , #{fldvNm}
+								   , #{fileSizeVl}
+								   ,  #{gvUserId}
+								   ,  #{gvUserIp}
+								   ,  sysdate
+								   ,  #{gvClntPrgmId}
+								   ,  #{gvSrvrPrgmId}
+								   ,  #{gvUserId}
+								   ,  #{gvUserIp}
+								   ,  sysdate
+								   ,  #{gvClntPrgmId}
+								   ,  #{gvSrvrPrgmId}
+								  )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO">
+	
+		<result property="fileGrpId" column="FILE_GRP_ID"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="filePathNm" column="FILE_PATH_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		 select  /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileInfo */
+			       FILE_GRP_ID
+			    ,  FILE_ID
+			    ,  FILE_NM
+			    ,  FILE_PATH_NM
+			    ,  FLDV_NM
+			    ,  FILE_SIZE_VL
+		  from  SEHRMGR.CSFILEMMT
+		where  FILE_GRP_ID = #{fileGrpId}
+		   and  FILE_ID = #{fileId}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-deleteFileInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-deleteFileInfo"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO"  >
+		<![CDATA[
+		 delete  /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-deleteFileInfo */	       
+		  from  SEHRMGR.CSFILEMMT
+		where  FILE_GRP_ID = #{fileGrpId}
+		   and  ( (FILE_ID = #{fileId}) or (upper(FILE_NM) = upper(#{fileNm})) )
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO">
+	
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm (인피니트파일 파일명 조회) 
+        Description :                                           apd_filemmt_s01$S01_인피니트파일 파일명 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmFileMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmFileMngmDAO-selectOneFileNm */
+		            FILE_NM
+		         ,  FLDV_NM
+		from   CSFILEMMT
+		where  FILE_GRP_ID = #{fileGrpId}
+	</select>
+
+
+
+</mapper>

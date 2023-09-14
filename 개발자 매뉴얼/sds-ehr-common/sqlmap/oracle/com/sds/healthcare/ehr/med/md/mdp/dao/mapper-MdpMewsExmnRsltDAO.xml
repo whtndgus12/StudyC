@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpMewsExmnRsltDAO_sql.xml 
+    Description :                                      MEWS에 통합검사결과를 반영한다.
+                  -->
+<mapper namespace="MdpMewsExmnRsltDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="mdcrDtlsCtrlAllNm" column="MDCR_DTLS_CTRL_ALL_NM"/>
+		<result property="adltYn" column="ADLT_YN"/>
+		<result property="chldYn" column="CHLD_YN"/>
+		<result property="adltSmsYn" column="ADLT_SMS_YN"/>
+		<result property="chldSmsYn" column="CHLD_SMS_YN"/>
+		<result property="afiBaseScrStr1" column="AFI_BASE_SCR_STR1"/>
+		<result property="afiBaseScrStr2" column="AFI_BASE_SCR_STR2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn () 
+        Description :                                           MEWS 계산진행여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsProgressYn */
+		select MDCR_DTLS_CTRL_ALL_NM          as MDCR_DTLS_CTRL_ALL_NM /* 병원코드를 입력하고 사용한다. */
+		     , nvl(a.MDCR_CTRL_CHRC_VL1, 'N') as ADLT_YN /* 성인사용여부 */
+		     , nvl(a.MDCR_CTRL_CHRC_VL2, 'N') as CHLD_YN /* 소아사용여부 */
+		     , nvl(a.MDCR_CTRL_CHRC_VL3, 'N') as ADLT_SMS_YN /* 성인SMS사용여부 */
+		     , nvl(a.MDCR_CTRL_CHRC_VL4, 'N') as CHLD_SMS_YN /* 소아SMS사용여부 */
+		     , nvl(a.MDCR_CTRL_CHRC_VL6, '0') as AFI_BASE_SCR_STR1 /* 검사결과SMS발송신호등값 */
+		     , nvl(a.MDCR_CTRL_CHRC_VL8, '0') as AFI_BASE_SCR_STR2 /* 검사결과Noti발송신호등값 */
+		  from MZCTRLMMT a   /* 진료제어정보			*/
+		 where a.MDCR_CTRL_CD = 'MDA_390_MGT'
+		   and a.MDCR_DTLS_CTRL_CD = 'PRGR_YN'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="sfshSetClsfSno" column="SFSH_SET_CLSF_SNO"/>
+		<result property="mntgItemNm" column="MNTG_ITEM_NM"/>
+		<result property="cnosItemGrpSno" column="CNOS_ITEM_GRP_SNO"/>
+		<result property="cnosItemSno" column="CNOS_ITEM_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn () 
+        Description :                                           SmartSheet설정구성 항목인지를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsscntExstYn */
+		select a.SFSH_SET_CLSF_SNO
+			 , a.SFSH_SET_CLSF_NM as MNTG_ITEM_NM
+		     , a.CNOS_ITEM_GRP_SNO
+		     , a.CNOS_ITEM_SNO
+		  from MESFSSCNT a /* SmartSheet설정구성 */
+		 where a.SFSH_NO = 91
+		   and a.SFSH_SET_CLSF_CD = '2'
+		   and a.ORDR_CD = #{ordrCd}
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageCtn" column="AGE_CTN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="ageMntsCnt" column="AGE_MNTS_CNT"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="icuWardCd" column="ICU_WARD_CD"/>
+		<result property="cnosTabCd" column="CNOS_TAB_CD"/>
+		<result property="wodvCd" column="WODV_CD"/>
+		<result property="careWardCd" column="CARE_WARD_CD"/>
+		<result property="afiAbrvCareWardCd" column="AFI_ABRV_CARE_WARD_CD"/>
+		<result property="carePtrmNo" column="CARE_PTRM_NO"/>
+		<result property="recvTlno" column="RECV_TLNO"/>
+		<result property="icuYn" column="ICU_YN"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="mcdpExclYn" column="MCDP_EXCL_YN"/>
+		<result property="dnrYn" column="DNR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt () 
+        Description :                                           환자 진료접수 조회를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneAprcrptnt */
+		select a.MDRP_NO									as MDRP_NO
+			 , a.CODV_CD									as CODV_CD 
+			 , a.PTNO										as PTNO
+			 , b.PTNT_NM									as PTNT_NM
+			 , b.GEND_CD                                    as GEND_CD       	/* 성별	*/
+			 , FN_MD_GETAGE('2', b.BTDT, sysdate)           as AGE_CTN          /* 나이	*/
+			 , to_char(b.BTDT, 'yyyymmdd') 				    as BTDT
+			 , a.MCDP_CD									as MCDP_CD
+		     , trunc(months_between(sysdate, b.BTDT))       as AGE_MNTS_CNT     /* 연령개월수    */
+			 , a.MDDR_ID									as MDDR_ID
+			 , ( select aa.USER_NM from CCUSRDPHT aa where aa.USER_ID = a.MDDR_ID )	as MDDR_NM
+			 , a.GNDR_ID									as GNDR_ID
+			 , ( select aa.USER_NM from CCUSRDPHT aa where aa.USER_ID = a.GNDR_ID ) 	as GNDR_NM
+		     , case when exists (select 1
+								    from MZCTRLMMT aa
+								   where aa.MDCR_CTRL_CD = 'MDA_390_WARD'
+									 and aa.MDCR_DTLS_CTRL_CD = a.CARE_WARD_CD)
+		           		then a.CARE_WARD_CD /* 스크리닝 제외 병실 조건 */
+		           when a.CODV_CD = 'E'
+		           		then 'ER' /* 응급 제외 */
+		           when a.CODV_CD = 'I'
+		           		then 'WARD'
+		           else null
+		       end 										    as ICU_WARD_CD    
+			 , null										    as CNOS_TAB_CD
+			 , null										    as WODV_CD
+			 , a.CARE_WARD_CD                            	as CARE_WARD_CD     /* 병동	*/
+			 , (select ABRV_DPRT_CD
+				   from HZDEPTMMT
+				  where DPRT_CD = a.CARE_WARD_CD)       	as AFI_ABRV_CARE_WARD_CD
+			 , a.CARE_PTRM_NO                               as CARE_PTRM_NO     /* 병실	*/
+			 , (select a1.MDCR_DTLS_CTRL_NM
+				   from MZCTRLMMT a1
+				  where a1.MDCR_CTRL_CD = 'MDA392F2_02'
+					and a1.MDCR_DTLS_CTRL_CD = 'RSV_TEL_NO') as RECV_TLNO /* 수신전화번호 */
+			 , (select 'Y'
+				   from APCTRLMMT aa            /* 환자제어정보	*/
+				  where aa.PTNT_CTRL_CD  = 'APZ_007'   /* 중환자실 코드는 원무제어코드로 통합됨.(MNB13 -> APZ_007) */
+					and aa.PTNT_DTLS_CTRL_CD = a.CARE_WARD_CD
+					and rownum = 1 )						as ICU_YN	/* ICU여부	*/
+			 , (select ABRV_DPRT_CD
+				   from HZDEPTMMT
+				  where DPRT_CD = a.MCDP_CD)       			as ABRV_DPRT_CD
+		    , nvl((select 'Y'
+		             from MZCTRLMMT
+		            where MDCR_CTRL_CD = 'MDA_390_MCDP'
+		              and MDCR_DTLS_CTRL_CD = a.MCDP_CD
+		              and rownum = 1), 'N')                as MCDP_EXCL_YN	/* RRS 모니터링 제외 진료과 */
+			 , (select 'Y'
+				from MDDNRAGRT /* 환자DNR동의정보    */
+				where PTNO = a.PTNO
+				and (nvl(MCLP_YN,'N') = 'Y' 
+					or nvl(BMIP_YN,'N') = 'Y' 
+					or nvl(IMPM_DCMN_YN,'N') = 'Y') /* 제1호서식, 제6호서식, 제13호서식 일 떄만 DNR로 처리한다. */
+		        and sysdate between RGST_DT and case when TRNT_DT is null then to_date('29991231235959', 'yyyymmddhh24miss') else TRNT_DT end
+				and rownum = 1)                             as DNR_YN     /* DNR동의서여부 */
+		  from APRCRPTNT a
+			 , APPTPTNTT b
+			 , MDEXMORDT c
+		 where b.PTNO =  a.PTNO
+		   and a.MDRP_NO = c.MDRP_NO
+		   and c.PTNO = #{ptno}
+		   and c.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and ORDR_SNO = #{ordrSno}
+		   and a.CODV_CD in ('I','E')
+		   and a.DSCH_DT = to_date('29991231', 'YYYYMMDD')
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="itemClbyPrvsWrnnBaseScr" column="ITEM_CLBY_PRVS_WRNN_BASE_SCR"/>
+		<result property="sycdVl" column="SYCD_VL"/>
+		<result property="strtNcvlVl" column="STRT_NCVL_VL"/>
+		<result property="fnshNcvlVl" column="FNSH_NCVL_VL"/>
+		<result property="scrAplyYn" column="SCR_APLY_YN"/>
+		<result property="baseLctnVl" column="BASE_LCTN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore () 
+        Description :                                           Factor Score를 구한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorScore */
+		select a.SCR							as ITEM_CLBY_PRVS_WRNN_BASE_SCR
+			 , a.SYCD_VL						as SYCD_VL
+			 , a.STRT_NCVL_VL					as STRT_NCVL_VL
+			 , a.FNSH_NCVL_VL					as FNSH_NCVL_VL
+			 , a.SCR_APLY_YN                   	as SCR_APLY_YN
+		     , a.BASE_LCTN_VL                   as BASE_LCTN_VL
+		  from
+			 (
+				select a.MCDP_CD						  as MCDP_CD
+					 , a.CHLD_ADLT_DVSN_CD				  as CHLD_ADLT_DVSN_CD
+					 , a.CNOS_ITEM_SNO					  as CNOS_ITEM_SNO
+					 , a.AGE_STRT_MM_VL					  as AGE_STRT_MM_VL
+					 , a.SMRT_PTNT_SMLT_DVSN_CD			  as SMRT_PTNT_SMLT_DVSN_CD
+					 , a.AGE_FNSH_MM_VL					  as AGE_FNSH_MM_VL
+					 , a.SCR							  as SCR
+					 , a.STRT_NCVL_VL					  as STRT_NCVL_VL
+					 , a.FNSH_NCVL_VL					  as FNSH_NCVL_VL
+					 , a.SYCD_VL						  as SYCD_VL
+					 , a.SCR_APLY_YN					  as SCR_APLY_YN
+					 , cast(#{mntgItemVl} as NUMBER(7,2)) as MNTG_ITEM_VL
+		             , a.BASE_LCTN_VL                     as BASE_LCTN_VL
+				  from MDSMEWSDT a
+				 where a.MCDP_CD = '000000'
+				   and a.CHLD_ADLT_DVSN_CD = #{chldAdltDvsnCd}
+				   and a.CNOS_ITEM_SNO = #{cnosItemGrpSno}
+				   and a.AGE_STRT_MM_VL = #{ageStrtMmVl}
+				   and a.SMRT_PTNT_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+				   and a.SCR_APLY_YN = 'Y'
+			 ) a
+		 where case when a.MNTG_ITEM_VL between a.STRT_NCVL_VL and a.FNSH_NCVL_VL and a.SYCD_VL = '2' then 'TRUE'
+					when a.MNTG_ITEM_VL < a.STRT_NCVL_VL and a.SYCD_VL = '1' then 'TRUE'
+					when a.MNTG_ITEM_VL > a.STRT_NCVL_VL and a.SYCD_VL = '3' then 'TRUE'
+					when a.MNTG_ITEM_VL = a.STRT_NCVL_VL and a.SYCD_VL = '4' then 'TRUE'
+					else 'FALSE'
+				end = 'TRUE'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="mdcrDtlsCtrlCd" column="MDCR_DTLS_CTRL_CD"/>
+		<result property="mdcrDtlsCtrlNm" column="MDCR_DTLS_CTRL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore () 
+        Description :                                           MEWS 신호등 구분(코드 및 점수)을 구한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneMewsScore */
+		select a.MDCR_DTLS_CTRL_CD as MDCR_DTLS_CTRL_CD
+			 , a.MDCR_DTLS_CTRL_NM as MDCR_DTLS_CTRL_NM
+		  from MZCTRLMMT a
+		 where a.MDCR_CTRL_CD = #{mdcrCtrlCd}
+		   and case when #{ptntPrvsWrnnBaseScr} <= a.MDCR_CTRL_NMBR_VL1 and a.MDCR_CTRL_CHRC_VL1 = '1' then 'TRUE'
+					when #{ptntPrvsWrnnBaseScr} = a.MDCR_CTRL_NMBR_VL1 and a.MDCR_CTRL_CHRC_VL1 = '2' then 'TRUE'
+					when #{ptntPrvsWrnnBaseScr} > a.MDCR_CTRL_NMBR_VL1 and a.MDCR_CTRL_CHRC_VL1 = '3' then 'TRUE'
+					when #{ptntPrvsWrnnBaseScr} between a.MDCR_CTRL_NMBR_VL1 and a.MDCR_CTRL_NMBR_VL2 and a.MDCR_CTRL_CHRC_VL1 = '4' then 'TRUE'
+					else 'FALSE'
+				end = 'TRUE'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk () 
+        Description :                                           MESFSRURT가 이미 생성되어 있는지 Check한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsrurtExstChk */
+		select decode(count(1), 0, 'N', 'Y') as YN
+		  from MESFSRURT a      	/* MEWS모니터링Factor	*/
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.PTNO = #{ptno}
+		   and a.MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and a.MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and a.CNOS_ITEM_SNO = #{cnosItemSno}
+		   and a.SPCM_NO = #{spcmNo}
+		   and nvl(a.DLTN_YN, 'N') = 'N'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrurtCancel () 
+        Description :                                           MESFSRURT MEWS모니터링Factor 최종 기존자료 존재시 삭제(취소처리)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrurtCancel"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrurtCancel */
+		update MESFSRURT      	/* MEWS모니터링Factor	*/
+		   set DLTN_YN = 'Y'		/* 삭제여부*/
+			 , DLTN_DT = sysdate	/* 삭제일시*/
+			 , LAST_UPDR_ID = #{gvUserId}
+			 , LAST_UPDT_IP = #{gvUserIp}
+			 , LAST_UPDT_DT = sysdate
+			 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where MDRP_NO = #{mdrpNo}
+		   and PTNO = #{ptno}
+		   and MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and CNOS_ITEM_SNO = #{cnosItemSno}
+		   and SPCM_NO = #{spcmNo}
+		   and nvl(DLTN_YN, 'N') = 'N'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrurt () 
+        Description :                                           MESFSRURT MEWS모니터링Factor 최종 Insert
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrurt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrurt */
+		insert  
+		  into MESFSRURT      	/* MEWS모니터링Factor	*/
+			 (
+			   MDRP_NO 				/* 진료접수번호		*/
+			 , PTNO					/* 환자번호			*/
+			 , MNTG_TRGT_DVSN_CD		/* 모니터링대상구분코드*/
+			 , MNTG_SMLT_DVSN_CD		/* 모니터링시뮬레이션구분코드*/
+			 , CNOS_ITEM_RCRD_DT		/* 임상관찰항목기록일시*/
+			 , CNOS_ITEM_SNO			/* 임상관찰항목일련번호*/
+			 , MNTG_WORK_DT			/* 모니터링작업일시*/
+			 , MNTG_WORK_SNO			/* 모니터링작업일련번호*/
+			 , MNTG_ITEM_DVSN_CD		/* 모니터링항목구분코드*/
+			 , MNTG_PRSG_RSLT_DVSN_CD	/* 모니터링처리결과구분코드*/
+		     , CNOS_ITEM_GRP_SNO /* 임상관찰항목그룹일련번호 */
+			 , ORDR_YMD				/* 처방일자*/
+			 , ORDR_SNO				/* 처방일련번호*/
+			 , ORDR_CD					/* 처방코드*/
+			 , MNTG_ITEM_VL			/* 모니터링항목값(ITEM합산 점수)*/
+			 , MNTG_ITEM_NM			/* 모니터링항목명*/
+			 , MNTG_ITEM_RSLT_CD		/* 모니터링항목결과코드(MDA_391A(성인), MDA_391C(소아))*/
+			 , MNTG_ITEM_RSLT_CTN		/* 모니터링항목결과내용*/
+			 , ITEM_CLBY_PRVS_WRNN_BASE_SCR	/* 항목별사전경고기준점수*/
+			 , MNGM_TRGT_BASE_MXMM_VL			/* 관리대상기준최대값*/
+			 , MNGM_TRGT_BASE_MXMM_RANG_CD		/* 관리대상기준최대범위코드*/
+			 , MNGM_TRGT_BASE_MNMM_VL	/* 관리대상기준최소값*/
+			 , MNGM_TRGT_BASE_MNMM_RANG_CD		/* 관리대상기준최소범위코드*/
+			 , SCR_APLY_YN             /* 계산적용여부 */
+			 , MNTG_NMBR_VL         /* 모니터링숫자값(점검 전체Factor 총점) */
+			 , MNTG_PRSG_RSLT_CD		/* 모니터링처리결과코드(MEWS 코드)	*/
+			 , MNTG_PRSG_RSLT_CTN		/* 모니터링처리결과내용	*/
+			 , SPCM_NO /* 검체번호 */
+		     , BASE_LCTN_VL /* 기준위치값 */
+			 , FRST_RGSR_ID
+			 , FRST_RGST_IP
+			 , FRST_RGST_DT
+			 , FRST_RGST_CLNT_PRGM_ID
+			 , FRST_RGST_SRVR_PRGM_ID
+			 , LAST_UPDR_ID
+			 , LAST_UPDT_IP
+			 , LAST_UPDT_DT
+			 , LAST_UPDT_CLNT_PRGM_ID
+			 , LAST_UPDT_SRVR_PRGM_ID
+			 )
+		values
+			 (
+			   #{mdrpNo} 				/* 진료접수번호		*/
+			 , #{ptno}					/* 환자번호			*/
+			 , #{mntgTrgtDvsnCd}		/* 모니터링대상구분코드*/
+			 , #{mntgSmltDvsnCd}		/* 모니터링시뮬레이션구분코드*/
+			 , to_date(#{cnosItemRcrdDt}, 'yyyymmddhh24miss')		/* 임상관찰항목기록일시*/
+			 , #{cnosItemSno}			/* 임상관찰항목일련번호*/
+			 , to_date(#{mntgWorkDt}	, 'yyyymmddhh24miss')		/* 모니터링작업일시*/
+			 , (select nvl(max(a.MNTG_WORK_SNO), 0) + 1
+				  from MESFSRURT a
+				 where a.MDRP_NO	= #{mdrpNo}
+				   and a.PTNO		= #{ptno}
+				   and a.MNTG_TRGT_DVSN_CD	= #{mntgTrgtDvsnCd}
+				   and a.MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+				   and a.CNOS_ITEM_RCRD_DT = to_date(#{cnosItemRcrdDt}, 'yyyymmddhh24miss')
+				   and a.CNOS_ITEM_SNO       =  #{cnosItemSno}			/* 임상관찰항목일련번호*/
+				   and a.MNTG_WORK_DT		= to_date(#{mntgWorkDt}, 'yyyymmddhh24miss'))	/* 모니터링작업일련번호*/
+			 , #{mntgItemDvsnCd}		/* 모니터링항목구분코드*/
+			 , #{mntgPrsgRsltDvsnCd}	/* 모니터링처리결과구분코드*/
+		     , #{cnosItemGrpSno} /* 임상관찰항목그룹일련번호 */
+			 , to_date(#{ordrYmd}, 'yyyymmdd')				/* 처방일자*/
+			 , #{ordrSno}				/* 처방일련번호*/
+			 , #{ordrCd}					/* 처방코드*/
+			 , #{mntgItemVl}			/* 모니터링항목값(ITEM합산 점수)*/
+			 , #{mntgItemNm}			/* 모니터링항목명*/
+			 , #{mntgItemRsltCd}		/* 모니터링항목결과코드(MDA_391A(성인), MDA_391C(소아))*/
+			 , #{mntgItemRsltCtn}		/* 모니터링항목결과내용*/
+			 , #{itemClbyPrvsWrnnBaseScr}	/* 항목별사전경고기준점수*/
+			 , #{mngmTrgtBaseMxmmVl}			/* 관리대상기준최대값*/
+			 , #{mngmTrgtBasemxmmRangCd}		/* 관리대상기준최대범위코드*/
+			 , #{mngmTrgtBasemnmmVl}	/* 관리대상기준최소값*/
+			 , #{mngmTrgtBasemnmmRangCd}		/* 관리대상기준최소범위코드*/
+			 , #{scrAplyYn}            	/* 계산적용여부 */
+			 , #{mntgNmbrVl}           /* 모니터링숫자값(점검 전체Factor 총점) */
+			 , #{mntgPrsgRsltCd}		/* 모니터링처리결과코드(MEWS 코드)	*/
+			 , #{mntgPrsgRsltCtn}		/* 모니터링처리결과내용	*/
+			 , #{spcmNo} /* 검체번호 */
+		     , #{baseLctnVl} /* 기준위치값 */
+			 , #{gvUserId}
+			 , #{gvUserIp}
+			 , sysdate
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			 , #{gvUserId}
+			 , #{gvUserIp}
+			 , sysdate
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			 )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="vlExstYn" column="VL_EXST_YN"/>
+		<result property="notcTrasYn" column="NOTC_TRAS_YN"/>
+		<result property="mntgPrsgRsltCd" column="MNTG_PRSG_RSLT_CD"/>
+		<result property="smsrCtn" column="SMSR_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk () 
+        Description :                                           MESFSRUPT MEWS모니터링결과최종이 이미 생성되어 있는지 Check
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptExstChk */
+		select decode(count(*), 0, 'N', 'Y')	as VL_EXST_YN
+		     , nvl(max(a.NOTC_TRAS_YN), 'N') as NOTC_TRAS_YN
+		     , nvl(max(a.MNTG_PRSG_RSLT_CD), '0') as MNTG_PRSG_RSLT_CD
+		     , max(a.SMSR_CTN) as SMSR_CTN
+		  from MESFSRUPT a    	/* MEWS모니터링결과최종	*/
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.PTNO = #{ptno}
+		   and a.MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and a.MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and a.SPCM_NO = #{spcmNo}
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-deleteSfsrupt () 
+        Description :                                           MESFSRUPT MEWS모니터링결과최종 기존자료 존재시 삭제(취소처리)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-deleteSfsrupt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-deleteSfsrupt */
+		delete 
+		  from MESFSRUPT      	/* MEWS모니터링결과최종	*/
+		 where MDRP_NO = #{mdrpNo}
+		   and PTNO = #{ptno}
+		   and MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and SPCM_NO = #{spcmNo}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrupt () 
+        Description :                                           MESFSRUPT MEWS모니터링결과최종 Insert
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrupt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-insertSfsrupt */
+		insert  
+		  into MESFSRUPT      	        /* MEWS모니터링결과최종	*/
+			 (
+			   MDRP_NO					/* 진료접수번호		*/
+			 , PTNO					    /* 환자번호			*/
+			 , MNTG_TRGT_DVSN_CD		/* 모니터링대상구분코드	*/
+			 , MNTG_SMLT_DVSN_CD		/* 모니터링시뮬레이션구분코드 */
+			 , CNOS_ITEM_RCRD_DT		/* 임상관찰항목기록일시	*/
+			 , MNTG_WORK_DT		        /* 모니터링작업일시	*/
+			 , MNTG_PRSG_RSLT_CD		/* 모니터링처리결과코드	*/
+			 , MNTG_PRSG_RSLT_CTN		/* 모니터링처리결과내용	*/
+			 , PTNT_PRVS_WRNN_BASE_SCR  /* 환자사전경고기준점수	*/
+			 , SMSR_CTN				    /* SMS내용		*/
+			 , SPCM_NO				    /* 검체번호		*/
+		     , NOTC_TRAS_YN             /* 노티전송여부 */
+			 , FRST_RGSR_ID
+			 , FRST_RGST_IP
+			 , FRST_RGST_DT
+			 , FRST_RGST_CLNT_PRGM_ID
+			 , FRST_RGST_SRVR_PRGM_ID
+			 , LAST_UPDR_ID
+			 , LAST_UPDT_IP
+			 , LAST_UPDT_DT
+			 , LAST_UPDT_CLNT_PRGM_ID
+			 , LAST_UPDT_SRVR_PRGM_ID
+			 )
+		values
+			 (
+			   #{mdrpNo}				/* 진료접수번호		*/
+			 , #{ptno}					/* 환자번호			*/
+			 , #{mntgTrgtDvsnCd}		/* 모니터링대상구분코드*/
+			 , #{mntgSmltDvsnCd}		/* 모니터링시뮬레이션구분코드*/
+			 , to_date(#{cnosItemRcrdDt}, 'yyyymmddhh24miss')		/* 임상관찰항목기록일시*/
+			 , to_date(#{mntgWorkDt}, 'yyyymmddhh24miss')		/* 모니터링작업일시	*/
+			 , #{mntgPrsgRsltCd}		/* 모니터링처리결과코드(MEWS 코드)	*/
+			 , #{mntgPrsgRsltCtn}		/* 모니터링처리결과내용	*/
+			 , #{ptntPrvsWrnnBaseScr}	/* 환자사전경고기준점수	*/
+			 , #{smsrCtn}			    /* SMS내용		*/
+			 , #{spcmNo}			    /* 검체번호		*/
+		     , #{notcTrasYn}            /* 노티전송여부 */     
+			 , #{gvUserId}
+			 , #{gvUserIp}
+			 , sysdate
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			 , #{gvUserId}
+			 , #{gvUserIp}
+			 , sysdate
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			 )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn () 
+        Description :                                           RRS 호출 서비스를 사용하도록 설정되었는지 확인한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotiPsblYn */
+		select max(x.YN) as YN
+		  from (
+		        select decode(count(1), 1, 'Y', 'N') as YN
+		          from MDMEWSAMT a     /* MEWS알람수신자관리	*/
+		         where a.CHLD_ADLT_DVSN_CD in ('Z', #{chldAdltDvsnCd})	/* 'Z'성인,소아, 'A'성인, 'C'소아 */
+		           and a.DYWK_DVSN_CD = 'WK'
+		           and substr(#{mntgWorkDt}, 9, 4) between a.STRT_HH_VL and a.FNSH_HH_VL
+		           and nvl(a.DLTN_YN, 'N') = 'N'
+		           and to_char(to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'), 'd') in ('2', '3', '4', '5', '6')
+		           and not exists (select 1
+		                             from APDSPBHLT a1
+		                            where a1.HLDY_YMD = to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'))
+		           and a.USER_ID = 'RRS_NOTICE' /* RRS NOTICE 사용자 포함 */
+		           and rownum = 1
+		         union all
+		        select decode(count(1), 1, 'Y', 'N') as YN
+		          from MDMEWSAMT a     /* MEWS알람수신자관리	*/
+		         where a.CHLD_ADLT_DVSN_CD in ('Z', #{chldAdltDvsnCd})	/* 'Z'성인,소아, 'A'성인, 'C'소아 */
+		           and a.DYWK_DVSN_CD = 'HD'
+		           and substr(#{mntgWorkDt}, 9, 4) between a.STRT_HH_VL and a.FNSH_HH_VL
+		           and nvl(a.DLTN_YN, 'N') = 'N'
+		           and ( to_char(to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'), 'd') in ('1', '7')
+		               or exists (select 1
+		                            from APDSPBHLT a1
+		                           where a1.HLDY_YMD = to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'))
+		               )
+		           and a.USER_ID = 'RRS_NOTICE' /* RRS NOTICE 사용자 포함 */
+		           and rownum = 1		
+			) x
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs () 
+        Description :                                           환자의 병동 간호사 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listWardNurs */
+		select distinct b.LGIN_ID as USER_ID
+		  from APRCRPTNT a	/* 진료접수 */
+		     , CCUSRDPHT b	/* NEXMED-EHR 사용자 역할정보 */
+		     , CCUSERAMT c	/* NEXMED-EHR 사용자 직종 */
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.CARE_WARD_CD = b.MDCR_DPRT_CD
+		   and b.LGIN_ID = c.LGIN_ID   
+		   and trunc(sysdate) between b.APST_YMD and b.APFN_YMD
+		   and c.OCFM_CD = 'HAB'		/* 직종코드 (HAB:간호직) */
+		   and c.OCFM_DETL_CD = 'HAB02'	/* 직종코드상세 (HAB02:간호사) */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="mntgPrsgRsltCtn" column="MNTG_PRSG_RSLT_CTN"/>
+		<result property="dtlsCtn" column="DTLS_CTN"/>
+		<result property="itemClbyPrvsWrnnBaseScr" column="ITEM_CLBY_PRVS_WRNN_BASE_SCR"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr () 
+        Description :                                           MESFSRUPT MEWS모니터링결과최종의 항목별사전경고기준점수의 합산을 구한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSfsruptTotScr */
+		 select listagg(MNTG_ITEM_RSLT_CTN, chr(13) || chr(10)) 
+		        within group(order by CNOS_ITEM_RCRD_DT, CNOS_ITEM_GRP_SNO) as MNTG_PRSG_RSLT_CTN
+		      , listagg(MNTG_ITEM_NM || '(' || MNTG_ITEM_VL || ')', ', ') 
+		       	within group(order by CNOS_ITEM_RCRD_DT, CNOS_ITEM_SNO) as DTLS_CTN
+		      , nvl(sum(ITEM_CLBY_PRVS_WRNN_BASE_SCR),0) as ITEM_CLBY_PRVS_WRNN_BASE_SCR
+		   from MESFSRURT
+		  where MDRP_NO = #{mdrpNo}
+		    and PTNO = #{ptno}
+		    and MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		    and MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		    and SPCM_NO = #{spcmNo}
+		    and nvl(DLTN_YN, 'N') = 'N'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn () 
+        Description :                                           검사 결과 보고 항목이 신속대응체계 해당 항목인지를 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneFactorItemYn */
+		select decode(count(1), 1, 'Y', 'N') as YN
+		  from MESFSSCNT a /* SmartSheet설정구성 */
+		 where a.SFSH_NO = 91
+		   and a.SFSH_SET_CLSF_CD = '2'
+		   and a.ORDR_CD = #{ordrCd}
+		   and a.CNOS_ITEM_GRP_SNO is not null /* 임상관찰항목그룹일련번호 */
+		   and a.CNOS_ITEM_SNO is not null /* 임상관찰항목일련번호 */
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="vlExstYn" column="VL_EXST_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn () 
+        Description :                                           Snooze 대상인지 Check
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneSnoozeVlexstYn */
+		select decode(count(1), 1, 'Y', 'N') as VL_EXST_YN
+		  from MDSSNZPMT a /* SMART스누즈환자관리 */
+		 where a.MDRP_NO = #{mdrpNo}
+		   and sysdate between a.SNZ_OCRN_DT and a.RELE_DT
+		   and nvl(a.RELE_YN, 'N') = 'N'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="chldAdltDvsnCd" column="CHLD_ADLT_DVSN_CD"/>
+		<result property="afiAdltChldDvsnNm" column="AFI_ADLT_CHLD_DVSN_NM"/>
+		<result property="wrknMngrYn" column="WRKN_MNGR_YN"/>
+		<result property="smsrRcvrTlno" column="SMSR_RCVR_TLNO"/>
+		<result property="strtHhVl" column="STRT_HH_VL"/>
+		<result property="fnshHhVl" column="FNSH_HH_VL"/>
+		<result property="afiCrntDt" column="AFI_CRNT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans () 
+        Description :                                           MEWS 알림 대상자 조회 (보고일시)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-listMewsAlramTrans */
+		select a.USER_ID                                  	as USER_ID
+		     , (select  a1.USER_NM
+		          from  SEHRMGR.CCUSRDPHT a1
+		         where  a1.USER_ID = a.USER_ID )           as USER_NM          	/* 수신자명		*/
+		     , a.CHLD_ADLT_DVSN_CD                         as CHLD_ADLT_DVSN_CD    /* 성인/소아구분	*/
+		     , (select  a1.MDCR_DTLS_CTRL_NM
+		          from  SEHRMGR.MZCTRLMMT a1
+		         where  a1.MDCR_CTRL_CD  = 'MDA_390A'
+		           and  a1.MDCR_DTLS_CTRL_CD = a.CHLD_ADLT_DVSN_CD) as AFI_ADLT_CHLD_DVSN_NM
+		     , a.WRKN_MNGR_YN                              as WRKN_MNGR_YN     /* 관리자여부	*/
+		     , a.SMSR_RCVR_TLNO                            as SMSR_RCVR_TLNO   /* 수신번호		*/
+		     , a.STRT_HH_VL           						as STRT_HH_VL     	/* 수신시작시간	*/
+		     , a.FNSH_HH_VL								as FNSH_HH_VL		/* 수신종료시간	*/	   
+		   	 , to_char(sysdate, 'yyyymmddhh24miss')	as AFI_CRNT_DT	/* 현재일시	*/
+		  from MDMEWSAMT a     /* MEWS알람수신자관리	*/
+		 where 1=1
+		   and a.CHLD_ADLT_DVSN_CD in ('Z', #{chldAdltDvsnCd})	/* 'Z'성인,소아, 'A'성인, 'C'소아 */
+		   and a.DYWK_DVSN_CD = 'WK'
+		   and substr(#{mntgWorkDt}, 9, 4) between a.STRT_HH_VL and a.FNSH_HH_VL
+		   and nvl(a.DLTN_YN, 'N') = 'N'
+		   and to_char(to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'), 'd') in ('2', '3', '4', '5', '6')
+		   and not exists (select 1
+		                     from APDSPBHLT a1
+		                    where a1.HLDY_YMD = to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'))
+		   and a.USER_ID <> 'RRS_NOTICE' /* RRS NOTICE 사용자 제외 */
+		 union all
+		select a.USER_ID                                  	as USER_ID
+		     , (select  a1.USER_NM
+		          from  SEHRMGR.CCUSRDPHT a1
+		         where  a1.USER_ID = a.USER_ID )           as USER_NM          	/* 수신자명		*/
+		     , a.CHLD_ADLT_DVSN_CD                         as CHLD_ADLT_DVSN_CD    /* 성인/소아구분	*/
+		     , (select  a1.MDCR_DTLS_CTRL_NM
+		          from  SEHRMGR.MZCTRLMMT a1
+		         where  a1.MDCR_CTRL_CD  = 'MDA_390A'
+		           and  a1.MDCR_DTLS_CTRL_CD = a.CHLD_ADLT_DVSN_CD) as AFI_ADLT_CHLD_DVSN_NM
+		     , a.WRKN_MNGR_YN                              as WRKN_MNGR_YN     /* 관리자여부	*/
+		     , a.SMSR_RCVR_TLNO                            as SMSR_RCVR_TLNO   /* 수신번호		*/
+		     , a.STRT_HH_VL           						as STRT_HH_VL     	/* 수신시작시간	*/
+		     , a.FNSH_HH_VL								as FNSH_HH_VL		/* 수신종료시간	*/	   
+			 , to_char(sysdate, 'yyyymmddhh24miss')	as AFI_CRNT_DT	/* 현재일시	*/
+		  from MDMEWSAMT a     /* MEWS알람수신자관리	*/
+		 where 1=1
+		   and a.CHLD_ADLT_DVSN_CD in ('Z', #{chldAdltDvsnCd})	/* 'Z'성인,소아, 'A'성인, 'C'소아 */
+		   and a.DYWK_DVSN_CD = 'HD'
+		   and substr(#{mntgWorkDt}, 9, 4) between a.STRT_HH_VL and a.FNSH_HH_VL
+		   and nvl(a.DLTN_YN, 'N') = 'N'
+		   and ( to_char(to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'), 'd') in ('1', '7')
+		       or exists (select 1
+		                    from APDSPBHLT a1
+		                   where a1.HLDY_YMD = to_date(substr(#{mntgWorkDt}, 1, 8), 'yyyymmdd'))
+		       )
+		   and a.USER_ID <> 'RRS_NOTICE' /* RRS NOTICE 사용자 제외 */
+		 order by USER_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO">
+	
+		<result property="adltNotcYn" column="ADLT_NOTC_YN"/>
+		<result property="chldNotcYn" column="CHLD_NOTC_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn () 
+        Description :                                           RRS Notice 기능 사용 여부 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-selectOneNotcProgressYn */
+		select nvl(a.MDCR_CTRL_CHRC_VL1, 'N') as ADLT_NOTC_YN
+		     , nvl(a.MDCR_CTRL_CHRC_VL2, 'N') as CHLD_NOTC_YN
+		  from MZCTRLMMT a   /* 진료제어정보			*/
+		 where a.MDCR_CTRL_CD = 'MDA_393_MGT'
+		   and a.MDCR_DTLS_CTRL_CD = 'NOTC_USE_YN'
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrupt () 
+        Description :                                           SMS 전송 성공 시 MESFSRUPT.SMSR_CTN 업데이트 실행
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrupt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsrupt */
+		update MESFSRUPT /* MEWS모니터링결과최종	*/
+		   set SMSR_CTN = #{smsrCtn}
+			 , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where MDRP_NO = #{mdrpNo}
+		   and PTNO = #{ptno}
+		   and MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and SPCM_NO = #{spcmNo} /* 검체번호 */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsruptNotc () 
+        Description :                                           Noti 전송 성공 시 MESFSRUPT.NOTC_TRAS_YN 업데이트 실행.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsruptNotc"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMewsExmnRsltDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMewsExmnRsltDAO-updateSfsruptNotc */
+		update MESFSRUPT /* MEWS모니터링결과최종	*/
+		   set NOTC_TRAS_YN = #{notcTrasYn}
+			 , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where MDRP_NO = #{mdrpNo}
+		   and PTNO = #{ptno}
+		   and MNTG_TRGT_DVSN_CD = #{mntgTrgtDvsnCd}
+		   and MNTG_SMLT_DVSN_CD = #{mntgSmltDvsnCd}
+		   and SPCM_NO = #{spcmNo} /* 검체번호 */
+		]]>
+	</update>
+
+</mapper>

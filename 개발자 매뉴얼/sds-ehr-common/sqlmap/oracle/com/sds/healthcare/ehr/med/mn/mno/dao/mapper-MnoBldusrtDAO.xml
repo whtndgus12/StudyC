@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnoBldusrtDAO_sql.xml 
+    Description :                                      혈액
+                  -->
+<mapper namespace="MnoBldusrtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt-result" type="com.sds.healthcare.ehr.med.mn.mno.vo.MnoBldusrtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="patcnt" column="PATCNT"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="orocCd" column="OROC_CD"/>
+		<result property="frnsDprtCd" column="FRNS_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt (혈액불출을 위해서 해당병동의 근무자들을 조회) 
+        Description :                                           혈액불출을 위해서 해당병동의 근무자들을 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoBldusrtDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoBldusrtDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoBldusrtDAO-listBldusrt */
+		<![CDATA[ 
+		    select /*+ mnd_bldusrt_l01$S01_수혈기록 개별항목 조회 */
+		          distinct
+		          a.lgin_id
+		         ,a.USER_NM
+		         ,( select count(e.ptno)
+		                    from (
+		                           select /*+ USE_NL(a b) INDEX (B APIPDLST_IDX32) */
+		                                   a.ptno
+		                             from MDBLDORDT a,
+		                                  APRCRPTNT b,
+		                                  MNIBLOODT c,
+		                                  APPTPTNTV d
+		                            where b.WARD_CD   = #{wardCd}
+		                              and #{wardCd} not in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))        /* CO2C, PTC2 제외처리 */
+		                              and b.CODV_CD   = 'I'
+		                              and b.DSCH_DT   = to_date('29991231', 'YYYYMMDD')
+		                              and b.MDRP_NO   = a.MDRP_NO
+		                              and a.OROC_DPRT_CD   = 'W'
+		                              and a.CODV_CD   = 'I'
+		                              and c.PTNO      = a.ptno
+		                              and c.ORDR_YMD   = a.ORDR_YMD
+		                              and c.ORDR_SNO   = a.ORDR_SNO
+		                              and c.TRNF_ORDR_PRSS_CD = 'R'
+		                              and d.PTNO      = a.PTNO
+		                              group by a.ptno
+		                        ) e
+		               ) as patcnt
+		             , #{wardCd} AS "WARD_CD"
+		             , #{orocCd} AS "OROC_CD"
+		             , #{frnsDprtCd} "FRNS_DPRT_CD"
+		       from(
+		                select /*+ mnd_bldusrt_l01$S01_수혈기록 개별항목 조회 */
+		                        c.lgin_id
+		                       ,c.USER_NM
+		                  from
+		                        mnasprsct a
+		                      , ccuseramt c
+		                where
+		                        1=1 /* a.care_wkpl_cd = b.care_wkpl_cd */
+		                    and a.wkpr_id = c.lgin_id
+		                    and a.wrkn_strt_ymd <= trunc(sysdate)
+		                    and a.wrkn_fnsh_ymd >= trunc(sysdate)
+		                    and a.CARE_WKPL_CD = #{wardCd}  
+		                    and #{wardCd} not in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))        /* CO2C, PTC2 제외처리 */
+		                    and #{orocCd}   = 'W'
+		                    and a.wkpr_id not in (select WRKN_NURS_ID
+		                                    from
+				                                        MNANDUTDT  /* mnrsprnct */
+				                                    where
+				                                        PRN_WRKN_DPRT_CD = #{wardCd}   /* prap_wkpl_cd */
+				                                    and wrkn_ymd = trunc(sysdate)
+		                                    )
+		                    union all
+		                    select
+		                        c.lgin_id
+		                       ,c.USER_NM
+		                    from
+		                        MNANDUTDT b -- PRN 일자별 prn 오는사람   /* mnrsprnct */
+		                       , ccuseramt c
+		                     where
+				                         b.CARE_WKPL_CD = #{wardCd}   /* b.rcep_wkpl_cd */
+				                     and #{wardCd} not in ( fn_cc_get_dprt_cd('WARD_ANTC_DAY'))        /* CO2C, PTC2 제외처리 */
+				                     and b.wrkn_ymd = trunc(sysdate)
+				                     and b.WRKN_NURS_ID = c.lgin_id  /* b.wkpr_id */
+				                     and #{orocCd}   = 'W'
+		            ) a
+		    union
+			select /*+ mnd_bldusrt_l01$S01_수혈기록 개별항목 조회 응급실 */
+					c.lgin_id
+				   ,c.USER_NM
+				   ,( select count(e.ptno)
+							from (
+								   select /*+ USE_NL(a b) INDEX (B APIPDLST_IDX32) */
+										   a.ptno
+									 from MDBLDORDT a,
+										  APRCRPTNT b,
+										  MNIBLOODT c,
+										  APPTPTNTV d
+									where b.WARD_CD   = #{wardCd}
+									  and b.CODV_CD   = 'E'
+									  and b.DSCH_DT   = to_date('29991231', 'YYYYMMDD')
+									  and b.MDRP_NO   = a.MDRP_NO
+									  and a.OROC_DPRT_CD   = 'E'
+									  and a.CODV_CD   = 'E'
+									  and c.PTNO      = a.ptno
+									  and c.ORDR_YMD   = a.ORDR_YMD
+									  and c.ORDR_SNO   = a.ORDR_SNO
+									  and c.TRNF_ORDR_PRSS_CD = 'R'
+									  and d.PTNO      = a.PTNO
+									  group by a.ptno
+								) e
+					   ) as patcnt
+				   , #{wardCd}
+				   , #{orocCd}
+				   , #{frnsDprtCd}
+			  from
+					mnasprsct a
+				  , ccuseramt c
+			where
+					1=1 /* a.care_wkpl_cd = b.care_wkpl_cd */
+				and a.wkpr_id = c.lgin_id
+				and a.wrkn_strt_ymd <= trunc(sysdate)
+				and a.wrkn_fnsh_ymd >= trunc(sysdate)
+				and a.CARE_WKPL_CD = #{wardCd}  
+				and #{orocCd}   = 'E'
+		   union
+		   select /*+ 주사실_조회 */
+		         distinct
+		         a.lgin_id
+		        ,a.USER_NM
+		        ,(select count(e.ptno)
+		            from (
+		                    select  a.PTNO
+		                      from  MNIBLOODT a
+		                           ,MDBLDORDT b
+		                           ,(select COMN_DTLS_CD
+		                              from CCCMCDDMT
+		                             where COMN_GRP_CD = 'MN923'
+		                               and COMN_DTLS_CD = #{frnsDprtCd}
+		                              /* and COMN_DTLS_CD not in ('201243','201250','201289','201290','201291') */ ) c   /*# 주사실 그룹가져오기  PTC, PTC1, C02A, C02B, C02D 제외 */
+		                     where 1=1
+		                       and a.TRNF_ORDR_PRSS_CD = 'R'
+		                       and b.PTNO     = a.PTNO
+		                       and b.ORDR_YMD = a.ORDR_YMD
+		                       and b.ORDR_SNO = a.ORDR_SNO
+		                       and b.FRNS_DPRT_CD = c.COMN_DTLS_CD
+		                   union
+		                    select  /*+ PTC, PTC1, PTC2, CATC 주사실_조회 */
+		                            a.PTNO
+		                      from  MNIBLOODT a
+		                           ,MDBLDORDT b
+		                     where 1=1
+		                       and a.TRNF_ORDR_PRSS_CD = 'R'
+		                       and b.PTNO     = a.PTNO
+		                       and b.ORDR_YMD = a.ORDR_YMD
+		                       and b.ORDR_SNO = a.ORDR_SNO
+		                       and (
+		                             nvl(#{frnsDprtCd},#{wardCd}) in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))             /* 항암주사실 */
+		                               and nvl(b.FRNS_DPRT_CD,b.WARD_CD) in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))  /* C02A,C02B,C02C,C02D 포함 */
+		                             
+		                           )
+		                     group by a.PTNO
+		                 ) e
+		         ) as patcnt
+		         , #{wardCd}
+		         , #{orocCd}
+		         , #{frnsDprtCd}
+		 from  (
+		                  select /*+ 주사실_조회 */
+		                          n.lgin_id
+		                         ,n.USER_NM
+		                    from
+		                          MNASPRSCT m
+		                        , CCUSERAMT n
+		                        ,(select COMN_DTLS_CD
+		                           from CCCMCDDMT
+		                          where COMN_GRP_CD = 'MN923'
+		                            and COMN_DTLS_CD = #{frnsDprtCd}
+		                         /*   and COMN_DTLS_CD not in ('201243','201250','201289','201290','201291') */ /*# 주사실 그룹가져오기  PTC, PTC1, C02A, C02B, C02D 제외 */
+		                         ) o   
+		                    where 1=1
+		                      and m.wkpr_id = n.lgin_id
+		                      and m.wrkn_strt_ymd <= trunc(sysdate)
+		                      and m.wrkn_fnsh_ymd >= trunc(sysdate)
+		                      and nvl(m.OTPT_WKPR_MCDP_CD,m.CARE_WKPL_CD) = o.COMN_DTLS_CD /* 외래의경우 불출장소를 행정에서 세팅해야 함 */
+		               union all
+		                   select /*+ PTC, PTC1, PTC2, CATC 주사실_조회 */
+		                          n.lgin_id
+		                         ,n.USER_NM
+		                     from
+		                          MNASPRSCT m
+		                        , CCUSERAMT n
+		                    where 1=1
+		                      and m.wkpr_id = n.lgin_id
+		                      and m.wrkn_strt_ymd <= trunc(sysdate)
+		                      and m.wrkn_fnsh_ymd >= trunc(sysdate)
+		                      and (
+		                            nvl(#{frnsDprtCd},#{wardCd}) in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))             /* 항암주사실 */
+		                              and nvl(m.OTPT_WKPR_MCDP_CD,m.CARE_WKPL_CD) in (fn_cc_get_dprt_cd('WARD_ANTC_DAY'))  /* C02A,C02B,C02C,C02D 포함 */
+		                          )
+		               union all
+		                   select /*+ PRN_조회 */
+				                       c.lgin_id
+				                      ,c.USER_NM
+				                   from
+				                       MNANDUTDT b  /* mnrsprnct */ /* PRN 일자별 prn 오는사람 */  
+				                      , ccuseramt c
+				                    where
+				                    b.CARE_WKPL_CD = #{wardCd}     /* b.rcep_wkpl_cd */
+				                    and b.wrkn_ymd = trunc(sysdate)
+				                    and b.WRKN_NURS_ID = c.lgin_id   /* b.wkpr_id */
+		       ) a
+		 union
+		 select
+		       distinct
+		       a.lgin_id
+		      ,a.USER_NM
+		      , (select count(*)
+		           from (
+		                   select c.PTNO
+		                     from MNIBLOODT c /* 수혈처방상세 */
+		                        , MDBLDORDT d /* 수혈처방 */
+		                    where
+		                          c.TRNF_ORDR_PRSS_CD = 'R' /* 준비완료인 상태 */
+		                      and d.PTNO     = c.ptno
+		                      and d.ORDR_YMD = c.ORDR_YMD
+		                      and d.ORDR_SNO = c.ORDR_SNO
+		                      and d.OROC_DPRT_CD  = #{orocCd}
+		                    group by c.PTNO
+		                )
+		        )  as patcnt
+		          , #{wardCd}
+		          , #{orocCd}
+		          , #{frnsDprtCd}
+		    from(
+		            select /*+ mnd_bldusrt_l01$S01_수혈기록 개별항목 조회 */
+		                     c.LGIN_ID
+		                    ,c.USER_NM
+		               from
+		                     MNASPRSCT a /* 간호근무자정보 */
+		                   , CCUSERAMT c /* OCS사용자 */
+		             where
+		                     1=1
+		                 and a.WKPR_ID = c.LGIN_ID
+		                 and a.WRKN_STRT_YMD <= trunc(sysdate)
+		                 and a.WRKN_FNSH_YMD >= trunc(sysdate)
+		                 and (((#{orocCd} = 'R' or #{orocCd} = 'A') and a.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))
+		                       or
+		                      ((#{orocCd} = 'L' or #{orocCd} = 'M' or #{orocCd} = 'U' or #{orocCd} = 'V') and a.CARE_WKPL_CD ='171138')
+		                       or
+		                      ((#{orocCd} = 'P' or #{orocCd} = 'S') and a.CARE_WKPL_CD ='11211A')
+		                       or
+		                      (#{orocCd} = 'Y' and a.CARE_WKPL_CD ='172610')
+		                       or
+		                      ((#{orocCd} = 'r' or #{orocCd} = 'v') and a.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))
+		                       or
+		                      ((#{orocCd} = 'p' or #{orocCd} = 'q') and a.CARE_WKPL_CD ='11211B')
+		                       or
+		                      (#{orocCd} = 'f' and a.CARE_WKPL_CD ='202164')
+		                       or
+		                      ((#{orocCd} = 'G' or #{orocCd} = 'K') and a.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))
+		                       or
+		                       ((#{orocCd} = 'F' or #{orocCd} = 'H' or #{orocCd} = 'I') and a.CARE_WKPL_CD ='172413')
+		                       or
+		                       ((#{orocCd} = 'k' or #{orocCd} = 'i') and a.CARE_WKPL_CD in ('11211A','11211B'))
+		                       or
+		                       (#{orocCd} = 'N' and a.CARE_WKPL_CD ='172619')
+		                     )
+		              union all
+		               select
+		                      c.LGIN_ID
+		                    , c.USER_NM
+		                 from
+				                     MNANDUTDT b /* PRN 일자별 prn 오는사람 MNRSPRNCT */
+				                   , CCUSERAMT c
+				                  where
+				                      b.WRKN_YMD = trunc(sysdate)
+				                  and b.WRKN_NURS_ID = c.LGIN_ID
+				                  and (
+				                       ((#{orocCd} = 'R' or #{orocCd} = 'A') and b.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))   /* b.RCEP_WKPL_CD */
+				                        or
+				                       ((#{orocCd} = 'L' or #{orocCd} = 'M' or #{orocCd} = 'U' or #{orocCd} = 'V') and b.CARE_WKPL_CD = '171138')   /* b.RCEP_WKPL_CD */
+				                        or
+				                       ((#{orocCd} = 'P' or #{orocCd} = 'S') and b.CARE_WKPL_CD ='11211A')   /* b.RCEP_WKPL_CD */
+				                        or
+				                       (#{orocCd} = 'Y' and b.CARE_WKPL_CD ='172610')   /* b.RCEP_WKPL_CD */
+				                        or
+				                       ((#{orocCd} = 'r' or #{orocCd} = 'v') and b.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))   /* b.RCEP_WKPL_CD */
+				                        or
+				                       ((#{orocCd} = 'p' or #{orocCd} = 'q') and b.CARE_WKPL_CD ='11211B')   /* b.RCEP_WKPL_CD */
+				                        or
+				                       (#{orocCd} = 'f' and b.CARE_WKPL_CD ='202164')   /* b.RCEP_WKPL_CD */
+				                        or
+				                       ((#{orocCd} = 'G' or #{orocCd} = 'K') and b.CARE_WKPL_CD in ('173400','172413','17241A','17241B','17241C','17641A','17641B'))   /* b.RCEP_WKPL_CD */
+				                        or
+				                        ((#{orocCd} = 'F' or #{orocCd} = 'H' or #{orocCd} = 'I') and b.CARE_WKPL_CD ='172413')   /* b.RCEP_WKPL_CD */
+				                        or
+				                        ((#{orocCd} = 'k' or #{orocCd} = 'i') and b.CARE_WKPL_CD in ('11211A','11211B'))   /* b.RCEP_WKPL_CD */
+				                        or
+				                        (#{orocCd} = 'N' and b.CARE_WKPL_CD =fn_cc_get_dprt_cd('DPRT_HD'))   /* b.RCEP_WKPL_CD */
+				                      )
+		        ) a
+		]]>
+	</select>
+
+
+
+</mapper>

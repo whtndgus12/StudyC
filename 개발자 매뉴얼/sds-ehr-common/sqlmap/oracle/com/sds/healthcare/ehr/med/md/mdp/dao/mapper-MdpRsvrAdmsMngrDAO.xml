@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpRsvrAdmsMngrDAO_sql.xml 
+    Description :                                      예비입원 환자의 원무정보를 수정 처리한다.
+                  -->
+<mapper namespace="MdpRsvrAdmsMngrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRsvrAdmsMngrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageCtn" column="AGE_CTN"/>
+		<result property="antpMcdpCd" column="ANTP_MCDP_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="admsPrrnWardCd" column="ADMS_PRRN_WARD_CD"/>
+		<result property="admsPrrnPtrmNo" column="ADMS_PRRN_PTRM_NO"/>
+		<result property="admsPrrnSckbNo" column="ADMS_PRRN_SCKB_NO"/>
+		<result property="istyCd" column="ISTY_CD"/>
+		<result property="oprtNeedYn" column="OPRT_NEED_YN"/>
+		<result property="infcIsltNeedYn" column="INFC_ISLT_NEED_YN"/>
+		<result property="crptRomAdmsYn" column="CRPT_ROM_ADMS_YN"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="prrnPtadRespDt" column="PRRN_PTAD_RESP_DT"/>
+		<result property="ptadRespCtn" column="PTAD_RESP_CTN"/>
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="unsbCtn" column="UNSB_CTN"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="abrvWardCd" column="ABRV_WARD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt (예비입원 환자를 조회한다.) 
+        Description :                                           예비입원 환자를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRsvrAdmsMngrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRsvrAdmsMngrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-listRsvrAdmsPtnt */
+		select d.PTNO                                   as PTNO             -- 등록번호
+						     , d.PTNT_NM                                as PTNT_NM          -- 환자명
+						     , d.GEND_CD                                as GEND_CD           -- 성별
+						     , FN_MD_GETAGE('2', d.BTDT, sysdate)       as AGE_CTN           -- 나이
+						     , b.ANTP_MCDP_CD                           as ANTP_MCDP_CD      -- 입원예상 진료과코드
+						     , (select x.KORN_DPRT_NM
+						          from HZDEPTMMT x
+						         where x.DPRT_CD = b.ANTP_MCDP_CD)      as KORN_DPRT_NM      -- 예상 입원과명
+						     , b.ADMS_PRRN_WARD_CD                      as ADMS_PRRN_WARD_CD -- 병동
+						     , b.ADMS_PRRN_PTRM_NO                      as ADMS_PRRN_PTRM_NO -- 병실
+						     , b.ADMS_PRRN_SCKB_NO                      as ADMS_PRRN_SCKB_NO -- 침상
+						     , c.ISTY_CD                                as ISTY_CD           -- 유형
+						     , b.OPRT_NEED_YN                           as OPRT_NEED_YN      -- 수술필요여부
+						     , b.INFC_ISLT_NEED_YN                      as INFC_ISLT_NEED_YN -- 감염격리필요여부
+						     , b.CRPT_ROM_ADMS_YN                       as CRPT_ROM_ADMS_YN  -- 중환자실입원여부
+						     , to_char(b.WRTG_DT, 'yyyymmdd')           as WRTG_DT           -- 작성일시(진료요청일시)
+						     , to_char(b.PRRN_PTAD_RESP_DT, 'yyyymmdd') as PRRN_PTAD_RESP_DT -- 예정원무답변일시 (원무확인일시)
+						     , b.PTAD_RESP_CTN                          as PTAD_RESP_CTN     -- 원무답변내용 (입원 예상 내용)
+						     , to_char(c.MDCR_YMD, 'yyyymmdd')          as MDCR_YMD          -- 진료일자
+						     , to_char(c.MDCR_DT, 'yyyymmddhh24miss')   as MDCR_DT           -- 진료일시
+						     , b.UNSB_CTN                               as UNSB_CTN          -- 특이사항내용
+		                     , c.MDRP_NO                                as MDRP_NO           -- 진료접수번호 
+		                     , (select f_a.ABRV_DPRT_CD
+		                          from HZDEPTMMT f_a
+		                         where f_a.DPRT_CD = b.ADMS_PRRN_WARD_CD) as ABRV_WARD_CD      -- 약어병동코드
+						  from MNEERRPAT a -- 응급간호정보조사지  
+						     , MDRSVADMT b -- 예비입원
+						     , APRCRPTNT c -- 진료접수 
+						     , APPTPTNTT d -- 환자
+						 where 
+						       a.CHOT_DT is null
+						   and b.MDRP_NO = a.MDRP_NO   
+						   and (
+						         (b.WRTG_DT is not null)     -- 응급실 취소 (작성일시)
+						          or
+						         (b.PRRN_PTAD_RESP_DT is not null)     -- 원무취소 (예정원무답변일시 )
+						       )
+						   and not exists (
+						                   select 1
+						                     from APRCAMAPT x -- 입원예약
+						                    where x.MDRP_NO = a.MDRP_NO
+						                      and rownum = 1)
+						   and c.MDRP_NO = b.MDRP_NO
+						   and d.PTNO    = c.PTNO
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-updatePdadRsvrAdmsInfm (예비입원 환자의 원무정보를 수정 처리한다) 
+        Description :                                           예비입원 환자의 원무정보를 수정 처리한다
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpRsvrAdmsMngrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-updatePdadRsvrAdmsInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpRsvrAdmsMngrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpRsvrAdmsMngrDAO-updatePdadRsvrAdmsInfm */
+		update MDRSVADMT -- 예비입원
+		   set LAST_UPDR_ID           = #{gvUserId}              
+			 , LAST_UPDT_IP           = #{gvUserIp}              
+			 , LAST_UPDT_DT           = sysdate             
+			 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}        
+			 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			 , PRRN_PTAD_RESP_DT = (case when #{rsvrAdmsAplyYn} = 'Y' then sysdate else null end) -- 예정원무답변일시
+		<if test='rsvrAdmsAplyYn != null and rsvrAdmsAplyYn == "Y"'>
+			 , ADMS_PRRN_WARD_CD = #{admsPrrnWardCd}  -- 입원예정병동코드
+			 , ADMS_PRRN_PTRM_NO = #{admsPrrnPtrmNo}  -- 입원예정병실번호
+			 , ADMS_PRRN_SCKB_NO =  #{admsPrrnSckbNo} -- 입원예정병상번호
+			 , PTAD_RESP_CTN     =  #{ptadRespCtn}    -- 원무답변내용
+			 , PTAD_RESPR_ID     = #{ptadResprId}     -- 원무답변자ID
+		</if>
+		where MDRP_NO = #{mdrpNo}
+	</update>
+
+</mapper>

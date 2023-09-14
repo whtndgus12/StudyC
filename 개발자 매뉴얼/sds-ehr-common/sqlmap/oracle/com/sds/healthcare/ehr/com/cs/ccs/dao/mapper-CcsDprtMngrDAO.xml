@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsDprtMngrDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsDprtMngrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmCdNm" column="OCFM_CD_NM"/>
+		<result property="ocfmDetlCd" column="OCFM_DETL_CD"/>
+		<result property="ocfmDetlCdNm" column="OCFM_DETL_CD_NM"/>
+		<result property="trgtYn" column="TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-listDprtMngr */
+		SELECT M.DPRT_CD           					/*부서코드*/
+		        , D.KORN_DPRT_NM    				/*부서명*/
+		        , M.MENU_GRP_ID    				    /*메뉴그룹ID*/
+		        , M.OCFM_CD            				/*직종코드*/
+		        ,(SELECT X.DETL_CD_NM
+		            FROM CCCMCDDMT X
+		           WHERE X.COMN_GRP_CD  = 'GP170'
+		             AND X.COMN_DTLS_CD = M.OCFM_CD
+		        ) AS OCFM_CD_NM       			    /*직종코드명*/
+		        , M.OCFM_DETL_CD         			/*직종상세코드*/
+		        ,(SELECT X.DETL_CD_NM
+		            FROM CCCMCDDMT X
+		           WHERE X.COMN_GRP_CD  = 'GP174'
+		             AND X.COMN_DTLS_CD = M.OCFM_DETL_CD
+		        ) AS OCFM_DETL_CD_NM    			/*직종상세코드명*/
+		        , M.TRGT_YN            				/*대상여부*/
+		     FROM CSDPMNRMT M
+		        , HZDEPTMMT D
+		    WHERE M.DPRT_CD  = D.DPRT_CD
+		     <if test="dprtCd != null">
+		     AND M.DPRT_CD    	LIKE '%' || #{dprtCd} || '%'
+		     </if>
+		     <if test="menuGrpId != null">
+		     AND M.MENU_GRP_ID  LIKE '%' || #{menuGrpId} || '%' 
+		     </if>
+		     <if test="ocfmCd != null and !ocfmCd.equals('')">
+		     AND M.OCFM_CD   	LIKE '%' || #{ocfmCd} || '%'
+		     </if>
+		     <if test="ocfmDetlCd != null and !ocfmDetlCd.equals('')">
+		     AND M.OCFM_DETL_CD LIKE '%' || #{ocfmDetlCd} || '%' 
+		     </if>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-insertDprtMngr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-insertDprtMngr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-insertDprtMngr */
+		 INSERT 
+		   INTO CSDPMNRMT( DPRT_CD
+		                 , OCFM_TYPE
+		                 , OCFM_CD
+		                 , OCFM_DETL_CD
+		                 , MENU_GRP_ID
+						 , TRGT_YN
+		                 , FRST_RGSR_ID
+		                 , FRST_RGST_IP
+		                 , FRST_RGST_DT
+		                 , FRST_RGST_CLNT_PRGM_ID
+		                 , FRST_RGST_SRVR_PRGM_ID
+		                 , LAST_UPDR_ID
+		                 , LAST_UPDT_IP
+		                 , LAST_UPDT_DT
+		                 , LAST_UPDT_CLNT_PRGM_ID
+		                 , LAST_UPDT_SRVR_PRGM_ID)
+		 VALUES		  (    #{dprtCd}
+					     , #{ocfmType}
+					     , #{ocfmCd}
+					     , #{ocfmDetlCd}
+					     , #{menuGrpId}  
+					     , #{trgtYn}                
+		           		 , #{gvLginId}                      
+		           		 , #{gvUserIp}                      
+		           		 , sysdate                      
+		           		 , #{gvClntPrgmId}                      
+		           		 , #{gvSrvrPrgmId}                      
+		           		 , #{gvLginId}                      
+		           		 , #{gvUserIp}                      
+		           		 , sysdate                      
+		           		 , #{gvClntPrgmId}                      
+		           		 , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-updateDprtMngr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-updateDprtMngr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-updateDprtMngr */
+		     UPDATE CSDPMNRMT
+				SET  DPRT_CD           		 = #{dprtCd}     /* 부서코드 */ 
+		           , OCFM_TYPE           	 = #{ocfmType}     /* 직종타입 */ 
+		           , OCFM_CD           		 = #{ocfmCd}     /* 직종코드 */ 
+		           , OCFM_DETL_CD            = #{ocfmDetlCd}     /* 직종상세코드 */ 
+		           , MENU_GRP_ID           	 = #{menuGrpId}     /* 메뉴그룹ID */ 
+		           , LAST_UPDR_ID            = #{gvLginId}     /* 최종수정자ID */ 
+		           , LAST_UPDT_IP            = #{gvUserIp}     /* 최종수정IP */ 
+		           , LAST_UPDT_DT            = sysdate          /* 최종수정일시 */ 
+		           , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}  /* 최종수정클라이언트프로그램ID */ 
+		           , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}  /* 최종수정서버프로그램ID */ 
+		      WHERE  DPRT_CD = #{dprtCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-deleteDprtMngr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-deleteDprtMngr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-deleteDprtMngr */
+		DELETE FROM CSDPMNRMT 
+		      WHERE DPRT_CD  = #{dprtCd}
+		     <if test="menuGrpId != null">
+		        AND MENU_GRP_ID  LIKE '%' || #{menuGrpId} || '%' 
+		     </if>
+		     <if test="ocfmCd != null and !ocfmCd.equals('')">
+		        AND OCFM_CD   	LIKE '%' || #{ocfmCd} || '%'
+		     </if>
+		     <if test="ocfmDetlCd != null and !ocfmDetlCd.equals('')">
+		        AND OCFM_DETL_CD LIKE '%' || #{ocfmDetlCd} || '%' 
+		     </if>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="ocfmType" column="OCFM_TYPE"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmDetlCd" column="OCFM_DETL_CD"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="frstRgstClntPrgmId" column="FRST_RGST_CLNT_PRGM_ID"/>
+		<result property="frstRgstSrvrPrgmId" column="FRST_RGST_SRVR_PRGM_ID"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdtClntPrgmId" column="LAST_UPDT_CLNT_PRGM_ID"/>
+		<result property="lastUpdtSrvrPrgmId" column="LAST_UPDT_SRVR_PRGM_ID"/>
+		<result property="trgtYn" column="TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsDprtMngrDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsDprtMngrDAO-selectOneDprtMngr */
+		SELECT *
+		  FROM CSDPMNRMT
+		 WHERE DPRT_CD = #{dprtCd}
+		   AND MENU_GRP_ID = #{menuGrpId}
+		   AND OCFM_TYPE = #{ocfmType}
+	</select>
+
+
+
+</mapper>

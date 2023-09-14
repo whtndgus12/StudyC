@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaClclComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AcaClclComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO">
+	
+		<result property="rcpcAmt" column="RCPC_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt (입원환자 유효처방 계산금액) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsRcpcAmt */
+		       nvl(sum(RCPC_AMT), 0) as RCPC_AMT
+		 from  ACCLMCCLT a
+		where  MDRP_NO    =  #{mdrpNo}
+		  and  ORTA_NM    not in ('APRCRPTNT', 'APRCPTRMT') /*  APIPDLST, APROOMMT */
+		  and  CNCL_DT    is null
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO">
+	
+		<result property="hsptAditAmt" column="HSPT_ADIT_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt (병원 입원가산금액 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsHsptAditAmt */
+		select
+		                            nvl(sum(HSPT_ADIT_AMT), 0) as HSPT_ADIT_AMT
+		                        from  ACCLMCCLT x
+		                       where  MDRP_NO       =  #{mdrpNo}
+		                        and  (
+		                             ( PTAD_CODV_CD = 'I'
+		                              and ORTA_NM not in ('APRCRPTNT', 'APRCPTRMT') /*  APIPDLST, APROOMMT */
+		                             )
+		                             or PTAD_CODV_CD != 'I'
+		                            )
+		                        and  CNCL_DT is null
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-updateAdmsMcclCncl (입원계산내역취소) 
+        Description :                                           처방에대한 입원계산내역 취소처리
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-updateAdmsMcclCncl"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-updateAdmsMcclCncl */
+		update  ACCLMCCLT
+		   set  CNCL_DT           = trunc(sysdate)
+		     ,  LAST_UPDR_ID      = #{gvUserId}
+		     ,  LAST_UPDT_IP      = #{gvUserIp}
+		     ,  LAST_UPDT_DT      = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  PTNO     = #{ptno}
+		   and  ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		   and  ORDR_SNO = #{ordrSno}
+		   and  ORTA_NM  = #{ortaNm}
+		   and  PTAD_CODV_CD = 'I'
+		   and  CNCL_DT is null
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO">
+	
+		<result property="chckSttsCd" column="CHCK_STTS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd (입원계산내역에 해당하는 접수내역의 심사상태 조회) 
+        Description :                                           입원계산내역에 해당하는 접수내역의 심사상태 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaClclComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaClclComnDAO-selectOneAdmsChckSttsCd */
+		select  nvl(max(b.CHCK_STTS_CD),'N')    CHCK_STTS_CD
+		  from  ACCLPAORV a   
+		     ,  APRCRPTNT b
+		 where  a.PTNO     = #{ptno}
+		   and  a.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		   and  a.ORDR_SNO = #{ordrSno}
+		   and  a.ORTA_NM  = #{ortaNm}
+		   and  b.MDRP_NO = a.PTAD_MDRP_NO
+		   and  rownum    = 1
+	</select>
+
+
+
+</mapper>

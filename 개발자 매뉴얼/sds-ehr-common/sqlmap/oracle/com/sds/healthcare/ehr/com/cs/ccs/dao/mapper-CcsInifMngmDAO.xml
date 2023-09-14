@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsInifMngmDAO_sql.xml 
+    Description :                                      개인정보조회관리
+                  -->
+<mapper namespace="CcsInifMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-insertInifInqrResn (개인정보조회사유입력) 
+        Description :                                           csd_inifrmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-insertInifInqrResn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-insertInifInqrResn_개인정보조회사유입력 */
+		into	CSINIFRMT
+						  (INIF_SNO,
+						   PTNO,
+						   SCRN_ID,
+						   INQR_RESN_CD,
+						   INQR_REET_CTN,
+						   RCKI_CD,
+						   IQPR_ID,
+						   INQR_IP,
+						   INQR_DT,
+						   INIF_INQR_ITDV_CD,
+						   REDN_STRT_DT,
+						   REDN_FNSH_DT,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID
+					)
+				   values  (
+			   			 (select nvl(max(INIF_SNO),0) + 1 from CSINIFRMT ),
+			   			 #{ptno},
+			   			 #{scrnId},
+			   			 #{inqrResnCd},
+			   			 #{inqrReetCtn},
+			   			 #{rckiCd},
+			   			 nvl(#{iqprId}, #{gvUserId}),
+			   			 nvl(#{inqrIp}, #{gvUserIp}),
+			   			 sysdate, 
+			   			 #{inifInqrItdvCd},
+			   			 to_date(#{rednStrtDt},'yyyymmddhh24miss'),
+			   			 to_date(#{rednFnshDt},'yyyymmddhh24miss'),
+			   			 #{gvUserId},
+			   			 #{gvUserIp},
+			   			 sysdate,
+			   			 #{gvClntPrgmId},
+			   			 #{gvSrvrPrgmId},
+			   			 #{gvUserId},
+			   			 #{gvUserIp},
+			   			 sysdate,
+			   			 #{gvClntPrgmId},
+			   			 #{gvSrvrPrgmId}
+					)
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO">
+	
+		<result property="inifSno" column="INIF_SNO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="scrnId" column="SCRN_ID"/>
+		<result property="inqrResnCd" column="INQR_RESN_CD"/>
+		<result property="inqrReetCtn" column="INQR_REET_CTN"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="iqprId" column="IQPR_ID"/>
+		<result property="inqrIp" column="INQR_IP"/>
+		<result property="inqrDt" column="INQR_DT"/>
+		<result property="rednStrtDt" column="REDN_STRT_DT"/>
+		<result property="rednFnshDt" column="REDN_FNSH_DT"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+		<result property="rturVl5" column="RTUR_VL_5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn (개인정보조회등록내용조회) 
+        Description :                                           csd_inifrmt_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrResn_개인정보 조회 등록 내용 조회 */
+						   A.INIF_SNO as INIF_SNO,
+						   A.PTNO as PTNO,
+						   A.SCRN_ID as SCRN_ID,
+						   A.INQR_RESN_CD as INQR_RESN_CD,
+						   A.INQR_REET_CTN as INQR_REET_CTN,
+						   A.RCKI_CD as RCKI_CD,
+						   '' as MDCR_DT,
+						   A.IQPR_ID as IQPR_ID,
+						   A.INQR_IP as INQR_IP,
+						   to_char(A.INQR_DT,'yyyymmddhh24miss') as INQR_DT,
+						   to_char(A.REDN_STRT_DT,'yyyymmddhh24miss') as REDN_STRT_DT,
+						   to_char(A.REDN_FNSH_DT,'yyyymmddhh24miss') as REDN_FNSH_DT,
+						   ( select PTNT_NM from APPTPTNTT where PTNO = A.PTNO ) as RTUR_VL_1,
+						   B.USER_NM as RTUR_VL_2,
+						   ( select PRGM_NM from CSPRMLTMT /*  CSPROXMMT */ where PRGM_ID = A.SCRN_ID ) as RTUR_VL_3,
+						   ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CCX_004' and COMN_DTLS_CD = INQR_RESN_CD  ) as RTUR_VL_4,
+						   decode(A.PTNO, '', '', A.PTNO||' ( ' || (select PTNT_NM from  APPTPTNTT where  PTNO = a.PTNO) || ' )' ) as RTUR_VL_5
+					 from  CSINIFRMT A,
+						     CCUSERAMT B
+					where  ( ( A.PTNO like #{ptno}) or ( decode( #{ptno},'%',null, #{ptno} ) is null ) )
+					  and  A.INQR_DT >= to_date(#{rturVl1},'yyyymmddhh24miss')
+					  and  A.INQR_DT <= to_date(#{rturVl2},'yyyymmddhh24miss')
+					  and  ( ( A.SCRN_ID like #{scrnId} ) or ( decode( #{scrnId},'%',null, #{scrnId} ) is null ) )
+					  and  A.IQPR_ID like #{iqprId}
+					  and  A.INQR_RESN_CD like #{inqrResnCd}
+					  and  ( ( A.RCKI_CD like #{rckiCd} ) or ( decode( #{rckiCd},'%',null, #{rckiCd} ) is null ) )
+					  and  A.IQPR_ID = B.LGIN_ID
+					  and  A.INIF_INQR_ITDV_CD = 'M'
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO">
+	
+		<result property="inptYmd" column="INPT_YMD"/>
+		<result property="inifSno" column="INIF_SNO"/>
+		<result property="inifDvsnCd" column="INIF_DVSN_CD"/>
+		<result property="msknYn" column="MSKN_YN"/>
+		<result property="inqrLctnCtn" column="INQR_LCTN_CTN"/>
+		<result property="prinDvsnCd" column="PRIN_DVSN_CD"/>
+		<result property="srvcId" column="SRVC_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="inqrDt" column="INQR_DT"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="workCct" column="WORK_CCT"/>
+		<result property="dwnlResnCtn" column="DWNL_RESN_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog (개인정보조회로그저장 내용조회) 
+        Description :                                           csd_iniflmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog-result" useCache="true" flushCache="false">
+		<![CDATA[
+			   select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-listInifInqrLog_개인정보조회로그저장  내용 조회 */
+						to_char(INPT_YMD,'YYYYMMDD')           as INPT_YMD 				/* 입력일자 */
+			   		  , INIF_SNO                                            as INIF_SNO 				/* 개인정보구분코드 */
+			   		  , INIF_DVSN_CD                                    as INIF_DVSN_CD 		/* 개인정보구분코드 */
+			   		  , MSKN_YN                                           as MSKN_YN 				/* Masking여부 */
+			   		  , INQR_LCTN_CTN                                  as INQR_LCTN_CTN 	/* 조회위치내용 */
+			   		  , PRIN_DVSN_CD                                    as PRIN_DVSN_CD 	/* 출력구분코드 */
+			   		  , SRVC_ID                                              as SRVC_ID 				/* 서비스ID */
+			   		  , USER_ID                                              as USER_ID 				/* 사용자ID */
+			   		  , to_char( INQR_DT,'yyyymmddhh24miss' ) as INQR_DT 				/* 조회일시 */
+			   		  , RMRK_CTN                                          as RMRK_CTN 			/* 비고내용 */
+			   		  , ''                                                        as FRST_RGSR_ID 		/* 최초등록자ID */
+			   		  , ( select DETL_CD_NM 
+			   		        from CCCMCDDMT 
+			   		       where COMN_GRP_CD = 'CCX_002' 
+			   		         and COMN_DTLS_CD = INIF_DVSN_CD
+			   		    )                                                        as RTUR_VL_1  			/* 개인정보구분코드 */
+			   		  , ( select DETL_CD_NM 
+			   		        from CCCMCDDMT 
+			   		       where COMN_GRP_CD = 'CCX_003' 
+			   		         and COMN_DTLS_CD = PRIN_DVSN_CD
+			   		    )                                                       as RTUR_VL_2  			/* 출력구분코드 */
+			   		  , ( select user_nm 
+			   		        from ccuseramt 
+			   		       where lgin_id  = USER_ID
+			   		    )                                                       as RTUR_VL_3 			/* 사용자명 */
+			   		  , ''                                                       as RTUR_VL_4
+			   		  , FRST_RGST_IP 					                    as FRST_RGST_IP			/* 최초등록IP */
+			   		  , WORK_CCT	
+					  , DWNL_RESN_CTN       
+		    	from CSINIFLMT                                                                         /* 개인정보조회로그T */
+			   where INQR_DT >= to_date(#{rturVl1},'yyyymmddhh24miss')       /* 입력일자 */
+			     and INQR_DT <= to_date(#{rturVl2},'yyyymmddhh24miss')           
+			 	 and ((nvl(#{lginId}, '*')         = '*') or (FRST_RGSR_ID    = #{lginId}))              /* 최초등록자ID */
+				 and ((nvl(#{inifDvsnCd}, '*')  = '*') or (INIF_DVSN_CD   = #{inifDvsnCd}))      /* 개인정보구분코드 */
+				 and ((nvl(#{msknYn}, '*')      = '*') or (MSKN_YN         = #{msknYn}))          /* Masking여부 */ 
+				 and ((nvl(#{prinDvsnCd}, '*') = '*') or (PRIN_DVSN_CD  = #{prinDvsnCd}))    /* 출력구분코드 */
+		         and ((nvl(#{inqrLctnCtn}, '*') = '*') or (INQR_LCTN_CTN  LIKE #{inqrLctnCtn} || '%'))    /* 출력구분코드 */
+			  order 
+				  by INQR_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO">
+	
+		<result property="inifInqrCndtCtn" column="INIF_INQR_CNDT_CTN"/>
+		<result property="prinItemCtn" column="PRIN_ITEM_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl (개인정보조회로그저장 상세내용조회) 
+        Description :                                           csd_iniflmt_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsInifMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl-result" useCache="true" flushCache="false">
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsInifMngmDAO-selectOneInifInqrLogDetl_개인정보조회로그저장  상세 조회 */
+					INIF_INQR_CNDT_CTN as INIF_INQR_CNDT_CTN,
+					PRIN_ITEM_CTN as PRIN_ITEM_CTN
+		from		CSINIFLMT
+		where	INPT_YMD = to_date(#{inptYmd}, 'yyyy-mm-dd' )
+		and		INIF_SNO = #{inifSno}
+	</select>
+
+
+
+</mapper>

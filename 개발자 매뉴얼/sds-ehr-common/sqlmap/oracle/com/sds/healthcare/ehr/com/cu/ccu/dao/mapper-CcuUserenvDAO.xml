@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUserenvDAO_sql.xml 
+    Description :                                      개인화 설정
+                  -->
+<mapper namespace="CcuUserenvDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-insertUserenv (개인화 설정 저장) 
+        Description :                                           개인화 설정 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-insertUserenv"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-insertUserenv */
+		insert  /*+ cud_userenv_i01$I01_개인화 설정 저장 */
+				   into   CSURCFGMT( USER_ID
+										  , INDV_STUP_DVSN_CD
+										  , FILE_NM
+										  , FILE_SIZE_VL
+										  , FLDV_NM
+										  , INDV_STUP_VL
+										  , FRST_RGSR_ID
+										  , FRST_RGST_IP
+										  , FRST_RGST_DT
+										  , FRST_RGST_CLNT_PRGM_ID
+										  , FRST_RGST_SRVR_PRGM_ID
+										  , LAST_UPDR_ID
+										  , LAST_UPDT_IP
+										  , LAST_UPDT_DT
+										  , LAST_UPDT_CLNT_PRGM_ID
+										  , LAST_UPDT_SRVR_PRGM_ID
+										  )
+									values( #{userId}
+										  , #{indvStupDvsnCd}
+										  , #{fileNm}
+										  , #{fileSizeVl}
+										  , #{fldvNm}
+										   , #{indvStupVlByte}
+										  , #{gvUserId}
+										  , #{gvUserIp}
+										  , sysdate
+										  , #{gvClntPrgmId}
+										  , #{gvSrvrPrgmId}
+										  , #{gvUserId}
+										  , #{gvUserIp}
+										  , sysdate
+										  , #{gvClntPrgmId}
+										  , #{gvSrvrPrgmId}
+										  )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="indvStupDvsnCd" column="INDV_STUP_DVSN_CD"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="indvStupVlByte" column="INDV_STUP_VL_BYTE"/>
+		<result property="indvStupVlBd" column="INDV_STUP_VL_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv (개인화 설정 조회) 
+        Description :                                           개인화 설정 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listUserenv */
+		select  /*+ cud_userenv_l01$S01_개인화 설정 조회 */
+						   USER_ID
+		                 , INDV_STUP_DVSN_CD
+		                 , FILE_NM
+		                 , FILE_SIZE_VL
+		                 , FLDV_NM
+		                 , INDV_STUP_VL AS "INDV_STUP_VL_BYTE"
+						 , '' as "INDV_STUP_VL_BD"
+				   from    CSURCFGMT
+				   where   USER_ID           = #{userId}
+					 and   INDV_STUP_DVSN_CD = #{indvStupDvsnCd}
+					 and   ((nvl(#{fileNm}, '*') = '*') or
+							(FILE_NM         = #{fileNm}))
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteUserenv (개인화 설정 삭제) 
+        Description :                                           개인화 설정 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteUserenv"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteUserenv */
+		delete  /*+ cud_userenv_d01$I01_개인화 설정 삭제 */
+				   from    CSURCFGMT
+				   where   USER_ID            = #{userId}
+					 and   INDV_STUP_DVSN_CD  = #{indvStupDvsnCd}
+					 and   ((nvl(#{fileNm}, '*') = '*') or
+							(FILE_NM            = #{fileNm}))
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO">
+	
+		<result property="prinSqnc" column="PRIN_SQNC"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="indvStupDvsnCd" column="INDV_STUP_DVSN_CD"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="indvStupVlByte" column="INDV_STUP_VL_BYTE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup (개인화 설정 조회) 
+        Description :                                           개인화 설정 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-listIndvStup */
+						   rownum as PRIN_SQNC
+						 , to_char(a.FRST_RGST_DT,'YYYY-MM-DD HH24:MM:SS') as RTUR_VL
+						 , a.INDV_STUP_DVSN_CD as INDV_STUP_DVSN_CD
+						 , decode(a.INDV_STUP_DVSN_CD, 'EM', '개인화 메뉴', 'WS', 'WorkSpace', 'FD', 'FormDeginer', 'GD', 'Grid 설정', '') as RTUR_VL_1
+						 , a.USER_ID as USER_ID
+						 , b.USER_NM as USER_NM
+						 , replace(a.FLDV_NM, '.', '') as FLDV_NM
+						 , a.FILE_NM as FILE_NM
+						 , a.INDV_STUP_VL as INDV_STUP_VL_BYTE
+				   from    CSURCFGMT a
+						 , CCUSRDPHT b
+				   where   a.USER_ID = b.USER_ID
+					 and   a.USER_ID = #{userId}
+					 and   ((nvl(#{indvStupDvsnCd}, '*') = '*') or (a.INDV_STUP_DVSN_CD = #{indvStupDvsnCd}))
+				   order by a.FRST_RGST_DT desc
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteIndvStup (개인화 설정 삭제) 
+        Description :                                           개인화 설정 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteIndvStup"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserenvDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserenvDAO-deleteIndvStup */
+				   from    CSURCFGMT
+				   where   USER_ID            = #{userId}
+					 and   INDV_STUP_DVSN_CD  = #{indvStupDvsnCd}
+					 and   ((nvl(#{fileNm}, '*') = '*') or
+							(FILE_NM            = #{fileNm}))
+		]]>
+	</delete>
+
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaOpcaComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AcaOpcaComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-listPtntOpcaInfo-result" type="com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO">
+	
+		<result property="crcrPrrtSqnc" column="CRCR_PRRT_SQNC"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="crcrNm" column="CRCR_NM"/>
+		<result property="aplcCrcrNo" column="APLC_CRCR_NO"/>
+		<result property="crcrValdYm" column="CRCR_VALD_YM"/>
+		<result property="useFnshYmd" column="USE_FNSH_YMD"/>
+		<result property="crcrOwneNm" column="CRCR_OWNE_NM"/>
+		<result property="opcaRgstYmd" column="OPCA_RGST_YMD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="aplnNm" column="APLN_NM"/>
+		<result property="pnrlCtn" column="PNRL_CTN"/>
+		<result property="aplnClnoCtn" column="APLN_CLNO_CTN"/>
+		<result property="crcrInfmCtn" column="CRCR_INFM_CTN"/>
+		<result property="opcaPymnRangCd" column="OPCA_PYMN_RANG_CD"/>
+		<result property="chmeRecvTlnoCtn" column="CHME_RECV_TLNO_CTN"/>
+		<result property="rcptRcepEmadNm" column="RCPT_RCEP_EMAD_NM"/>
+		<result property="afiRcptRcepMthdNm" column="AFI_RCPT_RCEP_MTHD_NM"/>
+		<result property="chmeRecvAgrmYn" column="CHME_RECV_AGRM_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-listPtntOpcaInfo (오픈카드 정보조회) 
+        Description :                                           acd_mdrcoca_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-listPtntOpcaInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-listPtntOpcaInfo"  parameterType="com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-listPtntOpcaInfo-result" useCache="true" flushCache="false">
+		select  /*+ acd_mdrcoca_l01$S01_오픈카드 정보조회 */
+			   a.CRCR_PRRT_SQNC as CRCR_PRRT_SQNC
+			,  b.DETL_CD_NM as DETL_CD_NM
+		    ,  a.CRCR_NM
+			,  a.APLC_CRCR_NO as APLC_CRCR_NO
+			,  a.CRCR_VALD_YM as CRCR_VALD_YM
+			,  to_char(a.APFN_YMD, 'yyyymmdd') as USE_FNSH_YMD /*  카드사용 종료일 */
+			,  a.CRCR_OWNE_NM as CRCR_OWNE_NM
+			,  to_char(a.OPCA_RGST_YMD, 'yyyymmdd') as OPCA_RGST_YMD
+			,  to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD
+			,  to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD
+			,  a.APLN_NM as APLN_NM
+			,  a.PNRL_CTN as PNRL_CTN
+			,  a.APLN_CLNO_CTN as APLN_CLNO_CTN
+			,  a.CRCR_INFM_CTN as CRCR_INFM_CTN
+			,  nvl(a.OPCA_PYMN_RANG_CD, 'A') as OPCA_PYMN_RANG_CD
+			,  a.CHME_RECV_TLNO_CTN as CHME_RECV_TLNO_CTN
+			,  a.RCPT_RCEP_EMAD_NM as RCPT_RCEP_EMAD_NM
+			,  case a.RCPT_RCEP_MTHD_CD
+				  when 'P' then '직접수령'
+				  when 'A' then '우편수령'
+				  when 'E' then 'E-MAIL 수령'
+				  when 'D' then '수납창구에서 수령'
+				  end as AFI_RCPT_RCEP_MTHD_NM    /*  영수증 수령 방법명 */
+			,  a.CHME_RECV_AGRM_YN as CHME_RECV_AGRM_YN
+		 from
+			   ACRCOCRGT a
+			,  CCCMCDDMT b				
+		where  a.rowid = fn_ac_get_opca_rowid(to_date(#{ordrYmd}, 'yyyymmdd'), #{ptno})
+		  and  b.COMN_GRP_CD   (+)= 'AC086'
+		  and  b.COMN_DTLS_CD  (+)= a.CCCM_CD
+		order
+		   by
+			   a.OPCA_RGST_YMD desc
+			,  a.CRCR_PRRT_SQNC asc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn-result" type="com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO">
+	
+		<result property="hipassRgstYn" column="HIPASS_RGST_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn (하이패스등록여부조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn"  parameterType="com.sds.healthcare.ehr.adm.ac.acc.vo.AcaOpcaComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-acc-dao-AcaOpcaComnDAO-selectOneHipassRgstYn */
+		select 'Y' as HIPASS_RGST_YN
+		  from ACRCOCRGT
+		 where rowid = fn_ac_get_opca_rowid(trunc(sysdate), #{ptno})
+		   and rownum = 1
+	</select>
+
+
+
+</mapper>

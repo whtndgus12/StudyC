@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SppComnDxPthlScndOrdrMngmDAO_sql.xml 
+    Description :                                      진단병리2차처방정보를 관리(처방등록 및 취소)한다.
+                  -->
+<mapper namespace="SppComnDxPthlScndOrdrMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrRgstPrsg (진단병리2차처방 등록처리) 
+        Description :                                           병리 2차처방 정보에 처방정보(처방번호, 처방일자 등)의 정보를 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrRgstPrsg"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrRgstPrsg */
+		    update  /*+ spd_mdspaad_u02$U01_진단병리 2차처방 처리 */
+		            SPAADDODT                          /* 추가 오더 관리(선검사처방) */
+		       set
+		            ODDR_ID   = #{oddrId}                      /* 처방의사             */
+		         ,  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')                /* 처방일자             */
+		         ,  ORDR_SNO  = #{ordrSno}                /* 처방순번             */
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  1 = 1
+		       /*and  PTNO    = #{ptno}                               환자번호             */
+		       and  PTHL_NO = #{pthlNo}                           /* 병리번호             */
+		       and  PTEX_ADOR_SNO = #{ptexAdorSno}               /* 병리검사추가처방순번             */
+		       and  ORDR_YMD  is null                         /* 처방일자             */
+		       and  ODDR_ID   is null                         /* 처방의사             */
+		       and  CCDR_ID   is null                         /* 취소한의사           */
+		       and  nvl(DX_PTHL_PRSG_DVSN_CD, 'N') = 'N'      /* 선검사처리여부 Y=처리,N=미처리,C=취소 */
+		       and  nvl(EXMN_DVSN_NM, 'PRE') = 'PRE'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrCnclPrsg (진단병리2차처방 취소처리) 
+        Description :                                           병리 2차처방 정보에 처방취소정보를 갱신한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrCnclPrsg"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrMngmDAO-updateDxPthlScndOrdrCnclPrsg */
+		    update  /*+ spd_mdspaad_u01$U01_진단병리 2차처방 취소 */  
+		            SPAADDODT                          /* 추가 오더 관리(선검사처방) */
+		       set  CCDR_ID   = #{ccdrId}                      /* 취소한의사           */
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO      = #{ptno}                         /* 환자번호             */
+		       and  ORDR_YMD  is null                         /* 처방일자             */
+		       and  ODDR_ID   is null                         /* 처방의사             */
+		       and  CCDR_ID   is null                         /* 취소한의사           */
+		       and  nvl(DX_PTHL_PRSG_DVSN_CD, 'N') = 'C'      /* 선검사처리여부 Y=처리,N=미처리,C=취소 */
+	</update>
+
+</mapper>

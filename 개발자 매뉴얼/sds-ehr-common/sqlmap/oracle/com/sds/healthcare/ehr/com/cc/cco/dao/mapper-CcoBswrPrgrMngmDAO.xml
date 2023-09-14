@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoBswrPrgrMngmDAO_sql.xml 
+    Description :                                      진척관리(COR948L1) 관련 조회, 저장, 수정처리를 수행한다.
+                  -->
+<mapper namespace="CcoBswrPrgrMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO">
+	
+		<result property="fitGapId" column="FIT_GAP_ID"/>
+		<result property="prssCd" column="PRSS_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM1"/>
+		<result property="dvlrNm" column="DVLR_NM"/>
+		<result property="sprintNo" column="SPRINT_NO"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="mdfcYmd" column="MDFC_YMD"/>
+		<result property="workMdfcSbjcCtn" column="WORK_MDFC_SBJC_CTN"/>
+		<result property="cnfmNm" column="CNFM_NM"/>
+		<result property="acwrCnfrYmd" column="ACWR_CNFR_YMD"/>
+		<result property="unitBswrNm" column="UNIT_BSWR_NM"/>
+		<result property="bswrNm" column="BSWR_NM"/>
+		<result property="gapCtn" column="GAP_CTN"/>
+		<result property="gapCrspRemdCtn" column="GAP_CRSP_REMD_CTN"/>
+		<result property="devpAsigCd" column="DEVP_ASIG_CD"/>
+		<result property="detlCdNm2" column="DETL_CD_NM2"/>
+		<result property="afiEtcNm" column="AFI_ETC_NM"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="detlCdNm3" column="DETL_CD_NM3"/>
+		<result property="sbSystId" column="SB_SYST_ID"/>
+		<result property="detlCdNm4" column="DETL_CD_NM4"/>
+		<result property="fnshPrrnYmd" column="FNSH_PRRN_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt (진척관리(COR948F1) 메인조회처리) 
+        Description :                                           진척관리(COR948F1) 화면의 메인조회를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-listCorBpMgmt */
+		<![CDATA[
+			SELECT 
+						MGMT.FIT_GAP_ID											      										-- FIT_GAP_ID
+			  		  , MGMT.PRSS_CD													  										-- 진행상태코드(1 : BASE, 2 : 추가, 3 : 변경, 4 : 삭제 )
+			  		  , CD1.DETL_CD_NM 														AS DETL_CD_NM1       -- 진행상태코드명
+			  		  , MGMT.DVLR_NM													  										-- 개발자명
+			  		  , MGMT.SPRINT_NO												  										-- SPRINT
+			  		  , MGMT.APST_YMD														AS APST_YMD				-- 적용시작일자
+			  		  , MGMT.APFN_YMD														AS APFN_YMD			-- 적용종료일자
+			  		  , MGMT.MDFC_YMD														AS MDFC_YMD 			-- 변경일자
+			  		  , MGMT.WORK_MDFC_SBJC_CTN							      										-- 작업변경사항내용
+			  		  , MGMT.CNFM_NM												  										-- 현업확인자명
+			  		  , MGMT.ACWR_CNFR_YMD												AS ACWR_CNFR_YMD	-- 현업확인일자
+			  		  , TGDT.UNIT_BSWR_NM       									  										-- 단위업무명
+			  		  , TGDT.BSWR_NM													  										-- 업무명(상세업무)
+			  		  , TGDT.GAP_CTN													  										-- GAP내용
+			  		  , TGDT.GAP_CRSP_REMD_CTN  								  										-- GAP대응방안
+			  		  , TGDT.DEVP_ASIG_CD       										  										-- 개발담당코드  devpAsigCd
+			  		  , CD2.DETL_CD_NM 														AS DETL_CD_NM2       -- 개발담당코드명
+			  		  , TGDT.FP_VRSN_NO          												AS AFI_ETC_NM 			-- STORY-POINT
+			  		  , TGDT.PRGM_ID            										  										-- 화면ID
+			  		  , TGDT.RMRK_CTN           										  										-- FIT_GAP 비고	  
+			  		  , TGDT.SYST_ID																								-- 단위업무
+			  		  , CD3.DETL_CD_NM 														AS DETL_CD_NM3  		-- 단위업무명
+			  		  , TGDT.SB_SYST_ID  																						-- 상세업무
+					  , CD4.DETL_CD_NM 														AS DETL_CD_NM4  		-- 상세업무명
+					  , MGMT.FNSH_PRRN_YMD												AS FNSH_PRRN_YMD	-- 종료예정일자
+		     FROM CORBPMGMT 	MGMT 		-- 진척관리_T
+		      		 , CCCMCDDMT 	CD1  		-- 진척관리 진행구분코드(COR_068)
+		      		 , CCCMCDDMT 	CD2  		-- 개발담당코드(COR_067)
+		      		 , CORFITGDT 		TGDT 		-- FIT_GAP결과서_T
+					 , CCCMCDDMT 	CD3        	-- 단위업무
+		      		 , CCCMCDDMT 	CD4        	-- 상세업무
+		   WHERE CD1.COMN_GRP_CD(+) = 'COR_068'						-- 진척구분코드
+		      AND MGMT.PRSS_CD 		    = CD1.COMN_DTLS_CD(+)    
+		      AND MGMT.FIT_GAP_ID 			= TGDT.FIT_GAP_ID
+		      AND CD2.COMN_GRP_CD(+)  = 'COR_067'						-- 개발담당코드
+		      AND TGDT.DEVP_ASIG_CD     = CD2.COMN_DTLS_CD(+)
+		      AND CD3.COMN_GRP_CD(+) = 'COR_062'   						-- 단위업무
+		      AND TGDT.SYST_ID = CD3.COMN_DTLS_CD(+)
+		      AND CD4.COMN_GRP_CD(+) = 'COR_063'   						-- 상세업무
+		      AND TGDT.SB_SYST_ID = CD4.COMN_DTLS_CD(+) 
+			  AND  ( TGDT.SYST_ID      is null or TGDT.SYST_ID     like  #{systId} || '%' )
+		      AND  ( TGDT.SB_SYST_ID is null or TGDT.SB_SYST_ID like #{sbSystId} || '%')
+		]]>
+		<if test="fitGapId != null and fitGapId  != '' ">
+		    AND MGMT.FIT_GAP_ID like  '%' ||  #{fitGapId} || '%'
+		</if>
+		<if test="devpAsigCd != null and devpAsigCd != ''.toString()">	
+			AND TGDT.DEVP_ASIG_CD  = #{devpAsigCd}
+		</if>
+		<![CDATA[
+		 ORDER
+		       BY TGDT.SYST_ID, TGDT.SB_SYST_ID, TGDT.BSWR_NM, MGMT.FIT_GAP_ID, TGDT.DMND_PROR_VL
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrmergeCorBpMgmtngmDAO-mergeCorBpMgmt (진척관리(COR948F2) 화면의 등록/ 수정처리) 
+        Description :                                           진척관리(COR948F2) 화면의 등록/ 수정처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrmergeCorBpMgmtngmDAO-mergeCorBpMgmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrmergeCorBpMgmtngmDAO-mergeCorBpMgmt */
+		<![CDATA[
+		            merge
+		             into CORBPMGMT MT  -- 진척관리_T
+		            using DUAL
+		               on (FIT_GAP_ID = #{fitGapId})
+		             when matched then
+		               update 
+							 set
+		                           PRSS_CD                  			= #{prssCd}                         					/* 진행상태코드 */
+		                         , DVLR_NM                  			= #{dvlrNm}                       						/* 개발자명 */
+		                         , SPRINT_NO               	 		= #{sprintNo}											/* SPRINT */
+		                         , APST_YMD                 			= to_date( #{apstYmd}, 'YYYYMMDD' )        /* 적용시작일자 */
+		                         , APFN_YMD                 			= to_date( #{apfnYmd}, 'YYYYMMDD' )       /* 적용종료일자 */
+		                         , MDFC_YMD                 		= decode( #{bsdvNm}, 'EXCEL', MDFC_YMD, sysdate  ) /* 변경일자 */
+		                         , WORK_MDFC_SBJC_CTN			= decode( #{bsdvNm}, 'EXCEL', WORK_MDFC_SBJC_CTN, #{workMdfcSbjcCtn} )	/* 작업변경사항내용 */
+		                         , CNFM_NM                  			= #{cnfmNm}                         					/* 현업확인자명 */
+		                         , ACWR_CNFR_YMD        		= to_date( #{acwrCnfrYmd}, 'YYYYMMDD' )	/* 현업확인일자 */
+		                         , LAST_UPDR_ID             			= #{gvUserId}                       					/* 최종수정자ID */
+		                         , LAST_UPDT_IP             			= #{gvUserIp}                       					/* 최종수정IP */
+		                         , LAST_UPDT_DT             		= sysdate                           					/* 최종수정일시 */
+		                         , LAST_UPDT_CLNT_PRGM_ID	= #{gvClntPrgmId}                   				/* 최종수정클라이언트프로그램ID */
+		                         , LAST_UPDT_SRVR_PRGM_ID	= #{gvSrvrPrgmId}                   				/* 최종수정서버프로그램ID */
+								 , FNSH_PRRN_YMD                 = to_date( #{fnshPrrnYmd}, 'YYYYMMDD' ) /* 종료예정일자 */
+		                 where FIT_GAP_ID                			= #{fitGapId}
+		             when not matched then
+		                  insert
+		                    (
+		                           FIT_GAP_ID               			/* FITGAP ID */
+		                         , PRSS_CD                  			/* 진행상태코드 */
+		                         , DVLR_NM                  			/* 개발자명 */
+		                         , SPRINT_NO               	 		/* SPRINT */
+		                         , APST_YMD                 			/* 적용시작일자 */
+		                         , APFN_YMD                 			/* 적용종료일자 */
+		                         , MDFC_YMD                 		/* 변경일자 */
+		                         , WORK_MDFC_SBJC_CTN       	/* 작업변경사항내용 */
+		                         , CNFM_NM                  			/* 현업확인자명 */
+		                         , ACWR_CNFR_YMD            	/* 현업확인일자 */
+		                         , FRST_RGSR_ID             			/* 최초등록자ID */
+		                         , FRST_RGST_IP             			/* 최초등록IP */
+		                         , FRST_RGST_DT             			/* 최초등록일시 */
+		                         , FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+		                         , FRST_RGST_SRVR_PRGM_ID   	/* 최초등록서버프로그램ID */
+		                         , LAST_UPDR_ID             			/* 최종수정자ID */
+		                         , LAST_UPDT_IP             			/* 최종수정IP */
+		                         , LAST_UPDT_DT             		/* 최종수정일시 */
+		                         , LAST_UPDT_CLNT_PRGM_ID   /* 최종수정클라이언트프로그램ID */
+		                         , LAST_UPDT_SRVR_PRGM_ID   /* 최종수정서버프로그램ID */
+								 , FNSH_PRRN_YMD                /* 종료예정일자 */
+		                    )
+		                    values
+		                    (
+		                           #{fitGapId}          										/* FITGAP ID */
+		                         , #{prssCd}            										/* 진행상태코드 */
+		                         , #{dvlrNm}            									/* 개발자명 */
+		                         , #{sprintNo} 	 											/* SPRINT */
+		                         , to_date( #{apstYmd}, 'YYYYMMDD' )           	/* 적용시작일자 */
+		                         , to_date( #{apfnYmd}, 'YYYYMMDD' )           /* 적용종료일자 */
+		                         , decode( #{bsdvNm}, 'EXCEL', to_date(''), sysdate )     /* 변경일자 */
+		                         , decode( #{bsdvNm}, 'EXCEL', '', #{workMdfcSbjcCtn} ) /* 작업변경사항내용 */
+		                         , #{cnfmNm}            									/* 현업확인자명 */
+		                         , to_date( #{acwrCnfrYmd}, 'YYYYMMDD' )		/* 현업확인일자 */
+		                         , #{gvUserId}          									/* 최초등록자ID */
+		                         , #{gvUserIp}         		 								/* 최초등록IP */
+		                         , sysdate             		 								/* 최초등록일시 */
+		                         , #{gvClntPrgmId}      									/* 최초등록클라이언트프로그램ID */
+		                         , #{gvSrvrPrgmId}     				 					/* 최초등록서버프로그램ID */
+		                         , #{gvUserId}          									/* 최종수정자ID */
+		                         , #{gvUserIp}          									/* 최종수정IP */
+		                         , sysdate              									/* 최종수정일시 */
+		                         , #{gvClntPrgmId}      									/* 최종수정클라이언트프로그램ID */
+		                         , #{gvSrvrPrgmId}      									/* 최종수정서버프로그램ID */
+								 , to_date( #{fnshPrrnYmd}, 'YYYYMMDD' )     	/* 종료예정일자 */
+		                    )
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-insertCorBpHist (진척관리(COR948F2) 관련 진척관리이력 저장처리) 
+        Description :                                           진척관리(COR948F2) 관련 진척관리이력 저장처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-insertCorBpHist"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-insertCorBpHist */
+		<![CDATA[
+		INSERT
+		INTO CORBPHIST 
+				(
+			   		  SNO									/* 일련번호 */
+			 		, FIT_GAP_ID               				/* FITGAP ID */
+			 		, PRSS_CD                  			/* 진행상태코드 */
+			 		, DVLR_NM                  			/* 개발자명 */
+			 		, SPRINT_NO                			/* SPRINT */
+			 		, APST_YMD                 			/* 적용시작일자 */
+			 		, APFN_YMD                 			/* 적용종료일자 */
+			 		, MDFC_YMD                 			/* 변경일자 */
+			 		, WORK_MDFC_SBJC_CTN       	/* 작업변경사항내용 */
+			 		, CNFM_NM                  			/* 현업확인자명 */
+			 		, ACWR_CNFR_YMD            		/* 현업확인일자 */
+			 		, FRST_RGSR_ID             			/* 최초등록자ID */
+			 		, FRST_RGST_IP            			/* 최초등록IP */
+			 		, FRST_RGST_DT             			/* 최초등록일시 */
+			 		, FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+			 		, FRST_RGST_SRVR_PRGM_ID   	/* 최초등록서버프로그램ID */
+			 		, LAST_UPDR_ID             			/* 최종수정자ID */
+			 		, LAST_UPDT_IP             			/* 최종수정IP */
+			 		, LAST_UPDT_DT             			/* 최종수정일시 */
+			 		, LAST_UPDT_CLNT_PRGM_ID   	/* 최종수정클라이언트프로그램ID */
+			 		, LAST_UPDT_SRVR_PRGM_ID   	/* 최종수정서버프로그램ID */
+					, FNSH_PRRN_YMD   				/* 종료예정일자 */ 
+				)
+		VALUES
+				(
+			   		  #{sno}													/* 일련번호 */	
+			 		, #{fitGapId}          									/* FITGAP ID */
+			 		, #{prssCd}            									/* 진행상태코드 */
+			 		, #{dvlrNm}            									/* 개발자명 */
+			 		, #{sprintNo} 	 										/* SPRINT */
+			 		, to_date( #{apstYmd}, 'YYYYMMDD' )			/* 적용시작일자 */
+			 		, to_date( #{apfnYmd}, 'YYYYMMDD' )   	 	/* 적용종료일자 */
+			 		, sysdate           									/* 변경일자 */
+			 		, #{workMdfcSbjcCtn}								/* 작업변경사항내용 */
+			 		, #{cnfmNm}            								/* 현업확인자명 */
+			 		, to_date( #{acwrCnfrYmd}, 'YYYYMMDD' )	/* 현업확인일자 */
+			 		, #{gvUserId}          									/* 최초등록자ID */
+			 		, #{gvUserIp}          									/* 최초등록IP */
+			 		, sysdate              									/* 최초등록일시 */
+			 		, #{gvClntPrgmId}      								/* 최초등록클라이언트프로그램ID */
+			 		, #{gvSrvrPrgmId}      								/* 최초등록서버프로그램ID */
+			 		, #{gvUserId}          									/* 최종수정자ID */
+			 		, #{gvUserIp}          									/* 최종수정IP */
+			 		, sysdate              									/* 최종수정일시 */
+			 		, #{gvClntPrgmId}      								/* 최종수정클라이언트프로그램ID */
+			 		, #{gvSrvrPrgmId}      								/* 최종수정서버프로그램ID */
+					, to_date( #{fnshPrrnYmd}, 'YYYYMMDD' )   /* 종료예정일자 */ 
+				)
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO">
+	
+		<result property="sno" column="SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist (진척관리(COR948F2) 이력저장시 일련번호 추출) 
+        Description :                                           진척관리(COR948F2) 이력저장시 일련번호 추출을 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoBswrPrgrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoBswrPrgrMngmDAO-selectOneCorBpHist */
+		<![CDATA[
+			SELECT  NVL(MAX(HIST.SNO), 0) + 1 AS SNO
+		     FROM  CORBPHIST HIST
+		   WHERE  HIST.FIT_GAP_ID = #{fitGapId}
+		]]>
+	</select>
+
+
+
+</mapper>

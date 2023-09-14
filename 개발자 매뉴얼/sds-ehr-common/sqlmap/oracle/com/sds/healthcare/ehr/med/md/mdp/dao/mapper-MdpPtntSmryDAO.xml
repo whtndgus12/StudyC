@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpPtntSmryDAO_sql.xml 
+    Description :                                      Patient Summary DAO DAO
+                  -->
+<mapper namespace="MdpPtntSmryDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="mdstYmd" column="MDST_YMD"/>
+		<result property="mdfnYmd" column="MDFN_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx (PatientSummary 수진이력 조회) 
+        Description :                                           PatientSummary 수진이력 조회 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx-result" useCache="true" flushCache="false">
+		/* SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryHameHx */
+		<![CDATA[
+		select  /*+ MdpPtntSmryDAO-listSmryHameHx_PatientSummay_수진이력 */
+		        x.MDRP_NO                           as MDRP_NO
+		     ,  x.CODV_CD                           as CODV_CD
+		     ,  x.MCDP_CD                           as MCDP_CD
+		     ,  nvl((   select  ABRV_DPRT_CD
+		                  from  HZDEPTMMT
+		                 where  DPRT_CD = x.MCDP_CD 
+		        ), x.MCDP_CD)                       as ABRV_MCDP_CD             /* 약어부서코드 */
+		     ,  x.MDDR_ID                           as MDDR_ID
+		     ,  nvl((   select  USER_NM
+		                  from  CCUSRDPHT
+		                 where  USER_ID = x.MDDR_ID 
+		        ), x.MDDR_ID)                       as MDDR_NM                  /* 진료의사명 */
+		     ,  to_char(x.MDST_DT, 'yyyymmdd')      as MDST_YMD
+		     ,  to_char(x.MDFN_DT, 'yyyymmdd')      as MDFN_YMD
+		  from  (   select  a.CODV_CD                                   as CODV_CD
+		                 ,  a.MCDP_CD                                   as MCDP_CD
+		                 ,  a.MDDR_ID                                   as MDDR_ID
+		                 ,  min(a.MDCR_YMD)                             as MDST_DT
+		                 ,  max(a.MDCR_YMD)                             as MDFN_DT
+		                 ,  max(a.MDRP_NO)                              as MDRP_NO
+		              from  APRCRPTNT a
+		             where  a.PTNO      =   #{ptno}
+		               and  a.CODV_CD   =   'O'
+		               and  nvl(a.MCFE_RCPC_CD, 'N') != 'R'         /* 진찰료수납여부(Y/N) */
+		               and  a.MDCR_ANDV_CD not in ('7', '8', '9')   /* 예약구분'AP008' */
+		               and  a.CNCL_DT is null
+		             group
+		                by  a.CODV_CD
+		                 ,  a.MCDP_CD
+		                 ,  a.MDDR_ID
+		            union all
+		            select  a.CODV_CD                                   as CODV_CD
+		                 ,  a.MCDP_CD                                   as MCDP_CD
+		                 ,  a.MDDR_ID                                   as MDDR_ID
+		                 ,  a.MDCR_DT                                   as MDST_DT
+		                 ,  a.DSCH_DT                                   as MDFN_DT
+		                 ,  a.MDRP_NO                                   as MDRP_NO
+		              from  APRCRPTNT a
+		             where  a.PTNO      =   #{ptno}
+		               and  a.CODV_CD in ('I', 'D')
+		               and  a.CNCL_DT is null
+		            union all
+		            select  b.CODV_CD                                   as CODV_CD
+		                 ,  a.MCDP_CD                                   as MCDP_CD
+		                 ,  nvl(a.DSCH_ITDR_ID, a.COHS_PNTM_DR_ID)      as MDDR_ID
+		                 ,  trunc(a.COHS_DT)                            as MDST_DT
+		                 ,  max(trunc(a.CHOT_DT))                       as MDFN_DT
+		                 ,  max(b.MDRP_NO)                              as MDRP_NO
+		              from  MNEERRPAT a
+		                 ,  APRCRPTNT b
+		             where  a.PTNO      =   #{ptno}
+		               and  b.MDRP_NO   =   a.MDRP_NO
+		               and  b.CNCL_DT is null
+		             group  
+		                by  b.CODV_CD
+		                 ,  a.MCDP_CD
+		                 ,  nvl(a.DSCH_ITDR_ID, a.COHS_PNTM_DR_ID)
+		                 ,  trunc(a.COHS_DT)
+		            union all
+		            select  'G'                                         as CODV_CD
+		                 ,  '건진'                                      as MCDP_CD
+		                 ,  a.MDDR_ID                                   as MDDR_ID
+		                 ,  a.MDST_DT                                   as MDST_DT
+		                 ,  a.MDST_DT                                   as MDFN_DT
+		                 ,  0                                           as MDRP_NO
+		              from  (   select  c.JDGN_DR_ID        as MDDR_ID
+		                             ,  a.ORDR_PRRN_YMD     as MDST_DT
+		                          from  SMARSMAST a      /* 건진예약 */
+		                             ,  SMMPKGMST b
+		                             ,  SMDRSLTDT c
+		                         where  a.PTNO          =   #{ptno}
+		                           and  a.CNCL_DT is null
+		                           and  b.PCKG_CD       =   a.PCKG_CD
+		                           and  c.APNT_NO   (+) =   a.APNT_NO
+		                         group 
+		                            by  c.JDGN_DR_ID
+		                             ,  a.ORDR_PRRN_YMD
+		                    ) a
+		        ) x
+		 order
+		    by  MDST_DT desc
+		     ,  MCDP_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="clncDxNm" column="CLNC_DX_NM"/>
+		<result property="frstDxDt" column="FRST_DX_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx (Patient Summary 임상진단이력 조회) 
+        Description :                                           Patient Summary 임상진단이력 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx-result" useCache="true" flushCache="false">
+		/* SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryClncDxHx */
+		select  /*+ MdpPtntSmryDAO-listSmryClncDxHx_Patient Summary 임상진단이력 조회 */
+		        x.MCDP_CD                                   as MCDP_CD
+		     ,  (   select  ABRV_DPRT_CD
+		              from  HZDEPTMMT
+		             where  DPRT_CD = x.MCDP_CD
+		        )                                           as ABRV_MCDP_CD
+		     ,  x.CLNC_DX_NM                                as CLNC_DX_NM       /* 임상진단명 */
+		     ,  to_char(x.FRST_DX_DT, 'yyyymmddhh24miss')   as FRST_DX_DT       /* 최초진단일시 */
+		  from  (   select  b.MCDP_CD                       as MCDP_CD          /* 진료과 */
+		                 ,  b.CLNC_DX_NM                    as CLNC_DX_NM       /* 임상진단명 */
+		                 ,  min(a.MDCR_DT)                  as FRST_DX_DT       /* 최초진단일시 */
+		              from  APRCRPTNT a
+		                 ,  MDPACLNCT b         /* 환자임상진단내역 */
+		             where  a.PTNO      =   #{ptno}
+		               and  a.CNCL_DT  is null
+		               and  b.MDRP_NO   =   a.MDRP_NO
+		               and  b.CLNC_DX_NM is not null
+		             group
+		                by  b.MCDP_CD
+		                 ,  b.CLNC_DX_NM
+		        ) x
+		 order
+		    by  FRST_DX_DT desc
+		     ,  CLNC_DX_NM
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="oprtYmd" column="OPRT_YMD"/>
+		<result property="oprtSno" column="OPRT_SNO"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="opstPrrnDt" column="OPST_PRRN_DT"/>
+		<result property="opstDt" column="OPST_DT"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="erYn" column="ER_YN"/>
+		<result property="ordpCd" column="ORDP_CD"/>
+		<result property="abrvOrdpCd" column="ABRV_ORDP_CD"/>
+		<result property="opsrId1" column="OPSR_ID_1"/>
+		<result property="opsrNm1" column="OPSR_NM_1"/>
+		<result property="opsrId2" column="OPSR_ID_2"/>
+		<result property="opsrNm2" column="OPSR_NM_2"/>
+		<result property="opsrId3" column="OPSR_ID_3"/>
+		<result property="opsrNm3" column="OPSR_NM_3"/>
+		<result property="cmtxOprtYn" column="CMTX_OPRT_YN"/>
+		<result property="oprtSttsCd" column="OPRT_STTS_CD"/>
+		<result property="oprtSttsNm" column="OPRT_STTS_NM"/>
+		<result property="cscrCd" column="CSCR_CD"/>
+		<result property="cscrNm" column="CSCR_NM"/>
+		<result property="clncOprtCd" column="CLNC_OPRT_CD"/>
+		<result property="clncOprtNm" column="CLNC_OPRT_NM"/>
+		<result property="anshId1" column="ANSH_ID_1"/>
+		<result property="anshNm1" column="ANSH_NM_1"/>
+		<result property="anshId2" column="ANSH_ID_2"/>
+		<result property="anshNm2" column="ANSH_NM_2"/>
+		<result property="anshId3" column="ANSH_ID_3"/>
+		<result property="anshNm3" column="ANSH_NM_3"/>
+		<result property="anstStrtDt" column="ANST_STRT_DT"/>
+		<result property="ankiCd" column="ANKI_CD"/>
+		<result property="ankiNm" column="ANKI_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx (Patient Summary 수술이력 조회) 
+        Description :                                           Patient Summary 수술이력 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx-result" useCache="true" flushCache="false">
+		/* SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryOprtHx */
+		select  /*+ MdpPtntSmryDAO-listSmryOprtHx_Patient Summary 수술이력 조회 */
+		        a.PTNO                                          as PTNO
+		     ,  to_char(a.OPRT_YMD, 'yyyymmdd')                 as OPRT_YMD             /* 수술일자 */
+		     ,  a.OPRT_SNO                                      as OPRT_SNO             /* 일련번호 */
+		     ,  a.MDRP_NO                                       as MDRP_NO              /* 진료접수번호 */
+		     ,  to_char(a.OPST_PRRN_DT, 'yyyymmddhh24miss')     as OPST_PRRN_DT         /* 수술시작예정일시 */
+		     ,  to_char(a.OPST_DT, 'yyyymmddhh24miss')          as OPST_DT              /* 수술시작일시 */
+		     ,  a.CODV_CD                                       as CODV_CD              /* 내원구분 */
+		     ,  a.ER_YN                                         as ER_YN                /* 응급여부 */
+		     ,  a.ORDP_CD                                       as ORDP_CD              /* 집도과 */
+		     ,  (   select  ABRV_DPRT_CD 
+		              from  HZDEPTMMT
+		             where  DPRT_CD = a.ORDP_CD 
+		        )                                               as ABRV_ORDP_CD         /* 집도약어부서코드 */
+		     ,  a.OPSR_ID1                                      as OPSR_ID_1            /* 집도의사id1 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.OPSR_ID1 
+		        )                                               as OPSR_NM_1            /* 집도의사명1 */
+		     ,  a.OPSR_ID2                                      as OPSR_ID_2            /* 집도의사id2 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.OPSR_ID2 
+		        )                                               as OPSR_NM_2            /* 집도의사명2 */
+		     ,  a.OPSR_ID3                                      as OPSR_ID_3            /* 집도의사id3 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.OPSR_ID3 
+		        )                                               as OPSR_NM_3            /* 집도의사명3 */
+		     ,  a.CMTX_OPRT_YN                                  as CMTX_OPRT_YN         /* 헙진수술여부 */
+		     ,  a.OPRT_STTS_CD                                  as OPRT_STTS_CD         /* 수술상태코드(MM126) */
+		     ,  (   select  DETL_CD_NM
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD     =   'MM126'
+		               and  COMN_DTLS_CD    =   a.OPRT_STTS_CD
+		        )                                               as OPRT_STTS_NM         /* 수술상태코드명 */
+		 	 ,  nvl(c.OPAF_OPRT_CD_1, c.OPBE_OPRT_CD_1)                                  as CSCR_CD              /* Case_Cart코드 */
+			 ,  nvl(c.OPAF_OPRT_NM_1, c.OPBE_OPRT_NM_1)                              as CSCR_NM              /* Case_cart명 */
+		     ,  a.CLNC_OPRT_CD                                  as CLNC_OPRT_CD         /* 임상수술코드 */
+		     ,  a.CLNC_OPRT_NM                                  as CLNC_OPRT_NM         /* 임상수술명 */
+		     ,  a.ANSH_ID1                                      as ANSH_ID_1            /* 마취의사1 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.ANSH_ID1 
+		        )                                               as ANSH_NM_1            /* 마취의사명2 */
+		     ,  a.ANSH_ID2                                      as ANSH_ID_2            /* 마취의사2 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.ANSH_ID2 
+		        )                                               as ANSH_NM_2            /* 마취의사명2 */
+		     ,  a.ANSH_ID3                                      as ANSH_ID_3            /* 마취의사3 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.ANSH_ID2 
+		        )                                               as ANSH_NM_3            /* 마취의사명3 */
+		     ,  to_char(a.ANST_STRT_DT, 'yyyymmddhh24miss')     as ANST_STRT_DT         /* 마취시작일시 */
+		     ,  a.ANKI_CD                                       as ANKI_CD              /* 마취종류 */
+		     ,  (   select  DETL_CD_NM
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD     =   'MM081'
+		               and  COMN_DTLS_CD    =   a.ANKI_CD
+		        )                                               as ANKI_NM              /* 마취종류명 */
+		  from  MDOPSCHET a
+		        ,  MZCTRLMMT b
+				,  MDOPRECHV c
+		 where  a.PTNO      =   #{ptno}
+		   and  a.DFNT_YN   =   'Y'
+		   and  a.CNCL_YMD is null
+		   and  b.MDCR_CTRL_CD      (+) =   'MM130'
+		   and  b.MDCR_DTLS_CTRL_CD (+) =   a.OPRM_CD
+		   and  a.PTNO 		= c.PTNO
+		   and  a.OPRT_YMD  = c.OPRT_YMD
+		   and  a.OPRT_SNO  = c.OPRT_SNO
+		 order
+		    by  OPST_PRRN_DT desc
+		     ,  ORDP_CD asc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="rplyDrMcdpCd" column="RPLY_DR_MCDP_CD"/>
+		<result property="rplyDrId" column="RPLY_DR_ID"/>
+		<result property="rplyYmd" column="RPLY_YMD"/>
+		<result property="cmtxCct" column="CMTX_CCT"/>
+		<result property="rplyDrAbrvMcdpCd" column="RPLY_DR_ABRV_MCDP_CD"/>
+		<result property="rplyDrNm" column="RPLY_DR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx (Patient Summary 협진이력 조회) 
+        Description :                                           Patient Summary 협진이력 조회 (협진의사 별 최근협진일, 건수)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx-result" useCache="true" flushCache="false">
+		/* SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryCmtxHx */
+		select  /*+ MdpPtntSmryDAO-listSmryCmtxHx_Patient Summary 협진이력 조회 */
+		        x.MDRP_NO                               as MDRP_NO                  /* 진료접수번호 */
+		     ,  x.RPLY_DR_MCDP_CD                       as RPLY_DR_MCDP_CD          /* 회신의사진료과 */
+		     ,  x.RPLY_DR_ID                            as RPLY_DR_ID               /* 회신의사id */
+		     ,  to_char(y.MAX_RPLY_YMD, 'yyyymmdd')     as RPLY_YMD                 /* 최근 회신일자 */
+		     ,  y.CMTX_CCT                              as CMTX_CCT                 /* 협진건수 */
+		     ,  (   select  ABRV_DPRT_CD
+		              from  HZDEPTMMT
+		             where  DPRT_CD = x.RPLY_DR_MCDP_CD
+		        )                                       as RPLY_DR_ABRV_MCDP_CD     /* 회신약어부서코드 */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = x.RPLY_DR_ID
+		        )                                       as RPLY_DR_NM               /* 회신의사명 */
+		  from  MDCONSRCT x
+		     ,  (   select  RPLY_DR_MCDP_CD
+		                 ,  max(RPLY_YMD)       as MAX_RPLY_YMD
+		                 ,  count(1)            as CMTX_CCT
+		              from  MDCONSRCT
+		             where  PTNO            =   #{ptno}
+		               and  CMTX_STTS_CD    =   '4'     /* 최종회신 */
+		             group
+		                by  RPLY_DR_MCDP_CD
+		        ) y
+		 where  x.PTNO              =   #{ptno}
+		   and  y.RPLY_DR_MCDP_CD   =   x.RPLY_DR_MCDP_CD
+		   and  y.MAX_RPLY_YMD      =   x.RPLY_YMD
+		 order
+		    by  x.RPLY_YMD desc
+		     ,  x.RPLY_DR_MCDP_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="catnFlagCtn" column="CATN_FLAG_CTN"/>
+		<result property="catnDvsnNm" column="CATN_DVSN_NM"/>
+		<result property="unslCtn" column="UNSL_CTN"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm (Patient Summary 알레르기 정보 조회) 
+        Description :                                           Patient Summary 알레르기 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAlrgInfm */
+		select  x.CATN_FLAG_CTN                                     as CATN_FLAG_CTN
+		     ,  x.CATN_DVSN_NM                                      as CATN_DVSN_NM
+		     ,  x.UNSL_CTN                                          as UNSL_CTN
+		     ,  to_char(x.FRST_RGST_DT, 'yyyymmddhh24miss')         as FRST_RGST_DT
+		  from  (
+		            select  'A'                                                         as CLSF_CD                  /* 'A' 간호등록 알레르기 */
+		                 ,  o.CATN_DVSN_CD                                              as CATN_FLAG_CTN            /* 주의구분 (F-음식,E-환경,B-혈액,X-기타) */
+		                 ,  p.DETL_CD_NM                                                as CATN_DVSN_NM
+		                 ,  listagg(o.ALRG_CMNT_CTN, ', ') within group (order by o.SQNC desc)          as UNSL_CTN
+		                 ,  max(o.FRST_RGST_DT)                                         as FRST_RGST_DT
+		              from  (
+		                        select  a.CATN_DVSN_CD                                  as CATN_DVSN_CD             /* 주의구분코드 (MNZ_006) B-혈액,E-환경,F-음식,X-기타 */
+		                             ,  case
+		                                    when length(a.ALRG_CMNT_CTN) > 10 then substr(a.ALRG_CMNT_CTN, 1, 10) || '...'
+		                                    else a.ALRG_CMNT_CTN
+		                                    end                                         as ALRG_CMNT_CTN            /* 알러지커멘트내용 - 내용이 너무 길면 listagg 시 길이초과... */
+		                             ,  '1'                                             as SQNC                     /* '1' 간호 */
+		                             ,  a.FRST_RGST_DT                                  as FRST_RGST_DT
+		                          from  MNZCAUTMT a
+		                         where  a.PTNO = #{ptno}
+		                           and  a.ALRG_CMNT_CTN is not null
+		                        union all
+		                        select  'F'                                             as CATN_DVSN_CD
+		                             ,  listagg(ALRG_MDCG_NM, ', ') within group (order by ALRG_MDCG_NM)    as ALRG_CMNT_CTN
+		                             ,  '2'                                             as SQNC                     /* '2' 영양 */
+		                             ,  max(FRST_RGST_DT)                               as FRST_RGST_DT
+		                          from  (
+		                                    select  b.ALRG_MDCG_NM
+		                                         ,  a.FRST_RGST_DT
+		                                      from  SUALERGMT a     -- 알러지식품환자
+		                                         ,  SUALERMMT b     -- 알러지식품범주
+		                                     where  a.PTNO          =   #{ptno}
+		                                       and  a.USE_YN        =   'Y'
+		                                       and  b.ALRG_LRCT_CD  =   a.ALRG_LRCT_CD
+		                                       and  b.ALRG_MDCG_CD  =   a.ALRG_MDCG_CD
+		                                ) a
+		                    ) o
+		                 ,  CCCMCDDMT p
+		             where  p.COMN_GRP_CD   =   'MNZ_006'
+		               and  p.COMN_DTLS_CD  =   o.CATN_DVSN_CD
+		               and  o.ALRG_CMNT_CTN is not null
+		             group
+		                by  o.CATN_DVSN_CD
+		                 ,  p.DETL_CD_NM
+		            union all
+		            select  'B'                                                         as CLSF_CD                  /* 'B' 검사파트 등록 조영제 부작용 */
+		                 ,  a.EXMN_CD                                                   as CATN_FLAG_CTN
+		                 ,  max(FN_SR_SYMPTOM_S(a.SDEF_TXOR_DVSN_CMBN_CTN1, 'SR013'))   as CATN_DVSN_NM
+		                 ,  max(FN_SR_SYMPTOM_S(a.SDEF_TXOR_DVSN_CMBN_CTN1, 'SR021')) ||' '||
+		                    max(FN_SR_SYMPTOM_S(a.SDEF_TXOR_DVSN_CMBN_CTN1, 'SR022')) ||' '||
+		                    max(FN_SR_SYMPTOM_S(a.SDEF_TXOR_DVSN_CMBN_CTN1, 'SR023')) ||' '||
+		                    max(FN_SR_SYMPTOM_S(a.SDEF_TXOR_DVSN_CMBN_CTN1, 'SR024'))   as UNSL_CTN                 /* 특이내용 */
+		                 ,  max(a.FRST_RGST_DT)                                         as FRST_RGST_DT             /* 최초등록일시 */
+		              from  SRSIDREMT a     /* 환자별부작용관리 */
+		             where  a.PTNO  =   #{ptno}
+		             group
+		                by  a.EXMN_CD
+		            union all
+		            select  'C'                                                         as CLSF_CD                  /* 'C' 수혈부작용 */
+		                 ,  o.BLDP_DVSN_CD                                              as CATN_FLAG_CTN
+		                 ,  o.CATN_DVSN_NM                                              as CATN_DVSN_NM
+		                 ,  o.UNSL_CTN                                                  as UNSL_CTN
+		                 ,  max(o.FRST_RGST_DT)                                         as FRST_RGST_DT
+		              from  (
+		                        select  a.BLDP_DVSN_CD                                              as BLDP_DVSN_CD             /* 혈액제제구분코드 (SLB_013) 적혈구:R, 혈소판:P, 혈장:F */
+		                             ,  '원외-' || nvl(c.COMN_ITEM_CHRC_VL, b.DETL_CD_NM)           as CATN_DVSN_NM             /* 주의구분명 */
+		                             ,      case when a.TRNF_PYRX_YN        = 'Y' then '[발열] '       end
+		                                ||  case when a.TRNF_CHIL_YN        = 'Y' then '[오한] '       end
+		                                ||  case when a.TRNF_PLPT_YN        = 'Y' then '[심계항진] '   end
+		                                ||  case when a.TRNF_ITSN_YN        = 'Y' then '[소양감] '     end
+		                                ||  case when a.TRNF_HIVS_YN        = 'Y' then '[두드러기] '   end
+		                                ||  case when a.TRNF_DYSN_YN        = 'Y' then '[호흡곤란] '   end
+		                                ||  case when a.TRNF_BP_VRTN_YN     = 'Y' then '[혈압변화] '   end
+		                                ||  case when a.TRNF_NAUS_YN        = 'Y' then '[오심] '       end
+		                                ||  case when a.TRNF_VMTN_YN        = 'Y' then '[구토] '       end
+		                                ||  case when a.TRNF_SKIN_PALE_YN   = 'Y' then '[피부창백] '   end
+		                                ||  case when a.TRNF_HDCH_YN        = 'Y' then '[두통] '       end
+		                                ||  case when a.TRNF_HMTR_YN        = 'Y' then '[혈뇨] '       end
+		                                ||  case when a.TRNF_INSB_YN        = 'Y' then '[무감각(얼굴,입주위)] ' end
+		                                ||  case when a.RDNS_YN            = 'Y' then '[피부발적] ' end
+		                                ||  case when a.PAIN_YN            = 'Y' then '[통증(IV부위 포함)] ' end
+		                                ||  case when a.BLDN_EN            = 'Y' then '[출혈] ' end
+		                                ||  case when a.ETC_YN              = 'Y' then '[기타(' || a.ETC_CTN || ')] ' end
+		                                                                                            as UNSL_CTN
+		                             ,  a.FRST_RGST_DT                                              as FRST_RGST_DT             /* 최초등록일시 */
+		                          from  MNRBLDSDT a         -- 원외수혈부작용관리
+		                             ,  CCCMCDDMT b
+		                             ,  CCCMCDIDT c
+		                         where  a.ptno              =   #{ptno}
+		                           and  a.BLDP_DVSN_CD in ('F', 'P', 'R')
+		                           and  b.COMN_GRP_CD       =   'SLB_013'
+		                           and  b.COMN_DTLS_CD      =   a.BLDP_DVSN_CD
+		                           and  c.COMN_GRP_CD   (+) =   b.COMN_GRP_CD
+		                           and  c.COMN_DTLS_CD  (+) =   b.COMN_DTLS_CD
+		                           and  c.COMN_ITEM_CD  (+) =   'OPTION1'
+		                        union all
+		                        select  s.BLDP_DVSN_CD                                              as BLDP_DVSN_CD
+		                             ,  '원내-' || nvl(c.COMN_ITEM_CHRC_VL, b.DETL_CD_NM)           as CATN_DVSN_NM             /* 주의구분명 */
+		                             ,      case when a.TRNF_PNTM_PYRX_YN       = 'Y' then '[발열] '       end
+		                                ||  case when a.TRNF_CHIL_YN            = 'Y' then '[오한] '       end
+		                                ||  case when a.TRNF_PLPT_YN            = 'Y' then '[심계항진] '   end
+		                                ||  case when a.TRNF_ITSN_YN            = 'Y' then '[소양감] '     end
+		                                ||  case when a.TRNF_PNTM_HIVS_SDEF_YN  = 'Y' then '[두드러기] '   end
+		                                ||  case when a.TRNF_DYSN_YN            = 'Y' then '[호흡곤란] '   end
+		                                ||  case when a.TRNF_PNTM_BP_VRTN_YN    = 'Y' then '[혈압변화] '   end
+		                                ||  case when a.TRNF_NAUS_YN            = 'Y' then '[오심] '       end
+		                                ||  case when a.TRNF_VMTN_YN            = 'Y' then '[구토] '       end
+		                                ||  case when a.TRNF_SKIN_PALE_YN       = 'Y' then '[피부창백] '   end
+		                                ||  case when a.TRNF_HDCH_YN            = 'Y' then '[두통] '       end
+		                                ||  case when a.TRNF_HMTR_YN            = 'Y' then '[혈뇨] '       end
+		                                ||  case when a.TRNF_INSB_YN            = 'Y' then '[무감각(얼굴,입주위)] ' end
+		                                ||  case when a.RDNS_YN            = 'Y' then '[피부발적] ' end
+		                                ||  case when a.PAIN_YN            = 'Y' then '[통증(IV부위 포함)] ' end
+		                                ||  case when a.BLDN_EN            = 'Y' then '[출혈] ' end
+		                                                                                            as UNSL_CTN
+		                             ,  a.FRST_RGST_DT                                              as FRST_RGST_DT             /* 최초등록일시 */
+		                          from  MNRBLOODT a     /* 수혈기록*/
+		                             ,  SLBORDRCT s     /* 혈액제제처방코드마스터 */
+		                             ,  CCCMCDDMT b
+		                             ,  CCCMCDIDT c
+		                         where  a.PTNO      =   #{ptno}
+		                           and  s.ORDR_CD   =   a.ORDR_CD
+		                           and  a.ORDR_YMD between s.APST_YMD and s.APFN_YMD
+		                           and  s.BLDP_DVSN_CD in ('F', 'P', 'R')
+		                           and  (   a.TRNF_PNTM_PYRX_YN || a.TRNF_CHIL_YN || a.TRNF_PLPT_YN || a.TRNF_ITSN_YN || a.TRNF_PNTM_HIVS_SDEF_YN ||
+		                                    a.TRNF_DYSN_YN || a.TRNF_PNTM_BP_VRTN_YN || a.TRNF_NAUS_YN || a.TRNF_VMTN_YN || a.TRNF_SKIN_PALE_YN ||
+		                                    a.TRNF_HDCH_YN || a.TRNF_HMTR_YN || a.TRNF_INSB_YN || a.RDNS_YN || a.PAIN_YN || a.BLDN_EN
+		                                ) like '%Y%'
+		                           and  b.COMN_GRP_CD       =   'SLB_013'
+		                           and  b.COMN_DTLS_CD      =   s.BLDP_DVSN_CD
+		                           and  c.COMN_GRP_CD   (+) =   b.COMN_GRP_CD
+		                           and  c.COMN_DTLS_CD  (+) =   b.COMN_DTLS_CD
+		                           and  c.COMN_ITEM_CD  (+) =   'OPTION1'
+		                    ) o
+		             group
+		                by  o.BLDP_DVSN_CD
+		                 ,  o.CATN_DVSN_NM
+		                 ,  o.UNSL_CTN
+		            union all
+		            select  'D'                                                         as CLSF_CD                  /* 'D' ADR보고-약물부작용 */
+		                 ,  p.MDPR_CLSF_CD                                              as CATN_FLAG_CTN
+		                 ,  case p.MDPR_CLSF_CD
+		                        when '7' then '조영제'
+		                        else '일반약'
+		                        end                                                     as CATN_DVSN_NM             /* 주의구분명 */
+		                 ,  '약물 : ' || o.MDPR_NM 
+		                        || chr(13) || chr(10) || '발생일 : ' || to_char(o.ADRP_YMD, 'yyyy-mm-dd') 
+		                        || chr(13) || chr(10) || '유해반응정보 : ' || nvl(o.REACTION2, o.REACTION1)   as UNSL_CTN
+		                 ,  o.FRST_RGST_DT                                              as FRST_RGST_DT             /* 보고일자 */
+		              from  (
+		                        select  d.MDPR_CD
+		                             ,  d.MDPR_NM
+		                             ,  a.ADRP_YMD
+		                             ,  nvl(fn_sd_get_harmfulreact_eval(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)
+		                                  , fn_sd_get_harmfulreact(a.PTNO, a.ADRP_YMD, a.ADRP_SNO))     as REACTION1
+		                             ,  fn_sd_get_harmfulsymp(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)           as REACTION2
+		                             ,  fn_sd_get_symp_mnfs_degr_cd_s(a.PTNO, a.ADRP_YMD, a.ADRP_SNO)   as SEVEREFG
+		                             ,  a.ADR_PRSS_CD
+		                             ,  a.FRST_RGST_DT
+		                             ,  c.CNMD_DVSN_CD
+		                          from  SDCADRRMT a     -- ADR보고서
+		                             ,  SDCADRRDT d     -- ADR보고서의심약물
+		                             ,  SDCADRAMT c     -- ADR평가서
+		                         where  a.PTNO          =   #{ptno}
+		                           and  a.ADR_PRSS_CD   !=  '**'
+		                           and  d.PTNO      (+) =   a.PTNO
+		                           and  d.ADRP_YMD  (+) =   a.ADRP_YMD
+		                           and  d.ADRP_SNO  (+) =   a.ADRP_SNO
+		                           and  c.PTNO      (+) =   a.PTNO
+		                           and  c.ADRP_YMD  (+) =   a.ADRP_YMD
+		                           and  c.ADRP_SNO  (+) =   a.ADRP_SNO
+		                    ) o
+		                 ,  SFCORDRCT p
+		             where  p.ORDR_CD   (+) =   o.MDPR_CD
+		               and  nvl(o.CNMD_DVSN_CD, 'N') = 'N'
+		        ) x
+		 where  x.UNSL_CTN is not null
+		 order
+		    by  CLSF_CD
+		     ,  CATN_FLAG_CTN
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO">
+	
+		<result property="inqrDvsnCd" column="INQR_DVSN_CD"/>
+		<result property="acdgRgmnCd" column="ACDG_RGMN_CD"/>
+		<result property="acdgPrclNm" column="ACDG_PRCL_NM"/>
+		<result property="implYmd" column="IMPL_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx (Patient Summary 항암이력 조회) 
+        Description :                                           Patient Summary 항암이력 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntSmryDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpPtntSmryDAO-listSmryAntcHx */
+		select  distinct
+		        x.INQR_DVSN_CD          as INQR_DVSN_CD         /* 조회구분 '1' RT, '2' 성인항암, '3' 소아항암 */
+		     ,  x.ACDG_RGMN_CD          as ACDG_RGMN_CD         /* 항암레지먼코드 */
+		     ,  x.ACDG_PRCL_NM          as ACDG_PRCL_NM         /* 항암프로토콜명 */
+		     ,  x.IMPL_YMD              as IMPL_YMD             /* 실시일자 */
+		  from  (
+		            select  '1'                                     as INQR_DVSN_CD         /* 조회구분 '1' RT, '2' 성인항암, '3' 소아항암 */
+		                 ,  a.ORDR_CD                               as ACDG_RGMN_CD         /* 항암레지먼코드 */
+		                 ,  d.ORDR_NM                               as ACDG_PRCL_NM         /* 항암프로토콜명 */
+		                 ,  to_char(c.IMPL_DT, 'yyyymmdd')          as IMPL_YMD             /* 실시일자 */
+		              from  STCURORMT a         /* RT처방 */
+		                 ,  STORDRCMT b         /* RT처방마스터 */
+		                 ,  STRESERVT c         /* RT예약 */
+		                 ,  MDORDRCMT d
+		             where  a.PTNO              =   #{ptno}
+		               and  nvl(a.DC_DVSN_CD, 'N') = 'N'
+		               and  a.REFN_IDCT_DT is null
+		               and  b.ORDR_CD           =   a.ORDR_CD
+		               and  b.RTX_ORCL_CD       =   'S'
+		               and  c.PTNO              =   a.PTNO
+		               and  c.ORDR_YMD          =   a.ORDR_YMD
+		               and  c.ORDR_SNO          =   a.ORDR_SNO
+		               and  c.APNT_STTS_DVSN_CD =   '00'
+		               and  d.ORDR_CD           =   a.ORDR_CD
+		            union all
+		            select  '2'                                     as INQR_DVSN_CD         /* 조회구분 '1' RT, '2' 성인항암, '3' 소아항암 */
+		                 ,  c.ACDG_RGMN_CD                          as ACDG_RGMN_CD         /* 항암레지먼코드 */
+		                 ,  c.ACDG_PRCL_NM                          as ACDG_PRCL_NM         /* 항암프로토콜명 */
+		                 ,  to_char(d.RCRD_DT, 'yyyymmdd')          as IMPL_YMD             /* 실시일자 */
+		              from  MEACONDMT b         /* 종양경과 마스터 */
+		                 ,  MEACONRGT c         /* 종양경과 레지멘관리 */
+		                 ,  MEACONDDT d         /* 종양경과기록상세 */
+		             where  b.PTNO              =   #{ptno}
+		               and  c.RCRD_NO           =   b.RCRD_NO
+		               and  d.RCRD_NO           =   b.RCRD_NO
+		               and  nvl(d.DLTN_YN,'N')  =   'N'
+		            union all
+		            select  '3'                                     as INQR_DVSN_CD         /* 조회구분 '1' RT, '2' 성인항암, '3' 소아항암 */
+		                 ,  d.ACDG_RGMN_CD                          as ACDG_RGMN_CD         /* 항암레지먼코드 */
+		                 ,  d.ACDG_PRCL_NM                          as ACDG_PRCL_NM         /* 항암프로토콜명 */
+		                 ,  to_char(b.RCRD_DT, 'yyyymmdd')          as IMPL_YMD             /* 실시일자 */
+		              from  MECCDOCMT a         /* 소아암항암기록 */
+		                 ,  MECCDOCDT b         /* 소아암항암기록상세 */
+		                 ,  MECCDOCRT c         /* 소아암항암레지먼 */
+		                 ,  MEACRGMNT d         /* 항암레지먼 */
+		             where  a.PTNO          =   #{ptno}
+		               and  b.RCRD_NO       =   a.RCRD_NO
+		               and  c.RCRD_NO       =   b.RCRD_NO
+		               and  c.RCRD_DT       =   b.RCRD_DT
+		               and  d.ACDG_RGMN_CD  =   c.ACDG_RGMN_CD
+		        ) x
+		 order
+		    by  IMPL_YMD desc
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhTxinPpupDAO_sql.xml 
+    Description :                                      세금계산서_팝업 DAO
+                  -->
+<mapper namespace="HzhTxinPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTxinPpupDVO">
+	
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="dvsnCd" column="DVSN_CD"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+		<result property="txinNo" column="TXIN_NO"/>
+		<result property="cstrCd" column="CSTR_CD"/>
+		<result property="cstrNm" column="CSTR_NM"/>
+		<result property="splyAmt" column="SPLY_AMT"/>
+		<result property="vatAmt" column="VAT_AMT"/>
+		<result property="sumAmt" column="SUM_AMT"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="puchAsgnNm" column="PUCH_ASGN_NM"/>
+		<result property="empyNm" column="EMPY_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup (HZH010F3_Popup_세금계산서_조회_DAM) 
+        Description :                                           hzd_txibrkt_l01$S01_세금계산서_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTxinPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTxinPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTxinPpupDAO-listTxinPpup */
+				   rownum     as SORT_SQNC /* 순서 */
+				,  z.DVSN_CD  as DVSN_CD   /* 증빙구분코드 */
+				,  z.DVSN_NM  as DVSN_NM   /* 증빙구분명 */
+				,  z.TXIN_NO  as TXIN_NO   /* 세금계산서번호 */
+				,  z.CSTR_CD  as CSTR_CD   /* 거래처코드 */
+				,  z.CSTR_NM  as CSTR_NM   /* 거래처명 */
+				,  z.SPLY_AMT as SPLY_AMT  /* 세금계산서공급금액 */
+				,  z.VAT_AMT  as VAT_AMT   /* 세금계산서부가세금액 */
+				,  z.SUM_AMT  as SUM_AMT   /* 세금계산서금액 */
+				,  z.COMN_CD_NM as COMN_CD_NM         /* 매입매출구분명 */
+				,  z.PUCH_ASGN_NM as PUCH_ASGN_NM       /* 사번 */
+				,  z.EMPY_NM as EMPY_NM            /* 사원명 */
+			 from
+				  (select
+						   s.EVDN_DVSN_CD                                               DVSN_CD  /* 증빙구분코드 */
+						,  decode(s.EVDN_DVSN_CD, 'E', '전자증빙', 'P', '종이증빙', '') DVSN_NM  /* 증빙구분명 */
+						,  s.TXIN_NO                                                    TXIN_NO  /* 세금계산서번호 */
+						,  s.CSTR_CD                                                    CSTR_CD  /* 거래처코드 */
+						,  a.CSTR_NM                                                    CSTR_NM  /* 거래처명 */
+						,  s.TXIN_SPLY_AMT                                              SPLY_AMT /* 세금계산서공급금액 */
+						,  s.TXIN_VAT_AMT                                               VAT_AMT  /* 세금계산서부가세금액 */
+						,  s.TXIN_SPLY_AMT + s.TXIN_VAT_AMT                             SUM_AMT  /* 세금계산서금액 */
+						,  c.COMN_CD_NM                                                 COMN_CD_NM /* 매입매출구분명 */
+						,  s.PUCH_ASGN_NM                                               PUCH_ASGN_NM /* 사번 */
+		                ,  b.EMPY_NM                                                        EMPY_NM  /* 사원명 */
+					 from
+						   HMTXIBRKT s /* 세금계산서내역 */
+						,  HSCSINFMT a /* (HS)거래처정보 */
+		                ,  HZUSERMMT b /* 사원Master I/F(MDM연계) */
+						,  HZMICOCDT c /* MIS공통코드 */
+					where
+						   s.BSPL_CD           = #{bsplCd}   /* 사업장코드 */
+					  and  s.TXIN_MNGM_DVSN_CD =  '10'                         /* 세금계산서관리구분코드 */
+					  and  s.TXIN_BSRN         = replace(#{txinBsrn}, '-', '') /* 세금계산서사업자등록번호 */
+					  /*and  s.STTM_YMD         is  null                         /* 전표기표일자 */
+					  and  s.STTM_PRSG_YN      = 'N'                            /* 전표처리여부 */
+					  and  a.CSTR_BSRN         = s.TXIN_BSRN                   /* 거래처코드 */
+					  and  a.LAST_USE_YN       =  'Y'                          /* 최종사용여부 */
+		              and  s.PUCH_ASGN_NM      = b.EMNO (+)                          /* 매입담당자명 */
+					  and  c.COMN_GRP_CD       = 'HMC_004'
+					  and  c.MIS_COMN_CD       = s.PUCH_SALS_DVSN_CD  /* 매입매출구분코드 [I,O] : 매입, 매출  */
+					order  by  s.TXIN_NO  asc
+				  ) z
+			]]>
+	</select>
+
+
+
+</mapper>

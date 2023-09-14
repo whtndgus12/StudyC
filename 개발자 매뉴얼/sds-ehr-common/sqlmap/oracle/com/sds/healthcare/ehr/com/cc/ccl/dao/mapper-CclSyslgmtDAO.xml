@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CclSyslgmtDAO_sql.xml 
+    Description : -->
+<mapper namespace="CclSyslgmtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-insertSyslog () 
+        Description :                                           시스템로그 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-insertSyslog"  parameterType="com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO"  >
+		 insert /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-insertSyslog */
+		    into CSSYSLGMT
+		        ( 
+		          SYST_PRSG_ID		/* 시스템처리ID */	
+		        , BSDV_CD				    /* 업무구분코드 */	
+		        , CNCT_IP					/* 접속IP */
+		        , FRST_CRTN_DT			/* 최초생성일시 */
+		        , LAST_UPDT_DT			/* 최종수정일시 */
+		        , LOG_OCRN_DT			/* 로그발생시점 */
+		        , SRVC_ID					/* 서비스ID */
+		        , SRVC_INPT_CTN		    /* 서비스입력내용 */
+		        , SRVC_PRSG_DVSN_NM   /* 서비스처리구분명 */
+		        , SRVC_PRSG_RSLT_CTN    /* 서비스처리결과대량내용 */
+		        , SRVC_SUCS_YN		/* 서비스성공여부 */	
+		        , SYST_DVSN_CD		/* 시스템구분코드 */	
+		        , USER_ID				/* 사용자ID */	
+		        )
+		 values (
+		            #{systPrsgId}
+		          , #{bsdvCd}
+		          , #{cnctIp}
+		          , sysdate
+		          , sysdate
+		          , to_date(#{logOcrnDt}, 'yyyymmddhh24miss')
+		          , #{srvcId}         
+		          , #{srvcInptCtn}
+		          , #{srvcPrsgDvsnNm}
+		          , #{srvcPrsgRsltCtn}
+		          , #{srvcSucsYn}
+		          , #{systDvsnCd}
+		          , #{userId}
+		        )
+			
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-updateSyslog () 
+        Description :                                           시스템로그 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-updateSyslog"  parameterType="com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO"  >
+		 update /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-updateSyslog */
+		        CSSYSLGMT
+		    set SRVC_PRSG_RSLT_CTN = #{srvcPrsgRsltCtn}    /* 서비스처리결과대량내용 */
+		        , SRVC_SUCS_YN = #{srvcSucsYn}                  /* 서비스성공여부         */
+		        , LAST_UPDT_DT = sysdate			/* 최종수정시점*/
+		  where SYST_PRSG_ID = #{systPrsgId}
+			
+			
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm-result" type="com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm (접속이력대상클라이언트프로그램) 
+        Description :                                           접속이력대상클라이언트프로그램
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm"  parameterType="com.sds.healthcare.ehr.com.cc.ccl.vo.CclSyslgmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccl-dao-CclSyslgmtDAO-listCnctHxTrgtPrgm */
+		SELECT PRGM_ID
+		  FROM CUCTHPRGT
+		 WHERE SRVR_CLNT_DIV = #{srvrClntDiv}
+		<if test='prgmId != null and prgmId  != ""'>
+		    AND PRGM_ID = #{prgmId}
+		</if>	
+		   AND USE_YN = 'Y'
+	</select>
+
+
+
+</mapper>

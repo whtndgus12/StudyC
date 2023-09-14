@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	
+	<!-- *********************************************************************************** -->
+	
+	 <!--
+	    Bean Name : CFLIdGenWithFix01
+		HCCATTFLNT	첨부파일아이디 	ATTCH_FILE_ID
+		 Prefix : CFL
+	 -->
+	<bean name="CFLIdGenWithFix01" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="ehrDs" />
+		<property name="strategy" ref="cflMixStrategy" />
+		<property name="blockSize" value="5" />
+		<property name="table" value="CCIDCRETT" />
+		<property name="key" value="CFL_01_ATTCH_FILE_ID"/>
+		<property name="keyColumn" value="KEY_NM"/> 
+		<property name="nextValueColumn" value="KEY_VAL"/>
+	</bean>
+	
+	
+	<!--
+	    Bean Name : cflMixStrategy
+		CFL 01 ID 생성 정책
+	 -->
+	<bean name="cflMixStrategy" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="CFL" />
+		<property name="maxCiphers" value="10" />
+		<property name="paddingChar" value="0" />
+	</bean>
+	
+	<!-- 종합검진에서 사용하는 빈으로 고대에서는 미사용하므로 주석으로 처리함.(SmqClamMngmBiz.java) 190620 -->
+	<!--   
+	<bean name="SQ_SMBCLAMMTQ_IDGEN" class="org.anyframe.idgen.impl.SequenceIdGenServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="ehrDs" />
+    	<property name="query" value="SELECT SMBCLAMMTQ.nextval as HLSC_CLAM_NO FROM DUAL"/>	
+	</bean>
+	 -->
+</beans>

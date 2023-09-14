@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpFvrtDetlDAO_sql.xml 
+    Description :                                      즐겨찾기상세관리DAO
+                  -->
+<mapper namespace="MdpFvrtDetlDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-deleteFvrtDetl (즐겨찾기상세 삭제) 
+        Description :                                           즐겨찾기상세 삭제 mdd_bfvrtdt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-deleteFvrtDetl"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-deleteFvrtDetl */
+		        MDBFVRTDT
+		 where  FVRT_KIND_CD		= #{fvrtKindCd}
+		   and  USER_DPRT_DVSN_CD	= #{userDprtDvsnCd}
+		   and  FVRT_OWNR_CD 		= #{fvrtOwnrCd}
+		   and  FVRT_SNO 			= #{fvrtSno}
+		 <if test="fvrtDetlSno != null and fvrtDetlSno != 0">
+		   and  FVRT_DETL_SNO 		= #{fvrtDetlSno}
+		 </if>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-deleteMdbfvrtdtForParent () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-deleteMdbfvrtdtForParent"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  >
+		DELETE/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-deleteMdbfvrtdtForParent */
+		FROM MDBFVRTDT
+		WHERE FVRT_KIND_CD = #{fvrtKindCd}
+			AND USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+			AND FVRT_OWNR_CD = #{fvrtOwnrCd}
+			AND FVRT_SNO = #{fvrtSno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO">
+	
+		<result property="trmnId" column="TRMN_ID"/>
+		<result property="trmnNm" column="TRMN_NM"/>
+		<result property="clncDxSrwrCtn" column="CLNC_DX_SRWR_CTN"/>
+		<result property="clncCdHelpCtn" column="CLNC_CD_HELP_CTN"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinEnsnNm" column="SCIN_ENSN_NM"/>
+		<result property="ascsCd" column="ASCS_CD"/>
+		<result property="acutCrbrDissYn" column="ACUT_CRBR_DISS_YN"/>
+		<result property="slilScinYn" column="SLIL_SCIN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx (즐겨찾기 상세조회 (임상진단모음)) 
+        Description :                                           즐겨찾기 상세조회 (임상진단모음)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMdbfvrtdtDAO-listFvrtDetlForClncDx */
+		<![CDATA[
+		select  /*+ MdpMdbfvrtdtDAO-listFvrtDetlForClncDx_즐겨찾기_상세정보_임상진단검색용 조회 */
+		        x.TRMN_ID                   as TRMN_ID              /* 용어ID */
+		     ,  x.TRMN_NM                   as TRMN_NM              /* 용어명 */
+		     ,  x.CLNC_DX_SRWR_CTN          as CLNC_DX_SRWR_CTN     /* 임상진단검색어내용 */
+		     ,  x.CLNC_CD_HELP_CTN          as CLNC_CD_HELP_CTN     /* 임상코드도움말내용 */
+		     ,  x.SCIN_CD                   as SCIN_CD              /* 상병코드 */
+		     ,  x.SCIN_ENSN_NM              as SCIN_ENSN_NM         /* 상병영문명 */
+		     ,  (   select  min(case when SPCS_DVSN_CD = '01' then 'A' ELSE 'B' end)
+		              from  AIIMASABT
+		             where  STRT_SCIN_CD    <=  x.SCIN_CD
+		               and  FNSH_SCIN_CD    >   x.SCIN_CD
+		               and  nvl(to_date(#{baseYmd},'yyyymmdd'), trunc(sysdate)) between APST_YMD and APFN_YMD
+		               and  SPCS_DVSN_CD in ('01', '03', '07', '08', '09', '10')
+		        )                           as ASCS_CD              /* 산정특례 ('A' 암환자, 'B' 희귀난치질환) */
+		     ,  (   select  max(ACUT_CRBR_DISS_YN)
+		              from  AIIMASABT
+		             where  STRT_SCIN_CD    <=  x.SCIN_CD
+		               and  FNSH_SCIN_CD    >   x.SCIN_CD
+		               and  nvl(to_date(#{baseYmd},'yyyymmdd'), trunc(sysdate)) between APST_YMD and APFN_YMD
+		               and  ISTY_ASST_CD not in ('OA', 'SA', 'T1', 'T2', 'T3', 'T4', 'T8', 'TE', 'TI', 'ZZ')
+		        )                           as ACUT_CRBR_DISS_YN        /* 급성뇌혈관질환여부 */
+		     , x.SLIL_SCIN_YN as SLIL_SCIN_YN /* 경증상병여부 */
+		  from  (   select
+		                    a.TRMN_ID               /* 용어ID */
+		                 ,  a.TRMN_NM               /* 용어명 */
+		                 ,  a.CLNC_DX_SRWR_CTN      /* 임상진단검색어내용 */
+		                 ,  a.CLNC_CD_HELP_CTN      /* 임상코드도움말내용 */
+		                 ,  b.SCIN_CD               /* 상병코드 */
+		                 ,  c.SCIN_ENSN_NM          /* 상병영문명 */
+		                 ,  b.SORT_SQNC             /* 정렬순서 */
+		                 ,  z.FVRT_DETL_SORT_SQNC
+		                 , (select decode(count(ASCS_APLY_BASE_CD),0,'N','Y')
+		                     from AIIMASABT x /* 산정특례적용기준코드 */
+		                   where c.SCIN_CD >= x.STRT_SCIN_CD
+		                      and c.SCIN_CD  < x.FNSH_SCIN_CD
+		                      and x.SPSD_ID in ('V252','V352')
+		                      and trunc(sysdate) between nvl(x.APST_YMD, to_date('19950101', 'yyyymmdd')) and nvl(x.APFN_YMD, to_date('29991231', 'yyyymmdd'))) as SLIL_SCIN_YN
+		              from  MDBFVRTDT z
+		                 ,  METRDCTMT a     /* 용어사전 */
+		                 ,  MRBSCLSCT b     /* 임상코드상병 */
+		                 ,  MRBSSCINT c     /* 상병코드 */
+		             where  z.FVRT_KIND_CD      =   #{fvrtKindCd}
+		               and  z.USER_DPRT_DVSN_CD =   #{userDprtDvsnCd}
+		               and  z.FVRT_OWNR_CD      =   #{fvrtOwnrCd}
+		               and  z.FVRT_SNO          =   #{fvrtSno}
+		               and  a.TRMN_ID           =   z.FVRT_CD_VL
+		               and  nvl(to_date(#{baseYmd},'yyyymmdd'), trunc(sysdate)) between a.APLY_YMD and nvl(a.FNSH_YMD, to_date('29991230','YYYYMMDD')) + 0.99999
+		               and  a.MDCR_USE_YN       = 'Y'
+		               and  b.TRMN_ID           =   a.TRMN_ID
+		               and  nvl(to_date(#{baseYmd},'yyyymmdd'), trunc(sysdate)) between b.TRMN_MPNG_STRT_YMD and nvl(b.TRMN_MPNG_FNSH_YMD, sysdate) + 0.99999
+		               and  c.SCIN_CD           =   b.SCIN_CD
+		               and  c.SCIN_CD_VRSN_STRT_YMD = b.SCIN_CD_VRSN_STRT_YMD
+		               and  nvl(to_date(#{baseYmd},'yyyymmdd'), trunc(sysdate)) between c.APLY_YMD and nvl(c.FNSH_YMD, sysdate) + 0.99999
+		               and  c.MDCR_USE_YN       =   'Y'
+		        ) x
+		 order  
+		    by  x.FVRT_DETL_SORT_SQNC
+		     ,  x.TRMN_ID
+		     ,  x.SORT_SQNC
+		     ,  x.SCIN_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO">
+	
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="userDprtDvsnCd" column="USER_DPRT_DVSN_CD"/>
+		<result property="fvrtOwnrCd" column="FVRT_OWNR_CD"/>
+		<result property="fvrtSno" column="FVRT_SNO"/>
+		<result property="fvrtDetlSno" column="FVRT_DETL_SNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="fvrtDetlSortSqnc" column="FVRT_DETL_SORT_SQNC"/>
+		<result property="fvrtCdVl" column="FVRT_CD_VL"/>
+		<result property="fvrtCdVlNm" column="FVRT_CD_VL_NM"/>
+		<result property="scinCd1" column="SCIN_CD1"/>
+		<result property="scinCd2" column="SCIN_CD2"/>
+		<result property="scinCd3" column="SCIN_CD3"/>
+		<result property="scinCd4" column="SCIN_CD4"/>
+		<result property="scinCd5" column="SCIN_CD5"/>
+		<result property="scinNm1" column="SCIN_NM1"/>
+		<result property="scinNm2" column="SCIN_NM2"/>
+		<result property="scinNm3" column="SCIN_NM3"/>
+		<result property="scinNm4" column="SCIN_NM4"/>
+		<result property="scinNm5" column="SCIN_NM5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx (즐겨찾기_상세정보_관심임상진단) 
+        Description :                                           즐겨찾기_상세정보_관심임상진단 mdd_bfvrtdt_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlCnrnClncDx */
+		       a.FVRT_KIND_CD                  /* 즐겨찾기종류코드 */
+		     , a.USER_DPRT_DVSN_CD             /* 사용자부서구분코드 */
+		     , a.FVRT_OWNR_CD                  /* 즐겨찾기오너코드 */
+		     , a.FVRT_SNO                      /* 즐겨찾기일련번호 */
+		     , a.FVRT_DETL_SNO                 /* 즐겨찾기상세일련번호 */
+		     , a.MCDP_CD                       /* 진료과코드 */
+		     , a.FVRT_DETL_SORT_SQNC           /* 즐겨찾기상세정렬순서 */
+		     , a.FVRT_CD_VL                    /* 즐겨찾기코드값 */
+		     , a.FVRT_CD_VL_NM                 /* 즐겨찾기코드값명 */
+		     , b.SCIN_CD1                      /* 상병코드 */
+		     , b.SCIN_CD2
+		     , b.SCIN_CD3
+		     , b.SCIN_CD4
+		     , b.SCIN_CD5
+		     , b.SCIN_NM1                      /* 상병영문명 */
+		     , b.SCIN_NM2
+		     , b.SCIN_NM3
+		     , b.SCIN_NM4
+		     , b.SCIN_NM5
+		  from
+		       MDBFVRTDT a
+		     , (
+		        select
+		               TRMN_ID             /* 용어ID */
+		             , TRMN_NM             /* 용어명 */
+		             , CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		             , CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		             , regexp_substr(SCIN_CD,'[^^]+',1,1) as SCIN_CD1
+		             , regexp_substr(SCIN_CD,'[^^]+',1,2) as SCIN_CD2
+		             , regexp_substr(SCIN_CD,'[^^]+',1,3) as SCIN_CD3
+		             , regexp_substr(SCIN_CD,'[^^]+',1,4) as SCIN_CD4
+		             , regexp_substr(SCIN_CD,'[^^]+',1,5) as SCIN_CD5
+		             , regexp_substr(SCIN_NM,'[^^]+',1,1) as SCIN_NM1
+		             , regexp_substr(SCIN_NM,'[^^]+',1,2) as SCIN_NM2
+		             , regexp_substr(SCIN_NM,'[^^]+',1,3) as SCIN_NM3
+		             , regexp_substr(SCIN_NM,'[^^]+',1,4) as SCIN_NM4
+		             , regexp_substr(SCIN_NM,'[^^]+',1,5) as SCIN_NM5
+		        from (
+		              select
+		                     x.TRMN_ID             /* 용어ID */
+		                   , x.TRMN_NM             /* 용어명 */
+		                   , x.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                   , x.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		                   , ListAgg(SCIN_CD, '^') within group(order by TRMN_ID, SORT_SQNC, SCIN_CD) as SCIN_CD
+		                   , ListAgg(SCIN_ENSN_NM, '^') within group(order by TRMN_ID, SORT_SQNC, SCIN_CD) as SCIN_NM
+		                from (
+		                      select
+		                             a.TRMN_ID             /* 용어ID */
+		                           , a.TRMN_NM             /* 용어명 */
+		                           , a.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                           , a.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		                           , b.SCIN_CD             /* 상병코드 */
+		                           , c.SCIN_ENSN_NM        /* 상병영문명 */
+		                           , b.SORT_SQNC           /* 정렬순서 */
+		                        from METRDCTMT a    /* 용어사전 */
+		                           , MRBSCLSCT b    /* 임상코드상병 */
+		                           , MRBSSCINT c    /* 상병코드 */
+		                       where 1=1
+		                         and sysdate      between a.APLY_YMD
+		                                              and nvl(a.FNSH_YMD, to_date('29991230','YYYYMMDD')) + 0.99999
+		                         and b.TRMN_ID          = a.TRMN_ID
+		                         and sysdate      between b.TRMN_MPNG_STRT_YMD
+		                                              and nvl(b.TRMN_MPNG_FNSH_YMD, sysdate) + 0.99999
+		                         and c.SCIN_CD          = b.SCIN_CD
+		                         and c.SCIN_CD_VRSN_STRT_YMD = b.SCIN_CD_VRSN_STRT_YMD
+		                         and sysdate      between c.APLY_YMD
+		                                              and nvl(c.FNSH_YMD, sysdate) + 0.99999
+		                         and a.MDCR_USE_YN      = 'Y'
+		                         and c.MDCR_USE_YN      = 'Y') x
+		                group by
+		                      x.TRMN_ID             /* 용어ID */
+		                    , x.TRMN_NM             /* 용어명 */
+		                    , x.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                    , x.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		             )
+		       ) b
+		 where
+		       a.FVRT_KIND_CD      = #{fvrtKindCd}
+		   and a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and a.FVRT_OWNR_CD      = #{fvrtOwnrCd}
+		   and a.FVRT_SNO          = #{fvrtSno}
+		   and b.TRMN_ID           = a.FVRT_CD_VL
+		 order
+		    by a.FVRT_DETL_SORT_SQNC
+		     , b.TRMN_ID
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO">
+	
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="userDprtDvsnCd" column="USER_DPRT_DVSN_CD"/>
+		<result property="fvrtOwnrCd" column="FVRT_OWNR_CD"/>
+		<result property="fvrtSno" column="FVRT_SNO"/>
+		<result property="fvrtDetlSno" column="FVRT_DETL_SNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="fvrtDetlSortSqnc" column="FVRT_DETL_SORT_SQNC"/>
+		<result property="fvrtCdVl" column="FVRT_CD_VL"/>
+		<result property="fvrtCdVlNm" column="FVRT_CD_VL_NM"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="uprcOrdrNm" column="UPRC_ORDR_NM"/>
+		<result property="orclCd" column="ORCL_CD"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="ordrPsblDvsnCd" column="ORDR_PSBL_DVSN_CD"/>
+		<result property="kornPdctNm" column="KORN_PDCT_NM"/>
+		<result property="ensnPdctNm" column="ENSN_PDCT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn (즐겨찾기_상세정보 조회) 
+        Description :                                           즐겨찾기_상세정보 조회(검사처방) mdd_bfvrtdt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlExmn */
+		        a.FVRT_KIND_CD                          as FVRT_KIND_CD         /* 즐겨찾기종류코드 */
+		     ,  a.USER_DPRT_DVSN_CD                     as USER_DPRT_DVSN_CD    /* 사용자부서구분코드 */
+		     ,  a.FVRT_OWNR_CD                          as FVRT_OWNR_CD         /* 즐겨찾기오너코드 */
+		     ,  a.FVRT_SNO                              as FVRT_SNO             /* 즐겨찾기일련번호 */
+		     ,  a.FVRT_DETL_SNO                         as FVRT_DETL_SNO        /* 즐겨찾기상세일련번호 */
+		     ,  a.MCDP_CD                               as MCDP_CD              /* 진료과코드 */
+		     ,  a.FVRT_DETL_SORT_SQNC                   as FVRT_DETL_SORT_SQNC  /* 즐겨찾기상세정렬순서 */
+		     ,  a.FVRT_CD_VL                            as FVRT_CD_VL           /* 즐겨찾기코드값 */
+		     ,  a.FVRT_CD_VL_NM                         as FVRT_CD_VL_NM        /* 즐겨찾기코드값명 */
+		     ,  b.SLIP_CD                               as SLIP_CD              /* SLIP 코드 */
+		     ,  c.SLIP_NM                               as SLIP_NM              /* SLIP 명 */
+		     ,  to_char(b.APST_YMD, 'YYYYMMDD')         as APST_YMD             /* 적용시작일자 */
+		     ,  to_char(b.APFN_YMD, 'YYYYMMDD')         as APFN_YMD             /* 적용종료일자 */
+		     ,  b.ORDR_CD                               as ORDR_CD              /* 처방코드 */
+		     ,  b.ORDR_NM                               as ORDR_NM              /* 처방명 */
+		     ,  b.UPRC_ORDR_NM                          as UPRC_ORDR_NM         /* 대문자처방명 */
+		     ,  b.ORCL_CD                               as ORCL_CD              /* 처방분류코드 */
+		     ,  b.ORDR_CLTY_CD                          as ORDR_CLTY_CD         /* 처방분류유형코드 */
+		     ,  b.ORDR_PSBL_DVSN_CD                     as ORDR_PSBL_DVSN_CD    /* 처방가능구분코드 */
+		     ,  b.KORN_PDCT_NM                          as KORN_PDCT_NM         /* 한글상품명 */
+		     ,  b.ENSN_PDCT_NM                          as ENSN_PDCT_NM         /* 영문상품명 */
+		  from  MDBFVRTDT a
+		     ,  MDORDRCMT b
+		     ,  MDBSLIPCT c
+		 where
+		        a.FVRT_KIND_CD      =   #{fvrtKindCd}
+		   and  a.USER_DPRT_DVSN_CD =   #{userDprtDvsnCd}
+		   and  a.FVRT_OWNR_CD      =   #{fvrtOwnrCd}
+		   and  a.FVRT_SNO          =   #{fvrtSno}
+		   and  b.ORDR_CD           =   a.FVRT_CD_VL
+		   and  c.SLIP_CD           =   b.SLIP_CD
+		 order
+		    by  a.FVRT_DETL_SORT_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO">
+	
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="userDprtDvsnCd" column="USER_DPRT_DVSN_CD"/>
+		<result property="fvrtOwnrCd" column="FVRT_OWNR_CD"/>
+		<result property="fvrtSno" column="FVRT_SNO"/>
+		<result property="fvrtDetlSno" column="FVRT_DETL_SNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="fvrtDetlSortSqnc" column="FVRT_DETL_SORT_SQNC"/>
+		<result property="fvrtCdVl" column="FVRT_CD_VL"/>
+		<result property="fvrtCdVlNm" column="FVRT_CD_VL_NM"/>
+		<result property="txOprtCd1" column="TX_OPRT_CD1"/>
+		<result property="txOprtCd2" column="TX_OPRT_CD2"/>
+		<result property="txOprtCd3" column="TX_OPRT_CD3"/>
+		<result property="txOprtCd4" column="TX_OPRT_CD4"/>
+		<result property="txOprtCd5" column="TX_OPRT_CD5"/>
+		<result property="txOprtNm1" column="TX_OPRT_NM1"/>
+		<result property="txOprtNm2" column="TX_OPRT_NM2"/>
+		<result property="txOprtNm3" column="TX_OPRT_NM3"/>
+		<result property="txOprtNm4" column="TX_OPRT_NM4"/>
+		<result property="txOprtNm5" column="TX_OPRT_NM5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt (즐겨찾기_상세정보_관심임상수술 조회) 
+        Description :                                           즐겨찾기_상세정보_관심임상수술 mdd_bfvrtdt_l04
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-listFvrtDetlOprt */
+		       a.FVRT_KIND_CD                  /* 즐겨찾기종류코드 */
+		     , a.USER_DPRT_DVSN_CD             /* 사용자부서구분코드 */
+		     , a.FVRT_OWNR_CD                  /* 즐겨찾기오너코드 */
+		     , a.FVRT_SNO                      /* 즐겨찾기일련번호 */
+		     , a.FVRT_DETL_SNO                 /* 즐겨찾기상세일련번호 */
+		     , a.MCDP_CD                       /* 진료과코드 */
+		     , a.FVRT_DETL_SORT_SQNC           /* 즐겨찾기상세정렬순서 */
+		     , a.FVRT_CD_VL                    /* 즐겨찾기코드값 */
+		     , a.FVRT_CD_VL_NM                 /* 즐겨찾기코드값명 */
+		     , b.TX_OPRT_CD1                   /* 처치수술코드 */
+		     , b.TX_OPRT_CD2
+		     , b.TX_OPRT_CD3
+		     , b.TX_OPRT_CD4
+		     , b.TX_OPRT_CD5
+		     , b.TX_OPRT_NM1                   /* 처치수술명 */
+		     , b.TX_OPRT_NM2
+		     , b.TX_OPRT_NM3
+		     , b.TX_OPRT_NM4
+		     , b.TX_OPRT_NM5
+		  from
+		       MDBFVRTDT a
+		     , (
+		        select
+		               TRMN_ID             /* 용어ID */
+		             , TRMN_NM             /* 용어명 */
+		             , CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		             , CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		             , regexp_substr(TX_OPRT_CD,'[^^]+',1,1) as TX_OPRT_CD1
+		             , regexp_substr(TX_OPRT_CD,'[^^]+',1,2) as TX_OPRT_CD2
+		             , regexp_substr(TX_OPRT_CD,'[^^]+',1,3) as TX_OPRT_CD3
+		             , regexp_substr(TX_OPRT_CD,'[^^]+',1,4) as TX_OPRT_CD4
+		             , regexp_substr(TX_OPRT_CD,'[^^]+',1,5) as TX_OPRT_CD5
+		             , regexp_substr(TX_OPRT_NM,'[^^]+',1,1) as TX_OPRT_NM1
+		             , regexp_substr(TX_OPRT_NM,'[^^]+',1,2) as TX_OPRT_NM2
+		             , regexp_substr(TX_OPRT_NM,'[^^]+',1,3) as TX_OPRT_NM3
+		             , regexp_substr(TX_OPRT_NM,'[^^]+',1,4) as TX_OPRT_NM4
+		             , regexp_substr(TX_OPRT_NM,'[^^]+',1,5) as TX_OPRT_NM5
+		        from (
+		              select
+		                     x.TRMN_ID             /* 용어ID */
+		                   , x.TRMN_NM             /* 용어명 */
+		                   , x.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                   , x.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		                   , ListAgg(TX_OPRT_CD, '^') within group(order by TRMN_ID, SORT_SQNC, TX_OPRT_CD) as TX_OPRT_CD
+		                   , ListAgg(TX_OPRT_ENSN_NM, '^') within group(order by TRMN_ID, SORT_SQNC, TX_OPRT_CD) as TX_OPRT_NM
+		                from (
+		                      select
+		                             a.TRMN_ID             /* 용어ID */
+		                           , a.TRMN_NM             /* 용어명 */
+		                           , a.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                           , a.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		                           , b.TX_OPRT_CD          /* 처치수술코드 */
+		                           , c.TX_OPRT_ENSN_NM     /* 처치수술영문명 */
+		                           , b.SORT_SQNC           /* 정렬순서 */
+		                        from METRDCTMT a    /* 용어사전 */
+		                           , MRBSCLOPT b    /* 임상코드수술 */
+		                           , MRBSTROPT c    /* 처치수술코드 */
+		                       where 1=1
+		                         and sysdate      between a.APLY_YMD
+		                                              and nvl(a.FNSH_YMD, to_date('29991230','YYYYMMDD')) + 0.99999
+		                         and b.TRMN_ID          = a.TRMN_ID
+		                         and sysdate      between b.TRMN_MPNG_STRT_YMD
+		                                              and nvl(b.TRMN_MPNG_FNSH_YMD, sysdate) + 0.99999
+		                         and c.TX_OPRT_CD       = b.TX_OPRT_CD
+		                         and c.TX_OPRT_CD_VRSN_STRT_YMD = b.TX_OPRT_CD_VRSN_STRT_YMD
+		                         and sysdate      between c.APLY_YMD
+		                                              and nvl(c.FNSH_YMD, sysdate) + 0.99999
+		                         and a.MDCR_USE_YN      = 'Y') x
+		                group by
+		                      x.TRMN_ID             /* 용어ID */
+		                    , x.TRMN_NM             /* 용어명 */
+		                    , x.CLNC_DX_SRWR_CTN    /* 임상진단검색어내용 */
+		                    , x.CLNC_CD_HELP_CTN    /* 임상코드도움말내용 */
+		             )
+		       ) b
+		 where
+		       a.FVRT_KIND_CD      = #{fvrtKindCd}
+		   and a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and a.FVRT_OWNR_CD      = #{fvrtOwnrCd}
+		   and a.FVRT_SNO          = #{fvrtSno}
+		   and b.TRMN_ID           = a.FVRT_CD_VL
+		 order
+		    by a.FVRT_DETL_SORT_SQNC
+		     , b.TRMN_ID
+	</select>
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchInsFvrtDetl (즐겨찾기상세등록(Batch)) 
+        Description :                                           즐겨찾기상세등록(Batch) mdd_bfvrtdt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchInsFvrtDetl" parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO" >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchInsFvrtDetl */
+		  into  MDBFVRTDT
+		        (
+		        FVRT_KIND_CD
+		     ,  USER_DPRT_DVSN_CD
+		     ,  FVRT_OWNR_CD
+		     ,  FVRT_SNO
+		     ,  FVRT_DETL_SNO
+		     ,  MCDP_CD
+		     ,  FVRT_DETL_SORT_SQNC
+		     ,  FVRT_CD_VL                /* 즐겨찾기코드값 */
+		     ,  FVRT_CD_VL_NM             /* 즐겨찾기코드값명 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		select
+		        #{fvrtKindCd}
+		     ,  #{userDprtDvsnCd}
+		     ,  #{fvrtOwnrCd}
+		     ,  #{fvrtSno}
+		     ,  nvl(max(a.FVRT_DETL_SNO), 0) + 1
+		     ,  #{mcdpCd}
+		     ,  #{fvrtDetlSortSqnc}
+		     ,  #{fvrtCdVl}
+		     ,  #{fvrtCdVlNm}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		  from
+		        MDBFVRTDT a
+		 where
+		        a.FVRT_KIND_CD      = #{fvrtKindCd}
+		   and  a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and  a.FVRT_OWNR_CD      = #{fvrtOwnrCd}
+		   and  a.FVRT_SNO          = #{fvrtSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchUpdFvrtDetl (즐겨찾기상세수정(Batch)) 
+        Description :                                           즐겨찾기상세수정(Batch)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchUpdFvrtDetl" parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO" >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchUpdFvrtDetl */
+		        MDBFVRTDT
+		   set  
+		        FVRT_DETL_SNO       = #{fvrtDetlSno}
+		     ,  MCDP_CD             = #{mcdpCd}
+		     ,  FVRT_DETL_SORT_SQNC	= #{fvrtDetlSortSqnc}
+		     ,  FVRT_CD_VL          = #{fvrtCdVl}          /* 즐겨찾기코드값 */
+		     ,  FVRT_CD_VL_NM       = #{fvrtCdVlNm}       /* 즐겨찾기코드값명 */
+		     /* AUDIT */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  
+		        FVRT_KIND_CD	  = #{fvrtKindCd}
+		   and	USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and	FVRT_OWNR_CD	  = #{fvrtOwnrCd}
+		   and  FVRT_SNO          = #{fvrtSno}
+		   and  FVRT_DETL_SNO	  = #{fvrtDetlSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchDelFvrtDetl (즐겨찾기상세삭제(Batch)) 
+        Description :                                           즐겨찾기상세삭제(Batch) mdd_bfvrtdt_d02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchDelFvrtDetl" parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO" >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-executeBatchDelFvrtDetl */
+		  from  MDBFVRTDT
+		 where  FVRT_KIND_CD      = #{fvrtKindCd}
+		   and  USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and  FVRT_OWNR_CD      = #{fvrtOwnrCd}
+		   and  FVRT_SNO          = #{fvrtSno}
+		   and  FVRT_DETL_SNO     = #{fvrtDetlSno}
+	</update>
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO">
+	
+		<result property="workTypeCd" column="WORK_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar (추가변수) 
+        Description :                                           추가변수
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtDetlDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtDetlDAO-selectOneVar */
+		        '' as WORK_TYPE_CD
+		  from  dual
+	</select>
+
+
+
+</mapper>

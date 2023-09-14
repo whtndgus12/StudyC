@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmMsknAthrMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcmMsknAthrMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="pckgId" column="PCKG_ID"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm (마스킹프로그램목록조회) 
+        Description :                                           cmd_maskrmt_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm_마스킹 프로그램 목록 조회 */
+					PRGM_ID as PRGM_ID,
+					PRGM_NM as PRGM_NM,
+					PCKG_ID as PCKG_ID,
+					PRGM_TYP_CD as PRGM_TYP_CD
+		from
+					CSPRMLTMT
+		where	( (upper(PRGM_NM) like '%' || upper(#{prgmId}) || '%')
+						or   (upper(PRGM_ID) like upper(#{prgmId}) || '%') )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="maskInqrDvsnVl" column="MASK_INQR_DVSN_VL"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="maskInqrDvsnCd" column="MASK_INQR_DVSN_CD"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2 (마스킹프로그램목록조회) 
+        Description :                                           cmd_maskrmt_l04
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-listMsknPrgm2_마스킹 프로그램 목록 조회 */
+						   PRGM_ID as PRGM_ID,
+						   PRGM_NM as PRGM_NM,
+						   MASK_INQR_DVSN_VL as MASK_INQR_DVSN_VL,
+						   APST_YMD as APST_YMD,
+						   APFN_YMD as APFN_YMD,
+						   DPRT_CD as DPRT_CD,
+						   MASK_INQR_DVSN_CD as MASK_INQR_DVSN_CD,
+						   decode(MASK_INQR_DVSN_CD, 'F', 'F'||' (화면)', 'U', 'U'||' (사용자)', 'D', 'D'||' (부서)', 'O', 'O'||' (직종)') as RTUR_VL_1,
+						   decode(MASK_INQR_DVSN_CD, 'D', MASK_INQR_DVSN_VL||' ( '||DEPTNM||' )', 'U', MASK_INQR_DVSN_VL||' ( '||USER_NM||' - '||KORN_DPRT_NM||' )', 'O', MASK_INQR_DVSN_VL||' ( '||OCFM_NM||' )', MASK_INQR_DVSN_VL) as RTUR_VL_2
+		from
+						  (
+							select
+									PRGM_ID,
+									MASK_INQR_DVSN_CD,
+									MASK_INQR_DVSN_VL,
+									to_char(APST_YMD,'yyyymmdd') APST_YMD,
+									to_char(APFN_YMD,'yyyymmdd') APFN_YMD,
+									DPRT_CD,
+									(select
+			   							  	USER_NM
+									   from
+											 CCUSERAMT
+									  where
+											 LGIN_ID = MASK_INQR_DVSN_VL) as USER_NM,
+									(select
+			   							  	PRGM_NM
+									   from
+											CSPRMLTMT
+									  where
+											CSPRMLTMT.PRGM_ID  = CCMASKRMT.PRGM_ID ) as PRGM_NM,
+									(select
+			   							  KORN_DPRT_NM
+									   from
+											 HZDEPTMMT
+									  where
+											 DPRT_CD = CCMASKRMT.MASK_INQR_DVSN_VL) as DEPTNM,
+									(select
+											 DETL_CD_NM
+									   from
+											 CCCMCDDMT
+									  where
+											 COMN_GRP_CD(+) = 'GP170'
+										and  COMN_DTLS_CD(+) = MASK_INQR_DVSN_VL ) as OCFM_NM,
+									(select
+											 d.KORN_DPRT_NM
+									   from
+											 CCUSRDPHT c,
+											 HZDEPTMMT d
+									  where
+											 c.MDCR_DPRT_CD = d.DPRT_CD
+										and  c.USER_ID = CCMASKRMT.MASK_INQR_DVSN_VL ) as KORN_DPRT_NM,
+									(select
+			   							  DETL_CD_NM
+									   from
+											 CCCMCDDMT
+									  where
+											 COMN_GRP_CD = 'CSX_009'
+										and  COMN_DTLS_CD = USER_ATHR_DVSN_CD) as USER_ATHR_DVSN_CD_NAME,
+									MASK_INQR_DVSN_CD||' ('||(select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CSX_008' and COMN_DTLS_CD = MASK_INQR_DVSN_CD)||')' as MASK_INQR_DVSN_NM
+							  from
+									CCMASKRMT)
+					 where
+							nvl(upper(PRGM_ID), '%') like upper(#{prgmId}) ||'%'
+					   and  nvl(MASK_INQR_DVSN_CD, '%') like '%'|| #{maskInqrDvsnCd} ||'%'
+					   and  nvl(MASK_INQR_DVSN_VL, '%') like '%'|| #{maskInqrDvsnVl} ||'%'
+				  order by
+							PRGM_ID
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="maskInqrDvsnCd" column="MASK_INQR_DVSN_CD"/>
+		<result property="maskInqrDvsnVl" column="MASK_INQR_DVSN_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald (마스킹 화면단위 등록 Validation) 
+        Description :                                           cmd_maskrmt_s04
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald-result" useCache="true" flushCache="false">
+		select  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknScrnRgstVald_마스킹 화면단위 등록 Validation */
+					PRGM_ID as PRGM_ID,
+					MASK_INQR_DVSN_CD as MASK_INQR_DVSN_CD,
+					MASK_INQR_DVSN_VL as MASK_INQR_DVSN_VL,
+					'' as RTUR_VL_1
+		from
+					CCMASKRMT
+		where
+					PRGM_ID = #{prgmId}
+		and		MASK_INQR_DVSN_CD = #{maskInqrDvsnCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="maskInqrDvsnCd" column="MASK_INQR_DVSN_CD"/>
+		<result property="maskInqrDvsnVl" column="MASK_INQR_DVSN_VL"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="userAthrDvsnCd" column="USER_ATHR_DVSN_CD"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr (마스킹권한조회) 
+        Description :                                           cmd_maskrmt_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr-result" useCache="true" flushCache="false">
+		select  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-selectOneMsknAthr_마스킹 권한 조회 */
+					PRGM_ID as PRGM_ID,
+					MASK_INQR_DVSN_CD as MASK_INQR_DVSN_CD,
+					MASK_INQR_DVSN_VL as MASK_INQR_DVSN_VL,
+					to_char(APST_YMD,'yyyymmdd') as APST_YMD,
+					to_char(APFN_YMD,'yyyymmdd') as APFN_YMD,
+					USER_ATHR_DVSN_CD as USER_ATHR_DVSN_CD,
+					(select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CSX_008' and COMN_DTLS_CD = MASK_INQR_DVSN_CD) as RTUR_VL_1,
+					(select USER_NM from CCUSERAMT where LGIN_ID = MASK_INQR_DVSN_VL) as RTUR_VL_2,
+					(select PRGM_NM from CSPRMLTMT where CSPRMLTMT.PRGM_ID  = CCMASKRMT.PRGM_ID) as RTUR_VL_3
+		from		CCMASKRMT
+		where	PRGM_ID           = #{prgmId}
+		and		MASK_INQR_DVSN_CD = #{maskInqrDvsnCd}
+		and		MASK_INQR_DVSN_VL = #{maskInqrDvsnVl} 
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-deleteMsknAthr (마스킹권한삭제) 
+        Description :                                           cmd_maskrmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-deleteMsknAthr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-deleteMsknAthr_마스킹 권한 삭제 */
+		from		CCMASKRMT
+		where	PRGM_ID           = #{prgmId}
+		and		MASK_INQR_DVSN_CD = #{maskInqrDvsnCd}
+		and		MASK_INQR_DVSN_VL = #{maskInqrDvsnVl}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-insertMsknAthr (마스킹권한입력) 
+        Description :                                           cmd_maskrmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-insertMsknAthr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-insertMsknAthr_마스킹 권한 입력 */
+		into		CCMASKRMT
+						   (
+							PRGM_ID,
+							MASK_INQR_DVSN_CD,
+							MASK_INQR_DVSN_VL,
+							APST_YMD,
+							APFN_YMD,
+							USER_ATHR_DVSN_CD,
+							FRST_RGSR_ID,
+							FRST_RGST_IP,
+							FRST_RGST_DT,
+							FRST_RGST_CLNT_PRGM_ID,
+							FRST_RGST_SRVR_PRGM_ID,
+							LAST_UPDR_ID,
+							LAST_UPDT_IP,
+							LAST_UPDT_DT,
+							LAST_UPDT_CLNT_PRGM_ID,
+							LAST_UPDT_SRVR_PRGM_ID,
+							DPRT_CD)
+				   values
+						   (
+			   			 	#{prgmId},
+							#{maskInqrDvsnCd},
+							#{maskInqrDvsnVl},
+							to_date( #{apstYmd}, 'yyyymmdd' ),
+							to_date( #{apfnYmd}, 'yyyymmdd' ),
+							'P',
+			   			 	#{gvUserId},
+			   			 	#{gvUserIp},
+			   			 	sysdate,
+			   			 	#{gvClntPrgmId},
+			   			 	#{gvSrvrPrgmId},
+			   			 	#{gvUserId},
+			   			 	#{gvUserIp},
+			   			 	sysdate,
+			   			 	#{gvClntPrgmId},
+			   			 	#{gvSrvrPrgmId},
+			   			 	#{dprtCd} 
+							)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-updateMsknAthr (마스킹권한수정) 
+        Description :                                           cmd_maskrmt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-updateMsknAthr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmMsknAthrMngmDVO"  >
+		update  /*+ com-sds-healthcare-ehr-com-cm-ccm-dao-CcmMsknAthrMngmDAO-updateMsknAthr_마스킹 권한 수정 */
+					CCMASKRMT
+		set		APST_YMD           = to_date( #{apstYmd}, 'yyyymmdd' ),
+					APFN_YMD           = to_date( #{apfnYmd}, 'yyyymmdd' ),
+					USER_ATHR_DVSN_CD  = #{userAthrDvsnCd},
+					LAST_UPDR_ID       = #{gvUserId},
+					LAST_UPDT_IP       = #{gvUserIp},
+					LAST_UPDT_DT       =  sysdate,
+					LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId},
+					LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		where	PRGM_ID            = #{prgmId}
+		and		MASK_INQR_DVSN_CD  = #{maskInqrDvsnCd}
+		and		MASK_INQR_DVSN_VL  = #{maskInqrDvsnVl}
+	</update>
+
+</mapper>

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMenuGrpCndtDAO_sql.xml 
+    Description :                                      메뉴 그룹
+                  -->
+<mapper namespace="CcsMenuGrpCndtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO">
+	
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="cndtGrpId" column="CNDT_GRP_ID"/>
+		<result property="cndtGrpNm" column="CNDT_GRP_NM"/>
+		<result property="cndtItemId" column="CNDT_ITEM_ID"/>
+		<result property="cndtItemNm" column="CNDT_ITEM_NM"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemNm" column="CNDT_TRGT_ITEM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt (메뉴그룹 조건 조회) 
+        Description :                                           csd_ownagmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-listMenuGrpCndt_메뉴그룹 조건 조회 */
+							ttA.MENU_GRP_ID as MENU_GRP_ID
+						,	ttA.CNDT_GRP_ID as CNDT_GRP_ID
+						,	ttA.CNDT_GRP_NM as CNDT_GRP_NM
+						,	ttA.CNDT_ITEM_ID as CNDT_ITEM_ID
+						,	ttA.CNDT_ITEM_NM as CNDT_ITEM_NM
+						,	ttA.CNDT_TRGT_ITEM_CD as CNDT_TRGT_ITEM_CD
+						,	ttA.CNDT_OPRR_CD as CNDT_OPRR_CD
+						,	ttA.DETL_CD_NM as COMN_CD_NM
+						,	ttA.CNDT_TRGT_ITEM_VL as CNDT_TRGT_ITEM_VL
+						,	ttA.CNDT_TRGT_ITEM_NM as CNDT_TRGT_ITEM_NM
+						,	ttA.LV as RTUR_VL
+						,	ttA.INQR_SQNC as INQR_SQNC
+		from			(	select	tA.MENU_GRP_ID
+								 	,	tA.CNDT_GRP_ID
+								 	, 	'' as CNDT_GRP_NM
+								 	,	tA.CNDT_ITEM_ID
+								 	,	tA.CNDT_TRGT_ITEM_CD
+								 	,	tB.DETL_CD_NM as CNDT_ITEM_NM
+								 	,	tA.CNDT_OPRR_CD
+								 	,	tC.DETL_CD_NM
+								 	,	tA.CNDT_TRGT_ITEM_VL
+								 	,	tA.CNDT_TRGT_ITEM_NM
+								 	,	'1' as LV
+								 	,	tA.CNDT_ITEM_SQNC as INQR_SQNC
+							from		CSOWNAIMT tA,
+								   		CCCMCDDMT tB,
+								   		CCCMCDDMT tC
+							where	tA.MENU_GRP_ID = #{menuGrpId}
+							and		tB.COMN_GRP_CD(+) = 'CSM_003'  /*  조건대상항목코드 */
+							and		tB.COMN_DTLS_CD(+) = tA.CNDT_TRGT_ITEM_CD
+							and		tC.COMN_GRP_CD(+) = 'CSM_002'  /*  조건연산자코드 */
+							and		tC.COMN_DTLS_CD(+) = tA.CNDT_OPRR_CD
+						   	union all
+						   	select	tD.MENU_GRP_ID
+									,	tD.CNDT_GRP_ID
+									,	tD.CNDT_GRP_NM
+									,	tD.CNDT_GRP_ID as CNDT_ITEM_ID
+									,	'' as CNDT_TRGT_ITEM_CD
+								 	,	tD.CNDT_GRP_NM as CNDT_ITEM_NM
+								 	,	'' as CNDT_OPRR_CD
+								 	,	'' as DETL_CD_NM
+								 	,	'' as CNDT_TRGT_ITEM_VL
+								 	,	'' as CNDT_TRGT_ITEM_NM
+								 	,	'0' as LV
+								 	,	tD.CNDT_GRP_APLY_SQNC as INQR_SQNC
+							from  	CSOWNAGMT tD
+							where	substr(tD.CNDT_GRP_ID, 1, 1) = 'G'
+							and		tD.MENU_GRP_ID = #{menuGrpId}
+						  ) ttA
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrp (메뉴그룹 조건그룹 등록) 
+        Description :                                           csd_ownagmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		<![CDATA[
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrp_메뉴그룹조건그룹 등록 */
+		into			CSOWNAGMT( MENU_GRP_ID
+										   , CNDT_GRP_ID
+										   , CNDT_GRP_APLY_SQNC
+										   , CNDT_GRP_NM
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{menuGrpId}
+										   , #{cndtGrpId}
+										   , #{cndtGrpAplySqnc}
+										   , #{cndtGrpNm}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+					]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItem (메뉴그룹 조건항목 등록) 
+        Description :                                           csd_ownaimt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		<![CDATA[
+				   insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItem_메뉴그룹조건항목 등록 */
+					 into  CSOWNAIMT( MENU_GRP_ID
+										   , CNDT_GRP_ID
+										   , CNDT_ITEM_ID
+										   , CNDT_ITEM_SQNC
+										   , CNDT_OPRR_CD
+										   , CNDT_TRGT_ITEM_VL
+										   , CNDT_TRGT_ITEM_NM
+										   , CNDT_TRGT_ITEM_CD
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{menuGrpId}
+										   , #{cndtGrpId}
+										   , #{cndtItemId}
+										   , #{cndtItemSqnc}
+										   , #{cndtOprrCd}
+										   , #{cndtTrgtItemVl}
+										   , #{cndtTrgtItemNm}
+										   , #{cndtTrgtItemCd}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+					]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrpMdfcHx (메뉴그룹 조건그룹 변경이력 등록) 
+        Description :                                           csd_ownaght_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrpMdfcHx"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtGrpMdfcHx_메뉴그룹조건그룹 변경이력 등록 DAM */
+		into  CSOWNAGHT
+				   (
+				   select  	MENU_GRP_ID,
+						   		CNDT_GRP_ID,
+						   		sysdate,
+						   		CNDT_GRP_APLY_SQNC,
+						   		CNDT_GRP_NM,
+						   		FRST_RGSR_ID,
+						   		FRST_RGST_IP,
+						   		FRST_RGST_DT,
+						   		FRST_RGST_CLNT_PRGM_ID,
+						   		FRST_RGST_SRVR_PRGM_ID,
+						   		#{gvUserId},
+						   		#{gvUserIp},
+						   		sysdate,
+						   		#{gvClntPrgmId},
+						   		#{gvSrvrPrgmId}
+					 	from  CSOWNAGMT
+						where  MENU_GRP_ID = #{menuGrpId}
+			   			)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deleteMenuGrpCndtGrp (메뉴그룹 조건그룹 삭제) 
+        Description :                                           csd_ownagmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deleteMenuGrpCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deteteMenuGrpCndtGrp_메뉴그룹조건그룹 삭제 */
+		from  	CSOWNAGMT
+		where	MENU_GRP_ID = #{menuGrpId}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItemMdfcHx (메뉴그룹 조건항목 변경이력 등록) 
+        Description :                                           csd_ownaiht_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItemMdfcHx"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-insertMenuGrpCndtItemMdfcHx_메뉴그룹조건항목 변경이력 등록 DAM */
+		into  		CSOWNAIHT
+				   (
+				   select  MENU_GRP_ID,
+						   CNDT_GRP_ID,
+						   CNDT_ITEM_ID,
+						   sysdate,
+						   CNDT_ITEM_SQNC,
+						   CNDT_OPRR_CD,
+						   CNDT_TRGT_ITEM_CD,
+						   CNDT_TRGT_ITEM_NM,
+						   CNDT_TRGT_ITEM_VL,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   #{gvUserId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId}
+					 from  CSOWNAIMT
+					where  MENU_GRP_ID = #{menuGrpId}
+				)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deleteMenuGrpCndtItem (메뉴그룹 조건항목 삭제) 
+        Description :                                           csd_ownaimt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deleteMenuGrpCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuGrpCndtDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuGrpCndtDAO-deleteMenuGrpCndtItem_메뉴그룹조건항목 삭제 */
+		from		CSOWNAIMT
+		where	MENU_GRP_ID = #{menuGrpId}
+	</delete>
+
+</mapper>

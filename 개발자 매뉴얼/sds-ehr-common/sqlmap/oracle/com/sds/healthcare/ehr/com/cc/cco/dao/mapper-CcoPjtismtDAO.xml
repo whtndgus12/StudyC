@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoPjtismtDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoPjtismtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO">
+	
+		<result property="issNo" column="ISS_NO"/>
+		<result property="issNm" column="ISS_NM"/>
+		<result property="issCtn" column="ISS_CTN"/>
+		<result property="afiTrgtCot" column="AFI_TRGT_COT"/>
+		<result property="antpMnshVl" column="ANTP_MNSH_VL"/>
+		<result property="issPrsgPrjtTissCd" column="ISS_PRSG_PRJT_TISS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="issAsgnId" column="ISS_ASGN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="planStrtYmd" column="PLAN_STRT_YMD"/>
+		<result property="planFnshYmd" column="PLAN_FNSH_YMD"/>
+		<result property="acrlStrtYmd" column="ACRL_STRT_YMD"/>
+		<result property="acrlFnshYmd" column="ACRL_FNSH_YMD"/>
+		<result property="rflcYnCd" column="RFLC_YN_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="mngnSbjcCtn" column="MNGN_SBJC_CTN"/>
+		<result property="prjtTissCd" column="PRJT_TISS_CD"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="issDvsnCd" column="ISS_DVSN_CD"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="fnctId" column="FNCT_ID"/>
+		<result property="fnctNm" column="FNCT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01 (coo_pjtismt_l01 이슈현황 조회) 
+        Description :                                           coo_pjtismt_l01 이슈현황 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt01 */
+		<![CDATA[
+		  select  /*+ cod_pjtismt_l01$S01_이슈현황 조회 */
+		            a.ISS_NO
+		          , a.ISS_NM
+		          , a.ISS_CTN
+		          , 0 as AFI_TRGT_COT
+		          , a.ANTP_MNSH_VL
+		          , a.ISS_PRSG_PRJT_TISS_CD
+		          , d.DETL_CD_NM
+		          , a.ISS_ASGN_ID
+		          , e.USER_NM
+		          , to_char(a.FRST_RGST_DT , 'yyyymmdd') as FRST_RGST_DT
+		          , to_char(a.PLAN_STRT_YMD , 'yyyymmdd') as PLAN_STRT_YMD
+		          , to_char(a.PLAN_FNSH_YMD , 'yyyymmdd') as PLAN_FNSH_YMD
+		          , to_char(a.ACRL_STRT_YMD , 'yyyymmdd') as ACRL_STRT_YMD
+		          , to_char(a.ACRL_FNSH_YMD , 'yyyymmdd') as ACRL_FNSH_YMD
+		          , a.RFLC_YN_CD
+		          , b.DETL_CD_NM as DETL_CD_NM_1
+		          , a.MNGN_SBJC_CTN
+		          , a.PRJT_TISS_CD
+		          , c.DETL_CD_NM as DETL_CD_NM_2
+		          , a.RGSR_ID
+		          , f.USER_NM as USER_NM_1
+		          , a.ISS_DVSN_CD
+		          , g.DETL_CD_NM as DETL_CD_NM_3
+		          , a.DLTN_YN
+		          , h.PRGM_ID
+		          , i.PRGM_NM
+		          , decode(h.PRGM_ID, null, '', h.PRGM_ID || '_' || h.FNCT_ID) as AFI_RTUR_VL 
+		          , h.FNCT_ID
+		          , j.FNCT_NM
+		    from    COPJTISMT a
+		          , CCCMCDDMT b
+		          , CCCMCDDMT c
+		          , CCCMCDDMT d
+		          , CCUSRDPHT e
+		          , CCUSRDPHT f
+		          , CCCMCDDMT g
+		          , COPJTISDT h
+		          , COTBPRMMT i
+		          , COTBPRMDT j
+		    where   b.COMN_GRP_CD(+) = 'COR_026'
+		      and   a.RFLC_YN_CD     = b.COMN_DTLS_CD(+)
+		      and   c.COMN_GRP_CD(+) = 'COR_025'
+		      and   a.PRJT_TISS_CD   = c.COMN_DTLS_CD(+)
+		      and   d.COMN_GRP_CD(+) = 'COR_025'
+		      and   a.ISS_PRSG_PRJT_TISS_CD   = d.COMN_DTLS_CD(+)
+		      and   a.ISS_ASGN_ID    = e.USER_ID(+)
+		      and   a.RGSR_ID        = f.USER_ID(+)
+		      and   g.COMN_GRP_CD(+) = 'COR_007'
+		      and   a.ISS_DVSN_CD    = g.COMN_DTLS_CD(+)
+		      and   a.ISS_NO         = h.ISS_NO(+)
+		      and   nvl(h.DLTN_YN(+), 'N') <> 'Y'
+		      and   h.PRGM_ID        = i.PRGM_ID(+)
+		      and   h.PRGM_ID        = j.PRGM_ID(+)
+		      and   h.FNCT_ID        = j.FNCT_ID(+)
+		      /* 요청팀 */
+		      and   ((nvl( #{chrcCdVl} ,'*') = '*') or ( #{chrcCdVl}  like '%' || nvl(a.PRJT_TISS_CD, '123')  || '%'))
+		      /* 조치팀 */
+		      and   ((nvl( #{chrcCdVl1} ,'*') = '*') or ( #{chrcCdVl1}  like '%' || nvl(a.ISS_PRSG_PRJT_TISS_CD, '123') || '%'))
+		      /* 화면ID/명 */
+		      and   ((nvl( #{prgmNm} , '*') = '*') or (a.ISS_NO in ( select  xa.ISS_NO
+		                                                                             from    COPJTISDT xa
+		                                                                                   , COTBPRMMT xb
+		                                                                             where   xa.PRGM_ID = xb.PRGM_ID
+		                                                                               and   ((upper(xa.PRGM_ID) like upper(#{prgmNm}) || '%') or
+		                                                                                      (upper(xb.PRGM_NM) like '%' || upper(#{prgmNm}) || '%'))
+		                                                                           )))
+		      /* 기능ID/명  */
+		      and   ((nvl( #{fnctNm} , '*') = '*') or (a.ISS_NO in ( select  xa.ISS_NO
+		                                                                             from    COPJTISDT xa
+		                                                                                   , COTBPRMDT xb
+		                                                                             where   xa.PRGM_ID = xb.PRGM_ID
+		                                                                               and   xa.FNCT_ID = xb.FNCT_ID
+		                                                                               and   ((upper(xa.FNCT_ID) like upper(#{fnctNm}) || '%') or
+		                                                                                      (upper(xb.FNCT_NM) like '%' || upper(#{fnctNm}) || '%'))
+		                                                                            )))
+		      /* 이슈요청자  */
+		      and   ((nvl( #{rgsrId} ,'*') = '*') or (a.RGSR_ID =  #{rgsrId} ))
+		      /* 조치담당자 */
+		      and   ((nvl( #{issAsgnId} ,'*') = '*') or (a.ISS_ASGN_ID =  #{issAsgnId} ))
+		      /* 유형 */
+		      and   ((nvl( #{chrcCdVl2} ,'*') = '*') or ( #{chrcCdVl2}  like '%' || a.ISS_DVSN_CD || '%'))
+		      /* 상태 */
+		      and   ((nvl( #{chrcCdVl3} ,'*') = '*') or ( #{chrcCdVl3}  like '%' || a.RFLC_YN_CD || '%'))
+		      /* 예상(M/D) */
+		      and   ( (nvl( #{cqy} ,'*') = '*') or (#{cqy}  = 0 ) or ((a.ANTP_MNSH_VL >=  #{cqy} ) and (a.ANTP_MNSH_VL <=  #{cqy01} )))
+		      /* 삭제구분 ALL  */
+		      and   (( #{dltnYn}  = '0') or (( #{dltnYn}  = '1') and (nvl(a.DLTN_YN, 'N') <> 'Y')) or
+		             (( #{dltnYn}  = '2') and (nvl(a.DLTN_YN, 'N') = 'Y')))
+		      /* 이슈등록일   */
+		      and   ((nvl( #{fromInqrYmd} , '*') = '*') or
+		             ((trunc(a.FRST_RGST_DT) >= to_date( #{fromInqrYmd} , 'YYYYMMDD')) and
+		              (trunc(a.FRST_RGST_DT) <= to_date( #{toInqrYmd} , 'YYYYMMDD')))
+		            )
+		      /* 계획시작일 */
+		      and   ((nvl( #{fromInqrYmd1} , '*') = '*') or
+		             ((trunc(a.PLAN_STRT_YMD) >= to_date( #{fromInqrYmd1} , 'YYYYMMDD')) and
+		              (trunc(a.PLAN_STRT_YMD) <= to_date( #{toInqrYmd1} , 'YYYYMMDD')))
+		            )
+		      /* 계획종료일 */
+		      and   ((nvl( #{fromInqrYmd2} , '*') = '*') or
+		             ((trunc(a.PLAN_FNSH_YMD) >= to_date( #{fromInqrYmd2} , 'YYYYMMDD')) and
+		              (trunc(a.PLAN_FNSH_YMD) <= to_date( #{toInqrYmd2} , 'YYYYMMDD')))
+		            )
+		      /* 조치시작일   */
+		      and   ((nvl( #{fromInqrYmd3} , '*') = '*') or
+		             ((trunc(a.ACRL_STRT_YMD) >= to_date( #{fromInqrYmd3} , 'YYYYMMDD')) and
+		              (trunc(a.ACRL_STRT_YMD) <= to_date( #{toInqrYmd3} , 'YYYYMMDD')))
+		            )
+		      /* 조치완료일  */
+		      and   ((nvl( #{fromInqrYmd4} , '*') = '*') or
+		             ((trunc(a.ACRL_FNSH_YMD) >= to_date( #{fromInqrYmd4} , 'YYYYMMDD')) and
+		              (trunc(a.ACRL_FNSH_YMD) <= to_date( #{toInqrYmd4} , 'YYYYMMDD')))
+		            )
+		    order by a.FRST_RGST_DT
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO">
+	
+		<result property="issNo" column="ISS_NO"/>
+		<result property="issNm" column="ISS_NM"/>
+		<result property="issCtn" column="ISS_CTN"/>
+		<result property="afiTrgtCot" column="AFI_TRGT_COT"/>
+		<result property="antpMnshVl" column="ANTP_MNSH_VL"/>
+		<result property="issPrsgPrjtTissCd" column="ISS_PRSG_PRJT_TISS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="issAsgnId" column="ISS_ASGN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="planStrtYmd" column="PLAN_STRT_YMD"/>
+		<result property="planFnshYmd" column="PLAN_FNSH_YMD"/>
+		<result property="acrlStrtYmd" column="ACRL_STRT_YMD"/>
+		<result property="acrlFnshYmd" column="ACRL_FNSH_YMD"/>
+		<result property="rflcYnCd" column="RFLC_YN_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="mngnSbjcCtn" column="MNGN_SBJC_CTN"/>
+		<result property="prjtTissCd" column="PRJT_TISS_CD"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="issDvsnCd" column="ISS_DVSN_CD"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="fnctId" column="FNCT_ID"/>
+		<result property="fnctNm" column="FNCT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l (coo_pjtismt_l02 등록이슈 확인 조회) 
+        Description :                                           coo_pjtismt_l02 등록이슈 확인 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+		resultMap : com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l-result
+    -->
+	<select id="com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  resultMap="com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healistPjtismt02lthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-listPjtismt02l */
+		  <![CDATA[
+		   select  /*+ cod_pjtismt_l02$S01_등록이슈 확인 조회 */
+		            a.ISS_NO
+		          , a.ISS_NM
+		          , a.ISS_CTN
+		          , 0 as AFI_TRGT_COT
+		          , a.ANTP_MNSH_VL
+		          , a.ISS_PRSG_PRJT_TISS_CD
+		          , d.DETL_CD_NM
+		          , a.ISS_ASGN_ID
+		          , e.USER_NM
+		          , to_char(a.FRST_RGST_DT , 'yyyymmdd') as FRST_RGST_DT
+		          , to_char(a.PLAN_STRT_YMD , 'yyyymmdd') as PLAN_STRT_YMD
+		          , to_char(a.PLAN_FNSH_YMD , 'yyyymmdd') as PLAN_FNSH_YMD
+		          , to_char(a.ACRL_STRT_YMD , 'yyyymmdd') as ACRL_STRT_YMD
+		          , to_char(a.ACRL_FNSH_YMD , 'yyyymmdd') as ACRL_FNSH_YMD
+		          , a.RFLC_YN_CD
+		          , b.DETL_CD_NM as DETL_CD_NM_1
+		          , a.MNGN_SBJC_CTN
+		          , a.PRJT_TISS_CD
+		          , c.DETL_CD_NM as DETL_CD_NM_2
+		          , a.RGSR_ID
+		          , f.USER_NM as USER_NM_1
+		          , a.ISS_DVSN_CD
+		          , g.DETL_CD_NM as DETL_CD_NM_3
+		          , a.DLTN_YN
+		          , h.PRGM_ID
+		          , i.PRGM_NM
+		          , decode(h.PRGM_ID, null, '', h.PRGM_ID || '_' || h.FNCT_ID) as AFI_RTUR_VL 
+		          , h.FNCT_ID
+		          , j.FNCT_NM
+		    from    COPJTISMT a
+		          , CCCMCDDMT b
+		          , CCCMCDDMT c
+		          , CCCMCDDMT d
+		          , CCUSRDPHT e
+		          , CCUSRDPHT f
+		          , CCCMCDDMT g
+		          , COPJTISDT h
+		          , COTBPRMMT i
+		          , COTBPRMDT j
+		    where   b.COMN_GRP_CD(+) = 'COR_026'
+		      and   a.RFLC_YN_CD     = b.COMN_DTLS_CD(+)
+		      and   c.COMN_GRP_CD(+) = 'COR_025'
+		      and   a.PRJT_TISS_CD   = c.COMN_DTLS_CD(+)
+		      and   d.COMN_GRP_CD(+) = 'COR_025'
+		      and   a.ISS_PRSG_PRJT_TISS_CD   = d.COMN_DTLS_CD(+)
+		      and   a.ISS_ASGN_ID    = e.USER_ID(+)
+		      and   a.RGSR_ID        = f.USER_ID(+)
+		      and   g.COMN_GRP_CD(+) = 'COR_007'
+		      and   a.ISS_DVSN_CD    = g.COMN_DTLS_CD(+)
+		      and   a.ISS_NO         = h.ISS_NO
+		      and   nvl(h.DLTN_YN, 'N') <> 'Y'
+		      and   h.PRGM_ID        = i.PRGM_ID(+)
+		      and   h.PRGM_ID        = i.PRGM_ID(+)
+		      and   h.PRGM_ID        = j.PRGM_ID(+)
+		      and   h.FNCT_ID        = j.FNCT_ID(+)
+		      and   h.PRGM_ID(+)     =  #{prgmId}
+		      and   h.FNCT_ID(+)     =  #{fnctId}
+		 ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO">
+	
+		<result property="issNo" column="ISS_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt (cod_pjtismt_s01 프로그램의 기능 이슈코드 채번조회) 
+        Description :                                           cod_pjtismt_s01 프로그램의 기능 이슈코드 채번조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-selectOnePjtismt */
+		<![CDATA[
+		     select  /*+ cod_pjtismt_s01$S01_to-be 프로그램의 기능 이슈코드 채번조회 */
+		            'ISU' || lpad(to_number(substr(nvl(max(ISS_NO), '00000000'), 4, 5)) +1, 5, '0') as ISS_NO
+		    from    COPJTISMT
+		 ]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-insertPjtismt01 (cod_pjtismt_i01 프로그램의 기능 이슈 마스터 저장) 
+        Description :                                           cod_pjtismt_i01 프로그램의 기능 이슈 마스터 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-insertPjtismt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-insertPjtismt01 */
+		    insert  /*+ cod_pjtismt_i01$I01_to-be 프로그램의 기능 이슈 마스터 저장 */
+		    into COPJTISMT( ISS_NO
+		                         , ISS_NM
+		                         , ISS_DVSN_CD
+		                         , PRJT_TISS_CD
+		                         , RGSR_ID
+		                         , ISS_CTN
+		                         , ISS_PRSG_PRJT_TISS_CD
+		                         , ISS_ASGN_ID
+		                         , RFLC_YN_CD
+		                         , ANTP_MNSH_VL
+		                         , PLAN_STRT_YMD
+		                         , PLAN_FNSH_YMD
+		                         , ACRL_STRT_YMD
+		                         , ACRL_FNSH_YMD
+		                         , MNGN_SBJC_CTN
+		                         , DLTN_YN
+		                         , FRST_RGSR_ID
+		                         , FRST_RGST_IP
+		                         , FRST_RGST_DT
+		                         , FRST_RGST_CLNT_PRGM_ID
+		                         , FRST_RGST_SRVR_PRGM_ID
+		                         , LAST_UPDR_ID
+		                         , LAST_UPDT_IP
+		                         , LAST_UPDT_DT
+		                         , LAST_UPDT_CLNT_PRGM_ID
+		                         , LAST_UPDT_SRVR_PRGM_ID
+		                         )
+		                   values(  #{issNo}
+		                         ,  #{issNm}
+		                         ,  #{issDvsnCd}
+		                         ,  #{prjtTissCd}
+		                         ,  #{rgsrId}
+		                         ,  #{issCtn}
+		                         ,  #{issPrsgPrjtTissCd}
+		                         ,  #{issAsgnId}
+		                         ,  #{rflcYnCd}
+		                         ,  #{antpMnshVl}
+		                         , to_date( #{planStrtYmd} , 'YYYYMMDD')
+		                         , to_date( #{planFnshYmd} , 'YYYYMMDD')
+		                         , to_date( #{acrlStrtYmd} , 'YYYYMMDD')
+		                         , to_date( #{acrlFnshYmd} , 'YYYYMMDD')
+		                         ,  #{mngnSbjcCtn}
+		                         ,  #{dltnYn}
+		                         ,  #{gvUserId}
+		                         ,  #{gvUserIp}
+		                         , sysdate
+		                         ,  #{gvClntPrgmId}
+		                         ,  #{gvSrvrPrgmId}
+		                         ,  #{gvUserId}
+		                         ,  #{gvUserIp}
+		                         , sysdate
+		                         ,  #{gvClntPrgmId}
+		                         ,  #{gvSrvrPrgmId}
+		                         )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updatePjtismt01 (cod_pjtismt_u01 이슈변경) 
+        Description :                                           cod_pjtismt_u01 이슈변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updatePjtismt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updatePjtismt01 */
+		    update  /*+ cod_pjtismt_u01$I01_이슈변경 */
+		            COPJTISMT
+		    set     ISS_NM                =  #{issNm}
+		          , ISS_DVSN_CD           =  #{issDvsnCd}
+		          , PRJT_TISS_CD          =  #{prjtTissCd}
+		          , RGSR_ID               =  #{rgsrId}
+		          , ISS_CTN               =  #{issCtn}
+		          , ISS_PRSG_PRJT_TISS_CD =  #{issPrsgPrjtTissCd}
+		          , ISS_ASGN_ID           =  #{issAsgnId}
+		          , RFLC_YN_CD            =  #{rflcYnCd}
+		          , ANTP_MNSH_VL          =  #{antpMnshVl}
+		          , PLAN_STRT_YMD         = to_date( #{planStrtYmd} , 'YYYYMMDD')
+		          , PLAN_FNSH_YMD         = to_date( #{planFnshYmd} , 'YYYYMMDD')
+		          , ACRL_STRT_YMD         = to_date( #{acrlStrtYmd} , 'YYYYMMDD')
+		          , ACRL_FNSH_YMD         = to_date( #{acrlFnshYmd} , 'YYYYMMDD')
+		          , MNGN_SBJC_CTN         =  #{mngnSbjcCtn}
+		          , DLTN_YN               =  #{dltnYn}
+		          , LAST_UPDR_ID          =  #{gvUserId}
+		          , LAST_UPDT_IP          =  #{gvUserIp}
+		          , LAST_UPDT_DT          = sysdate
+		          , LAST_UPDT_CLNT_PRGM_ID     =  #{gvClntPrgmId}
+		          , LAST_UPDT_SRVR_PRGM_ID     =  #{gvSrvrPrgmId}
+		    where   ISS_NO                =  #{issNo}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updateDeletePjtismt (cod_pjtismt_u02 이슈삭제) 
+        Description :                                           cod_pjtismt_u02 이슈삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updateDeletePjtismt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtismtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtismtDAO-updateDeletePjtismt */
+		    update  /*+ cod_pjtismt_u02$I01_이슈삭제 */
+		            COPJTISMT
+		    set     DLTN_YN               = 'Y'
+		          , LAST_UPDR_ID          =  #{gvUserId}
+		          , LAST_UPDT_IP          =  #{gvUserIp}
+		          , LAST_UPDT_DT          = sysdate
+		          , LAST_UPDT_CLNT_PRGM_ID     =  #{gvClntPrgmId}
+		          , LAST_UPDT_SRVR_PRGM_ID     =  #{gvSrvrPrgmId}
+		    where   ISS_NO                =  #{issNo}
+	</update>
+
+</mapper>

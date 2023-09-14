@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrpExmnRptnDAO_sql.xml 
+    Description :                                      검사접수
+                  -->
+<mapper namespace="SrpExmnRptnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="pacsInrfYn" column="PACS_INRF_YN"/>
+		<result property="pacsCd" column="PACS_CD"/>
+		<result property="pacsCdNm" column="PACS_CD_NM"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="rtrnYn" column="RTRN_YN"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="ptadClbaYmd" column="PTAD_CLBA_YMD"/>
+		<result property="orprVl" column="ORPR_VL"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="dytmWardUseWntdYn" column="DYTM_WARD_USE_WNTD_YN"/>
+		<result property="afiCrntDt" column="AFI_CRNT_DT"/>
+		<result property="orocDprtCd" column="OROC_DPRT_CD"/>
+		<result property="pacsInrfYn" column="PACS_INRF_YN"/>
+		<result property="cisInrfYn" column="CIS_INRF_YN"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="pacsGrpNm" column="PACS_GRP_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr (검사진행가능 확인) 
+        Description :                                           검사진행가능 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnPrgrPsblCnfr */
+		<![CDATA[
+			       select /*+ swo_workmmt_m09$S01_검사반환 여부 체크 */
+		                a.CODV_CD                                        /* 환자구분 체크         */
+		              , a.RCST_CD                                        /* 수납구분 체크         */
+		              , a.MDRP_NO
+		              , a.PTAD_MDRP_NO
+		              , to_char(d.MDCR_DT, 'yyyymmddhh24mi') as MDCR_DT
+		              , a.ORDR_CD
+		              , nvl(b.PACS_INRF_YN, 'N') as PACS_INRF_YN
+		              , nvl(b.PACS_CD, 0) as PACS_CD
+		              , nvl(b.PACS_CD_NM, 0) as PACS_CD_NM
+		              , c.PACS_ACCS_NO                    /* PACS번호 조회 추가 */
+		              , case when a.RTRN_RQST_DT <> '' or nvl(a.RTRN_STTS_CD, 'N') <> 'N' then 'Y'
+		                     else                                                              'N'
+		                end as RTRN_YN
+		              , a.PTAD_CODV_CD
+		              , to_char(a.PTAD_CLBA_YMD, 'yyyymmddhh24miss') as PTAD_CLBA_YMD
+		              , a.PTNO||to_char(a.ORDR_YMD, 'yyyy-mm-dd') ||lpad(to_char(a.ORDR_SNO), 22, '0') as ORPR_VL
+		              , to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD
+		              , a.ORDR_SNO
+		              , nvl(a.DYTM_WARD_USE_WNTD_YN, 'N') as DYTM_WARD_USE_WNTD_YN
+		              , to_char(sysdate, 'yyyymmdd') as AFI_CRNT_DT
+		              , a.OROC_DPRT_CD
+				      , nvl(PACS_INRF_YN,'N') as PACS_INRF_YN
+		              , nvl(b.CIS_INRF_YN,'N') as CIS_INRF_YN
+		              , a.ODKI_CD
+		              , a.MCDP_CD
+					  , b.PACS_GRP_NM as PACS_GRP_NM
+		           from
+		                MDEXMORDT a                                      /* 검사처방      */
+		              , MDORDRCMT b                                      /* 처방코드 기본 */
+		              , SWWORKMMT c                                      /* 환자검사 작업관리*/
+		              , APRCRPTNT d
+		          where a.PTNO    = #{ptno}                    /* 환자번호      */
+		            and a.ORDR_YMD  = to_date(#{ordrYmd} , 'YYYYMMDD') /* 처방일자             */
+		            and a.ORDR_SNO = to_number(#{ordrSno})          /* 처방순번             */
+		            and a.EXCF_CD  = #{excfCd}
+		            and  (
+		                    a.EXOR_PRSS_CD is null
+		                    or
+		                    a.EXOR_PRSS_CD <= 'C'
+		                 )
+		            and  a.ORDR_CD = b.ORDR_CD                            /* 처방코드             */
+		            and  c.PTNO(+) = a.PTNO
+		            and  c.ORDR_YMD(+) = a.ORDR_YMD
+		            and  c.ORDR_SNO(+) = a.ORDR_SNO
+		            and  a.MDRP_NO = d.MDRP_NO
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="wardCd" column="WARD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1 (입원여부확인) 
+        Description :                                           입원여부확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr1 */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S40_입원여부확인 조회 */
+						        to_char(MDCR_DT, 'yyyymmdd') as MDCR_DT
+						     ,  WARD_CD
+						  from  APRCRPTNT
+						 where  PTNO = #{ptno}
+						   and  CODV_CD = 'I'
+						   and  CNCL_DT is null
+						   and  MDCR_DT <= sysdate   /* <--- 미리 입원등록된 환자는 진행됨.. */
+						   and  DSCH_DT > sysdate	
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="amptYn" column="AMPT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2 (입원여부확인2) 
+        Description :                                           입원여부확인2
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneAdmsYnCnfr2 */
+			<![CDATA[
+						select /*+ swo_workmmt_m09$S41_입원여부확인 조회 */
+						       'Y' as AMPT_YN
+						  from dual
+						 where exists (
+									  select /*+ INDEX(APIPDLST APIPDLST_PK) */
+											  'Y'
+										from  APRCRPTNT
+									   where  PTNO = #{ptno}
+										 and  CODV_CD = 'I'
+									     and  CNCL_DT is null
+									     and  MDCR_DT <= sysdate   /* <--- 미리 입원등록된 환자는 진행됨.. */
+									     and  DSCH_DT > sysdate
+									  )	
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="odkiCd" column="ODKI_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn (퇴원처방여부 확인) 
+        Description :                                           퇴원처방여부 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDschOrdrYn */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S42_퇴원처방여부 확인 */
+						        ODKI_CD
+						  from
+						        MDEXMORDT
+						 where  PTNO    = #{ptno}                          /* 환자번호             */
+						   and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD') /* 처방일자             */
+						   and  ORDR_SNO = to_number(#{ordrSno})            /* 처방순번             */
+						   and  EXCF_CD  = #{excfCd}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="dschYn" column="DSCH_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn (퇴실여부확인) 
+        Description :                                           퇴실여부확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChotYn */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S48_DSC 환자 처방확인 */
+											   'Y' as DSCH_YN
+						  from
+						        MDEXMORDT a
+						     ,  APRCRPTNT b
+						 where  a.PTNO    = #{ptno}
+						   and  a.ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+						   and  a.ORDR_SNO = to_number(#{ordrSno})
+						   and  a.MDRP_NO  = b.MDRP_NO
+						   and  b.CODV_CD    in ('D', 'E')
+						   and  b.CNCL_DT is null
+						   and  b.DSCH_DT <= to_date(#{rptnDt}, 'yyyymmddhh24miss')	
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm (외래예약정보) 
+        Description :                                           외래예약정보
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneOtptApntInfm */
+			<![CDATA[
+					select  /*+ swo_workmmt_m09$S17_외래예약정보조회 */
+						   a.MCDP_CD
+						 , a.ODDR_ID
+						 , a.ORDR_CD as EXMN_CD
+						 , nvl(a.HSLC_DVSN_CD, 'M') as HSLC_DVSN_CD
+						 , nvl(b.MCCN_CD, 'M') as MCCN_CD
+						 , a.CODV_CD as CODV_CD
+						 , a.PTAD_CODV_CD as PTAD_CODV_CD
+					  from MDEXMORDT a
+						 , SWWORKMMT b
+					 where
+						   a.PTNO    = #{ptno}                           /* 환자번호             */
+					   and a.ORDR_YMD  = to_date(#{ordrYmd} , 'YYYYMMDD') /* 처방일자             */
+					   and a.ORDR_SNO = to_number( #{ordrSno})              /* 처방순번             */
+					   and a.PTNO = b.PTNO(+)
+					   and a.ORDR_YMD = b.ORDR_YMD(+)
+					   and a.ORDR_SNO = b.ORDR_SNO(+)
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt (무료예약의사 부서정보 조회) 
+        Description :                                           무료예약의사 부서정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S18_무료예약의사 부서정보 조회 */
+								b.MDCR_DPRT_CD
+						  from
+								CCUSERAMT a
+							 ,  CCUSRDPHT B
+						 where  b.USER_ID =#{endsChfrAmdrId}
+		                   and  a.LGIN_ID = b.LGIN_ID
+		                   and  a.USER_STTS_CD not in ('8', '9')
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm (수진일자,시간 날짜변환 조회) 
+        Description :                                           수진일자,시간 날짜변환 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMdcrInfm */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S19_수진일자,시간 날짜변환 조회 */
+								to_char(sysdate,'yyyymmdd') as MDCR_YMD
+							 ,  to_char(sysdate,'yyyymmdd')||'1200' as MDCR_DT
+						     ,  nvl(case when #{oddrId} <> oddr_id then (select mccn_cd
+		                                                                   from apdsdrcnt
+		                                                                  where mddr_id = #{oddrId}
+		                                                                    and main_cntr_yn = 'Y'
+		                                                                    and sysdate between apst_ymd and apfn_ymd
+		                                                                    and rownum = 1)
+		                                                           else MCCN_CD
+		                            end, MCCN_CD) MCCN_CD
+						  from  MDEXMORDT
+					     where
+					            PTNO = #{ptno}
+				           and  ORDR_YMD = to_date(#{ordrYmd} , 'yyyymmdd')
+				           and  ORDR_SNO = to_number(#{ordrSno} )
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="exrmCd" column="EXRM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm (이동검사접수 검사실 조회) 
+        Description :                                           이동검사접수 검사실 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnExrm */
+		<![CDATA[
+		select /*+ swo_workmmt_m09$S05_이동검사접수 검사실 조회 */
+		               decode(c.HSLC_DVSN_CD, 'M', case when (to_char(sysdate,'hh24') >= '17') and (to_char(sysdate,'hh24') < '24')
+		                                                /* 17시~23시는 해당하는 일자의 짝수, 홀수로 구분하여 검사실 조회 */
+		                                                then nvl((select EXMN_DTLS_CTRL_NM
+		                                                            from szctrlmmt
+		                                                           where EXMN_CTRL_CD = 'SR0312'
+		                                                             and EXMN_DTLS_CTRL_CD = to_char(to_number(to_char(sysdate,'mm')))||to_char(mod(to_number(to_char(sysdate,'dd')),2))
+		                                                         ),b.OTPT_EXRM_CD)
+		                                                when (to_char(sysdate,'hh24') >= '00') and (to_char(sysdate,'hh24') < '08')
+		                                                /* 00시~08시는 해당하는 일자-1의 짝수,홀수로 구분하여 검사실 조회*/
+		                                                then nvl((select EXMN_DTLS_CTRL_NM
+		                                                            from szctrlmmt
+		                                                           where EXMN_CTRL_CD = 'SR0312'
+		                                                             and EXMN_DTLS_CTRL_CD = to_char(to_number(to_char(sysdate,'mm')))||to_char(mod(to_number(to_char(sysdate-1,'dd')),2))
+		                                                         ),b.OTPT_EXRM_CD)
+		                                                else 'G0P' /* 본관 주간에는 G0P */
+		                                           end,
+		                                      case when (to_char(sysdate,'hh24') >= '17') and (to_char(sysdate,'hh24') < '24')
+		                                           /* 암병원 17시~23시는 TCPN */
+		                                           then 'TCPN'
+		                                           when (to_char(sysdate,'hh24') >= '00') and (to_char(sysdate,'hh24') < '08')
+		                                           /* 암병원 00시~08시는 TCPN */
+		                                           then 'TCPN'
+		                                           else 'TCP' /* 암병원 주간에는 TCP */
+		                                      end) as EXRM_CD  /* 검사실코드 */
+					  from
+					        SWWORKMMT a                              /* 검사 WORK 관리 (계속) */
+					     ,  MDORDRCMT b
+					     ,  MDEXMORDT c
+					 where  a.PTNO = #{ptno}
+					   and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+					   and  a.ORDR_SNO = to_number(#{ordrSno})
+					   and  a.EXCF_CD = 'SR'
+					   and  a.CODV_CD = 'I'
+					   and  a.PTNO = c.PTNO
+					   and  a.ORDR_YMD = c.ORDR_YMD
+					   and  a.ORDR_SNO = c.ORDR_SNO
+					   and  a.EXMN_CD = b.ORDR_CD
+					   and  c.PRTB_YN = 'Y'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="implLcdvCd" column="IMPL_LCDV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt (이동검사접수 실시부서 조회) 
+        Description :                                           이동검사접수 실시부서 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneMvmnExmnRptnImplDprt */
+		<![CDATA[
+		select /*+ swo_workmmt_m09$S06_이동검사접수 실시부서 조회 */
+					        nvl(EXRM_HSDV_CD, 'M') as IMPL_LCDV_CD
+					   from  SZROOMCMT
+					 where  EXRM_CD = #{exrmCd}
+					   and  EXCF_CD  = #{excfCd}
+			]]>	
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm (SWWORKMMT 접수정보 수정) 
+        Description :                                           SWWORKMMT 접수정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm */
+			<![CDATA[
+				update  /*+ swo_workmmt_m09$S07_SWWORKMT MMEXMORT */
+		        		SWWORKMMT                                    /* 검사 WORK 관리 (계속) */
+				   set
+					   RPTN_DT = nvl(to_date(#{rptnDt},'yyyymmddhh24miss'),sysdate)  /* 접수일시              */
+					 , EXRM_CD = #{exrmCd}                             /* 검사실                */
+					 , EXMN_STTS_CD = 'C'                                /* 진행STATUS(진료지원)  */
+					 , INTR_YN   = 'N'                                    /* 판독여부              */
+					 , BDSD_YN  = #{bdsdYn}             /* 핵체내(BED/Wheel Chair여부) */
+					 , RCPS_ID   = #{rcpsId}            /* 접수자                */
+					 , IMPL_HSDV_CD = #{implLcdvCd}
+					 , RPTN_CNCL_DT = null
+					 , CNCL_PACS_ACCS_NO = null
+					 , GE_PACS_CNCL_ORDR_TRNM_YN = null
+					 , CT_WATR_INTK_YN = #{ctWatrIntkYn}                          /* 물관련여부 2012.03.19 */
+					 , CT_WATR_INTK_DT = nvl(CT_WATR_INTK_DT, sysdate)                  /* 접수시간   2012.03.19 */
+					 , MRI_CNRC_DVSN_CD = #{mriCnrcDvsnCd} /* MR금기/주의 */
+					 , EXMN_PRPN_FINS_YN  = ''                                 /* 준비완료    */
+					 , SLPN_YN = #{slpnYn}
+					 , EXMN_ATMT_RPTN_YN = nvl(#{exmnAtmtRptnYn}, 'N')
+		             , ENRM_EDCT_FLDV_CD = nvl(#{enrmEdctFldvCd}, ENRM_EDCT_FLDV_CD)		 /* 내시경 환자위치 관리 */
+		             , IMPT_ID = #{imptId}
+		             , IMPT_ID2= #{imptId2}
+					 , PRVL_RPTN_YN = null
+					 , IMPL_DPRT_CD = #{implDprtCd}
+					 , LAST_UPDR_ID = #{gvLginId}
+					 , LAST_UPDT_IP = #{gvUserIp}
+					 , LAST_UPDT_DT = sysdate
+					 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+					 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+				 where PTNO    = #{ptno}                             /* 환자번호             */
+				   and ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')  /* 처방일자             */
+				   and ORDR_SNO = to_number(#{ordrSno})             /* 처방순번             */
+		           and  EXCF_CD  = #{excfCd}               /* 검사분류             */
+				   and nvl(EXMN_STTS_CD, 'A') in ('A', 'C')	
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="prtbYn" column="PRTB_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn (병동 포터블 가능 여부) 
+        Description :                                           병동 포터블 가능 여부
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardPrtbPsblYn */
+			<![CDATA[
+					select /*+ swo_workmmt_m09$S02_병동 PORTABLE 검사 체크 */
+						   case when to_char(sysdate, 'hh24') >= '23' and to_char(sysdate, 'hh24') < '24' then 'Y'
+								else 'N'
+						   end as PRTB_YN
+					  from
+					       dual
+					       ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="ptadClbaYmd" column="PTAD_CLBA_YMD"/>
+		<result property="cnclYn" column="CNCL_YN"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr (심사중인지 여부를 체크) 
+        Description :                                           심사중인지 여부를 체크
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChckYnCnfr */
+			<![CDATA[	
+		        select  /*+ swo_workmmt_m09$S68 심사중인지 여부를 체크 */
+		                b.PTAD_CODV_CD
+		             ,  b.ODKI_CD
+		             ,  b.RCST_CD
+		             ,  to_char(b.PTAD_CLBA_YMD, 'yyyymmddhh24mi') as PTAD_CLBA_YMD
+		             ,  decode(trunc(RPTN_DT), trunc(sysdate), 'Y', 'N') as CNCL_YN
+		             ,  a.APNT_DT
+		             , b.PTAD_MDRP_NO 
+		          from  MDEXMORDT b
+		             ,  SWWORKMMT a
+		         where  b.PTNO    = #{ptno}
+		           and  b.ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+		           and  b.ORDR_SNO = to_number(#{ordrSno})
+		           and  a.PTNO = b.PTNO
+		           and  a.ORDR_YMD = b.ORDR_YMD
+		           and  a.ORDR_SNO = b.ORDR_SNO
+		           and  (
+		                   a.EXMN_STTS_CD is null
+		                   or
+		                   a.EXMN_STTS_CD <= 'C'
+		                )	
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="chckSttsCd" column="CHCK_STTS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr (환자재원상태 확인) 
+        Description :                                           환자재원상태 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneSthsSttsCnfr */
+			<![CDATA[
+				    select  /*+ swo_workmmt_m09$S70 환자재원상태 확인 */
+				            b.CHCK_STTS_CD
+				      from
+				            MDEXMORDT a
+				         ,  APRCRPTNT b
+				     where  a.PTNO    = #{ptno}
+				       and  a.ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+				       and  a.ORDR_SNO = to_number(#{ordrSno})
+				       and  b.PTNO    = a.PTNO
+				       and  b.MDCR_YMD  = a.PTAD_CLBA_YMD
+				       and  b.CODV_CD    = 'I'
+				       and  b.CNCL_DT is null
+				       ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="allCct" column="ALL_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck (_2차오더 존재 체크) 
+        Description :                                           _2차오더 존재 체크
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneScndOrdrExstCeck */
+			<![CDATA[
+		select /*+ swo_workmmt_m09$S09_2차오더 존재 체크  */
+					   count(*) as ALL_CCT
+				  from SWSNDMAMT
+				 where PTNO    =  #{ptno}                             /* 환자번호             */
+				   and ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')  /* 처방일자             */
+				   and ORDR_SNO = to_number(#{ordrSno})             /* 처방순번             */
+				   and nvl(RTRN_STTS_CD, 'N') <> 'Y'
+				   and nvl(RCST_CD, 'N') <> 'R'
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertRptnCnclHxCrtn (접수취소이력 생성) 
+        Description :                                           접수취소이력 생성
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertRptnCnclHxCrtn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertRptnCnclHxCrtn */
+			<![CDATA[
+				insert  /*+ swo_workmmt_m09$S71_접수취소이력 생성 */
+				  into
+				         SWWORKLMT
+				     (   PTNO
+					  ,  ORDR_YMD
+					  ,  ORDR_SNO
+					  ,  EXMN_CNCL_DT
+					  ,  EXCF_CD
+					  ,  EXMN_CD
+					  ,  EXMN_STTS_CD
+					  ,  EXRS_PRIN_NTM
+					  ,  AMPR_ID
+					  ,  RCPS_ID
+					  ,  ENDR_ID
+					  ,  IMPT_ID
+					  ,  TRNB_ID
+					  ,  CNDR_ID
+					  ,  CNCR_ID
+					  ,  EXRM_CD
+					  ,  ANDV_CD
+					  ,  APNT_DT
+					  ,  RPTN_DT
+					  ,  ENFR_DT
+					  ,  INTR_DT
+					  ,  SCND_ORDR_YN
+					  ,  RERN_PRRN_DT
+					  ,  RERN_IMPL_DT
+					  ,  SCHD_DTLS_TYP_CD
+					  ,  CNRE_CTN
+					  ,  EXMN_APNT_NO
+					  ,  DAT_NO
+					  ,  PACS_ACCS_NO
+					  ,  GE_PACS_ORDR_TRNM_YN
+					  ,  INTG_PACS_RSLT_TRNM_YN
+					  ,  PHYL_MDCT_PACS_TRDV_CD
+						, FRST_RGSR_ID	 
+						, FRST_RGST_IP
+						, FRST_RGST_DT
+						, FRST_RGST_CLNT_PRGM_ID
+						, FRST_RGST_SRVR_PRGM_ID
+						, LAST_UPDR_ID
+						, LAST_UPDT_IP
+						, LAST_UPDT_DT
+						, LAST_UPDT_CLNT_PRGM_ID
+						, LAST_UPDT_SRVR_PRGM_ID
+					 )
+				select
+			         	 PTNO
+					  ,  ORDR_YMD
+					  ,  ORDR_SNO
+					  ,  sysdate  /* REJTTIME   */
+					  ,  EXCF_CD
+					  ,  EXMN_CD
+					  ,  EXMN_STTS_CD
+					  ,  EXRS_PRIN_NTM     /* 검사결과출력횟수 */
+					  ,  AMPR_ID
+					  ,  RCPS_ID
+					  ,  ENDR_ID
+					  ,  IMPT_ID
+					  ,  TRNB_ID
+					  ,  CNDR_ID
+					  ,  #{gvLginId}             /* REJTID     , */
+					  ,  EXRM_CD
+					  ,  ANDV_CD
+					  ,  APNT_DT
+					  ,  RPTN_DT
+					  ,  ENFR_DT
+					  ,  INTR_DT
+					  ,  SCND_ORDR_YN
+					  ,  RERN_PRRN_DT
+					  ,  RERN_IMPL_DT
+					  ,  SCHD_DTLS_TYP_CD
+					  ,  #{cnreCtn}   /* 취소사유 */
+					  ,  EXMN_APNT_NO
+					  ,  DAT_NO
+					  ,  PACS_ACCS_NO
+					  ,  GE_PACS_ORDR_TRNM_YN
+					  ,  INTG_PACS_RSLT_TRNM_YN
+					  ,  PHYL_MDCT_PACS_TRDV_CD
+						,  #{gvLginId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+						,  #{gvLginId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+				  from
+						SWWORKMMT
+				 where  PTNO    = #{ptno}
+				   and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+				   and  ORDR_SNO = #{ordrSno}
+				   	]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteChcl (체크리스트 삭제) 
+        Description :                                           체크리스트 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteChcl"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteChcl */
+			<![CDATA[
+			        delete /*+ swo_workmmt_m09$S77_체크리스트 삭제 */
+		          from SWORCHKMT
+				 where  PTNO    = #{ptno}
+				   and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+				   and  ORDR_SNO = #{ordrSno}
+			]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteExmnWorkMngm (검사작업관리 삭제) 
+        Description :                                           검사작업관리 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteExmnWorkMngm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-deleteExmnWorkMngm */
+		<![CDATA[ 
+		           delete 
+		             from   SWWORKMMT 
+		         where  PTNO    = #{ptno}
+		           and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+		           and  ORDR_SNO = to_number(#{ordrSno})
+		  	]]>         
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm2 (검사작업관리 수정) 
+        Description :                                           검사작업관리 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm2 */
+			<![CDATA[
+				update  /*+ swo_workmmt_m09$S15_SWWORKMMT update */
+						SWWORKMMT                                     /* 검사 WORK 관리 (계속) */
+				   set
+					   EXMN_STTS_CD = #{exmnSttsCd}                          /* 진행상태             */
+					 , RPTN_DT = ''                                  /* 접수일시             */
+					 , RCPS_ID   = ''                                  /* 접수자               */
+					 , GE_PACS_ORDR_TRNM_YN = ''                                  /* PACS전송여부         */
+					 , PACS_INQR_DT         = null
+				     , ETC_PACS_ORDR_TRNM_YN = decode(nvl(ETC_PACS_ORDR_TRNM_YN, 'Y'), 'Y', '', 'C') /* 초음파내시경 기타 PACS 처방전송여부 */
+					 , PHYL_MDCT_PACS_TRDV_CD = ''                                  /* MDCT PACS 전송여부   */
+					 , EXRM_CD = decode(#{exmnSttsCd}, 'A', EXRM_CD, null)
+					 , IMPL_HSDV_CD = decode(#{exmnSttsCd}, 'A', #{implHsdvCd}, null)
+					 , CNCL_PACS_ACCS_NO =  #{pacsAccsNo}                             /* 취소된 PACS Accession No. */
+					 , GE_PACS_CNCL_ORDR_TRNM_YN = 'Y'                             /* 취소된 PACS Accession No. 전송여부 */
+					 , RPTN_CNCL_DT = sysdate
+					 , INTR_PRRN_DR_NM = ''
+					 , INTR_PRRN_DT = ''
+			         , EXMN_PRPN_FINS_YN = ''                               /* 준비완료 */
+			         , IMLN_CLSF_CD = null /* 임플란트정보 */
+		             , ENRM_EDCT_FLDV_CD = null   /* 내시경 환자위치 관리 초기화 */
+		             , IMPL_DPRT_CD = '' /* 실시부서 */
+					 , LAST_UPDR_ID = #{gvLginId}
+					 , LAST_UPDT_IP = #{gvUserIp}
+					 , LAST_UPDT_DT = sysdate
+					 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+					 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+					 , SLPN_YN = ''
+				 where 	PTNO    = #{ptno}
+				   and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+				   and  ORDR_SNO = #{ordrSno}
+				   and  EXMN_STTS_CD = 'C'
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="rcpsId" column="RCPS_ID"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="intrPrrnDrNm" column="INTR_PRRN_DR_NM"/>
+		<result property="intrPrrnDt" column="INTR_PRRN_DT"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="pacsInrfYn" column="PACS_INRF_YN"/>
+		<result property="cisInrfYn" column="CIS_INRF_YN"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="smtnCct" column="SMTN_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm (접수취소정보 조회) 
+        Description :                                           접수취소정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneRptnCnclInfm */
+			<![CDATA[
+				select /*+ swo_workmmt_m09$S11_ 접수취소정보 조회 */
+						--decode(to_char(a.APNT_DT, 'hh24mi'), ''    , ''
+						--				    		       , '0000', ''
+						--								           , 'A') as EXMN_STTS_CD
+		                decode(a.APNT_DT, null, '', 'A') as EXMN_STTS_CD
+					 ,  a.EXRM_CD
+					 ,  a.SCHD_DTLS_TYP_CD
+					 ,  a.PACS_ACCS_NO
+					 ,  a.RCPS_ID
+					 ,  a.EXMN_CD
+		             ,  a.INTR_PRRN_DR_NM
+		             ,  to_char(a.INTR_PRRN_DT, 'yyyymmddhh24mi') as INTR_PRRN_DT
+		             ,  to_char(a.RPTN_DT, 'yyyymmdd') as RPTN_DT
+		 		      , nvl(b.PACS_INRF_YN,'N') as PACS_INRF_YN
+		              , nvl(b.CIS_INRF_YN,'N') as CIS_INRF_YN
+		              , nvl(m.RCST_CD,'N') as RCST_CD
+					  , (select 
+							count(md.CIS_LNKG_NO) 
+							from MDEXMORDT md 
+							where md.PTNO = m.PTNO 
+							and md.CIS_LNKG_NO = m.CIS_LNKG_NO 
+							) as SMTN_CCT
+				  from
+						SWWORKMMT a
+			         ,  MDORDRCMT b 
+			         ,  APPTPTNTT g
+		             , MDEXMORDT m
+				 where  a.PTNO    = #{ptno}
+				   and  a.ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+				   and  a.ORDR_SNO = #{ordrSno}
+				   and  b.ORDR_CD = a.EXMN_CD                   /* 검사코드             */ 
+				   and  g.PTNO = a.PTNO                   /* 검사코드             */
+		           and a.PTNO = m.PTNO
+		           and a.ORDR_YMD = m.ORDR_YMD
+		           and a.ORDR_SNO = m.ORDR_SNO 
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="scrnId" column="SCRN_ID"/>
+		<result property="schdTypCd" column="SCHD_TYP_CD"/>
+		<result property="otptMcrmOpenYn" column="OTPT_MCRM_OPEN_YN"/>
+		<result property="andvCd" column="ANDV_CD"/>
+		<result property="exrmRptnDt" column="EXRM_RPTN_DT"/>
+		<result property="smdvCd" column="SMDV_CD"/>
+		<result property="exrsGrpCd" column="EXRS_GRP_CD"/>
+		<result property="hghtVl" column="HGHT_VL"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="mainExmnYn" column="MAIN_EXMN_YN"/>
+		<result property="prvsTxYn" column="PRVS_TX_YN"/>
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="endrId2" column="ENDR_ID2"/>
+		<result property="endrId3" column="ENDR_ID3"/>
+		<result property="rernYn" column="RERN_YN"/>
+		<result property="grpImplYn" column="GRP_IMPL_YN"/>
+		<result property="imptId3" column="IMPT_ID3"/>
+		<result property="filmNo" column="FILM_NO"/>
+		<result property="eqpmCd" column="EQPM_CD"/>
+		<result property="eqpmCd1" column="EQPM_CD1"/>
+		<result property="eqpmCd2" column="EQPM_CD2"/>
+		<result property="eqpmCd3" column="EQPM_CD3"/>
+		<result property="eqpmCd4" column="EQPM_CD4"/>
+		<result property="exmnStrtHm" column="EXMN_STRT_HM"/>
+		<result property="nghtPbhlImplDvsnCd" column="NGHT_PBHL_IMPL_DVSN_CD"/>
+		<result property="exmnApntNo" column="EXMN_APNT_NO"/>
+		<result property="datNo" column="DAT_NO"/>
+		<result property="brnsEndsBefrSttsCtn" column="BRNS_ENDS_BEFR_STTS_CTN"/>
+		<result property="brnsEndsAfssCtn" column="BRNS_ENDS_AFSS_CTN"/>
+		<result property="prtbPrfmYn" column="PRTB_PRFM_YN"/>
+		<result property="exrmHsdvCd" column="EXRM_HSDV_CD"/>
+		<result property="exmnD3RqstYn" column="EXMN_D3_RQST_YN"/>
+		<result property="afiRdqyClclPrsgDvsnCd" column="AFI_RDQY_CLCL_PRSG_DVSN_CD"/>
+		<result property="rdtnDoseVl" column="RDTN_DOSE_VL"/>
+		<result property="hndwInptRdtnDoseVl" column="HNDW_INPT_RDTN_DOSE_VL"/>
+		<result property="sngnSpcmBrcdSpsbCtn" column="SNGN_SPCM_BRCD_SPSB_CTN"/>
+		<result property="rdqyWighVl" column="RDQY_WIGH_VL"/>
+		<result property="spotInptVl" column="SPOT_INPT_VL"/>
+		<result property="flurInptVl" column="FLUR_INPT_VL"/>
+		<result property="afiImgnAcqrSpcmCnt" column="AFI_IMGN_ACQR_SPCM_CNT"/>
+		<result property="macRfaYn" column="MAC_RFA_YN"/>
+		<result property="injcKindNm" column="INJC_KIND_NM"/>
+		<result property="mdsiCd" column="MDSI_CD"/>
+		<result property="injcDt" column="INJC_DT"/>
+		<result property="vlm" column="VLM"/>
+		<result property="afiThyrIntkRt" column="AFI_THYR_INTK_RT"/>
+		<result property="ijprId" column="IJPR_ID"/>
+		<result property="prvsInjcDt" column="PRVS_INJC_DT"/>
+		<result property="prvsInjcQty" column="PRVS_INJC_QTY"/>
+		<result property="mngrInjcDt" column="MNGR_INJC_DT"/>
+		<result property="afiMngrInjcQty" column="AFI_MNGR_INJC_QTY"/>
+		<result property="expsInjcDt" column="EXPS_INJC_DT"/>
+		<result property="afiExpsInjcQty" column="AFI_EXPS_INJC_QTY"/>
+		<result property="blsgNcvlVl" column="BLSG_NCVL_VL"/>
+		<result property="drmlEn" column="DRML_EN"/>
+		<result property="mnsnYn" column="MNSN_YN"/>
+		<result property="unslCtn" column="UNSL_CTN"/>
+		<result property="lymphExmnKindCd" column="LYMPH_EXMN_KIND_CD"/>
+		<result property="exmnEnfrDt" column="EXMN_ENFR_DT"/>
+		<result property="exmnSpsbCtn" column="EXMN_SPSB_CTN"/>
+		<result property="chldYn" column="CHLD_YN"/>
+		<result property="afiImgnAcqrSpcmCntVl" column="AFI_IMGN_ACQR_SPCM_CNT_VL"/>
+		<result property="afiThyrIntkRtVl" column="AFI_THYR_INTK_RT_VL"/>
+		<result property="afiPrvsInjcQtyVl" column="AFI_PRVS_INJC_QTY_VL"/>
+		<result property="afiMngrInjcQtyVl" column="AFI_MNGR_INJC_QTY_VL"/>
+		<result property="afiExpsInjcQtyVl" column="AFI_EXPS_INJC_QTY_VL"/>
+		<result property="exmnCnreCd" column="EXMN_CNRE_CD"/>
+		<result property="implDprtCd" column="IMPL_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy (VO 임의 추가) 
+        Description :                                           VO 임의 추가
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneDummy */
+		<![CDATA[
+		select
+		  '' as SCRN_ID
+		, '' as SCHD_TYP_CD
+		, '' as OTPT_MCRM_OPEN_YN
+		, '' as ANDV_CD
+		, '' as EXRM_RPTN_DT
+		, '' as SMDV_CD
+		, '' as EXRS_GRP_CD
+		, '' as hght_Vl
+		, '' as bdwg_Vl
+		, '' as main_Exmn_Yn
+		, '' as PRVS_TX_YN
+		, '' as DTLS_EXCF_CD
+		, '' as ENDR_ID       
+		, '' as ENDR_ID2
+		, '' as ENDR_ID3
+		, '' as RERN_YN
+		, '' as GRP_IMPL_YN    
+		, '' as IMPT_ID3                     
+		, '' as FILM_NO                        
+		, '' as EQPM_CD
+		, '' as EQPM_CD1
+		, '' as EQPM_CD2
+		, '' as EQPM_CD3
+		, '' as EQPM_CD4
+		, '' as EXMN_STRT_HM                       
+		, '' as NGHT_PBHL_IMPL_DVSN_CD              
+		, '' as EXMN_APNT_NO                      
+		, '' as DAT_NO                              
+		, '' as BRNS_ENDS_BEFR_STTS_CTN            
+		, '' as BRNS_ENDS_AFSS_CTN                 
+		, '' as PRTB_PRFM_YN                        
+		, '' as EXRM_HSDV_CD
+		, '' as EXMN_D3_RQST_YN                     
+		, '' as Afi_Rdqy_Clcl_Prsg_Dvsn_Cd
+		, '' as RDTN_DOSE_VL                       
+		, '' as HNDW_INPT_RDTN_DOSE_VL
+		, '' as SNGN_SPCM_BRCD_SPSB_CTN
+		, '' as RDQY_WIGH_VL
+		, '' as SPOT_INPT_VL                         
+		, '' as FLUR_INPT_VL                       
+		, '' as AFI_IMGN_ACQR_SPCM_CNT
+		, '' as MAC_RFA_YN
+		, '' as INJC_KIND_NM
+		, '' as MDSI_CD
+		, '' as INJC_DT
+		, 0 as VLM
+		, '' as AFI_THYR_INTK_RT
+		, '' as IJPR_ID
+		, '' as PRVS_INJC_DT
+		, '' as PRVS_INJC_QTY
+		, '' as MNGR_INJC_DT
+		, '' as AFI_MNGR_INJC_QTY
+		, '' as EXPS_INJC_DT
+		, '' as AFI_EXPS_INJC_QTY
+		, '' as BLSG_NCVL_VL
+		, '' as DRML_EN
+		, '' as MNSN_YN
+		, '' as UNSL_CTN
+		, '' as LYMPH_EXMN_KIND_CD
+		, '' as EXMN_ENFR_DT
+		, '' as EXMN_SPSB_CTN
+		, '' as CHLD_YN
+		, '' as Afi_Imgn_Acqr_Spcm_Cnt_Vl
+		, '' as Afi_THYR_INTK_RT_VL
+		, '' as Afi_PRVS_INJC_QTY_VL
+		, '' as AFI_MNGR_INJC_QTY_VL
+		, '' as AFI_EXPS_INJC_QTY_VL
+		, '' as EXMN_CNRE_CD
+		, '' as IMPL_DPRT_CD
+		from dual
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="memo" column="MEMO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneImptNm */
+		 select 
+		'Op.'||
+		 (select USER_NM
+		                   from CCUSRDPHT
+		                  where USER_ID =#{imptId}) 
+		 ||', Ed.'||
+		(select USER_NM
+		                   from CCUSRDPHT
+		                  where USER_ID =#{imptId2}) as memo
+		from dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="wardCd" column="WARD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneWardCd */ 
+		<![CDATA[
+		 select  
+			     WARD_CD 
+			 from  APRCRPTNT
+		  where  PTNO = #{ptno}
+			and  CODV_CD = 'I'
+		    and  CNCL_DT is null
+			and  MDCR_DT <= sysdate   /* <--- 미리 입원등록된 환자는 진행됨.. */
+			and  DSCH_DT > sysdate
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="afiErrMesgCtn" column="AFI_ERR_MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneExmnOrdrPsblYn */
+		select   
+				          fn_ac_get_ordr_psbl_yn ( #{mdrpNo}) as AFI_ERR_MESG_CTN
+				 from  dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertMuseadtht (insert MUSEADTHT) 
+        Description :                                           Table[MUSEADTHT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertMuseadtht"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-insertMuseadtht */
+		INSERT INTO MUSEADTHT 
+		(
+		  P_QUEUEID		/* QueueID */
+		 ,P_ACCESSNO		/* Accession Number */
+		 ,P_FLAG		/* 처리여부 */
+		 ,P_EVENTTYPE  /* 이벤트타입 NW : 신규 / CA : 취소 */
+		 ,P_INSERTDATE		/* 입력일시 */
+		 ,P_PATID		/* 환자ID */
+		 ,P_PATNAME		/* 환자이름 */
+		 ,P_PATSTATUS		/* 환자유형(입원/외래) I : In patient / O : Out patient */
+		 ,P_PATSEX		/* 성별 M : Male / F : Female / O : Other */
+		 ,P_DEPARTMENT		/* 진료과 */
+		 ,P_DEPARTMENTID		/* 진료과ID */
+		 ,P_ROOMID		/* 검사실ID */
+		 ,P_ORDCODE		/* 검사코드 */
+		 ,P_ORDCODENM		/* 검사명 */
+		 ,P_PATBIRTH		/* 생년월일 */
+		 ,P_DOCID		/* 담당의ID */
+		 ,P_DOCNAME		/* 담당의사명 */
+		 ,P_WORKDATE		/* 작업일시 */
+		) 
+		select
+		  		  to_char(sysdate,'yyyymmdd') ||(select lpad(nvl(MAX(substr(P_QUEUEID,9,18)),0)+1 ,10,0)
+		                                            from Museadtht
+		                                            where trunc(P_INSERTDATE) = trunc(sysdate))  as P_QUEUEID  /* QueueID */
+		 , a.PTNO ||to_char(a.ORDR_YMD,'YYYYMMDD')||a.ORDR_SNO as P_ACCESSNO		/* Accession Number */
+		 ,'N' as P_FLAG		/* 처리여부 */
+		, #{evntType}   /* 이벤트타입 NW : 신규 / CA : 취소 */
+		 ,sysdate as P_INSERTDATE		/* 입력일시 */
+		 ,a.ptno as P_PATID		/* 환자ID */
+		 , substrb( (select F_A.PTNT_NM from APPTPTNTT F_A where F_A.PTNO = a.PTNO) ,0,50)  as P_PATNAME		/* 환자이름 */
+		 , a.codv_cd as P_PATSTATUS		/* 환자유형(입원/외래) I : In patient / O : Out patient */
+		 , g.GEND_CD  as P_PATSEX		/* 성별 M : Male / F : Female / O : Other */
+		 , ( select  ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = a.MCDP_CD group by ABRV_DPRT_CD ) as P_DEPARTMENT		/* 진료과 */
+		 , a.MCDP_CD as P_DEPARTMENTID		/* 진료과ID */
+		 , b.otpt_exrm_Cd as P_ROOMID		/* 검사실ID */
+		 , a.ordr_Cd as P_ORDCODE		/* 검사코드 */
+		 , b.ordr_nm as P_ORDCODENM		/* 검사명 */
+		 ,to_char(BTDT,'yyyymmdd') as P_PATBIRTH		/* 생년월일 */
+		 , a.CHDR_ID  as P_DOCID		/* 담당의ID */
+		 , ( select  USER_NM from CCUSRDPHT where   USER_ID = a.CHDR_ID)  as P_DOCNAME		/* 담당의사명 */
+		 ,sysdate as P_WORKDATE		/* 작업일시 */
+		from mdexmordt a
+		    , mdordrcmt b
+		    , APPTPTNTT g
+		where a.ptno=#{ptno}
+		and a.ordr_ymd=to_date(#{ordrYmd},'yyyymmdd')
+		and a.ordr_sno=#{ordrSno}
+		and a.ordr_Cd = b.ordr_cd
+		and g.PTNO = a.PTNO
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm3 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm3"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-updateRptnInfm3 */
+			<![CDATA[
+				update  /*+ swo_workmmt_m09$S07_SWWORKMT MMEXMORT */
+		        		SWWORKMMT                                    /* 검사 WORK 관리 (계속) */
+				   set
+					  ETC_MDRP_NO = #{etcMdrpNo}
+					 , LAST_UPDR_ID = #{gvLginId}
+					 , LAST_UPDT_IP = #{gvUserIp}
+					 , LAST_UPDT_DT = sysdate
+					 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+					 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+				 where PTNO    = #{ptno}                             /* 환자번호             */
+				   and ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')  /* 처방일자             */
+				   and ORDR_SNO = to_number(#{ordrSno})             /* 처방순번             */
+		           and  EXCF_CD  = #{excfCd}               /* 검사분류             */
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="exmnCtrlChrcVl1" column="EXMN_CTRL_CHRC_VL1"/>
+		<result property="exmnCtrlChrcVl2" column="EXMN_CTRL_CHRC_VL2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck (내시경외래예약대상여부체크) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneEndsRptnCheck */
+		<![CDATA[
+		select EXMN_DTLS_CTRL_CD as DTLS_EXCF_CD
+		     , APLY_PART_CD      as EXCF_CD 
+		     , EXMN_CTRL_CHRC_VL1 as EXMN_CTRL_CHRC_VL1
+		     , EXMN_CTRL_CHRC_VL2 as EXMN_CTRL_CHRC_VL2   
+		  from SZCTRLMMT
+		 where 1=1
+		   and EXMN_CTRL_CD      = 'SWB_006'
+		   and EXMN_DTLS_CTRL_CD = #{dtlsExcfCd}
+		   and APLY_PART_CD      = #{excfCd}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO">
+	
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-selectOneChfrAmdrDprt2 */
+			<![CDATA[
+						select  /*+ swo_workmmt_m09$S18_무료예약의사 부서정보 조회 */
+								b.MDCR_DPRT_CD
+						  from
+								CCUSERAMT a
+							 ,  CCUSRDPHT B
+						 where  b.LGIN_ID = #{endsChfrAmdrId}
+		                   and  b.EXCF_CD = #{excfCd}
+		                   and  a.LGIN_ID = b.LGIN_ID	
+		                   and  a.USER_STTS_CD not in ('8', '9')
+		                   and  rownum = 1
+			]]>
+	</select>
+
+
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmt () 
+        Description : 
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmt"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmt */
+		{ call  
+		        sp_sr_insert_szexmcmmt (   
+		                                #{ptno,         mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{ordrYmd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	to_char(#{ordrSno, 	mode=IN, jdbcType=VARCHAR, javaType=bigDecimal})
+									,	#{exmnCd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{excfCd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvLginId,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvClntPrgmId,    	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvUserIp,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	'2'
+		                              )
+		}
+	</select>	
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmtOne () 
+        Description : 
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmtOne"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnRptnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnRptnDAO-executeAutoRcptExmcMmtOne */
+		{ call  
+		        sp_sr_insert_szexmcmmt (   
+		                                #{ptno,         mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{ordrYmd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	to_char(#{ordrSno, 	mode=IN, jdbcType=VARCHAR, javaType=bigDecimal})
+									,	#{exmnCd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{excfCd,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvLginId,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvClntPrgmId,    	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	#{gvUserIp,     	mode=IN, jdbcType=VARCHAR, javaType=string}
+									,	'1'
+		                              )
+		}
+	</select>	
+</mapper>

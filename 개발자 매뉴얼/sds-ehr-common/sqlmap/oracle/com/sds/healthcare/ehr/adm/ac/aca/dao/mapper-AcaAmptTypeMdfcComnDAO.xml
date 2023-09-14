@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaAmptTypeMdfcComnDAO_sql.xml 
+    Description :                                      입원환자유형변경 공통 DAO
+                  -->
+<mapper namespace="AcaAmptTypeMdfcComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaAmptTypeMdfcComnDAO-updateAmptTypeMdfcByDschPrrnCncl (퇴원예정취소 시 입원유형 변경) 
+        Description :                                           퇴원예정취소 시 입원유형 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaAmptTypeMdfcComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaAmptTypeMdfcComnDAO-updateAmptTypeMdfcByDschPrrnCncl"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaAmptTypeMdfcComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaAmptTypeMdfcComnDAO-updateAmptTypeMdfcByDschPrrnCncl */
+		update  /*+ AcaAmptTypeMdfcComnDAO-updateAmptTypeMdfcByDschPrrnCncl_퇴원취소시 입원 유형 변경 취소 DAM */
+		        ACCLISTYT
+		   set  CHCK_PRSS_CD            =   'N'                 /* 심사진행상태코드(AI084) */
+		     ,  CLAM_YN                 =   'N'                 /* 청구여부 */
+		     ,  LAST_UPDR_ID            =   #{gvUserId}          
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}          
+		     ,  LAST_UPDT_DT            =   sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		 where  PTNO                    =   #{ptno}
+		   and  ADMS_DT                 =   to_date(#{admsDt}, 'yyyymmddhh24miss')
+		   and  CODV_CD                 =   'I'
+	</update>
+
+</mapper>

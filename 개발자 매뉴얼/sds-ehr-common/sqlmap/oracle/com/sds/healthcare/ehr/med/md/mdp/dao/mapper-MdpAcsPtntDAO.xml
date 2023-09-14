@@ -1,0 +1,945 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpAcsPtntDAO_sql.xml 
+    Description :                                      ACS환자정보조회DAO
+                  -->
+<mapper namespace="MdpAcsPtntDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmry-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="vlmVl" column="VLM_VL"/>
+		<result property="cdNm" column="CD_NM"/>
+		<result property="afiRsltNm1" column="AFI_RSLT_NM_1"/>
+		<result property="afiRsltNm2" column="AFI_RSLT_NM_2"/>
+		<result property="prsgDetlCtn1" column="PRSG_DETL_CTN_1"/>
+		<result property="afiVlmCnrlNm" column="AFI_VLM_CNRL_NM"/>
+		<result property="sdefEtcCtn" column="SDEF_ETC_CTN"/>
+		<result property="sdefEtcCtn1" column="SDEF_ETC_CTN_1"/>
+		<result property="sdefEtcCtn2" column="SDEF_ETC_CTN_2"/>
+		<result property="afiDgstItrcNm1" column="AFI_DGST_ITRC_NM_1"/>
+		<result property="afiDgstItrcNm2" column="AFI_DGST_ITRC_NM_2"/>
+		<result property="afiDgstItrcNm3" column="AFI_DGST_ITRC_NM_3"/>
+		<result property="afiDgstItrcNm4" column="AFI_DGST_ITRC_NM_4"/>
+		<result property="afiDgstItrcNm" column="AFI_DGST_ITRC_NM"/>
+		<result property="afiFoodItrcNm1" column="AFI_FOOD_ITRC_NM_1"/>
+		<result property="afiFoodItrcNm2" column="AFI_FOOD_ITRC_NM_2"/>
+		<result property="afiFoodItrcNm3" column="AFI_FOOD_ITRC_NM_3"/>
+		<result property="afiRsltNm" column="AFI_RSLT_NM"/>
+		<result property="drOpinCd" column="DR_OPIN_CD"/>
+		<result property="drCnfrDt" column="DR_CNFR_DT"/>
+		<result property="cndrNm" column="CNDR_NM"/>
+		<result property="wrfrIncrQtyCtn" column="WRFR_INCR_QTY_CTN"/>
+		<result property="wrfrDcrsQtyCtn" column="WRFR_DCRS_QTY_CTN"/>
+		<result property="acsDrOpinCtn" column="ACS_DR_OPIN_CTN"/>
+		<result property="acsDrusCd" column="ACS_DRUS_CD"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="thdyCnslCtn" column="THDY_CNSL_CTN"/>
+		<result property="afiAcsFnreHxNm" column="AFI_ACS_FNRE_HX_NM"/>
+		<result property="acsSno" column="ACS_SNO"/>
+		<result property="indtCtn" column="INDT_CTN"/>
+		<result property="trgtInrNm" column="TRGT_INR_NM"/>
+		<result property="acsRfdrId" column="ACS_RFDR_ID"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="acsFnshYmd" column="ACS_FNSH_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmry (ACS Summary Sheet 조회) 
+        Description :                                           ACS Summary Sheet 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmry-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmry"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmry-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /* ACS Summary Sheet 조회 */
+		        to_char(a.STRT_YMD, 'YYYY-MM-DD') as STRT_YMD     /*  시작일자             */
+		     ,  to_char(a.FNSH_YMD, 'YYYY-MM-DD') as FNSH_YMD                                   /*  마지막일자           */
+		     ,  decode(a.TKMD_CMDG_CD, '05', '', '09', '', a.VLM_VL) as VLM_VL                  /*  용량                 */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'SD044' and F_A.COMN_DTLS_CD =  a.ACS_DRUS_CD and F_B.LNGG_CD(+) = nvl( '', '*') ) as CD_NM                    /*  용법                 */
+		     ,  decode(a.WKDY_TOTL_ADMN_QTY, '', '', to_char(a.WKDY_TOTL_ADMN_QTY, '999.99')||'mg') as AFI_RSLT_NM_1 /*  TOTAL WEEKLY DOSE  */
+		     ,  to_char(a.INR_NCVL_VL, '999.99') as AFI_RSLT_NM_2                                                    /*  INR 수치             */
+		     ,  fn_sd_getacscntetctext_s(( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD039' and F_A.COMN_DTLS_CD =  a.TKMD_CMDG_CD and F_B.LNGG_CD(+) = nvl( '', '*') )
+		          , a.NNAD_NTM, a.NNAD_PERD_CTN) as PRSG_DETL_CTN_1      /*  복약순응도           */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'SD043'
+		             and F_A.COMN_DTLS_CD =  a.VLM_CNRL_CD and F_B.LNGG_CD(+) = nvl( '', '*') ) as AFI_VLM_CNRL_NM  /*  용량조절             */
+		     ,  fn_sd_getacscntetctext_s(
+		             decode(a.SDEF_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD040' and F_A.COMN_DTLS_CD =  a.SDEF_CD1 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.SDEF_NTM1, a.SDEF_ETC_CTN1) as SDEF_ETC_CTN    /*  부작용1         */
+		     ,  fn_sd_getacscntetctext_s(
+		             decode(a.SDEF_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD040' and F_A.COMN_DTLS_CD =  a.SDEF_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.SDEF_NTM2, a.SDEF_ETC_CTN2) as SDEF_ETC_CTN_1    /*  부작용2         */
+		     ,  decode(a.SDEF_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                       from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                      where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                        and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD040'
+		                                        and F_A.COMN_DTLS_CD =  a.SDEF_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as SDEF_ETC_CTN_2           /*  부작용3         */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD1
+		                                                  and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL1) as AFI_DGST_ITRC_NM_1       /*  약물상호작용1        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                                  and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD041'
+		                                                  and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL2) as AFI_DGST_ITRC_NM_2       /*  약물상호작용2        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL3) as AFI_DGST_ITRC_NM_3       /*  약물상호작용3        */
+		     ,  decode(a.DGST_ITRC_CD4, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD4 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_DGST_ITRC_NM_4   /*  약물상호작용4        */
+		     ,  decode(a.DGST_ITRC_CD5, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD5 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_DGST_ITRC_NM    /*  약물상호작용5        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.FOOD_ITRC_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD042' and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD1 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.FOOD_INR_INFL_VL1) as AFI_FOOD_ITRC_NM_1  /*  음식상호작용1        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.FOOD_ITRC_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                                  and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD042'
+		                                                  and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.FOOD_INR_INFL_VL2) as AFI_FOOD_ITRC_NM_2  /*  음식상호작용2        */
+		     ,  decode(a.FOOD_ITRC_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD042' and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_FOOD_ITRC_NM_3       /*  음식상호작용3        */
+		     ,  null as AFI_RSLT_NM  /*  PARMRMK, */     /*  약사 COMMENT         */
+		     ,  a.DR_OPIN_CD as DR_OPIN_CD                                        /*  의사 의견코드         */
+		     ,  to_char(a.DR_CNFR_DT, 'YYYYMMDDHH24MISS') as DR_CNFR_DT   /*  의사 확인일시         */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.CNDR_ID ) as CNDR_NM       /*  확인한 의사 ID       */
+		     ,  a.WRFR_INCR_QTY_CTN as WRFR_INCR_QTY_CTN                                 /*  WARFARIN 증가용량    */
+		     ,  a.WRFR_DCRS_QTY_CTN as WRFR_DCRS_QTY_CTN                                 /*  WARFARIN 감소용량    */
+		     ,  a.ACS_DR_OPIN_CTN as ACS_DR_OPIN_CTN                                   /*  의사 COMMENT        */
+		     ,  a.ACS_DRUS_CD as ACS_DRUS_CD                                       /*  용법                  */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.LAST_UPDR_ID ) as LAST_UPDR_NM                      /*  수정자명             */
+		     ,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDHH24MISS') as LAST_UPDT_DT                  /*  수정일시             */
+		     ,  a.THDY_CNSL_CTN as THDY_CNSL_CTN      /*  당일상담내용          */
+		     ,  decode(
+		            nvl(    (   select  c.ACS_FNRE_HX_CD 
+		                          from  SDCACSBAT c1 
+		                         where  c1.PTNO = a.PTNO 
+		                           and  c1.ACS_FNSH_HX_YMD = a.STRT_YMD 
+		                           and  rownum = 1
+		                    ), '')
+		          , '14',   (   select  nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                          from  CCCMCDDMT F_A, CCCMCDDLT F_B
+		                         where  F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) 
+		                           and  F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                           and  F_A.COMN_GRP_CD = 'SD038' 
+		                           and  F_A.COMN_DTLS_CD =  '14' 
+		                           and  F_B.LNGG_CD(+) = nvl( '', '*') 
+		                    )
+		          , '')                         as AFI_ACS_FNRE_HX_NM
+		     ,  a.ACS_SNO as ACS_SNO
+		     ,  c.INDT_CTN as INDT_CTN           /*  적응증1 from OCS    */
+		     ,  c.TRGT_INR_NM as TRGT_INR_NM        /*  TARGER INR         */
+		     ,  c.ACS_RFDR_ID as ACS_RFDR_ID        /*  ACS 의뢰의사1       */
+		     ,  c.GNDR_ID as GNDR_ID            /*  주치의                */
+		     ,  decode(to_char(c.ACS_FNSH_YMD, 'YYYYMMDD'), '29991231', '', to_char(c.ACS_FNSH_YMD, 'YYYYMMDD')) as ACS_FNSH_YMD         /*  ACS 종료일자         */
+		  from  SDCACSPRT a  /*  ACS환자프로필 */
+		     ,  SDCACSBAT c  /*  ACS환자기본 */
+		 where  a.PTNO = #{ptno}
+		   and  a.ACS_SNO = (select max(ACS_SNO) from SDCACSBAT where PTNO = a.PTNO)
+		                        /*  복약순응도가 들어가거나 용법이 들어간 것만 */
+		   and  (a.TKMD_CMDG_CD is not null or a.ACS_DRUS_CD is not null)
+		   and  nvl(a.TMPR_SAVE_YN,'N') <> 'Y'
+		   and  c.PTNO = a.PTNO
+		   and  c.ACS_SNO = a.ACS_SNO
+		 order 
+		    by  a.STRT_YMD desc
+		]]>      
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="acsSno" column="ACS_SNO"/>
+		<result property="strtDt" column="STRT_DT"/>
+		<result property="mcdpCd1" column="MCDP_CD1"/>
+		<result property="acsRfdrId" column="ACS_RFDR_ID"/>
+		<result property="mcdpCd2" column="MCDP_CD2"/>
+		<result property="gndrId" column="GNDR_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001 () 
+        Description :                                           툴바_ACS시작환자정보 조회 mdd_cacsbat_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0001 */
+		<![CDATA[
+		select  /*+ index_desc(acs SDCACSBAT_I01) mdd_cacsbat_s01$S01_툴바_ACS시작환자정보 조회_DAM */
+		        acs.PTNO                                     /* 환자번호      */
+		     ,  acs.ACS_SNO                                  /* ACS일련번호   */
+		     ,  to_char(acs.STRT_DT, 'YYYYMMDD') as STRT_DT  /* 시작일시(실제로는 시작일자) */
+		     ,  acs.MCDP_CD1                                 /* 진료과코드1   */
+		     ,  acs.ACS_RFDR_ID                              /* ACS의뢰의사ID */
+		     ,  acs.MCDP_CD2                                 /* 진료과코드2   */
+		     ,  acs.GNDR_ID                                  /* 주치의사ID    */
+		  from
+		        SDCACSBAT acs                         /* ACS환자기본   */
+		 where  acs.PTNO         = #{ptno}
+		   and  acs.ACS_FNSH_YMD = to_date('29991231', 'yyyymmdd')
+		   and  rownum < 2
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="acsSno" column="ACS_SNO"/>
+		<result property="acsFnshYmd" column="ACS_FNSH_YMD"/>
+		<result property="mcdpCd3" column="MCDP_CD3"/>
+		<result property="acsRfdrId1" column="ACS_RFDR_ID1"/>
+		<result property="mcdpCd4" column="MCDP_CD4"/>
+		<result property="gndrId1" column="GNDR_ID1"/>
+		<result property="acsFnreCd" column="ACS_FNRE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002 () 
+        Description :                                           툴바_ACS종료환자정보 조회 mdd_cacsbat_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0002 */
+		<![CDATA[
+		select  /*+ index_desc(acs SDCACSBAT_PK) mdd_cacsbat_s02$S01_툴바_ACS종료환자정보 조회_DAM */
+		        acs.PTNO                                                                /* 환자번호        */
+		     ,  acs.ACS_SNO                                                             /* ACS일련번호     */
+		     ,  decode(to_char(acs.ACS_FNSH_YMD, 'YYYYMMDD'), '', to_char(sysdate, 'YYYYMMDD')
+		             , to_char(acs.ACS_FNSH_YMD, 'YYYYMMDD'))         ACS_FNSH_YMD      /* ACS종료일자     */
+		     ,  acs.MCDP_CD1                                          MCDP_CD3          /* 진료과코드1(종료) */
+		     ,  acs.ACS_RFDR_ID                                       ACS_RFDR_ID1      /* ACS의뢰의사ID   */
+		     ,  acs.MCDP_CD2                                          MCDP_CD4          /* 진료과코드2     */
+		     ,  acs.GNDR_ID                                           GNDR_ID1          /* 주치의사ID      */
+		     ,  acs.ACS_FNRE_CD                                                         /* ACS종료사유코드 */
+		  from
+		        SDCACSBAT acs                                                    /* ACS환자기본     */
+		 where  acs.PTNO          = #{ptno}
+		   and  acs.ACS_FNSH_YMD != to_date('29991231', 'yyyymmdd')
+		   and  acs.ACS_FNRE_CD   in ('09', '10', '13')
+		   and  rownum < 2
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="mdcrYn" column="MDCR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003 () 
+        Description :                                           툴바_ACS환자 진료여부 조회 mdd_cacsbat_s03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsPtnt0003 */
+		<![CDATA[
+		select  /*+ mdd_cacsbat_s03$S01_툴바_ACS환자 진료여부 조회_DAM */
+		        'Y' as MDCR_YN      /* 진료를 본 경우가 1건이라도 있는 경우 */
+		  from  dual
+		 where  exists (
+		                select
+		                       'Y'
+		                  from  APRCRPTNT rcr
+		                 where  rcr.PTNO                    = #{ptno}
+		                   and  rcr.MDCR_YMD               >= to_date(#{acsFnshYmd}, 'yyyymmdd')  /* 종료일자 */
+		                   and  rcr.MDCR_YMD               <=  trunc(sysdate)
+		                   and  (   #{acsRfdrId1} is null
+		                         or (rcr.MDDR_ID in (#{acsRfdrId1}, #{gndrId1})))  /* 종료시 진료의1, 진료의2 */
+		                   and  rcr.MDCR_YN                 = 'Y'
+		                   and  nvl(rcr.MCFE_RCPC_CD, 'N') != 'R'                                       /* 진찰료수납여부(Y/N)  */
+		                   and  rcr.MDCR_ANDV_CD            not in ('7')
+		                   and  rcr.CNCL_DT  is null
+		               )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="acsSno" column="ACS_SNO"/>
+		<result property="strtDt" column="STRT_DT"/>
+		<result property="refrPtdvCd" column="REFR_PTDV_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="mcdpCd1" column="MCDP_CD1"/>
+		<result property="acsRfdrId" column="ACS_RFDR_ID"/>
+		<result property="afiAcsRfdrNm" column="AFI_ACS_RFDR_NM"/>
+		<result property="mcdpCd2" column="MCDP_CD2"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="scinCd1" column="SCIN_CD1"/>
+		<result property="scinCd2" column="SCIN_CD2"/>
+		<result property="scinCd3" column="SCIN_CD3"/>
+		<result property="dshxStulYn" column="DSHX_STUL_YN"/>
+		<result property="dshxChfYn" column="DSHX_CHF_YN"/>
+		<result property="dshxCancYn" column="DSHX_CANC_YN"/>
+		<result property="dshxLvdsYn" column="DSHX_LVDS_YN"/>
+		<result property="dshxHypsYn" column="DSHX_HYPS_YN"/>
+		<result property="dshxHyphYn" column="DSHX_HYPH_YN"/>
+		<result property="dshxDrnkYn" column="DSHX_DRNK_YN"/>
+		<result property="dshxBldnYn" column="DSHX_BLDN_YN"/>
+		<result property="dshxEtcCtn" column="DSHX_ETC_CTN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="hghtVl" column="HGHT_VL"/>
+		<result property="trgtInrNm" column="TRGT_INR_NM"/>
+		<result property="drthVl" column="DRTH_VL"/>
+		<result property="newWrfrRgmnNm" column="NEW_WRFR_RGMN_NM"/>
+		<result property="pastWrfrRgmnNm" column="PAST_WRFR_RGMN_NM"/>
+		<result property="rinrNm" column="RINR_NM"/>
+		<result property="rinrYmd" column="RINR_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="emrgCntcTlnoCtn1" column="EMRG_CNTC_TLNO_CTN1"/>
+		<result property="emrgCntcTlnoCtn2" column="EMRG_CNTC_TLNO_CTN2"/>
+		<result property="indtCtn" column="INDT_CTN"/>
+		<result property="acsIndtCd1" column="ACS_INDT_CD1"/>
+		<result property="acsIndtCd2" column="ACS_INDT_CD2"/>
+		<result property="acsIndtCd3" column="ACS_INDT_CD3"/>
+		<result property="acsIndtCd4" column="ACS_INDT_CD4"/>
+		<result property="acsRiskFctrCd1" column="ACS_RISK_FCTR_CD1"/>
+		<result property="acsRiskFctrCd2" column="ACS_RISK_FCTR_CD2"/>
+		<result property="acsRiskFctrCd3" column="ACS_RISK_FCTR_CD3"/>
+		<result property="acsRiskFctrCd4" column="ACS_RISK_FCTR_CD4"/>
+		<result property="acsRiskFctrCd5" column="ACS_RISK_FCTR_CD5"/>
+		<result property="acsFnshYmd" column="ACS_FNSH_YMD"/>
+		<result property="acsFnreCd" column="ACS_FNRE_CD"/>
+		<result property="acsRefrFrstInptDt" column="ACS_REFR_FRST_INPT_DT"/>
+		<result property="phdpRptnYn" column="PHDP_RPTN_YN"/>
+		<result property="uicmDgstCtn" column="UICM_DGST_CTN"/>
+		<result property="acsFnshYn" column="ACS_FNSH_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr (ACS 최종 의뢰내역 조회) 
+        Description :                                           ACS 최종 의뢰내역 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneAcsLastRefr */
+		select  /* ACS (마지막) 상담의뢰 조회 */
+		        PTNO                                            as PTNO                     /* 환자번호             */
+		     ,  ACS_SNO                                         as ACS_SNO                  /* ACS SERIAL NO        */
+		     ,  to_char(STRT_DT, 'yyyymmdd')                    as STRT_DT                  /* 시작일시             */
+		     ,  REFR_PTDV_CD                                    as REFR_PTDV_CD             /* 의뢰시 환자구분      */
+		     ,  PTRM_NO                                         as PTRM_NO                  /* 병실                 */
+		     ,  WARD_CD                                         as WARD_CD                  /* 병동                 */
+		     ,  MCDP_CD1                                        as MCDP_CD1                 /* 진료과1              */
+		     ,  ACS_RFDR_ID                                     as ACS_RFDR_ID              /* ACS 의뢰의사1        */
+		     ,  (   select  USER_NM
+		              from  CCUSRDPHT
+		             where  USER_ID = ACS_RFDR_ID
+		        )                                               as AFI_ACS_RFDR_NM          /* ACS 의뢰의사명        */
+		     ,  MCDP_CD2                                        as MCDP_CD2                 /* 진료과2              */
+		     ,  GNDR_ID                                         as GNDR_ID                  /* 주치의사ID(담당의)               */
+		     ,  (   select  USER_NM
+		              from  CCUSRDPHT
+		             where  USER_ID = GNDR_ID
+		        )                                               as GNDR_NM                  /* 주치의사명(담당의)        */
+		     ,  SCIN_CD1                                        as SCIN_CD1                 /* 상병코드1            */
+		     ,  SCIN_CD2                                        as SCIN_CD2                 /* 상병코드2            */
+		     ,  SCIN_CD3                                        as SCIN_CD3                 /* 상병코드3            */
+		     ,  DSHX_STUL_YN                                    as DSHX_STUL_YN             /* 질병력1              */
+		     ,  DSHX_CHF_YN                                     as DSHX_CHF_YN              /* 질병력2              */
+		     ,  DSHX_CANC_YN                                    as DSHX_CANC_YN             /* 질병력3              */
+		     ,  DSHX_LVDS_YN                                    as DSHX_LVDS_YN             /* 질병력4              */
+		     ,  DSHX_HYPS_YN                                    as DSHX_HYPS_YN             /* 질병력5              */
+		     ,  DSHX_HYPH_YN                                    as DSHX_HYPH_YN             /* 질병력6              */
+		     ,  DSHX_DRNK_YN                                    as DSHX_DRNK_YN             /* 질병력7              */
+		     ,  DSHX_BLDN_YN                                    as DSHX_BLDN_YN             /* 질병력8              */
+		     ,  DSHX_ETC_CTN                                    as DSHX_ETC_CTN             /* 질병력9              */
+		     ,  to_char(BTDT, 'yyyymmdd')                       as BTDT                     /* 생년월일         */
+		     ,  BDWG_VL                                         as BDWG_VL                  /* 체중                 */
+		     ,  HGHT_VL                                         as HGHT_VL                  /* 신장                 */
+		     ,  TRGT_INR_NM                                     as TRGT_INR_NM              /* TARGER INR           */
+		     ,  DRTH_VL                                         as DRTH_VL                  /* DURATION OF THERAPY  */
+		     ,  NEW_WRFR_RGMN_NM                                as NEW_WRFR_RGMN_NM         /* NEW WARFARIN REGIMEN */
+		     ,  PAST_WRFR_RGMN_NM                               as PAST_WRFR_RGMN_NM        /* OLD WARFARIN REGIMEN */
+		     ,  RINR_NM                                         as RINR_NM                  /* RECENT INR           */
+		     ,  to_char(RINR_YMD, 'yyyymmdd')                   as RINR_YMD                 /* RECENT INR D         */
+		     ,  RMRK_CTN                                        as RMRK_CTN                 /* COMMENTS FROM OCS    */
+		     ,  EMRG_CNTC_TLNO_CTN1                             as EMRG_CNTC_TLNO_CTN1      /* 긴급연락처1          */
+		     ,  EMRG_CNTC_TLNO_CTN2                             as EMRG_CNTC_TLNO_CTN2      /* 긴급연락처2          */
+		     ,  INDT_CTN                                        as INDT_CTN                 /* 적응증1 from OCS     */
+		     ,  ACS_INDT_CD1                                    as ACS_INDT_CD1             /* 적응증2              */
+		     ,  ACS_INDT_CD2                                    as ACS_INDT_CD2             /* 적응증3              */
+		     ,  ACS_INDT_CD3                                    as ACS_INDT_CD3             /* 적응증4              */
+		     ,  ACS_INDT_CD4                                    as ACS_INDT_CD4             /* 적응증5              */
+		     ,  ACS_RISK_FCTR_CD1                               as ACS_RISK_FCTR_CD1        /* 위험인자1            */
+		     ,  ACS_RISK_FCTR_CD2                               as ACS_RISK_FCTR_CD2        /* 위험인자2            */
+		     ,  ACS_RISK_FCTR_CD3                               as ACS_RISK_FCTR_CD3        /* 위험인자3            */
+		     ,  ACS_RISK_FCTR_CD4                               as ACS_RISK_FCTR_CD4        /* 위험인자4            */
+		     ,  ACS_RISK_FCTR_CD5                               as ACS_RISK_FCTR_CD5        /* 위험인자5            */
+		     ,  case
+		            when to_char(ACS_FNSH_YMD, 'yyyymmdd') = '29991231' then ''
+		            else to_char(ACS_FNSH_YMD, 'yyyymmdd')
+		            end                                         as ACS_FNSH_YMD             /* ACS 종료일자         */
+		     ,  ACS_FNRE_CD                                     as ACS_FNRE_CD              /* ACS 종료사유코드     */
+		     ,  to_char(ACS_REFR_FRST_INPT_DT, 'yyyymmdd')      as ACS_REFR_FRST_INPT_DT    /* ACS 의뢰최초입력일시 */
+		     ,  PHDP_RPTN_YN                                    as PHDP_RPTN_YN             /* 약제부접수여부       */
+		     ,  UICM_DGST_CTN                                   as UICM_DGST_CTN            /* 병용약물             */
+		     ,  ACS_FNSH_YN                                     as ACS_FNSH_YN              /* ACS종료여부          */
+		  from  SDCACSBAT a     /* ACS환자(의뢰)기본 */
+		 where  PTNO    =   #{ptno}
+		   and  ACS_SNO =   (   select  max(ACS_SNO)
+		                          from  SDCACSBAT
+		                         where  PTNO = a.PTNO
+		                    )
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="inqrDvsnCd" column="INQR_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy (selectOneDummy) 
+        Description :                                           selectOneDummy
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneDummy */
+		select  0           as MDRP_NO
+		  , 'O'         as INQR_DVSN_CD         -- 조회구분코드
+		  from  dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="scrnDsplVl" column="SCRN_DSPL_VL"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="vlmVl" column="VLM_VL"/>
+		<result property="cdNm" column="CD_NM"/>
+		<result property="afiRsltNm1" column="AFI_RSLT_NM_1"/>
+		<result property="afiRsltNm2" column="AFI_RSLT_NM_2"/>
+		<result property="prsgDetlCtn1" column="PRSG_DETL_CTN_1"/>
+		<result property="afiVlmCnrlNm" column="AFI_VLM_CNRL_NM"/>
+		<result property="sdefEtcCtn" column="SDEF_ETC_CTN"/>
+		<result property="sdefEtcCtn1" column="SDEF_ETC_CTN_1"/>
+		<result property="sdefEtcCtn2" column="SDEF_ETC_CTN_2"/>
+		<result property="afiDgstItrcNm1" column="AFI_DGST_ITRC_NM_1"/>
+		<result property="afiDgstItrcNm2" column="AFI_DGST_ITRC_NM_2"/>
+		<result property="afiDgstItrcNm3" column="AFI_DGST_ITRC_NM_3"/>
+		<result property="afiDgstItrcNm4" column="AFI_DGST_ITRC_NM_4"/>
+		<result property="afiDgstItrcNm" column="AFI_DGST_ITRC_NM"/>
+		<result property="afiFoodItrcNm1" column="AFI_FOOD_ITRC_NM_1"/>
+		<result property="afiFoodItrcNm2" column="AFI_FOOD_ITRC_NM_2"/>
+		<result property="afiFoodItrcNm3" column="AFI_FOOD_ITRC_NM_3"/>
+		<result property="afiRsltNm" column="AFI_RSLT_NM"/>
+		<result property="drOpinCd" column="DR_OPIN_CD"/>
+		<result property="drCnfrDt" column="DR_CNFR_DT"/>
+		<result property="cndrNm" column="CNDR_NM"/>
+		<result property="wrfrIncrQtyCtn" column="WRFR_INCR_QTY_CTN"/>
+		<result property="wrfrDcrsQtyCtn" column="WRFR_DCRS_QTY_CTN"/>
+		<result property="acsDrOpinCtn" column="ACS_DR_OPIN_CTN"/>
+		<result property="acsDrusCd" column="ACS_DRUS_CD"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="thdyCnslCtn" column="THDY_CNSL_CTN"/>
+		<result property="afiAcsFnreHxNm" column="AFI_ACS_FNRE_HX_NM"/>
+		<result property="acsSno" column="ACS_SNO"/>
+		<result property="indtCtn" column="INDT_CTN"/>
+		<result property="trgtInrNm" column="TRGT_INR_NM"/>
+		<result property="acsRfdrId" column="ACS_RFDR_ID"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="acsFnshYmd" column="ACS_FNSH_YMD"/>
+		<result property="encrAdmnQty" column="ENCR_ADMN_QTY"/>
+		<result property="encrAdmnCtn" column="ENCR_ADMN_CTN"/>
+		<result property="mdfcAdmnQty" column="MDFC_ADMN_QTY"/>
+		<result property="mdfcAdmnCtn" column="MDFC_ADMN_CTN"/>
+		<result property="drnkYn" column="DRNK_YN"/>
+		<result property="drnkCtn" column="DRNK_CTN"/>
+		<result property="smknYn" column="SMKN_YN"/>
+		<result property="acsSmknCtn" column="ACS_SMKN_CTN"/>
+		<result property="mcdpCd1" column="MCDP_CD1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder () 
+        Description :                                           ACS 관련 ccr 기본처방,약처방,검사처방 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-listAcsSmryNOrder */
+		<![CDATA[
+		select  'A' as  SCRN_DSPL_VL
+		     ,   to_char(a.STRT_YMD, 'YYYY-MM-DD') as STRT_YMD     /*  시작일자             */
+		     ,  to_char(a.FNSH_YMD, 'YYYY-MM-DD') as FNSH_YMD                                   /*  마지막일자           */
+		     ,  decode(a.TKMD_CMDG_CD, '05', '', '09', '', a.VLM_VL) as VLM_VL                  /*  용량                 */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'SD044' and F_A.COMN_DTLS_CD =  a.ACS_DRUS_CD and F_B.LNGG_CD(+) = nvl( '', '*') ) as CD_NM                    /*  용법                 */
+		     ,  decode(a.WKDY_TOTL_ADMN_QTY, '', '', to_char(a.WKDY_TOTL_ADMN_QTY, '999.99')||'mg') as AFI_RSLT_NM_1 /*  TOTAL WEEKLY DOSE  */
+		     ,  to_char(a.INR_NCVL_VL, '999.99') as AFI_RSLT_NM_2                                                    /*  INR 수치             */
+		     ,  fn_sd_getacscntetctext_s(( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD039' and F_A.COMN_DTLS_CD =  a.TKMD_CMDG_CD and F_B.LNGG_CD(+) = nvl( '', '*') )
+		          , a.NNAD_NTM, a.NNAD_PERD_CTN) as PRSG_DETL_CTN_1      /*  복약순응도           */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'SD043'
+		             and F_A.COMN_DTLS_CD =  a.VLM_CNRL_CD and F_B.LNGG_CD(+) = nvl( '', '*') ) as AFI_VLM_CNRL_NM  /*  용량조절             */
+		     ,  fn_sd_getacscntetctext_s(
+		             decode(a.SDEF_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD040' and F_A.COMN_DTLS_CD =  a.SDEF_CD1 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.SDEF_NTM1, a.SDEF_ETC_CTN1) as SDEF_ETC_CTN    /*  부작용1         */
+		     ,  fn_sd_getacscntetctext_s(
+		             decode(a.SDEF_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD040' and F_A.COMN_DTLS_CD =  a.SDEF_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.SDEF_NTM2, a.SDEF_ETC_CTN2) as SDEF_ETC_CTN_1    /*  부작용2         */
+		     ,  decode(a.SDEF_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                       from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                      where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                        and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD040'
+		                                        and F_A.COMN_DTLS_CD =  a.SDEF_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as SDEF_ETC_CTN_2           /*  부작용3         */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD1
+		                                                  and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL1) as AFI_DGST_ITRC_NM_1       /*  약물상호작용1        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                                  and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD041'
+		                                                  and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL2) as AFI_DGST_ITRC_NM_2       /*  약물상호작용2        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.DGST_ITRC_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.DGST_INR_INFL_VL3) as AFI_DGST_ITRC_NM_3       /*  약물상호작용3        */
+		     ,  decode(a.DGST_ITRC_CD4, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD4 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_DGST_ITRC_NM_4   /*  약물상호작용4        */
+		     ,  decode(a.DGST_ITRC_CD5, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD041' and F_A.COMN_DTLS_CD =  a.DGST_ITRC_CD5 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_DGST_ITRC_NM    /*  약물상호작용5        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.FOOD_ITRC_CD1, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                                  and F_A.COMN_GRP_CD = 'SD042' and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD1 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.FOOD_INR_INFL_VL1) as AFI_FOOD_ITRC_NM_1  /*  음식상호작용1        */
+		     ,  fn_sd_getacseffecttext_s(
+		             decode(a.FOOD_ITRC_CD2, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                                 from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                                where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		                                                  and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+) and F_A.COMN_GRP_CD = 'SD042'
+		                                                  and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD2 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		          , a.FOOD_INR_INFL_VL2) as AFI_FOOD_ITRC_NM_2  /*  음식상호작용2        */
+		     ,  decode(a.FOOD_ITRC_CD3, '', '', ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                                            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                             and F_A.COMN_GRP_CD = 'SD042' and F_A.COMN_DTLS_CD =  a.FOOD_ITRC_CD3 and F_B.LNGG_CD(+) = nvl( '', '*') ))
+		     as AFI_FOOD_ITRC_NM_3       /*  음식상호작용3        */
+		     ,  null as AFI_RSLT_NM  /*  PARMRMK, */     /*  약사 COMMENT         */
+		     ,  a.DR_OPIN_CD as DR_OPIN_CD                                        /*  의사 의견코드         */
+		     ,  to_char(a.DR_CNFR_DT, 'YYYYMMDDHH24MISS') as DR_CNFR_DT   /*  의사 확인일시         */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.CNDR_ID ) as CNDR_NM       /*  확인한 의사 ID       */
+		     ,  a.WRFR_INCR_QTY_CTN as WRFR_INCR_QTY_CTN                                 /*  WARFARIN 증가용량    */
+		     ,  a.WRFR_DCRS_QTY_CTN as WRFR_DCRS_QTY_CTN                                 /*  WARFARIN 감소용량    */
+		     ,  a.ACS_DR_OPIN_CTN as ACS_DR_OPIN_CTN                                   /*  의사 COMMENT        */
+		     ,  a.ACS_DRUS_CD as ACS_DRUS_CD                                       /*  용법                  */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = a.LAST_UPDR_ID ) as LAST_UPDR_NM                      /*  수정자명             */
+		     ,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDHH24MISS') as LAST_UPDT_DT                  /*  수정일시             */
+		     ,  a.THDY_CNSL_CTN as THDY_CNSL_CTN      /*  당일상담내용          */
+		     ,  decode(
+		            nvl(    (   select  c.ACS_FNRE_HX_CD 
+		                          from  SDCACSBAT c1 
+		                         where  c1.PTNO = a.PTNO 
+		                           and  c1.ACS_FNSH_HX_YMD = a.STRT_YMD 
+		                           and  rownum = 1
+		                    ), '')
+		          , '14',   (   select  nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		                          from  CCCMCDDMT F_A, CCCMCDDLT F_B
+		                         where  F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+) 
+		                           and  F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                           and  F_A.COMN_GRP_CD = 'SD038' 
+		                           and  F_A.COMN_DTLS_CD =  '14' 
+		                           and  F_B.LNGG_CD(+) = nvl( '', '*') 
+		                    )
+		          , '')                         as AFI_ACS_FNRE_HX_NM
+		     ,  a.ACS_SNO as ACS_SNO
+		     ,  c.INDT_CTN as INDT_CTN           /*  적응증1 from OCS    */
+		     ,  c.TRGT_INR_NM as TRGT_INR_NM        /*  TARGER INR         */
+		     ,  c.ACS_RFDR_ID as ACS_RFDR_ID        /*  ACS 의뢰의사1       */
+		     ,  c.GNDR_ID as GNDR_ID            /*  주치의                */
+		     ,  decode(to_char(c.ACS_FNSH_YMD, 'YYYYMMDD'), '29991231', '', to_char(c.ACS_FNSH_YMD, 'YYYYMMDD')) as ACS_FNSH_YMD         /*  ACS 종료일자         */
+		     ,  a.ENCR_ADMN_QTY     /* 권장용량 */
+		     ,  a.ENCR_ADMN_CTN     /* 권장용량내용 */
+		     ,  a.MDFC_ADMN_QTY     /* 변경용량 */
+		     ,  a.MDFC_ADMN_CTN     /* 변경용량내용 */
+		     ,  a.DRNK_YN           /* 음주여부 */
+		     ,  a.DRNK_CTN          /* 음주내용 */
+		     ,  a.SMKN_YN           /* 흡연여부 */
+		     ,  a.ACS_SMKN_CTN      /* 흡연내용 */
+		     ,  c.MCDP_CD1          /* 의뢰과1 */    
+		  from  SDCACSPRT a  /*  ACS환자프로필 */
+		     ,  SDCACSBAT c  /*  ACS환자기본 */
+		 where  a.PTNO = #{ptno}
+		   and  a.ACS_SNO = (select max(ACS_SNO) from SDCACSBAT where PTNO = a.PTNO)
+		                        /*  복약순응도가 들어가거나 용법이 들어간 것만 */
+		   and  (a.TKMD_CMDG_CD is not null or a.ACS_DRUS_CD is not null or a.WKDY_TOTL_ADMN_QTY != 0)
+		   and  nvl(a.TMPR_SAVE_YN,'N') <> 'Y'
+		   and  c.PTNO = a.PTNO
+		   and  c.ACS_SNO = a.ACS_SNO
+		 ]]>      
+		<choose>
+		   <when test='inqrDvsnCd != null and inqrDvsnCd == "O"'> 
+		 <![CDATA[
+		 union all 
+		 SELECT  A.SCRN_DSPL_VL
+		            ,A.STRT_YMD
+		            ,A.FNSH_YMD               
+		            ,A.VLM_VL
+		            ,A.CD_NM
+		            ,A.AFI_RSLT_NM_1
+		            ,A.AFI_RSLT_NM_2
+		            ,A.PRSG_DETL_CTN_1
+		            ,A.AFI_VLM_CNRL_NM
+		            ,A.SDEF_ETC_CTN
+		            ,A.SDEF_ETC_CTN_1
+		            ,A.SDEF_ETC_CTN_2
+		            ,A.AFI_DGST_ITRC_NM_1
+		            ,A.AFI_DGST_ITRC_NM_2
+		            ,A.AFI_DGST_ITRC_NM_3
+		            ,A.AFI_DGST_ITRC_NM_4
+		            ,A.AFI_DGST_ITRC_NM
+		            ,A.AFI_FOOD_ITRC_NM_1
+		            ,A.AFI_FOOD_ITRC_NM_2
+		            ,A.AFI_FOOD_ITRC_NM_3
+		            ,A.AFI_RSLT_NM
+		            ,A.DR_OPIN_CD
+		            ,A.DR_CNFR_DT
+		            ,A.CNDR_NM
+		            ,A.WRFR_INCR_QTY_CTN
+		            ,A.WRFR_DCRS_QTY_CTN
+		            ,A.ACS_DR_OPIN_CTN
+		            ,A.ACS_DRUS_CD
+		            ,A.LAST_UPDR_NM
+		            ,A.LAST_UPDT_DT      
+		            ,A.THDY_CNSL_CTN
+		            ,A.AFI_ACS_FNRE_HX_NM
+		            ,A.ACS_SNO
+		            ,A.INDT_CTN
+		            ,A.TRGT_INR_NM
+		            ,A.ACS_RFDR_ID
+		            ,A.GNDR_ID
+		            ,A.ACS_FNSH_YMD
+		            ,A.ENCR_ADMN_QTY     /* 권장용량 */
+		            ,A.ENCR_ADMN_CTN     /* 권장용량내용 */
+		            ,A.MDFC_ADMN_QTY     /* 변경용량 */
+		            ,A.MDFC_ADMN_CTN     /* 변경용량내용 */
+		            ,A.DRNK_YN           /* 음주여부 */
+		            ,A.DRNK_CTN          /* 음주내용 */
+		            ,A.SMKN_YN           /* 흡연여부 */
+		            ,A.ACS_SMKN_CTN      /* 흡연내용 */
+		            ,A.MCDP_CD1          /* 의뢰과1  */  
+		            FROM 
+		                (
+		                SELECT A.SCRN_DSPL_VL
+		                    ,A.STRT_YMD
+		                    ,A.FNSH_YMD                      
+		                    ,B.ORDR_NM AS VLM_VL
+		                    ,'' CD_NM
+		                    ,'' AFI_RSLT_NM_1
+		                    ,'' AFI_RSLT_NM_2
+		                    ,'' PRSG_DETL_CTN_1
+		                    ,'' AFI_VLM_CNRL_NM
+		                    ,'' SDEF_ETC_CTN
+		                    ,'' SDEF_ETC_CTN_1
+		                    ,'' SDEF_ETC_CTN_2
+		                    ,'' AFI_DGST_ITRC_NM_1
+		                    ,'' AFI_DGST_ITRC_NM_2
+		                    ,'' AFI_DGST_ITRC_NM_3
+		                    ,'' AFI_DGST_ITRC_NM_4          
+		                    ,'' AFI_DGST_ITRC_NM
+		                    ,'' AFI_FOOD_ITRC_NM_1
+		                    ,'' AFI_FOOD_ITRC_NM_2
+		                    ,'' AFI_FOOD_ITRC_NM_3
+		                    ,'' AFI_RSLT_NM
+		                    ,'' DR_OPIN_CD
+		                    ,'' DR_CNFR_DT
+		                    ,'' CNDR_NM
+		                    ,'' WRFR_INCR_QTY_CTN
+		                    ,'' WRFR_DCRS_QTY_CTN
+		                    ,'' ACS_DR_OPIN_CTN
+		                    ,'' ACS_DRUS_CD
+		                    ,'' LAST_UPDR_NM
+		                    ,'' LAST_UPDT_DT      
+		                    , A.ORDR_DETAIL AS THDY_CNSL_CTN
+		                    ,'' AFI_ACS_FNRE_HX_NM
+		                    ,1 AS  ACS_SNO
+		                    ,'' INDT_CTN
+		                    ,'' TRGT_INR_NM
+		                    ,'' ACS_RFDR_ID
+		                    ,'' GNDR_ID
+		                    ,'' ACS_FNSH_YMD
+							,'' ENCR_ADMN_QTY     /* 권장용량 */
+		                    ,'' ENCR_ADMN_CTN     /* 권장용량내용 */
+		                    ,'' MDFC_ADMN_QTY     /* 변경용량 */
+		                    ,'' MDFC_ADMN_CTN     /* 변경용량내용 */
+		                    ,'' DRNK_YN           /* 음주여부 */
+		                    ,'' DRNK_CTN          /* 음주내용 */
+		                    ,'' SMKN_YN           /* 흡연여부 */
+		                    ,'' ACS_SMKN_CTN      /* 흡연내용 */
+		                    ,'' MCDP_CD1          /* 의뢰과1  */  
+		                FROM 
+		                    (
+		                    SELECT TO_CHAR(A.ORDR_YMD,'YYYY-MM-DD') AS STRT_YMD
+		                        ,TO_CHAR(A.ORDR_YMD,'YYYY-MM-DD') AS FNSH_YMD
+		                        ,'B' AS SCRN_DSPL_VL
+		                        ,A.ORDR_CD
+		                        ,LPAD(A.BSIS_ORDR_UNSL_CTN,15,' ') AS ORDR_DETAIL
+		                    FROM MDBASORDT A      
+		                    WHERE A.PTNO = #{ptno}
+		                    AND A.ORDR_YMD >= TO_DATE(#{strtYmd},'YYYYMMDD')
+		                    AND A.ORDR_YMD <  TO_DATE(#{fnshYmd},'YYYYMMDD')+1
+		                    AND A.ORDR_CD IN (SELECT MDCR_DTLS_CTRL_CD 
+		                                        FROM MZCTRLMMT 
+		                                        WHERE MDCR_CTRL_CD = 'MDM_320' 
+		                                            AND MDCR_CTRL_CHRC_VL1 = '2'  /*  CCR 계산값 기본 처방 코드 */
+		                                        )   
+		                    AND NVL(A.TMPR_ORDR_YN,'N') = 'N'
+		                    AND NVL(A.DC_DVSN_CD,'N')  = 'N'  
+		                    UNION ALL
+		                    SELECT TO_CHAR(A.ORDR_YMD,'YYYY-MM-DD') AS STRT_YMD
+		                        ,TO_CHAR(A.ORDR_YMD,'YYYY-MM-DD') AS FNSH_YMD
+		                        ,'C' AS SCRN_DSPL_VL      
+		                        ,A.ORDR_CD
+		                        , LPAD(DECODE(SLCT_UNIT_DVSN_CD,'1',PCKN_UNAD_QTY || PCUN_CD
+		                                                    ,ICUN_ADMN_VLM || ICUN_CD ),5,' ')
+		                        ||LPAD(NTM ||'회',5,' ')
+		                        ||LPAD(DRUS_CD,5,' ')
+		                        ||LPAD(DDCN||'일',5, ' ')  AS DETAIL                                      
+		                    FROM MDMEDORDT A 
+		                  WHERE A.PTNO = #{ptno}
+		                    AND A.ORDR_YMD >= TO_DATE(#{strtYmd},'YYYYMMDD')
+		                    AND A.ORDR_YMD <  TO_DATE(#{fnshYmd},'YYYYMMDD')+1
+		                    AND NVL(A.TMPR_ORDR_YN,'N') = 'N'
+		                    AND NVL(A.DC_DVSN_CD,'N')  = 'N'
+		                    AND A.ORDR_CD IN (SELECT MDCR_DTLS_CTRL_CD 
+		                                        FROM MZCTRLMMT 
+		                                        WHERE MDCR_CTRL_CD = 'MDM_320' 
+		                                            AND MDCR_CTRL_CHRC_VL1 = '1'  /*  항응고제 약처방 */
+		                                        )   
+		                    UNION ALL
+		                    SELECT /*+ LEADING(A) USE_NL(B) NO_EXPAND */ 
+							     TO_CHAR(A.ORDR_YMD,'YYYY-MM-DD') AS STRT_YMD
+		                        ,TO_CHAR(B.RPRT_DT,'YYYY-MM-DD') AS FNSH_YMD
+		                        ,'D' AS SCRN_DSPL_VL   
+		                        ,B.EXMN_CD     
+		                        ,LPAD(B.EXRS_NCVL_VL,5,' ') || LPAD(B.EXRS_UNIT_NM,8,' ')
+		                    FROM MDEXMORDT A
+		                        ,SZRESULMT B
+		                    WHERE A.PTNO = #{ptno}
+		                    AND A.RPRT_DT >= TO_DATE(#{strtYmd},'YYYYMMDD')
+		                    AND A.RPRT_DT <  TO_DATE(#{fnshYmd},'YYYYMMDD')+1
+		                    AND NVL(A.TMPR_ORDR_YN,'N') = 'N'
+		                    AND NVL(A.DC_DVSN_CD,'N')  = 'N'
+		                    AND A.ORDR_CD IN (SELECT /*+ NO_UNNEST */
+							                         MDCR_DTLS_CTRL_CD 
+		                                        FROM MZCTRLMMT 
+		                                        WHERE MDCR_CTRL_CD = 'MDM_320' 
+		                                            AND MDCR_CTRL_CHRC_VL1 IN ('3','4')  /*  CREATININE, PT */
+		                                        )
+		                    AND B.PTNO = A.PTNO 
+		                    AND B.ORDR_YMD = A.ORDR_YMD
+		                    AND B.ORDR_SNO = A.ORDR_SNO
+		                    AND B.EXMN_PRSS_CD  = 'G'
+		                    )A
+		                    ,MDORDRCMT B
+		                WHERE B.ORDR_CD = A.ORDR_CD
+		                )A   
+		]]>               
+		</when>           
+		</choose>                   
+		            ORDER BY 2 DESC,1  
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rprtDt" column="RPRT_DT"/>
+		<result property="exrsNcvlVl" column="EXRS_NCVL_VL"/>
+		<result property="bodyMsrnRcrdDt" column="BODY_MSRN_RCRD_DT"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo () 
+        Description :                                           Ccr 계산값을 위한 필요 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpAcsPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpAcsPtntDAO-selectOneCcrInfo */
+		<![CDATA[
+		SELECT MAX(A.PTNO) AS PTNO
+		      ,MAX(A.RPRT_DT) AS RPRT_DT
+		      ,MAX(A.EXRS_NCVL_VL) AS EXRS_NCVL_VL
+		      ,MAX(A.BODY_MSRN_RCRD_DT) AS BODY_MSRN_RCRD_DT
+		      ,MAX(A.BDWG_VL) AS BDWG_VL
+		  FROM 
+		    (
+		    SELECT /*+ LEADING(A) USE_NL(B) NO_EXPAND */
+			       A.PTNO
+		          ,A.RPRT_DT                     /*  Cr 보고일  */
+		          ,A.EXRS_NCVL_VL                /*  Cr 결과   */
+		          ,'' AS BODY_MSRN_RCRD_DT       /*  몸무게 측정일자 */
+		          ,'' AS BDWG_VL                 /*  몸무게 측정값 */  
+		      FROM 
+		        (
+		        SELECT   A.PTNO
+		                ,TO_CHAR(B.RPRT_DT,'YYYY-MM-DD') AS RPRT_DT                        
+		                ,B.EXRS_NCVL_VL || LPAD(B.EXRS_UNIT_NM,6,' ') AS EXRS_NCVL_VL
+		          FROM MDEXMORDT A
+		              ,SZRESULMT B
+		        WHERE A.PTNO = #{ptno}
+		          AND A.RPRT_DT >= TRUNC(SYSDATE)-31
+		          AND A.RPRT_DT <  TRUNC(SYSDATE)+1
+		          AND NVL(A.TMPR_ORDR_YN,'N') = 'N'
+		          AND NVL(A.DC_DVSN_CD,'N')  = 'N'
+		          AND A.ORDR_CD IN (SELECT MDCR_DTLS_CTRL_CD 
+		                               FROM MZCTRLMMT 
+		                              WHERE MDCR_CTRL_CD = 'MDM_320' 
+		                                AND MDCR_CTRL_CHRC_VL1  = '3' /* Creatinine */
+		                            )
+		          AND B.PTNO = A.PTNO 
+		          AND B.ORDR_YMD = A.ORDR_YMD
+		          AND B.ORDR_SNO = A.ORDR_SNO
+		          AND B.EXMN_PRSS_CD  = 'G'
+		          ORDER BY A.RPRT_DT 
+		          )A
+		      WHERE ROWNUM < 2    
+		     UNION ALL
+		     SELECT     TEMP.PTNO
+		               ,'' AS RPRT_DT
+		               ,'' AS EXRS_NCVL_VL
+		               ,TO_CHAR(TEMP.ITEM_RCRD_DT,'YYYY-MM-DD') 
+		               ,TEMP.ITEM_RCRD_VL
+		              FROM  (
+		                     SELECT  /*+ ORDERED USE_NL(DOMT BMMT DAMT) */
+							         DOMT.PTNO
+		                          ,  BMMT.BODY_MSRN_ITEM_SNO AS ITEM_SNO
+		                          ,  DAMT.CNOS_ITEM_NM       AS ITEM_NM
+		                          ,  BMMT.BODY_MSRN_RCRD_DT  AS ITEM_RCRD_DT
+		                          ,  CASE
+		                               WHEN (UPPER(BMMT.BODY_MSRN_UNIT_CD) = 'G' AND              /* 단위 컬럼 추가 g으로 측정되는 경우 Kg 전환 처리 */
+		                                     REGEXP_INSTR(BMMT.BODY_MSRN_RCRD_VL, '[^0-9]') = 0) THEN TO_CHAR(TO_NUMBER(BMMT.BODY_MSRN_RCRD_VL)/1000, 'FM990.999' )
+		                                                                                         ELSE BMMT.BODY_MSRN_RCRD_VL
+		                             END  AS ITEM_RCRD_VL
+		                          ,  DENSE_RANK() OVER(PARTITION BY BMMT.BODY_MSRN_ITEM_SNO
+		                                                   ORDER BY TO_CHAR(BMMT.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') DESC) RANK
+		                       FROM  MECFSDOMT DOMT
+		                          ,  MECFSBMMT BMMT
+		                          ,  MECFSDAMT DAMT
+		                      WHERE  DOMT.PTNO          = #{ptno}
+		                        AND  BMMT.CNOS_RCRD_NO  = DOMT.CNOS_RCRD_NO
+		                        AND  BMMT.BODY_MSRN_RCRD_DT >= TRUNC(SYSDATE) - 31
+		                        AND  BMMT.BODY_MSRN_RCRD_DT  < TRUNC(SYSDATE) + 1
+		                        AND  DAMT.CNOS_ITEM_SNO = BMMT.BODY_MSRN_ITEM_SNO
+		                        AND  DAMT.SMSP_ID       = 'MDD_CFSVSMT_L02_BM'
+		                        AND  DAMT.CNOS_ITEM_NM IN ('WT')
+		                    )  TEMP
+		             WHERE  TEMP.RANK = 1
+		    )A
+		]]>     
+	</select>
+
+
+
+</mapper>

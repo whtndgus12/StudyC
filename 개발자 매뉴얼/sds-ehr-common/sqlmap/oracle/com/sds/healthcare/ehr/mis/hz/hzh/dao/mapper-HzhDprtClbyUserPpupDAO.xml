@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhDprtClbyUserPpupDAO_sql.xml 
+    Description :                                      부서별 사용자 팝업용 DAO
+                  -->
+<mapper namespace="HzhDprtClbyUserPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtClbyUserPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup (HZH010FS_1_Popup_부서별_사용자_목록 조회) 
+        Description :                                           hzd_usermmt_l01$S01_부서별_사용자_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtClbyUserPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtClbyUserPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtClbyUserPpupDAO-listDprtClbyUserPpup */
+		        rownum         as SQNC         /* 순서 */
+		     ,  x.EMNO         as EMNO         /* 사용자ID */
+		     ,  x.EMPY_NM      as EMPY_NM      /* 사용자명 */
+		     ,  x.DPRT_CD      as DPRT_CD      /* 부서코드 */
+		     ,  x.KORN_DPRT_NM as KORN_DPRT_NM /* 한글부서명 */
+		  from
+		        ( select
+		                  u.EMNO            EMNO         /* 사원번호 */
+		               ,  u.EMPY_NM         EMPY_NM      /* 사원명 */
+		               ,  u.WRKN_PART_CD    DPRT_CD      /* 부서코드 */
+		               ,  d.KORN_DPRT_NM    KORN_DPRT_NM /* 한글부서명 */
+					   ,  u.OCPS_CD         OCPS_CD      /* 직위 */
+					   ,  u.OCCL_CD         OCCL_CD      /* 직급 */
+					   ,  u.SLCL_CD         SLCL_CD      /* 호봉 */
+		            from
+		                  HZUSERMMT u /* (HH)사원IF */
+					   ,  ( select DPRT_CD,
+					               KORN_DPRT_NM
+		                      from HZDEPTMMT
+		                     start with DPRT_CD = #{dprtCd}
+		                     connect by prior DPRT_CD = HRAF_HGRN_DPRT_CD
+						  ) d
+		           where
+		                  u.WRKN_PART_CD  =    d.DPRT_CD    /* 실근무파트 */
+		             and  u.HLOF_STTS_CD  like 'A%'         /* 재직상태코드 : A%-재직 */
+		             and  (    ( #{srchCd} = 'C' and u.EMNO     like #{srchCdNm} || '%' )          /* 검색코드[C:사원번호] */
+		                    or ( #{srchCd} = 'N' and u.EMPY_NM  like '%' || #{srchCdNm} || '%' )   /* 검색코드[N:사원명] */
+		                  )
+				   order  by u.EMNO desc
+		           /* order  by  case #_{_srchCd_} when 'C' then u.EMNO else u.EMPY_NM end  asc */
+		        ) x
+		]]>
+	</select>
+
+
+
+</mapper>

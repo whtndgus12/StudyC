@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoPrgmMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoPrgmMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmOrgCode */
+		select  /*+ cod_tbprmmt_l03$S01_프로젝트조직코드 조회 */ 
+			    a.COMN_DTLS_CD
+			 ,  a.DETL_CD_NM
+			 ,  b.COMN_ITEM_CD
+			 ,  b.COMN_ITEM_CHRC_VL
+		  from  CCCMCDDMT a
+			 ,  CCCMCDIDT b
+		 where  a.COMN_GRP_CD  = #{comnGrpCd}
+		   and  a.COMN_GRP_CD  = b.COMN_GRP_CD
+		   and  a.COMN_DTLS_CD = b.COMN_DTLS_CD
+		   and  b.COMN_ITEM_CD = #{comnItemCd}
+		 order 
+		    by  a.SCRN_DSPL_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="prgmDetlDscrCtn" column="PRGM_DETL_DSCR_CTN"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+		<result property="bsdvCd" column="BSDV_CD"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="fnctId" column="FNCT_ID"/>
+		<result property="fnctDvsnNm" column="FNCT_DVSN_NM"/>
+		<result property="fnctNm" column="FNCT_NM"/>
+		<result property="fnctDetlCtn" column="FNCT_DETL_CTN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="prinSqnc" column="PRIN_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFunc */
+		select
+		        a.PRGM_ID
+		     ,  a.PRGM_NM
+		     ,  a.PRGM_DETL_DSCR_CTN
+		     ,  a.PRGM_TYP_CD
+		     ,  a.BSDV_CD
+		     ,  a.PRGM_NM
+		     ,  b.FNCT_ID
+		     ,  b.FNCT_DVSN_NM
+		     ,  b.FNCT_NM
+		     ,  b.FNCT_DETL_CTN
+		     ,  b.RMRK_CTN
+		     ,  b.PRIN_SQNC
+		  from  COTBPRMMT a, COTBPRMDT b  
+		 where  a.PRGM_ID = b.PRGM_ID
+		<if test="prgmId != null and prgmId != ''">
+			and  ( upper(a.PRGM_ID) like upper(#{prgmId}) || '%' or upper(a.PRGM_NM) like '%' || upper(#{prgmId}) || '%' )  
+		</if>
+		<if test="fnctNm != null and fnctNm != ''">
+			and  b.FNCT_NM like '%' || #{fnctNm} || '%'
+		</if>
+		<if test="systDvsnCdList != null and systDvsnCdList.size() &gt; 0">
+			<foreach close=")" collection="systDvsnCdList" item="systDvsnCdItem" open=" and (" separator="or">
+		      	a.BSDV_CD like #{systDvsnCdItem} || '%'
+			</foreach>
+		</if>
+		<if test="prgmTypCdList != null and prgmTypCdList.size() &gt; 0">
+			and  a.PRGM_TYP_CD IN
+			<foreach close=")" collection="prgmTypCdList" item="prgmTypCdItem" open="(" separator=",">
+				   #{prgmTypCdItem}
+			</foreach>
+		</if>
+		 order 
+		    by  b.PRGM_ID, b.PRIN_SQNC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="prgmDetlDscrCtn" column="PRGM_DETL_DSCR_CTN"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+		<result property="bsdvCd" column="BSDV_CD"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="fnctId" column="FNCT_ID"/>
+		<result property="fnctDvsnNm" column="FNCT_DVSN_NM"/>
+		<result property="fnctNm" column="FNCT_NM"/>
+		<result property="fnctDetlCtn" column="FNCT_DETL_CTN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="prinSqnc" column="PRIN_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmFuncById */
+		select
+		        a.PRGM_ID
+		     ,  a.PRGM_NM
+		     ,  a.PRGM_DETL_DSCR_CTN
+		     ,  a.PRGM_TYP_CD
+		     ,  a.BSDV_CD
+		     ,  a.PRGM_NM
+		     ,  b.FNCT_ID
+		     ,  b.FNCT_DVSN_NM
+		     ,  b.FNCT_NM
+		     ,  b.FNCT_DETL_CTN
+		     ,  b.RMRK_CTN
+		     ,  b.PRIN_SQNC
+		  from  COTBPRMMT a, COTBPRMDT b  
+		 where  a.PRGM_ID = b.PRGM_ID
+		<if test="prgmIdList != null and prgmIdList.size() &gt; 0">	 
+		    and  a.PRGM_ID IN ( select c.PRGM_ID from COTBPRMMT c where
+		  <foreach close=")" collection="prgmIdList" item="prgmIds" open="" separator="or">
+		      	c.PRGM_ID = #{prgmIds}
+		  </foreach>
+		</if>
+		<if test="prgmIdList == null or prgmIdList.size() == 0">
+			and  a.PRGM_ID = ''
+		</if>
+		 order 
+		    by  b.PRGM_ID, b.PRIN_SQNC
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmInfo"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmInfo */
+		INSERT 
+			   INTO
+						 COTBPRMMT 
+					  (
+						 PRGM_ID		/* 프로그램ID */
+					  ,  PRGM_NM		/* 프로그램명  */
+					  ,  PRGM_DETL_DSCR_CTN		/* 프로그램상세설명내용 */
+					  ,  PRGM_TYP_CD		/* 프로그램타입코드 */
+					  ,  BSDV_CD		/* 업무구분코드 */
+					  ,  FRST_RGSR_ID		/*  */
+					  ,  FRST_RGST_IP		/*  */
+					  ,  FRST_RGST_DT		/*  */
+					  ,  FRST_RGST_CLNT_PRGM_ID		/*  */
+					  ,  FRST_RGST_SRVR_PRGM_ID		/*  */
+					  ,  LAST_UPDR_ID		/*  */
+					  ,  LAST_UPDT_IP		/*  */
+					  ,  LAST_UPDT_DT		/*  */
+					  ,  LAST_UPDT_CLNT_PRGM_ID		/*  */
+					  ,  LAST_UPDT_SRVR_PRGM_ID		/*  */
+					  )
+			VALUES
+					  (
+						 #{prgmId}
+					  ,  #{prgmNm}
+					  ,  #{prgmDetlDscrCtn}
+					  ,  #{prgmTypCd}
+					  ,  #{bsdvCd}
+					  ,  #{gvLginId}
+					  ,  #{gvUserIp}
+					  ,  sysdate
+					  ,  #{gvClntPrgmId}
+					  ,  #{gvSrvrPrgmId}
+					  ,  #{gvLginId}
+					  ,  #{gvUserIp}
+					  ,  sysdate
+					  ,  #{gvClntPrgmId}
+					  ,  #{gvSrvrPrgmId}
+			)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmFunc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmFunc"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-insertPrgmFunc */
+		INSERT 
+		   INTO
+					 COTBPRMDT 
+				  (
+					 PRGM_ID			/* 프로그램ID */
+				  ,  FNCT_ID			/* 기능ID */
+				  ,  FNCT_DVSN_NM		/* 기능구분명 */
+				  ,  FNCT_NM			/* 기능명 */
+				  ,  FNCT_DETL_CTN		/* 기능상세내용 */
+				  ,  RMRK_CTN			/* 비고내용 */
+				  ,  PRIN_SQNC			/* 출력순서 */		 
+				  ,  FRST_RGSR_ID		/*  */
+				  ,  FRST_RGST_IP		/*  */
+				  ,  FRST_RGST_DT		/*  */
+				  ,  FRST_RGST_CLNT_PRGM_ID		/*  */
+				  ,  FRST_RGST_SRVR_PRGM_ID		/*  */
+				  ,  LAST_UPDR_ID		/*  */
+				  ,  LAST_UPDT_IP		/*  */
+				  ,  LAST_UPDT_DT		/*  */
+				  ,  LAST_UPDT_CLNT_PRGM_ID		/*  */
+				  ,  LAST_UPDT_SRVR_PRGM_ID		/*  */
+				  )
+		VALUES
+				  (
+					 #{prgmId}
+				  ,  #{fnctId}
+				  ,  #{fnctDvsnNm}
+				  ,  #{fnctNm}
+				  ,  #{fnctDetlCtn}
+				  ,  #{rmrkCtn}
+				  ,  #{prinSqnc}		  
+				  ,  #{gvLginId}
+				  ,  #{gvUserIp}
+				  ,  sysdate
+				  ,  #{gvClntPrgmId}
+				  ,  #{gvSrvrPrgmId}
+				  ,  #{gvLginId}
+				  ,  #{gvUserIp}
+				  ,  sysdate
+				  ,  #{gvClntPrgmId}
+				  ,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmInfo"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmInfo */
+		delete 
+		   from  COTBPRMMT
+		 where PRGM_ID = #{prgmId}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmFunc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmFunc"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-deletePrgmFunc */
+		delete 
+		   from  COTBPRMDT
+		 where PRGM_ID = #{prgmId}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="prgmDetlDscrCtn" column="PRGM_DETL_DSCR_CTN"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+		<result property="bsdvCd" column="BSDV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPrgmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPrgmMngmDAO-listPrgmInfo */
+		select
+		        a.PRGM_ID
+		     ,  a.PRGM_NM
+		     ,  a.PRGM_DETL_DSCR_CTN
+		     ,  a.PRGM_TYP_CD
+		     ,  a.BSDV_CD   
+		  from  COTBPRMMT a
+		 where  1=1
+		<if test="prgmId != null and prgmId != ''">
+			and  ( upper(a.PRGM_ID) like upper(#{prgmId}) || '%' or upper(a.PRGM_NM) like upper(#{prgmId}) || '%' )  
+		</if>
+		<if test="systDvsnCdList != null and systDvsnCdList.size() &gt; 0">
+			<foreach close=")" collection="systDvsnCdList" item="systDvsnCdItem" open=" and (" separator="or">
+		      	a.BSDV_CD like #{systDvsnCdItem} || '%'
+			</foreach>
+		</if>
+		 order 
+		    by  a.PRGM_ID
+	</select>
+
+
+
+</mapper>

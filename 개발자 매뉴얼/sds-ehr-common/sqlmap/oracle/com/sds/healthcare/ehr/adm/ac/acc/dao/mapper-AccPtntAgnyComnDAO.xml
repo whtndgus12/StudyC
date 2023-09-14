@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AccPtntAgnyComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AccPtntAgnyComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-insertPtntClbyAgny (환자별에이전시수수료 등록) 
+        Description :                                           acd_etaycrt_i01$I01_환자별에이전시수수료 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.acc.vo.AccPtntAgnyComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-insertPtntClbyAgny"  parameterType="com.sds.healthcare.ehr.adm.ac.acc.vo.AccPtntAgnyComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-insertPtntClbyAgny */
+		into  ACETAYCRT
+		(
+			   PTNO
+			,  APST_YMD
+			,  APFN_YMD
+			,  AGNY_CD
+			,  AGNY_CHR_RT
+		    ,  AGNY_HLSC_CHR_RT
+			,  RMRK_CTN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+		)
+		values  (
+			   #{ptno}
+			,  to_date(#{apstYmd},'yyyymmdd')
+			,  to_date(nvl(#{apfnYmd},'29991231'),'yyyymmdd')
+			,  #{agnyCd}
+			,  #{agnyChrRt}
+			,  #{agnyHlscChrRt}
+			,  #{rmrkCtn}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny-result" type="com.sds.healthcare.ehr.adm.ac.acc.vo.AccPtntAgnyComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="agnyCd" column="AGNY_CD"/>
+		<result property="agnyNm" column="AGNY_NM"/>
+		<result property="agnyChrRt" column="AGNY_CHR_RT"/>
+		<result property="agnyHlscChrRt" column="AGNY_HLSC_CHR_RT"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="baseYmd" column="BASE_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny (환자에이전시정보조회(API)) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.acc.vo.AccPtntAgnyComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny"  parameterType="com.sds.healthcare.ehr.adm.ac.acc.vo.AccPtntAgnyComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ac-acc-dao-AccPtntAgnyComnDAO-selectOnePtntAgny */
+		        a.PTNO					            as PTNO              /* 환자번호 */
+		     ,  to_char(a.APST_YMD,'yyyymmdd')		as APST_YMD          /* 적용시작일자 */
+		     ,  to_char(a.APFN_YMD,'yyyymmdd')  	as APFN_YMD          /* 적용종료일자 */
+		     ,  a.AGNY_CD				            as AGNY_CD           /* 에이전시코드 */
+		     ,  (select z.AGNY_NM 
+		           from ACETAGNYT z 
+		          where a.AGNY_CD = z.AGNY_CD  
+		            and rownum = 1)			        as AGNY_NM           /* 에이전시명 */
+		     ,  a.AGNY_CHR_RT				        as AGNY_CHR_RT       /* 에이전시수수료율 */
+		     ,  a.AGNY_HLSC_CHR_RT
+		     ,  a.RMRK_CTN				            as RMRK_CTN          /* 비고 */
+		     ,  to_char(a.APST_YMD,'yyyymmdd')  	as BASE_YMD          /* 기준일자 */
+		  from  ACETAYCRT a
+		 where  a.PTNO = #{ptno}
+		    and a.APST_YMD <= trunc(sysdate)
+		    and a.APFN_YMD >= trunc(sysdate)
+		    and rownum = 1
+		]]>
+	</select>
+
+
+
+</mapper>

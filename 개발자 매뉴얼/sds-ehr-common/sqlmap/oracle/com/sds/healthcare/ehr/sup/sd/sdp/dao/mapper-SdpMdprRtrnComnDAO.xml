@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpMdprRtrnComnDAO_sql.xml 
+    Description :                                      SdpDrugRtrnComnDAO 클래스
+                  -->
+<mapper namespace="SdpMdprRtrnComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO">
+	
+		<result property="vlExstYn" column="VL_EXST_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn (약반납확인 여부) 
+        Description :                                           약반납확인 여부
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn-result" useCache="true" flushCache="false">
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-selectOneDrrtCnfrYn*/
+				<![CDATA[
+				   select  /*+ sdd_mngrtnt_s01$S01_약반납확인 여부 조회 */
+			   decode(count(*), 0, 'N', 'Y') as VL_EXST_YN
+		 from
+			   SDJDGRTNT
+		where
+			   ORDR_YMD             = to_date(#{ordrYmd}, 'yyyymmdd')
+		  and  MDTN_NO_DVSN_CD      = #{mdtnNoDvsnCd}
+		  and  MDTN_NO              = to_number(#{mdtnNo})
+		  and  MDTN_LCDV_CD         = #{mdtnLcdvCd}
+		  and  ORDR_SNO             = to_number(#{ordrSno})
+		  and  RTRN_RQST_DT         = to_date(#{rtrnRqstDt}, 'yyyymmddhh24miss')
+		  and  MDPR_CD              = #{mdprCd}
+		  and  RTRN_CNFR_YMD is null
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtDprt ([반납부서변경] 약반납부서) 
+        Description :                                           [반납부서변경] 약반납부서
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtDprt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtDprt*/
+				<![CDATA[
+				   update  /*+ sdd_mngrtnt_u01$U01_약반납부서변경DAM */
+			   SDJDGRTNT
+		  set  ARVL_DPRT_CD         = #{arvlDprtCd}
+			,  LAST_UPDR_ID         = #{gvUserId}
+			,  LAST_UPDT_IP         = #{gvUserIp}
+			,  LAST_UPDT_DT         = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID    = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID    = #{gvSrvrPrgmId}
+		where  ORDR_YMD             = to_date(#{ordrYmd}, 'yyyymmdd')
+		  and  MDTN_NO_DVSN_CD      = #{mdtnNoDvsnCd}
+		  and  MDTN_NO              = to_number(#{mdtnNo})
+		  and  MDTN_LCDV_CD         = #{mdtnLcdvCd}
+		  and  ORDR_SNO             = to_number(#{ordrSno})
+		  and  RTRN_RQST_DT         = to_date(#{rtrnRqstDt}, 'yyyymmddhh24miss')
+		  and  MDPR_CD              = #{mdprCd}
+		  and  RTRN_CNFR_YMD is null
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtCupQtyRtrn ([약품반납 수정/취소] 약반납 저장(잔량반납)) 
+        Description :                                           [약품반납 수정/취소] 약반납 저장(잔량반납)
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtCupQtyRtrn"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-updateDrrtCupQtyRtrn*/
+				<![CDATA[
+				   update  /*+ sdd_mngrtnt_u02$U01_마약향정 잔량반납DAM */
+			  SDJDGRTNT
+		 set  RTRN_RQST_CQY      = to_number(#{afiRtrnNtmStr})
+		   ,  PTAD_RTRN_QTY      = to_number(#{afiRtrnNtmStr})
+		   ,  RTRN_RQPR_ID       = #{gvUserId}
+		   ,  RTRN_RQST_IP       = #{gvUserIp}
+		   ,  MDPR_RTRN_NTM      = 0
+		   ,  LAST_UPDR_ID       = #{gvUserId}
+		   ,  LAST_UPDT_IP       = #{gvUserIp}
+		   ,  LAST_UPDT_DT       = sysdate
+		   ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		   ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+				   where  ORDR_YMD           = to_date(#{ordrYmd}, 'yyyymmdd')
+		 and  ORDR_SNO           = to_number(#{afiOrdrSnoStr})
+		 and  DRUG_RTRE_CD       = '6'
+		 and  PTNO               = #{ptno}
+		 and  nvl(RTRN_YN, 'N') != 'Y'
+		 and  nvl(REFN_YN, 'N') != 'R'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertAtmtCupQtyRtrn (자동잔량반납) 
+        Description :                                           자동잔량반납
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertAtmtCupQtyRtrn"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertAtmtCupQtyRtrn*/
+		<![CDATA[
+		   insert  /*+ sdd_mnjdgrt_i99$I01_자동잔량반납생성DAM */
+		 into  SDJDGRTNT
+			   (
+			   ORDR_YMD
+			,  MDTN_LCDV_CD
+			,  MDTN_NO_DVSN_CD
+			,  MDTN_NO
+			,  ORDR_SNO
+			,  RTRN_RQST_YMD
+			,  RTRN_RQST_DT
+			,  PTNO
+			,  PTDV_CD
+			,  ARVL_DPRT_CD
+			,  PTRM_NO
+			,  SCKB_NO
+			,  RTRN_DETL_DVSN_CD
+			,  DRUG_RTRE_CD
+			,  MDPR_CD
+			,  CARE_ITDV_CD
+			,  SHDT_CD
+			,  TEAM_CD
+			,  PTAD_RTRN_QTY
+			,  RTRN_RQST_CQY
+			,  RTRN_RQPR_ID
+			,  RTRN_RQST_IP
+			,  MDPR_RTRN_NTM
+			,  STDL_DVSN_CD
+			,  RTRN_DVSN_CD
+			,  STDL_DETL_DVSN_CD
+			,  DSCH_ATMT_RTRN_YN
+			,  FRNS_RTRN_CQY
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			   )
+		 select /*+ index(a MDMEDORDT_I19) */  /*  병동 */
+			   a.ORDR_YMD
+			,  a.MDTN_LCDV_CD
+			,  a.MDTN_NO_DVSN_CD
+			,  a.MDTN_NO
+			,  a.ORDR_SNO
+			,  trunc(b.acim_dt) as RTRN_RQST_YMD
+			,  b.acim_dt as RTRN_RQST_DT
+			,  a.PTNO
+			,  c.PTDV_CD
+			,  c.INJC_PLAC_CD as ARVL_DPRT_CD
+			,  (select y.care_ptrm_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as PTRM_NO
+			,  (select y.care_sckb_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as SCKB_NO
+			,  'Z' as RTRN_DETL_DVSN_CD
+			,  '6' as DRUG_RTRE_CD
+			,  c.MDPR_CD
+			,  'R' as CARE_ITDV_CD
+			,  null SHDT_CD
+			,  (select DAY_SCKB_TEAM_CD
+				  from MNWBTEAMT x
+					 , APRCRPTNT y
+				 where x.WARD_CD = y.care_ward_cd
+				   and  x.PTRM_NO = y.care_ptrm_no
+				   and  x.SCKB_NO = y.care_sckb_no
+				   and y.mdrp_no = a.mdrp_no) as TEAM_CD
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a.ntm              /* 횟수*/
+																		  , a.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a.drap_dvsn_cd
+																		  , a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.ICUN_ADMN_VLM*a.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a.ntm              /* 횟수*/
+														, a.ddcn
+														, d.totl_qty_clcl_cd
+														, a.drap_dvsn_cd
+														, a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.pckn_unad_qty*a.NTM*d.PCUN_INLS_QTY) as PTAD_RTRN_QTY
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a.ntm              /* 횟수*/
+																		  , a.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a.drap_dvsn_cd
+																		  , a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.ICUN_ADMN_VLM*a.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a.ntm              /* 횟수*/
+														, a.ddcn
+														, d.totl_qty_clcl_cd
+														, a.drap_dvsn_cd
+														, a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.pckn_unad_qty*a.NTM*d.PCUN_INLS_QTY) as RTRN_RQST_CQY
+			,  b.ACTN_IMPT_ID as RTRN_RQPR_ID
+			,  #{gvUserIp} as RTRN_RQST_IP
+			,  0 as MDPR_RTRN_NTM
+			,  'B' as STDL_DVSN_CD
+			,  'N' as RTRN_DVSN_CD
+			,  case when a.codv_cd = 'O' then 'C'
+					when a.codv_cd = 'I' then 'E'
+					when a.codv_cd = 'E' then 'G'
+					when a.codv_cd = 'D' then 'I'
+					when a.codv_cd = 'H' then 'C'
+				end as STDL_DETL_DVSN_CD
+			,  null DSCH_ATMT_RTRN_YN
+			,  null FRNS_RTRN_CQY
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 from mnwadacnt b
+			, mdmedordt a
+			, SDPORDDET c
+			, mdordrcmt d
+		where #{dcDvsnCd} <> 'O'
+		  and b.ACIM_DT between to_date(#{ordrYmd}||'000000', 'yyyymmddhh24miss') and to_date(#{ordrYmd}||'235959', 'yyyymmddhh24miss')
+		  and b.actn_kind_cd is not null
+		  and b.ward_drug_ijac_rno = 1
+		  and b.ptno = a.ptno
+		  and b.ordr_ymd = a.ordr_ymd
+		  and b.ordr_sno = a.ordr_sno
+		  and a.frns_dprt_cd = #{arvlDprtCd}
+		  and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+		  and a.orfr_cd <> 'P'
+		  and a.mdpr_clsf_cd in ('2', '3')
+		  and a.ordr_clty_cd = 'B1'
+		  and a.codv_cd in ('I', 'E')
+		  and ceil(a.pckn_unad_qty * a.ntm) - (a.pckn_unad_qty * a.ntm) <> 0
+		  and c.ptno = a.ptno
+		  and c.ordr_ymd = a.ordr_ymd
+		  and c.ordr_sno = a.ordr_sno
+		  and not exists (select 'Y'
+							from SDJDGRTNT x
+						   where x.ptno = a.ptno
+							 and x.ordr_ymd = a.ordr_ymd
+							 and x.ordr_sno = a.ordr_sno
+							 and x.rtrn_detl_dvsn_cd = 'Z'
+							 and x.drug_rtre_cd = '6'
+							 /*  and x.rtrn_rqst_cqy <> 0  -- 폐기있으면 insert 하지 않도록...폐기한줄, 잔량한줄 생성되면 반납리스트에서 각각 조회됨.*/
+							 )
+		  and a.ordr_cd = d.ordr_cd
+			   union all
+		select /*+ index(a MDMEDORDT_I19) */   /*  응급실 */
+			   a1.ORDR_YMD
+			,  a1.MDTN_LCDV_CD
+			,  a1.MDTN_NO_DVSN_CD
+			,  a1.MDTN_NO
+			,  a1.ORDR_SNO
+			,  trunc(b.acim_dt) as RTRN_RQST_YMD
+			,  b.acim_dt as RTRN_RQST_DT
+			,  a.PTNO
+			,  c.PTDV_CD
+			,  c.INJC_PLAC_CD as ARVL_DPRT_CD
+			,  (select y.care_ptrm_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as PTRM_NO
+			,  (select y.care_sckb_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as SCKB_NO
+			,  'Z' as RTRN_DETL_DVSN_CD
+			,  '6' as DRUG_RTRE_CD
+			,  c.MDPR_CD
+			,  'R' as CARE_ITDV_CD
+			,  null SHDT_CD
+			,  (select DAY_SCKB_TEAM_CD
+				  from MNWBTEAMT x
+					 , APRCRPTNT y
+				 where x.WARD_CD = y.care_ward_cd
+				   and  x.PTRM_NO = y.care_ptrm_no
+				   and  x.SCKB_NO = y.care_sckb_no
+				   and y.mdrp_no = a.mdrp_no) as TEAM_CD
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a1.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a1.ntm              /* 횟수*/
+																		  , a1.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a1.drap_dvsn_cd
+																		  , a1.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a1.ICUN_ADMN_VLM*a1.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a1.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a1.ntm              /* 횟수*/
+														, a1.ddcn
+														, d.totl_qty_clcl_cd
+														, a1.drap_dvsn_cd
+														, a1.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a1.pckn_unad_qty*a1.NTM*d.PCUN_INLS_QTY) as PTAD_RTRN_QTY
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a1.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a1.ntm              /* 횟수*/
+																		  , a1.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a1.drap_dvsn_cd
+																		  , a1.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a1.ICUN_ADMN_VLM*a1.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a1.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a1.ntm              /* 횟수*/
+														, a1.ddcn
+														, d.totl_qty_clcl_cd
+														, a1.drap_dvsn_cd
+														, a1.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a1.pckn_unad_qty*a1.NTM*d.PCUN_INLS_QTY) as RTRN_RQST_CQY
+			,  b.ACTN_IMPT_ID as RTRN_RQPR_ID
+			,  #{gvUserIp} as RTRN_RQST_IP
+			,  0 as MDPR_RTRN_NTM
+			,  'B' as STDL_DVSN_CD
+			,  'N' as RTRN_DVSN_CD
+			,  case when a1.codv_cd = 'O' then 'C'
+					when a1.codv_cd = 'I' then 'E'
+					when a1.codv_cd = 'E' then 'G'
+					when a1.codv_cd = 'D' then 'I'
+					when a1.codv_cd = 'H' then 'C'
+				end as STDL_DETL_DVSN_CD
+			,  null DSCH_ATMT_RTRN_YN
+			,  null FRNS_RTRN_CQY
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 from mnwadacnt b
+			, mdmedordt a   /*  1차처방 */
+			, mdmedordt a1  /*  실처방 */
+			, SDPORDDET c
+			, mdordrcmt d
+		where #{dcDvsnCd} <> 'O'
+		  and b.ACIM_DT between to_date(#{ordrYmd}||'000000', 'yyyymmddhh24miss') and to_date(#{ordrYmd}||'235959', 'yyyymmddhh24miss')
+		  and b.actn_kind_cd is not null
+		  and b.ward_drug_ijac_rno = 1
+		  and b.ptno = a.ptno
+		  and b.ordr_ymd = a.ordr_ymd
+		  and b.ordr_sno = a.ordr_sno
+		  and a1.ptno = a.ptno
+		  and a1.orgl_ordr_ymd = a.ordr_ymd
+		  and a1.orgl_ordr_sno = a.ordr_sno
+		  and a.frns_dprt_cd = #{arvlDprtCd}
+		  and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+		  and a.orfr_cd <> 'P'
+		  and a.mdpr_clsf_cd in ('2', '3')
+		  and a.ordr_clty_cd = 'B1'
+		  and a.codv_cd = 'E'
+		  and ceil(a1.pckn_unad_qty * a1.ntm) - (a1.pckn_unad_qty * a1.ntm) <> 0
+		  and c.ptno = a1.ptno
+		  and c.ordr_ymd = a1.ordr_ymd
+		  and c.ordr_sno = a1.ordr_sno
+		  and not exists (select 'Y'
+							from SDJDGRTNT x
+						   where x.ptno = a1.ptno
+							 and x.ordr_ymd = a1.ordr_ymd
+							 and x.ordr_sno = a1.ordr_sno
+							 and x.rtrn_detl_dvsn_cd = 'Z'
+							 and x.drug_rtre_cd = '6'
+							 /*  and x.rtrn_rqst_cqy <> 0  -- 폐기있으면 insert 하지 않도록...폐기한줄, 잔량한줄 생성되면 반납리스트에서 각각 조회됨.*/
+							 )
+		  and a1.ordr_cd = d.ordr_cd
+			   union all
+		select /*+ index(b MNIOUTCNT_I02) */   /*  외래처방 */
+			   a.ORDR_YMD
+			,  a.MDTN_LCDV_CD
+			,  a.MDTN_NO_DVSN_CD
+			,  a.MDTN_NO
+			,  a.ORDR_SNO
+			,  trunc(b.IJAC_DT) as RTRN_RQST_YMD
+			,  b.IJAC_DT as RTRN_RQST_DT
+			,  a.PTNO
+			,  c.PTDV_CD
+			,  c.INJC_PLAC_CD as ARVL_DPRT_CD
+			,  (select y.care_ptrm_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as PTRM_NO
+			,  (select y.care_sckb_no
+				  from APRCRPTNT y
+				 where y.mdrp_no = a.mdrp_no) as SCKB_NO
+			,  'Z' as RTRN_DETL_DVSN_CD
+			,  '6' as DRUG_RTRE_CD
+			,  c.MDPR_CD
+			,  'R' as CARE_ITDV_CD
+			,  null SHDT_CD
+			,  (select DAY_SCKB_TEAM_CD
+				  from MNWBTEAMT x
+					 , APRCRPTNT y
+				 where x.WARD_CD = y.care_ward_cd
+				   and  x.PTRM_NO = y.care_ptrm_no
+				   and  x.SCKB_NO = y.care_sckb_no
+				   and y.mdrp_no = a.mdrp_no) as TEAM_CD
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a.ntm              /* 횟수*/
+																		  , a.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a.drap_dvsn_cd
+																		  , a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.ICUN_ADMN_VLM*a.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a.ntm              /* 횟수*/
+														, a.ddcn
+														, d.totl_qty_clcl_cd
+														, a.drap_dvsn_cd
+														, a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.pckn_unad_qty*a.NTM*d.PCUN_INLS_QTY) as PTAD_RTRN_QTY
+			,  decode(A.SLCT_UNIT_DVSN_CD, '2',
+													(FN_SD_TOTIVQTY_S(
+																			a.pckn_unad_qty    /* 포장단위투여량스트링*/
+																		  , a.ntm              /* 횟수*/
+																		  , a.ddcn
+																		  , d.totl_qty_clcl_cd
+																		  , a.drap_dvsn_cd
+																		  , a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.ICUN_ADMN_VLM*a.NTM
+												  , (FN_SD_TOTIVQTY_S(
+														  a.pckn_unad_qty    /* 포장단위투여량스트링*/
+														, a.ntm              /* 횟수*/
+														, a.ddcn
+														, d.totl_qty_clcl_cd
+														, a.drap_dvsn_cd
+														, a.drug_ordr_prss_cd))*d.PCUN_INLS_QTY-a.pckn_unad_qty*a.NTM*d.PCUN_INLS_QTY) as RTRN_RQST_CQY
+			,  b.IJAC_INPR_ID as RTRN_RQPR_ID
+			,  #{gvUserIp} as  RTRN_RQST_IP
+			,  0 as MDPR_RTRN_NTM
+			,  'B' as STDL_DVSN_CD
+			,  'N' as RTRN_DVSN_CD
+			,  case when a.codv_cd = 'O' then 'C'
+					when a.codv_cd = 'I' then 'E'
+					when a.codv_cd = 'E' then 'G'
+					when a.codv_cd = 'D' then 'I'
+					when a.codv_cd = 'H' then 'C'
+				end as STDL_DETL_DVSN_CD
+			,  null DSCH_ATMT_RTRN_YN
+			,  null FRNS_RTRN_CQY
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  SYSDATE
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 from mnioutcnt b
+			, mdmedordt a
+			, SDPORDDET c
+			, mdordrcmt d
+		where #{dcDvsnCd} = 'O'
+		  and b.IJAC_DT between to_date(#{ordrYmd}||'000000', 'yyyymmddhh24miss') and to_date(#{ordrYmd}||'235959', 'yyyymmddhh24miss')
+		  and b.actn_kind_cd is not null
+		  and b.ijac_rno = 1
+		  and b.ptno = a.ptno
+		  and b.ordr_ymd = a.ordr_ymd
+		  and b.ordr_sno = a.ordr_sno
+		  and a.mcdp_cd = #{arvlDprtCd}
+		  and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+		  and a.orfr_cd <> 'P'
+		  and a.mdpr_clsf_cd in ('2', '3')
+		  and a.ordr_clty_cd = 'B1'
+		  and a.codv_cd in ('O', 'H')
+		  and ceil(a.pckn_unad_qty * a.ntm) - (a.pckn_unad_qty * a.ntm) <> 0
+		  and c.ptno = a.ptno
+		  and c.ordr_ymd = a.ordr_ymd
+		  and c.ordr_sno = a.ordr_sno
+		  and not exists (select 'Y'
+							from SDJDGRTNT x
+						   where x.ptno = a.ptno
+							 and x.ordr_ymd = a.ordr_ymd
+							 and x.ordr_sno = a.ordr_sno
+							 and x.rtrn_detl_dvsn_cd = 'Z'
+							 and x.drug_rtre_cd = '6'
+							 /*  and x.rtrn_rqst_cqy <> 0  -- 폐기있으면 insert 하지 않도록...폐기한줄, 잔량한줄 생성되면 반납리스트에서 각각 조회됨.*/
+							 )
+		  and a.ordr_cd = d.ordr_cd
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertOrdrDrrt (처방성약품반납관리) 
+        Description :                                           처방성약품반납관리
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertOrdrDrrt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprRtrnComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpDrugRtrnComnDAO-insertOrdrDrrt */
+		<![CDATA[
+				   insert  /*+ sdd_jdgrtnt_i02$I01_처방성약품반납관리 입력 */
+		 into
+			  SDJDGRTNT
+			  (RTRN_RQST_YMD
+			,  MDPR_CD
+			,  STDL_DVSN_CD
+			,  STDL_DETL_DVSN_CD
+			,  RTRN_DVSN_CD
+			,  RTRN_DETL_DVSN_CD
+			,  RTRN_RQST_CQY
+			,  ARVL_DPRT_CD
+			,  ORDR_YMD
+			,  MDTN_NO_DVSN_CD
+			,  MDTN_NO
+			,  ORDR_SNO
+			,  DRUG_RTRE_CD
+			,  REFN_YN
+			,  PTNO
+			,  PTDV_CD
+			,  RTRN_RQPR_ID
+			,  RTRN_RQST_DT
+			,  RTRN_YN
+			,  PTRM_NO
+			,  SCKB_NO
+			,  CARE_ITDV_CD
+			,  PTAD_RTRN_QTY
+			,  MDPR_RTRN_NTM
+			,  MDTN_LCDV_CD
+			,  FRNS_RTRN_CQY
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			   )
+				   select
+			   trunc(sysdate)                                                     /*  RTNDATE,         */
+			,  #{ordrCd}                                        /*  DRUGCODE,        */
+			,  'B'                                                                /*  IOTYP1,          */
+			,  'E'                                                                /*  IOTYP2,          */
+			,  'N'                                                                /*  REJTYP1,         */
+			,  'B'                                                                /*  REJTYP2,         */
+			/* ,  decode(:sds_jdgrtnt_132[0].frns_cqy, 0, a.PCKN_UNAD_QTY * a.NTM * a.DDCN, :sds_jdgrtnt_132[0].frns_cqy) /*  RTNREQQTY,       */
+			,  decode(#{frnsCtrlDvsnCd}, null, #{frnsCqy}, #{invnTotlQty})
+			,  #{injcPlacCd}                                               /*  TODEPT,          */
+			,  to_date(#{ordrYmd}, 'YYYYMMDD')                          /*  BORDDATE,        */
+			,  #{mdtnNoDvsnCd}                                              /*  BDGORDTYP,       */
+			,  #{mdtnNo}                                                 /*  BDOSNO,          */
+			,  #{ordrSno}                                              /*  BORDSEQNO,       */
+			,  '7'                                                                /*  RTNRSN,          */
+			,  'N'                                                                /*  REFUNDYN,        */
+			,  #{ptno}                                                 /*  PATNO,           */
+			,  #{codvCd}                                                 /*  PATFG,           */
+			,  decode(a.CMMD_BEFR_RTRN_DVSN_CD,'Y',a.CMMD_BEFR_RTPR_ID,#{oddrId})               /*  RTNID,           */
+			,  decode(a.CMMD_BEFR_RTRN_DVSN_CD,'Y',a.CMMD_BEFR_RTRN_DT,decode(nvl(a.DC_DVSN_CD, 'N'),'Y',a.DC_ORDR_DT))   /*  RTNTIME,         */
+			,  'N'                                                                /*  RTNYN,           */
+			,  b.CARE_PTRM_NO                                                       /*  ROOMNO,          */
+			,  b.CARE_SCKB_NO                                                        /*  BEDNO,           */
+			,  'R'                                                                /*  DGRTNFG,         */
+			,  decode(a.FRNS_CTRL_DVSN_CD, null, a.PCKN_UNAD_QTY * a.NTM * a.DDCN, a.FRNS_VLM)   /*  RTNPACKQTY,      */
+			,  decode( (a.NTM * a.DDCN) ,0,1, (a.NTM * a.DDCN) )                                                      /*  RTNCNT,          */
+			,  #{mdtnLcdvCd}                                             /*  DGLOCATFG        */
+			,  decode(a.FRNS_CTRL_DVSN_CD, null, null, a.FRNS_VLM)                         /*  APTOTIVQTY       */
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 from
+			   MDMEDORDT a
+			,  APRCRPTNT b
+		where  a.PTNO = #{ptno}
+		  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  a.ORDR_SNO = #{ordrSno}
+		  and  (
+				   nvl(a.DC_DVSN_CD, 'N') = 'Y'
+				or
+				   nvl(a.CMMD_BEFR_RTRN_DVSN_CD,'N') = 'Y'
+			   )
+		  and  b.MDRP_NO = a.MDRP_NO
+		]]>
+	</insert>
+
+</mapper>

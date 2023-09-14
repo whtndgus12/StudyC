@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MriComnGrpCdInfoDAO_sql.xml 
+    Description :                                      MR_공통그룹코드정보DAO
+                                                       mrd_cmcdmmt_l90
+                                                       mrd_cmcdmmt_l91
+                  -->
+<mapper namespace="MriComnGrpCdInfoDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="grpCdNm" column="GRP_CD_NM"/>
+		<result property="grpCdDscrCtn" column="GRP_CD_DSCR_CTN"/>
+		<result property="hgrnGrpCd" column="HGRN_GRP_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemNm" column="COMN_ITEM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90 (공통코드 마스터 조회 mrd_cmcdmmt_l90) 
+        Description :                                           공통코드 마스터내역을 조회한다.
+                                                                1)상위그룹코드가 존재할 경우 다건조회
+                                                                2)공통그룹코드가 존재할 경우 단건조회 됨
+                      parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO
+resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL90_공통코드 마스터 조회 */
+						   a.COMN_GRP_CD as COMN_GRP_CD             /*  공통그룹코드 */
+						 , a.GRP_CD_NM as GRP_CD_NM               /*  그룹코드명 */
+						 , a.GRP_CD_DSCR_CTN as GRP_CD_DSCR_CTN         /*  그룹코드설명내용 */
+						 , a.HGRN_GRP_CD as HGRN_GRP_CD             /*  상위그룹코드 */
+						 , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD                /*  적용시작일자 */
+						 , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD                /*  적용종료일자 */
+						 , '' as COMN_ITEM_CD                        /*  공통항목코드 -- 공통항목 리스트는 mrd_cmcdmmt_l91에서 조회 */
+						 , '' as COMN_ITEM_NM                        /*  공통항목명   -- 공통항목 리스트는 mrd_cmcdmmt_l91에서 조회 */
+					 from CCCMCDMMT a
+					where a.COMN_GRP_CD = nvl(#{comnGrpCd}, a.COMN_GRP_CD)
+					  and nvl(a.HGRN_GRP_CD, '*') = nvl(#{hgrnGrpCd}, nvl(a.HGRN_GRP_CD, '*'))
+					  and sysdate between a.APST_YMD and a.APFN_YMD
+					  order by a.COMN_GRP_CD
+					]]>
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="grpCdNm" column="GRP_CD_NM"/>
+		<result property="grpCdDscrCtn" column="GRP_CD_DSCR_CTN"/>
+		<result property="hgrnGrpCd" column="HGRN_GRP_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemNm" column="COMN_ITEM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91 (공통코드 마스트 항목 조회 mrd_cmcdmmt_l91) 
+        Description :                                           공통코드 마스트와 항목리스트를 조회한다 
+                      parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO
+resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnGrpCdInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91-result" useCache="true" flushCache="false">
+		<![CDATA[
+			select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriComnGrpCdInfoDAO-listMrdCmcdmmtL91_공통코드 마스트 항목 조회 */
+						   a.COMN_GRP_CD as COMN_GRP_CD             /*  공통그룹코드 */
+						 , a.GRP_CD_NM as GRP_CD_NM               /*  그룹코드명 */
+						 , a.GRP_CD_DSCR_CTN as GRP_CD_DSCR_CTN         /*  그룹코드설명내용 */
+						 , a.HGRN_GRP_CD as HGRN_GRP_CD             /*  상위그룹코드 */
+						 , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD                /*  적용시작일자 */
+						 , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD                /*  적용종료일자 */
+						 , b.COMN_ITEM_CD as COMN_ITEM_CD            /*  공통항목코드 -- 공통항목 리스트는 mrd_cmcdmmt_l91에서 조회 */
+						 , b.COMN_ITEM_NM as COMN_ITEM_NM            /*  공통항목명    -- 공통항목 리스트는 mrd_cmcdmmt_l91에서 조회 */
+					 from CCCMCDMMT a
+						, CCCMCDIMT b
+					where a.COMN_GRP_CD = #{comnGrpCd}
+					  and a.COMN_GRP_CD = b.COMN_GRP_CD
+					  and sysdate between a.APST_YMD and a.APFN_YMD
+					 order by b.COMN_ITEM_CD
+					]]>
+	</select>
+
+</mapper>

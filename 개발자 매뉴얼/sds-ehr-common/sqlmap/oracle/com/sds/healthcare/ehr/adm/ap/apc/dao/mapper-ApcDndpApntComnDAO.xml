@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcDndpApntComnDAO_sql.xml 
+    Description :                                      치과예약공통DAO
+                  -->
+<mapper namespace="ApcDndpApntComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-insertDndpApnt (치과예약 입력) 
+        Description :                                           치과예약 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-insertDndpApnt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-insertDndpApnt */
+		insert  /* 치과예약 입력 */
+		  into  APRCDNAPT
+		        (
+		        MDCR_YMD
+		     ,  MCDP_CD
+		     ,  MDDR_ID
+		     ,  DNDP_CHAR_NO
+		     ,  MDST_DT
+		     ,  MDRP_NO
+		     ,  PTNO
+		     ,  CODV_CD
+		     ,  TOTL_MDCR_HH
+		     ,  DNDP_NO
+		     ,  RECL_YN
+		     ,  DNDP_MDCR_ABRV_CD
+		     ,  DNDP_MDCR_ABRV_ADTN_CTN
+		     ,  DNDP_APNT_DSLW_RESN_CD
+		     ,  APNT_ITDR_ID
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values  (
+		        to_date(#{mdcrYmd}, 'yyyymmdd')
+		     ,  #{mcdpCd}
+		     ,  #{mddrId}
+		     ,  #{dndpCharNo}
+		     ,  to_date(#{mdstDt}, 'yyyymmddhh24miss')
+		     ,  #{mdrpNo}
+		     ,  #{ptno}
+		     ,  #{codvCd}
+		     ,  #{totlMdcrHh}
+		     ,  #{dndpNo}
+		     ,  #{reclYn}
+		     ,  #{dndpMdcrAbrvCd}
+		     ,  #{dndpMdcrAbrvAdtnCtn}
+		     ,  #{dndpApntDslwResnCd}
+		     ,  #{apntItdrId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-updateDndpApnt (치과예약 수정) 
+        Description :                                           치과예약 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-updateDndpApnt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-updateDndpApnt */
+		update  /* 치과예약 체어별 수정 */
+		        APRCDNAPT
+		   set  LAST_UPDR_ID            =   #{gvUserId}
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}
+		     ,  LAST_UPDT_DT            =   sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		 <if test="dndpMdcrAbrvCd != null">
+		     ,  DNDP_MDCR_ABRV_CD       =   #{dndpMdcrAbrvCd}                       -- 치과진료약어코드
+		 </if>
+		 <if test="dndpMdcrAbrvAdtnCtn != null">
+		     ,  DNDP_MDCR_ABRV_ADTN_CTN =   #{dndpMdcrAbrvAdtnCtn}                  -- 치과진료약어추가내용
+		 </if>
+		 <if test="totlMdcrHh != null">
+		     ,  TOTL_MDCR_HH            =   #{totlMdcrHh}                           -- 총진료시간
+		 </if>
+		 where  MDCR_YMD                =   to_date(#{mdcrYmd}, 'yyyymmdd')
+		   and  MCDP_CD                 =   #{mcdpCd}
+		   and  MDDR_ID                 =   #{mddrId}
+		   and  DNDP_CHAR_NO            =   #{dndpCharNo}
+		   and  MDST_DT                 =   to_date(#{mdstDt}, 'yyyymmddhh24miss')
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-deleteDndpApnt (치과예약 삭제) 
+        Description :                                           치과예약 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-deleteDndpApnt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-deleteDndpApnt */
+		delete  /* 치과예약 삭제 */
+		  from  APRCDNAPT
+		 where  MDCR_YMD        =   to_date(#{mdcrYmd}, 'yyyymmdd')
+		   and  MCDP_CD         =   #{mcdpCd}
+		   and  MDDR_ID         =   #{mddrId}
+		   and  DNDP_CHAR_NO    =   #{dndpCharNo}
+		   and  MDST_DT         =   to_date(#{mdstDt}, 'yyyymmddhh24miss')
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="dndpCharNo" column="DNDP_CHAR_NO"/>
+		<result property="totlMdcrHh" column="TOTL_MDCR_HH"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcDndpApntComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcDndpApntComnDAO-selectOne */
+		select MCDP_CD 
+		     , DNDP_CHAR_NO
+		     , TOTL_MDCR_HH
+		  from APRCDNAPT
+		 where 1=1
+		   and MDRP_NO = #{mdrpNo}
+		   and rownum = 1
+	</select>
+
+
+
+</mapper>

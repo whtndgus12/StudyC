@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SlpPhrmDrugOrdrPrsgDAO_sql.xml 
+    Description : -->
+<mapper namespace="SlpPhrmDrugOrdrPrsgDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-selectOneParameter */
+		select '' as PTNO
+		   from dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO">
+	
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="exrsNcvlVl" column="EXRS_NCVL_VL"/>
+		<result property="spcmExrsUnitNm" column="SPCM_EXRS_UNIT_NM"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="nrmlUplmVl" column="NRML_UPLM_VL"/>
+		<result property="nrmlLwlmVl" column="NRML_LWLM_VL"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs (약물동력학 농도 검사결과 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkCncnExrs */
+		    select  /*+ sld_tdmmat0_l05$S01_약물동력학 농도검사결과 조회 */ 
+		            a.CLNC_PTHL_ORDR_SHRT_NM                         as ORDR_NM /* 검사명 */
+		         ,  decode(c.EXRS_FRMT_CD, 'N', decode(substr(c.EXRS_NCVL_VL, 1, 1), '.', '0'||c.EXRS_NCVL_VL, c.EXRS_NCVL_VL), c.EXRS_NCVL_VL)  as EXRS_NCVL_VL /* 검사결과(수치) */
+		         ,  b.SPCM_EXRS_UNIT_NM                              as SPCM_EXRS_UNIT_NM /* 검사결과UNIT */
+		         ,  to_char(d.BLCL_DT, 'YYYYMMDDHH24MISS')           as RPTN_DT/* 접수일시 */
+		         ,  b.NRML_UPLM_VL                                   as NRML_UPLM_VL/* 정상치상 */
+		         ,  b.NRML_LWLM_VL                                   as NRML_LWLM_VL/* 정상치하 */
+		         ,  a.ORDR_CD                                        as ORDR_CD/* 검사코드 */
+		      from
+		            MDORDRCMT a                              /* 검사항목코드관리 */
+		         ,  SFWWORKMT b                              /* 검체검사 WORK */
+		         ,  SZRESULMT c                              /* 통합검사결과 */
+		         ,  SFASPCMDT d            
+		     where  a.PHRK_EXMN_CD = #{phrkExmnCd}           /* 약물동력학CODE(검사) */
+		       and  b.PTNO         = #{ptno}                 /* 환자번호 */
+		       and  b.EXMN_CD      = a.ORDR_CD               /* 검사코드 */
+		       and  c.PTNO(+)      = b.PTNO                  /* 환자번호 */
+		       and  c.ORDR_YMD(+)  = b.ORDR_YMD              /* 처방일자 */
+		       and  c.ORDR_SNO(+)  = b.ORDR_SNO              /* 처방순번 */
+		       and  c.SPCM_NO(+)   = b.SPCM_NO
+		       and  c.EXMN_CD(+)   = b.EXMN_CD               /* 검사코드 */
+		       and  d.SPCM_NO      = b.SPCM_NO
+		     /*  and  c.RPRT_DT(+)   = b.RPRT_DT    */       /* 보고일시 */
+		     /*  and  nvl(c.EXRS_UPDT_YN(+), 'N') = 'N'  결과테이블과 히스토리 분리로 주석 처리     */
+		     order
+		        by  c.RPRT_DT  desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkRltdExrs-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO">
+	
+		<result property="exrsNcvlVl" column="EXRS_NCVL_VL"/>
+		<result property="spcmExrsUnitNm" column="SPCM_EXRS_UNIT_NM"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkRltdExrs (약물동력학 관련 검사결과 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkRltdExrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkRltdExrs"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-listPhrkRltdExrs-result" useCache="true" flushCache="false">
+		    select  /*+ sld_tdmmat0_l06$S01_약물동역학 관련검사결과 조회 */ 
+		            decode(c.EXRS_FRMT_CD, 'N', decode(substr(c.EXRS_NCVL_VL, 1, 1), '.', '0'||c.EXRS_NCVL_VL, c.EXRS_NCVL_VL), c.EXRS_NCVL_VL) as EXRS_NCVL_VL /* 검사결과(수치) */
+		         ,  a.SPCM_EXRS_UNIT_NM                    as SPCM_EXRS_UNIT_NM /* 검사결과UNIT */
+		         ,  to_char(d.TKOV_DT, 'YYYYMMDD')         as RPTN_DT/* 접수일시 */
+		      from
+		            SFWWORKMT a                              /* 검체검사 WORK */
+		         ,  SFCORDRCT b                              /* 검사항목코드관리 */
+		         ,  SZRESULMT c                              /* 통합검사결과 */
+		         ,  SFASPCMDT d
+		     where  a.PTNO    = #{ptno}                        /* 환자번호 */
+		       and  a.EXMN_CD = #{exmnCd}                     /* 검사코드 */
+		       and  b.ORDR_CD = a.EXMN_CD                    /* 검사코드 */
+		       and  c.PTNO(+) = a.PTNO                       /* 환자번호 */
+		       and  c.ORDR_YMD(+) = a.ORDR_YMD               /* 처방일자 */
+		       and  c.ORDR_SNO(+) = a.ORDR_SNO               /* 처방순번 */
+		       and  c.SPCM_NO(+)  = a.SPCM_NO               /* 처방순번 */
+		       and  c.EXMN_CD(+)  = a.EXMN_CD                 /* 검사코드 */
+		       and  d.SPCM_NO     = a.SPCM_NO
+		       /* and  c.RPRT_DT(+)  = a.RPRT_DT  */               /* 보고일시 */
+		       /*  and  nvl(c.EXRS_UPDT_YN(+), 'N') = 'N'  결과테이블과 히스토리 분리로 주석 처리     */
+		     order
+		        by  a.RPTN_DT  desc
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkCnsnCmnt (약물동력학 자문 커멘트 등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkCnsnCmnt"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkCnsnCmnt */
+		        update  /*+ sld_tdmmat0_u02$I01_약물동력학 자문COMMENT 등록 */
+		            SLWTDMMAT                                 /* 약물동력학 자문테이블 */
+		        set
+		            CNSN_RMRK_CTN     = #{cnsnRmrkCtn}
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          , LAST_UPDR_ID = #{gvUserId}
+		          , LAST_UPDT_IP = #{gvUserIp}
+		          , LAST_UPDT_DT = sysdate
+		          , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		          , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO     = #{ptno}
+		       and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO = #{ordrSno}
+		       and  EXMN_CD  = #{exmnCd}
+		       and  CNSN_SNO = #{cnsnSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkIntgRslt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkIntgRslt"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkIntgRslt */
+		   insert  /*+ sld_resltmt_i01$I01_약물동력학 통합결과 등록 */
+		      into  SZRESULMT
+		         (
+		            PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  EXMN_CD
+		         ,  SPCM_NO
+		         ,  INDR_ID1
+		         ,  EXRS_CTN
+		         ,  EXRS_FRMT_CD
+		         ,  RPRT_DT
+		         ,  EXCF_CD
+		         ,  EXMN_PRSS_CD
+		         ,  RPRR_ID
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  FRST_RGSR_ID
+		         ,  FRST_RGST_IP
+		         ,  FRST_RGST_DT
+		         ,  FRST_RGST_CLNT_PRGM_ID
+		         ,  FRST_RGST_SRVR_PRGM_ID
+		         ,  LAST_UPDR_ID
+		         ,  LAST_UPDT_IP
+		         ,  LAST_UPDT_DT
+		         ,  LAST_UPDT_CLNT_PRGM_ID
+		         ,  LAST_UPDT_SRVR_PRGM_ID
+		         )
+		    values
+		         (
+		            #{ptno}
+		         ,  to_date(#{ordrYmd}, 'YYYYMMDD')
+		         ,  #{ordrSno}
+		         ,  #{exmnCd}
+		         ,  'TDM'
+		         ,  null
+		         ,  #{exrsCtn}
+		         ,  'T'
+		         ,  sysdate
+		         ,  'SL'
+		         ,  #{exmnPrssCd}
+		         ,  null
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmRsltSttsVl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmRsltSttsVl"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmRsltSttsVl */
+		    update  /*+ sld_tdmmat0_u04$I01_약물동력학 TDM결과 상태값 처리 */
+		            SLWTDMMAT                                 /* 약물동력학 자문테이블 */
+		        set
+		            RSLT_UPDT_YN = 'Y'                  /* 진행상태 J:진행, G:보고 */
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          , LAST_UPDR_ID = #{gvUserId}
+		          , LAST_UPDT_IP = #{gvUserIp}
+		          , LAST_UPDT_DT = sysdate
+		          , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		          , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}     
+		     where  PTNO     = #{ptno}
+		       and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO = #{ordrSno}
+		       and  EXMN_CD  = #{exmnCd}
+		       and  CNSN_SNO = #{cnsnSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkIntgRsltSttsVl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkIntgRsltSttsVl"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkIntgRsltSttsVl */
+		    update  /*+ sld_resltmt_u01$I01_약물동역학 통합결과 상태값 처리 */
+		            SZRESULMT
+		       set
+		            EXRS_UPDT_YN = 'Y'
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          , LAST_UPDR_ID = #{gvUserId}
+		          , LAST_UPDT_IP = #{gvUserIp}
+		          , LAST_UPDT_DT = sysdate
+		          , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		          , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+		     where  PTNO     = #{ptno}
+		       and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO = #{ordrSno}
+		       and  EXMN_CD  = #{exmnCd}
+		       and  SPCM_NO  = SPCM_NO
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkLastRprt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkLastRprt"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-insertPhrkLastRprt */
+		    insert  /*+ sld_tdmmat0_i01$I01_약물동력학 최종보고 수정 */ 
+		      into  SLWTDMMAT
+		         (
+		             PTNO                                   /* 환자번호            */
+		          ,  ORDR_YMD                               /* 처방일자            */
+		          ,  ORDR_SNO                               /* 처방순서            */
+		          ,  EXMN_CD                                /* 검사코드            */
+		          ,  CNSN_SNO                               /* 자문일련번호 */
+		          ,  ORDR_CODV_CD                           /* 처방위치            */
+		          /* ,  MDCR_DT                                 입원일시/내원일시   */
+		          ,  MCDP_CD                                /* 진료과              */
+		          ,  RSLT_SAVE_RPRT_DT                      /* 결과저장일시,결과보고일시*/
+		          ,  MDRP_NO                                /* 진료접수번호       */
+		          ,  WARD_CD                                /* 병동                */
+		          ,  ODKI_CD                                /* 일반(R),응급(S) 처방*/
+		          ,  MDTN_INDT_CTN                          /* 투약적응증          */
+		          ,  UNSL_CTN                               /* 특이사항            */
+		          ,  CNSN_REFR_OBJC_CTN                     /* 자문의뢰목적        */
+		          ,  BDWG_VL_CTN                            /* 체중                */
+		          ,  HGHT_VL_CTN                            /* 키                  */
+		          ,  MTHX_CTN                               /* 투약력              */
+		          ,  CNSN_RMRK_CTN                          /* 자문Comment         */
+		          ,  ODDR_ID                                /* 처방의              */
+		          ,  PHRK_CNPN_CTN                          /* 연락처              */
+		          ,  CNSN_RSLT_INPR_ID                      /* 자문결과입력자/1차보고자*/
+		          ,  LAST_RPRR_ID                           /* 최종보고자          */
+		          ,  PHRK_CNSN_PRSS_CD                      /* 진행상태 J:진행, Y:보고*/
+		          ,  RSLT_UPDT_YN                           /* 결과수정여부        */
+		          ,  CNSN_RSLT_CTN                          /* 자문결과            */
+		          ,  EXMN_RMRK_CTN                          /* 검사관련 Comment    */
+		          ,  CNSN_ORDR_CD1                          /* 최근자문처방코드1   */
+		          ,  CNSN_ORDR_RSLT_VL1                     /* 최근자문처방결과1   */
+		          ,  CNSN_ORDR_UNIT_NM1                     /* 최근자문처방단위1   */
+		          ,  CNSN_ORDR_RPRT_DT1                    /* 최근자문처방보고일자1*/
+		          ,  RFRC_UPLM_VL1                          /* 참고치(상한)1       */
+		          ,  RFRC_LWLM_VL1                          /* 참고치(하한)1       */
+		          ,  CNSN_ORDR_CD2                          /* 최근자문처방코드2   */
+		          ,  CNSN_ORDR_RSLT_VL2                     /* 최근자문처방결과2   */
+		          ,  CNSN_ORDR_UNIT_NM2                     /* 최근자문처방단위2   */
+		          ,  CNSN_ORDR_RPRT_DT2                    /* 최근자문처방보고일자2*/
+		          ,  RFRC_UPLM_VL2                          /* 참고치(상한)2       */
+		          ,  RFRC_LWLM_VL2                          /* 참고치(하한)2       */
+		          ,  CRNN_EXRS_VL1                          /* 최근 Creatinine 검사결과*/
+		          ,  CRNN_RSLT_UNIT_NM1                     /* 최근 Creatinine 결과단위*/
+		          ,  CRNN_EXMN_RPRT_DT1                    /* 최근 Creatinine 검사보고일자*/
+		          ,  CRNN_EXRS_VL2                          /* 최근 Creatinine 검사결과*/
+		          ,  CRNN_RSLT_UNIT_NM2                     /* 최근 Creatinine 결과단위*/
+		          ,  CRNN_EXMN_RPRT_DT2                    /* 최근 Creatinine 검사보고일자*/
+		          ,  ALBN_EXRS_NM1                          /* 최근 Creatinine 검사결과*/
+		          ,  ALBN_RSLT_UNIT_NM1                     /* 최근 Creatinine 결과단위*/
+		          ,  ALBN_EXMN_RPRT_DT1                    /* 최근 Creatinine 검사보고일자*/
+		          ,  ALBN_EXRS_NM2                          /* 최근 Creatinine 검사결과*/
+		          ,  ALBN_RSLT_UNIT_NM2                     /* 최근 Creatinine 결과단위*/
+		          ,  ALBN_EXMN_RPRT_DT2                    /* 최근 Creatinine 검사보고일자*/
+		          ,  HLLF_VL                                /* 반감기              */
+		          ,  VD_VL                                  /* VD                  */
+		          ,  CL_CTN                                 /* CL                  */
+		          ,  MDTN_DRUS_CTN                          /* 투약용법내용        */
+		          ,  RCMN_DRUS_CTN                          /* 추천용법내용        /*
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          ,  FRST_RGSR_ID
+		          ,  FRST_RGST_IP
+		          ,  FRST_RGST_DT
+		          ,  FRST_RGST_CLNT_PRGM_ID
+		          ,  FRST_RGST_SRVR_PRGM_ID
+		          ,  LAST_UPDR_ID
+		          ,  LAST_UPDT_IP
+		          ,  LAST_UPDT_DT
+		          ,  LAST_UPDT_CLNT_PRGM_ID
+		          ,  LAST_UPDT_SRVR_PRGM_ID
+		          )
+		     select
+		             PTNO                                                                   /* 환자번호            */
+		          ,  ORDR_YMD                                                               /* 처방일자            */
+		          ,  ORDR_SNO                                                               /* 처방순서            */
+		          ,  EXMN_CD                                                                /* 검사코드            */
+		          ,  (select max(CNSN_SNO) + 1
+		                from SLWTDMMAT
+		               where PTNO     = #{ptno}
+		                 and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                 and ORDR_SNO = #{ordrSno}
+		                 and EXMN_CD  = #{exmnCd}
+		             )
+		          ,  ORDR_CODV_CD                                                           /* 처방위치            */
+		          /*,  MDCR_DT                                                                 입원일시/내원일시   */
+		          ,  MCDP_CD                                                                /* 진료과              */
+		          ,  sysdate                                                                /* 결과저장보고일시                */
+		          ,  MDRP_NO                                                                /* 진료접수번호 */
+		          ,  WARD_CD                                                                /* 병동코드              */
+		          ,  ODKI_CD                                                                /* 처방종류코드          */
+		          ,  #{mdtnIndtCtn}                                      /* 투약적응증내용 */
+		          ,  #{unslCtn}                                           /* 특이사항            */
+		          ,  #{cnsnRefrObjcCtn}                                 /* 자문의뢰목적        */
+		          ,  #{bdwgVlCtn}                                        /* 체중                */
+		          ,  #{hghtVlCtn}                                        /* 키                  */
+		          ,  #{mthxCtn}                                           /* 투약력              */
+		          ,  #{cnsnRmrkCtn}                                      /* 자문비고내용      */
+		          ,  ODDR_ID                                               /* 처방의사ID         */
+		          ,  PHRK_CNPN_CTN                                         /* 연락처              */
+		          ,  #{cnsnRsltInprId}                                  /* 자문결과입력자/1차보고자 */
+		          ,  #{gvUserId}                                           /* 최종보고자               */
+		          ,  #{phrkCnsnPrssCd}                                  /* 진행상태 J:진행, Y:보고 */
+		          ,  'N'                                                   /* 결과수정여부             */
+		          ,  #{cnsnRsltCtn}                                      /* 자문결과내용  */
+		          ,  #{exmnRmrkCtn}                                      /* 검사비고내용   */
+		          ,  #{cnsnOrdrCd1}                                     /* 최근자문처방코드1   */
+		          ,  #{cnsnOrdrRsltVl1}                                /* 최근자문처방결과1   */
+		          ,  #{cnsnOrdrUnitNm1}                                /* 최근자문처방단위1   */
+		          ,  to_date(#{cnsnOrdrRprtDt1}, 'YYYYMMDDHH24MISS')  /* 최근자문처방보고일자1*/
+		          ,  #{rfrcUplmVl1}                                     /* 참고치(상한)1       */
+		          ,  #{rfrcLwlmVl1}                                     /* 참고치(하한)1       */
+		          ,  #{cnsnOrdrCd2}                                     /* 최근자문처방코드2   */
+		          ,  #{cnsnOrdrRsltVl2}                                /* 최근자문처방결과2   */
+		          ,  #{cnsnOrdrUnitNm2}                                /* 최근자문처방단위2   */
+		          ,  to_date(#{cnsnOrdrRprtDt2}, 'YYYYMMDDHH24MISS')  /* 최근자문처방보고일자2*/
+		          ,  #{rfrcUplmVl2}                                     /* 참고치(상한)2       */
+		          ,  #{rfrcLwlmVl2}                                     /* 참고치(하한)2      */
+		          ,  #{crnnExrsVl1}                                     /* 최근 Creatinine 검사결과1*/
+		          ,  #{crnnRsltUnitNm1}                                /* 최근 Creatinine 결과단위1*/
+		          ,  to_date(#{crnnExmnRprtDt1}, 'YYYYMMDDHH24MISS')          /* 최근 Creatinine 검사보고일자1*/
+		          ,  #{crnnExrsVl2}                                     /* 최근 Creatinine 검사결과2*/
+		          ,  #{crnnRsltUnitNm2}                                /* 최근 Creatinine 결과단위2*/
+		          ,  to_date(#{crnnExmnRprtDt2}, 'YYYYMMDDHH24MISS')          /* 최근 Creatinine 검사보고일자2*/
+		          ,  #{albnExrsNm1}                                     /* 최근 알부민 검사결과1*/
+		          ,  #{albnRsltUnitNm1}                                /* 최근 알부민 결과단위1*/
+		          ,  to_date(#{albnExmnRprtDt1}, 'YYYYMMDDHH24MISS')          /* 최근 알부민 검사보고일자1*/
+		          ,  #{albnExrsNm2}                                     /* 최근 알부민 검사결과2*/
+		          ,  #{albnRsltUnitNm2}                                /* 최근 알부민 결과단위2*/
+		          ,  to_date(#{albnExmnRprtDt2}, 'YYYYMMDDHH24MISS')          /* 최근 알부민 검사보고일자2*/
+		          ,  #{hllfVl}                                            /* 반감기              */
+		          ,  #{vdVl}                                              /* VD                  */
+		          ,  #{clCtn}                                             /* CL                  */
+		          ,  #{mdtnDrusCtn}                                       /* 투약용법내용        */
+		          ,  #{rcmnDrusCtn}                                      /* 추천용법내용        /*                                        
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          ,  #{gvUserId}
+		          ,  #{gvUserIp}
+		          ,  sysdate
+		          ,  #{gvClntPrgmId}
+		          ,  #{gvSrvrPrgmId}
+		          ,  #{gvUserId}
+		          ,  #{gvUserIp}
+		          ,  sysdate
+		          ,  #{gvClntPrgmId}
+		          ,  #{gvSrvrPrgmId}
+		       from
+		             SLWTDMMAT
+		      where  PTNO          = #{ptno}
+		        and  ORDR_YMD      = to_date(#{ordrYmd}, 'YYYYMMDD')
+		        and  ORDR_SNO      = #{ordrSno}
+		        and  EXMN_CD       = #{exmnCd}
+		        and  CNSN_SNO      = #{cnsnSno}
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkPrmrCnsnRsltInprId () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkPrmrCnsnRsltInprId"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkPrmrCnsnRsltInprId */
+		    update  /*+ sld_tdmmat0_u01$I01_약물동력학 1차자문자 등록 */
+		            SLWTDMMAT                                 /* 약물동력학 자문테이블 */
+		        set
+		            PHRK_CNSN_PRSS_CD = #{phrkCnsnPrssCd}       /* 진행상태 J:진행, G:보고 */
+		         ,  RSLT_SAVE_RPRT_DT = decode(#{phrkCnsnPrssCd}, '*', null, null, null, sysdate)                                     /* 결과저장일시,결과보고일시 */
+		         ,  CNSN_RSLT_INPR_ID = decode(#{phrkCnsnPrssCd}, '*', null, null, null, #{cnsnRsltInprId})  /* 자문결과입력자/1차보고자   */
+		         ,  CNSN_RMRK_CTN     = #{cnsnRmrkCtn}
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO     = #{ptno}
+		       and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO = #{ordrSno}
+		       and  EXMN_CD  = #{exmnCd}
+		       and  CNSN_SNO = #{cnsnSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkSaveAndLastRprt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkSaveAndLastRprt"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkSaveAndLastRprt */
+		    update  /*+ sld_tdmmat0_u03$I01_약물동력학 저장 및 최종보고 */
+		            SLWTDMMAT                                                                                    /* 약물동력학 자문테이블 */
+		       set
+		            PHRK_CNSN_PRSS_CD   = #{phrkCnsnPrssCd}                                         /* 진행상태 J:진행, Y:보고 */
+		         ,  MDTN_INDT_CTN       = #{mdtnIndtCtn}                                             /* 투약적응증           */
+		         ,  UNSL_CTN            = #{unslCtn}                                                  /* 특이사항             */
+		         ,  CNSN_REFR_OBJC_CTN  = #{cnsnRefrObjcCtn}                                        /* 자문의뢰목적         */
+		         ,  BDWG_VL_CTN         = #{bdwgVlCtn}                                               /* 체중                 */
+		         ,  HGHT_VL_CTN         = #{hghtVlCtn}                                               /* 키                   */
+		         ,  MTHX_CTN            = #{mthxCtn}                                                  /* 투약력               */
+		         ,  CNSN_RSLT_INPR_ID   = #{cnsnRsltInprId}                                         /* 자문결과입력자/1차보고자 */
+		         ,  LAST_RPRR_ID        = case when nvl(#{phrkCnsnPrssCd}, ' ') = 'G' then #{gvUserId} else null end
+		         ,  RSLT_SAVE_RPRT_DT   = sysdate                                                                       /* 결과저장일시,결과보고일시 */
+		         ,  CNSN_RSLT_CTN       = #{cnsnRsltCtn}                                             /* 자문결과             */
+		         ,  CNSN_RMRK_CTN       = #{cnsnRmrkCtn}                                             /* 자문Comment          */
+		         ,  HLLF_VL             = #{hllfVl}                                                   /* 반감기               */
+		         ,  VD_VL               = #{vdVl}                                                     /* VD                   */
+		         ,  CL_CTN              = #{clCtn}                                                    /* CL                   */
+		         ,  CNSN_ORDR_CD1       = nvl(#{cnsnOrdrCd1}, CNSN_ORDR_CD1)                        /* 최근자문처방코드1    */
+		         ,  CNSN_ORDR_RSLT_VL1  = nvl(#{cnsnOrdrRsltVl1}, CNSN_ORDR_RSLT_VL1)              /* 최근자문처방결과1    */
+		         ,  CNSN_ORDR_UNIT_NM1  = nvl(#{cnsnOrdrUnitNm1}, CNSN_ORDR_UNIT_NM1)              /* 최근자문처방단위1    */
+		         ,  CNSN_ORDR_RPRT_Dt1 = decode(#{cnsnOrdrRprtDt1}, null, CNSN_ORDR_RPRT_Dt1
+		                                , to_date(#{cnsnOrdrRprtDt1}, 'YYYYMMDDHH24MISS'))        /* 최근자문처방보고일자1 */
+		         ,  CNSN_ORDR_CD2       = nvl(#{cnsnOrdrCd2}, CNSN_ORDR_CD2)                        /* 최근자문처방코드2    */
+		         ,  CNSN_ORDR_RSLT_VL2  = nvl(#{cnsnOrdrRsltVl2}, CNSN_ORDR_RSLT_VL2)              /* 최근자문처방결과2    */
+		         ,  CNSN_ORDR_UNIT_NM2  = nvl(#{cnsnOrdrUnitNm2}, CNSN_ORDR_UNIT_NM2)              /* 최근자문처방단위2    */
+		         ,  CNSN_ORDR_RPRT_Dt2 = decode(#{cnsnOrdrRprtDt2}, null, CNSN_ORDR_RPRT_Dt2
+		                                , to_date(#{cnsnOrdrRprtDt2}, 'YYYYMMDDHH24MISS'))        /* 최근자문처방보고일자2 */
+		         ,  CRNN_EXRS_VL1       = nvl(#{crnnExrsVl1}, CRNN_EXRS_VL1)                        /* 최근 Creatinine 검사결과 */
+		         ,  CRNN_RSLT_UNIT_NM1  = nvl(#{crnnRsltUnitNm1}, CRNN_RSLT_UNIT_NM1)              /* 최근 Creatinine 결과단위 */
+		         ,  CRNN_EXMN_RPRT_Dt1 = decode(#{crnnExmnRprtDt1}, null, CRNN_EXMN_RPRT_Dt1
+		                                , to_date(#{crnnExmnRprtDt1}, 'YYYYMMDDHH24MISS'))                /* 최근 Creatinine 검사보고일자 */
+		         ,  CRNN_EXRS_VL2       = nvl(#{crnnExrsVl2}, CRNN_EXRS_VL2)                        /* 최근 Creatinine 검사결과 */
+		         ,  CRNN_RSLT_UNIT_NM2  = nvl(#{crnnRsltUnitNm2}, CRNN_RSLT_UNIT_NM2)              /* 최근 Creatinine 결과단위 */
+		         ,  CRNN_EXMN_RPRT_Dt2 = decode(#{crnnExmnRprtDt2}, null, CRNN_EXMN_RPRT_Dt2
+		                                , to_date(#{crnnExmnRprtDt2}, 'YYYYMMDDHH24MISS'))                /* 최근 Creatinine 검사보고일자 */
+		         ,  ALBN_EXRS_NM1       = nvl(#{albnExrsNm1}, ALBN_EXRS_NM1)                        /* 최근 Creatinine 검사결과 */
+		         ,  ALBN_RSLT_UNIT_NM1  = nvl(#{albnRsltUnitNm1}, ALBN_RSLT_UNIT_NM1)              /* 최근 Creatinine 결과단위 */
+		         ,  ALBN_EXMN_RPRT_Dt1 = decode(#{albnExmnRprtDt1}, null, ALBN_EXMN_RPRT_Dt1
+		                                , to_date(#{albnExmnRprtDt1}, 'YYYYMMDDHH24MISS'))                /* 최근 Creatinine 검사보고일자 */
+		         ,  ALBN_EXRS_NM2       = nvl(#{albnExrsNm2}, ALBN_EXRS_NM2)                        /* 최근 Creatinine 검사결과 */
+		         ,  ALBN_RSLT_UNIT_NM2  = nvl(#{albnRsltUnitNm2}, ALBN_RSLT_UNIT_NM2)              /* 최근 Creatinine 결과단위 */
+		         ,  ALBN_EXMN_RPRT_Dt2 = decode(#{albnExmnRprtDt2}, null, ALBN_EXMN_RPRT_Dt2
+		                                , to_date(#{albnExmnRprtDt2}, 'YYYYMMDDHH24MISS'))                /* 최근 Creatinine 검사보고일자 */
+		         ,  RFRC_UPLM_VL1       = nvl(#{rfrcUplmVl1}, RFRC_UPLM_VL1)                        /* 참고치(상한)1        */
+		         ,  RFRC_LWLM_VL1       = nvl(#{rfrcLwlmVl1}, RFRC_LWLM_VL1)                        /* 참고치(하한)1        */
+		         ,  RFRC_UPLM_VL2       = nvl(#{rfrcUplmVl2}, RFRC_UPLM_VL2)                        /* 참고치(상한)2        */
+		         ,  RFRC_LWLM_VL2       = nvl(#{rfrcLwlmVl2}, RFRC_LWLM_VL2)                        /* 참고치(하한)2        */
+		         ,  EXMN_RMRK_CTN       = nvl(#{exmnRmrkCtn}, EXMN_RMRK_CTN)                         /* 검사관련 Comment     */
+				 ,  MDTN_DRUS_CTN		   	=  #{mdtnDrusCtn}													/*  현용법  */
+				 ,  RCMN_DRUS_CTN		   	=  #{rcmnDrusCtn}													/*	추천용법 */
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO     = #{ptno}
+		       and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO = #{ordrSno}
+		       and  EXMN_CD  = #{exmnCd}
+		       and  CNSN_SNO = #{cnsnSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmConsrSave (진료협진 약물동력학 회신) 
+        Description :                                           진료협진 약물동력학 회신
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmConsrSave"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpPhrmDrugOrdrPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpPhrmDrugOrdrPrsgDAO-updatePhrkTdmConsrSave */
+		update  /*+ sld_tdmmat0_u04$I01_약물동력학 TDM결과 상태값 처리 */
+		            MDCONSRCT                           /* 약물동력학 자문테이블 */
+		        set 
+		            RPLY_YMD = sysdate                     /* 회신일자             */   
+		         ,  RPLY_DR_ID = #{gvUserId}              /* 회신의사             */
+		         ,  RPLY_DR_MCDP_CD = #{rplyDrMcdpCd}             /* 회신의사 진료과(회신부서) */
+		         ,  CMTX_RPLY_CTN = #{cnsnRsltCtn}    /* 회신내용             */
+		         ,  TMPR_RSLT_CTN = null                         /* 회신내용임시         */
+		         ,  TMPR_RSLT_LOG_CTN  = null                         /* 회신임시정보         */
+		         ,  IMPL_YMD = sysdate                      /* 실시일자             */
+		         ,  CMTX_STTS_CD = '4'                           /* 협진상태             */ 
+		         ,  NXDY_RPLY_YN = null
+		         ,  RPTN_DT = sysdate           /* 접수일시             */
+		         ,  CLCL_EXCL_YN = 'Y'          /* 계산제외여부를 Y로 */
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         , LAST_UPDR_ID = #{gvUserId}
+		         , LAST_UPDT_IP = #{gvUserIp}
+		         , LAST_UPDT_DT = sysdate
+		         , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}     
+		     where  PTNO     = #{ptno}
+		       and  LNKN_ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  LNKN_ORDR_SNO = #{ordrSno}
+		       and  CMTX_STTS_CD != '0' /* 임시저장 제외 */
+		       and  nvl(DLTN_YN, 'N') = 'N' /* 삭제건 제외 */
+	</update>
+
+</mapper>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuPrgmfmtDAO_sql.xml 
+    Description :                                      형상관리
+                  -->
+<mapper namespace="CcuPrgmfmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="cfrtPrgmId" column="CFRT_PRGM_ID"/>
+		<result property="prgmDscrCtn" column="PRGM_DSCR_CTN"/>
+		<result property="prgmSizeCnt" column="PRGM_SIZE_CNT"/>
+		<result property="devpVrsnNm" column="DEVP_VRSN_NM"/>
+		<result property="ceckPhspDt" column="CECK_PHSP_DT"/>
+		<result property="dsrbLctnNm" column="DSRB_LCTN_NM"/>
+		<result property="comnYn" column="COMN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listPrgmfmt */
+				<![CDATA[
+				   select  /*+ cud_prgmfmt_l04$S01_형상관리 조회 */
+						   CFRT_PRGM_ID as CFRT_PRGM_ID,
+						   PRGM_DSCR_CTN as PRGM_DSCR_CTN,
+						   PRGM_SIZE_CNT as PRGM_SIZE_CNT,
+						   DEVP_VRSN_NM as DEVP_VRSN_NM,
+						   to_char(CECK_PHSP_DT,'yyyymmddhh24miss') as CECK_PHSP_DT,
+						   DSRB_LCTN_NM as DSRB_LCTN_NM,
+						   COMN_YN as COMN_YN
+					 from  CUPRGMFMT
+					where  #{afiRturYn} <> 'S'
+		               and ((DSRB_LCTN_NM <> '/BPL/') or
+		                      (DSRB_LCTN_NM = '/BPL/' and 
+		                       PRGM_DSCR_CTN = 'COMN'))
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="cfrtPrgmId" column="CFRT_PRGM_ID"/>
+		<result property="prgmDscrCtn" column="PRGM_DSCR_CTN"/>
+		<result property="prgmSizeCnt" column="PRGM_SIZE_CNT"/>
+		<result property="devpVrsnNm" column="DEVP_VRSN_NM"/>
+		<result property="ceckPhspDt" column="CECK_PHSP_DT"/>
+		<result property="dsrbLctnNm" column="DSRB_LCTN_NM"/>
+		<result property="comnYn" column="COMN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-selectOnePrgmfmt */
+		select  /*+ cud_prgmfmt_s04$S01_형상관리 조회 */
+		            CFRT_PRGM_ID,
+		            PRGM_DSCR_CTN,
+		            PRGM_SIZE_CNT,
+		            DEVP_VRSN_NM,
+		            to_char(CECK_PHSP_DT,'yyyymmddhh24miss') as CECK_PHSP_DT,
+		            DSRB_LCTN_NM,
+		            COMN_YN
+		      from  CUPRGMFMT
+		     where  CFRT_PRGM_ID = #{cfrtPrgmId}
+		       --and  COMN_YN      = 'N'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listLnevContents */
+		SELECT COMN_ENVR_STUP_ITEM_CD
+		         ,  COMN_ENVR_STUP_ITEM_CHRC_VL
+		   FROM CCENSTIMT 
+		 WHERE COMN_ENVR_STUP_GRP_CD = 'LNEV_CONTENTS'
+		UNION ALL
+		SELECT 'OPEN_DATE' AS "COMN_ENVR_STUP_ITEM_CD"
+		        , CNST_VL AS "COMN_ENVR_STUP_ITEM_CHRC_VL"
+		  FROM COCONSTDT
+		 WHERE BSDV_CD = 'CCO'
+		    AND CNST_GRP_ID = 'CCO_001'
+		    AND CNST_ID = 'OPEN_DT'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="cfrtPrgmId" column="CFRT_PRGM_ID"/>
+		<result property="prgmDscrCtn" column="PRGM_DSCR_CTN"/>
+		<result property="prgmSizeCnt" column="PRGM_SIZE_CNT"/>
+		<result property="devpVrsnNm" column="DEVP_VRSN_NM"/>
+		<result property="ceckPhspDt" column="CECK_PHSP_DT"/>
+		<result property="dsrbLctnNm" column="DSRB_LCTN_NM"/>
+		<result property="comnYn" column="COMN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listBplPrgmfmt */
+		select  /*+ cud_prgmfmt_s04$S01_형상관리 조회 */
+		            CFRT_PRGM_ID,
+		            PRGM_DSCR_CTN,
+		            PRGM_SIZE_CNT,
+		            DEVP_VRSN_NM,
+		            to_char(CECK_PHSP_DT,'yyyymmddhh24miss') as CECK_PHSP_DT,
+		            DSRB_LCTN_NM,
+		            COMN_YN
+		      from  CUPRGMFMT
+		   where COMN_YN = 'N'
+		     and DSRB_LCTN_NM not in ('/LIB/')
+		----    and  DSRB_LCTN_NM = dsrbLctnNm
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect (다중시스템 목록 조회) 
+        Description :                                           다중시스템 목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMultiConnect */
+		SELECT *
+		  FROM (SELECT COMN_ENVR_STUP_GRP_CD
+				         , COMN_ENVR_STUP_ITEM_CD
+				         , COMN_ENVR_STUP_ITEM_NM
+				         ,  COMN_ENVR_STUP_ITEM_CHRC_VL
+				  FROM CCENSTIMT 
+				 WHERE COMN_ENVR_STUP_GRP_CD = 'CMC_MULTI_CONNECT'
+				 UNION ALL 
+				SELECT 'CMC_MULTI_CONNECT' AS "COMN_ENVR_STUP_GRP_CD"
+				     , '100' AS "COMN_ENVR_STUP_ITEM_CD"
+				     , EXTL_LNKD_NM AS "COMN_ENVR_STUP_ITEM_NM"
+				     , CNCT_YN AS "COMN_ENVR_STUP_ITEM_CHRC_VL"
+				  FROM CUEXRLNMT
+				 WHERE EXTL_LNKD_ID = 'EHRMultiServer1'
+				 UNION ALL 
+				SELECT 'CMC_MULTI_CONNECT' AS "COMN_ENVR_STUP_GRP_CD"
+				     , '200' AS "COMN_ENVR_STUP_ITEM_CD"
+				     , EXTL_LNKD_NM AS "COMN_ENVR_STUP_ITEM_NM"
+				     , CNCT_YN AS "COMN_ENVR_STUP_ITEM_CHRC_VL"
+				  FROM CUEXRLNMT
+				 WHERE EXTL_LNKD_ID = 'EHRMultiServer2')
+		 ORDER 
+		       BY COMN_ENVR_STUP_GRP_CD ASC, COMN_ENVR_STUP_ITEM_CD ASC
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listMainContents */
+		select COMN_ENVR_STUP_ITEM_CD
+						 , COMN_ENVR_STUP_ITEM_NM
+						 , COMN_ENVR_STUP_ITEM_CHRC_VL
+					 from CCENSTIMT
+					where COMN_ENVR_STUP_GRP_CD  = 'CMA_MAIN_CONTENTS'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList (화면보호기 비설치 IP) 
+        Description :                                           화면보호기 비설치 IP
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrIgnoreList */
+		SELECT COMN_ENVR_STUP_GRP_CD
+		         , COMN_ENVR_STUP_ITEM_CD
+		         , COMN_ENVR_STUP_ITEM_CHRC_VL
+		  FROM CCENSTIMT
+		 WHERE COMN_ENVR_STUP_GRP_CD = 'CMA_SCVR_IGNORE_IP'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList (화면보호기 정보) 
+        Description :                                           화면보호기 정보
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrList */
+		SELECT COMN_ENVR_STUP_GRP_CD
+		         , COMN_ENVR_STUP_ITEM_CD
+		         , COMN_ENVR_STUP_ITEM_CHRC_VL
+		  FROM CCENSTIMT
+		 WHERE COMN_ENVR_STUP_GRP_CD = 'CMA_SCREEN_SAVER'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO">
+	
+		<result property="cfrtPrgmId" column="CFRT_PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPrgmfmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPrgmfmtDAO-listScvrFile */
+		SELECT CFRT_PRGM_ID
+		  FROM CUPRGMFMT
+		 WHERE DSRB_LCTN_NM LIKE '/SYS/SCVR/%'
+	</select>
+
+
+
+</mapper>

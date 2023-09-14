@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/jee http://www.springframework.org/schema/aop/spring-jee.xsd">
+
+	<util:properties id="onlineProperties" location="classpath:context-#{systemProperties['spring.profiles.active']}.properties" />
+	<!-- PropertyUtil.getProperty(String key) - 기본 Properties -->
+	<util:properties id="contextProperties" location="classpath:properties/shc_ehr_com-#{systemProperties['spring.profiles.active']}.properties" />
+
+	<!-- PASSWORD Encryption -->
+	<bean id="environmentVariableConfiguration"
+		class="com.sds.healthcare.ehr.com.sy.cnf.EHREnvironmentStringPBEConfig">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+	</bean>
+
+	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="environmentVariableConfiguration" />
+	</bean>
+
+	<bean id="propertyConfigurer" class="org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer">
+		<constructor-arg ref="configurationEncryptor" />
+		<property name="locations">
+			<list>
+				<value>classpath:context-#{systemProperties['spring.profiles.active']}.properties</value>
+			</list>
+
+		</property>
+	</bean>
+
+	<bean id="ehrDs" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+		<property name="targetDataSource">
+			<bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+				<property name="driverClassName" value="#{onlineProperties.driver}" />
+				<property name="url" value="#{onlineProperties.url}" />
+				<property name="username" value="#{onlineProperties.username}" />
+				<property name="password" value="${password}" />
+				<property name="initialSize" value="1" />
+				<property name="maxActive" value="5" />
+				<property name="maxIdle" value="5" />
+				<property name="minIdle" value="5" />
+				<property name="testOnBorrow" value="false" />
+				<property name="testOnReturn" value="false" />
+				<property name="testWhileIdle" value="true" />
+				<property name="timeBetweenEvictionRunsMillis" value="60000" />
+				<property name="numTestsPerEvictionRun" value="12" />
+				<property name="minEvictableIdleTimeMillis" value="-1" />
+				<property name="validationQuery" value="select 1 from dual" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="ehrDs2" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+		<property name="targetDataSource">
+			<bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+				<property name="driverClassName" value="#{onlineProperties.driver2}" />
+				<property name="url" value="#{onlineProperties.url2}" />
+				<property name="username" value="#{onlineProperties.username2}" />
+				<property name="password" value="${password2}" />
+				<property name="initialSize" value="1" />
+				<property name="maxActive" value="5" />
+				<property name="maxIdle" value="5" />
+				<property name="minIdle" value="5" />
+				<property name="testOnBorrow" value="false" />
+				<property name="testOnReturn" value="false" />
+				<property name="testWhileIdle" value="true" />
+				<property name="timeBetweenEvictionRunsMillis" value="60000" />
+				<property name="numTestsPerEvictionRun" value="12" />
+				<property name="minEvictableIdleTimeMillis" value="-1" />
+				<property name="validationQuery" value="select 1 from dual" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="onlineTxManager" class="org.springframework.data.transaction.ChainedTransactionManager">
+		<constructor-arg>
+			<array value-type="org.springframework.transaction.PlatformTransactionManager">
+				<ref bean="ehrTxManager"/>
+			</array>
+		</constructor-arg>
+	</bean>
+
+	<bean id="ehrTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="ehrDs" />
+	</bean>
+	
+	<bean id="ehrTxManager2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="ehrDs2" />
+	</bean>
+
+    <tx:advice id="onlineTxAdvice4" transaction-manager="ehrTxManager2">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception" propagation="REQUIRED" timeout="60" />
+		</tx:attributes>
+	</tx:advice>
+
+  	<aop:config proxy-target-class="true">
+        <aop:advisor id="onlineTxAdvisor4" advice-ref="onlineTxAdvice4" pointcut="execution(* com.sds.healthcare.ehrcm..*SvcImpl.*(..))" />
+    </aop:config>
+    
+	<bean id="routingPackageDataSourceNameResolver" class="com.anyframe.online.runtime.jdbc.resolver.RoutingPackageDataSourceNameResolver">
+		<property name="mappings">
+			<map key-type="java.lang.String" value-type="java.lang.String">
+				<entry key="com.sds.healthcare.ehr" value="ehrDs" />
+				<entry key="com.sds.healthcare.ehrcm" value="ehrDs2" />
+			</map>
+		</property>
+	</bean>
+
+    <tx:annotation-driven transaction-manager="onlineTxManager" />
+
+	<tx:advice id="onlineTxAdvice" transaction-manager="onlineTxManager">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception" propagation="REQUIRED" timeout="60" />
+		</tx:attributes>
+	</tx:advice>
+
+	<tx:advice id="onlineTxAdvice2" transaction-manager="onlineTxManager">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception" propagation="REQUIRED" timeout="300" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<tx:advice id="onlineTxAdvice3" transaction-manager="onlineTxManager">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception" propagation="REQUIRED" timeout="900" />
+		</tx:attributes>
+	</tx:advice>
+
+    <aop:config proxy-target-class="true">
+    	<aop:advisor id="onlineTxAdvisor3" advice-ref="onlineTxAdvice3" pointcut="execution(* com.sds.healthcare.ehr..*SvcImpl.*LongTrx2(..)) || bean(crudServiceActivator)" />
+        <aop:advisor id="onlineTxAdvisor2" advice-ref="onlineTxAdvice2" pointcut="execution(* com.sds.healthcare.ehr..*SvcImpl.*LongTrx(..)) || bean(crudServiceActivator)" />
+        <aop:advisor id="onlineTxAdvisor" advice-ref="onlineTxAdvice" pointcut="execution(* com.sds.healthcare.ehr..*SvcImpl.*(..)) || bean(crudServiceActivator)" />
+    </aop:config>
+
+	<bean id="platformTransactionManagerInterceptor"
+		class="com.anyframe.online.runtime.transaction.aop.PlatformTransactionManagerInterceptor" />
+
+	<bean id="transactionManagerProxyCreator" class="com.anyframe.online.runtime.transaction.aop.PlatformTransactionManagerBeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>onlineTxManager</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>platformTransactionManagerInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="transactionManagerHolder" class="com.anyframe.online.runtime.transaction.TransactionManagerHolder">
+		<property name="defaultTransactionManagerName" value="onlineTxManager" />
+	</bean>
+</beans>

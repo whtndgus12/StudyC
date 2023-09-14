@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMngtlmtDAO_sql.xml 
+    Description :                                      툴바
+                  -->
+<mapper namespace="CcsMngtlmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO">
+	
+		<result property="tlbrDvsnCd" column="TLBR_DVSN_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="tlbrPrgmId" column="TLBR_PRGM_ID"/>
+		<result property="tlbrNm" column="TLBR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmt */
+				   select  /*+ csd_mngtlmt_l03$S01_TOOL바 정보 조회 */ 
+				           c.TLBR_DVSN_CD as TLBR_DVSN_CD
+				         , d.DETL_CD_NM as DETL_CD_NM
+				         , c.TLBR_PRGM_ID as TLBR_PRGM_ID
+				         , c.TLBR_NM as TLBR_NM
+				    from   CSMNUSRMT a
+				         , CSMGLMGMT b
+				         , CSMNGTLMT c
+				         , CCCMCDDMT d
+				    where  a.LGIN_ID      = #{gvLginId}
+				      and  a.TLBR_USE_YN  = 'Y'
+				      and  a.APST_DT      <![CDATA[<]]> sysdate
+				      and  a.APFN_DT      <![CDATA[>]]> sysdate
+				      and  a.MENU_GRP_ID  = b.MENU_GRP_ID
+				      and  b.APST_DT      <![CDATA[<]]> sysdate
+				      and  b.APFN_DT      <![CDATA[>]]> sysdate
+				      and  a.MENU_GRP_ID  = c.MENU_GRP_ID
+				      and  d.COMN_GRP_CD  = 'CSX_003'
+				      and  c.TLBR_DVSN_CD = d.COMN_DTLS_CD
+			
+			
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO">
+	
+		<result property="tlbrDvsnCd" column="TLBR_DVSN_CD"/>
+		<result property="tlbrPrgmId" column="TLBR_PRGM_ID"/>
+		<result property="tlbrNm" column="TLBR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit () 
+        Description :                                           툴바개별
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMngtlmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMngtlmtDAO-listMngtlmtIdit */
+		 select  /*+ csd_mngtlmt_l05$S01_툴바 개별 */
+						  a.TLBR_DVSN_CD as TLBR_DVSN_CD
+						, a.TLBR_PRGM_ID as TLBR_PRGM_ID
+						, a.TLBR_NM as TLBR_NM
+				   from   CSMNGTLMT a
+				   where  a.MENU_GRP_ID  = #{menuGrpId}
+			
+			
+			
+	</select>
+
+
+
+</mapper>

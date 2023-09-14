@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccLctFileDAO_sql.xml 
+    Description : -->
+<mapper namespace="CccLctFileDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO">
+	
+		<result property="nornYmd" column="NORN_YMD"/>
+		<result property="nornNoTo" column="NORN_NO_TO"/>
+		<result property="nornNo" column="NORN_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneLctFile */
+		SELECT TO_CHAR(SYSDATE, 'YYYYMMDD') AS "NORN_YMD"
+		     , LPAD(TO_CHAR(CCLCTDMMTQ.CURRVAL - 1), 10, '0') AS "NORN_NO_TO"
+		     , LPAD(TO_CHAR(CCLCTDMMTQ.NEXTVAL), 10, '0') AS "NORN_NO"
+		  FROM DUAL
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-insertLctFile () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-insertLctFile"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO"  >
+		INSERT 	
+		   INTO 	CCLCTDMMT							  
+					(                    
+							FILE_NM       
+						 ,  ORCP_FILE_NM  
+						 ,  FRST_RGSR_ID
+						 ,  FRST_RGST_IP
+						 ,  FRST_RGST_DT
+						 ,  FRST_RGST_CLNT_PRGM_ID
+						 ,  FRST_RGST_SRVR_PRGM_ID
+						 ,  LAST_UPDR_ID
+						 ,  LAST_UPDT_IP
+						 ,  LAST_UPDT_DT
+						 ,  LAST_UPDT_CLNT_PRGM_ID
+						 ,  LAST_UPDT_SRVR_PRGM_ID
+					)
+		VALUES
+					(
+							#{fileNm}
+						 ,  #{orcpFileNm}
+						 ,  #{gvUserId}
+						 ,  #{gvUserIp}
+						 ,  sysdate
+						 ,  #{gvClntPrgmId}
+						 ,  #{gvSrvrPrgmId}
+						 ,  #{gvUserId}
+						 ,  #{gvUserIp}
+						 ,  sysdate
+						 ,  #{gvClntPrgmId}
+						 ,  #{gvSrvrPrgmId}
+					)
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO">
+	
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="orcpFileNm" column="ORCP_FILE_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm (파일명 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-selectOneFileNm */
+		SELECT FILE_NM
+		     , ORCP_FILE_NM
+		  FROM CCLCTDMMT
+		 WHERE FILE_NM = #{fileNm}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-deleteLctFile (파일정보 삭제) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-deleteLctFile"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLctFileDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLctFileDAO-deleteLctFile */
+		DELETE 
+		  FROM CCLCTDMMT
+		 WHERE FILE_NM = #{fileNm}
+	</delete>
+
+</mapper>

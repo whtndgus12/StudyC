@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_RpaRsrcPrjcInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="RpaRsrcPrjcInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser-result" type="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrDVO">
+	
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="irbrPrjcNo" column="IRBR_PRJC_NO"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="rsrcPrjcDgstNm" column="RSRC_PRJC_DGST_NM"/>
+		<result property="crisNo" column="CRIS_NO"/>
+		<result property="rciyAplyDcsnYn" column="RCIY_APLY_DCSN_YN"/>
+		<result property="crisNo2" column="CRIS_NO_2"/>
+		<result property="clrsRdexCd" column="CLRS_RDEX_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="rciyCmdvCd" column="RCIY_CMDV_CD"/>
+		<result property="comnCdNm2" column="COMN_CD_NM_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser (사용자ID에 해당하는 연구과제 목록 조회 - 고대 특화) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrDVO
+		resultMap : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser-result
+    -->
+	<select id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser"  parameterType="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrDVO"  resultMap="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrDAO-listRsrcPrjcByUser */
+		       RSRC_PRJC_CD
+		     , IRBR_PRJC_NO
+		       --과제명이 너무길면, 임상연구 Project선택팝업(MDP162F1)에서 과제명이 잘려보이므로 30자 정도까지만 표시
+		       --감면정보도 보여주는 것이 좋으므로, RSRC_PRJC_NM 컬럼에 추가: MDP162F1 화면을 수정하지 않기 위함.
+		     , case when length(RSRC_PRJC_KRLN_NM) <![CDATA[ < ]]> 31 then RSRC_PRJC_KRLN_NM
+		            else substr(RSRC_PRJC_KRLN_NM, 1, 30) || '...'
+		             end 
+		       || '  [감면정보]' || COMN_CD_NM as RSRC_PRJC_NM 
+		     , RSRC_PRJC_DGST_NM
+		     , CRIS_NO
+		     , RCIY_APLY_DCSN_YN
+		     , CRIS_NO_2
+		     , CLRS_RDEX_CD
+		     , COMN_CD_NM
+		     , RCIY_CMDV_CD
+		     , COMN_CD_NM_2
+		  from (
+		        select
+					   a.RSRC_PRJC_CD              -- 연구과제코드
+					 , a.IRBR_PRJC_NO              -- IRB 번호
+					 , a.RSRC_PRJC_KRLN_NM              -- 연구과제명
+					 , a.RSRC_PRJC_DGST_NM         -- 연구과제약물명
+					 , a.CRIS_NO                   -- CRIS 번호
+					 , a.RCIY_APLY_DCSN_YN         -- 요양급여적용결정여부
+					 , decode(RCIY_APLY_DCSN_YN, 'Y', CRIS_NO, '') CRIS_NO_2 --요양급여적용결정여부가 Y인 경우만 CRIS_NO를 화면에 보여주기 위함
+					 , CLRS_RDEX_CD                -- 임상연구감면코드
+					 , (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'RPX_001' and COMN_DTLS_CD = a.CLRS_RDEX_CD) COMN_CD_NM /* 임상연구감면코드명 */
+					 , RCIY_CMDV_CD                -- 요양급여청구구분코드
+					 , (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'RPX_002' and COMN_DTLS_CD = a.RCIY_CMDV_CD) COMN_CD_NM_2 /* 요양급여청구구분코드명 */
+				  from
+				       ( select *
+				           from RPRSRPRJT r -- 연구과제관리
+		                  where 1=1
+		                    and RSRC_PRSS_CTN in ('SSON', 'SSNA') --SSON:연구중, SSST:연구중지, SSCL:연구종료, SSCM, 연구완료, SSNA:해당없음
+		                    and RSRC_RNPR_EMNO = #{userId} /* 1. 책임연구자 */
+		                    and nvl(CLRS_RDEX_CD,'0') <![CDATA[ <> ]]> '0' 
+		                  union 
+		                 select *
+		                   from RPRSRPRJT r -- 연구과제관리 
+		                  where 1=1
+		                    and RSRC_PRSS_CTN in ('SSON', 'SSNA') --SSON:연구중, SSST:연구중지, SSCL:연구종료, SSCM, 연구완료, SSNA:해당없음
+		                    and nvl(CLRS_RDEX_CD,'0')  <![CDATA[ <> ]]>  '0'
+				           /* 조회 권한 (책임연구자 or 공동연구자) - 고대특화 */
+		                    and exists ( select 'O'        /* 2. 공동연구자 */
+		                                   from RPJONRSRT -- 공동연구자
+		                         	      where RSRC_PRJC_CD = r.RSRC_PRJC_CD
+		                        		    and (DLTN_YN is null  or  DLTN_YN != 'Y')
+		                                    and RSRH_ID      =  #{userId}
+		                                )
+				       ) a        
+				order by a.IRBR_PRJC_NO desc
+		       )
+	</select>
+
+
+
+</mapper>

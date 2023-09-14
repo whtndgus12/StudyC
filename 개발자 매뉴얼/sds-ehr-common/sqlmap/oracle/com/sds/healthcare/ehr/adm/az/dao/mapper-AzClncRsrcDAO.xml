@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzClncRsrcDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzClncRsrcDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClncRsrc-result" type="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO">
+	
+		<result property="clrsYn" column="CLRS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClncRsrc (임상연구환자여부) 
+        Description :                                           apd_sdtclip_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClncRsrc-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClncRsrc"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClncRsrc-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzClncrsrcDAO-selectOne000 */
+						   nvl(max('Y'),'') as CLRS_YN
+					 from
+						   SDTCLIPAT a
+						,  SDTCLIPJT b
+					where  a.ptno         = #{ptno}
+					  and  a.IRBR_NO      = b.IRBR_NO
+					  and  b.USE_YN       = 'Y'
+					  and  b.FRST_RGST_DT &gt;= to_date('20111230', 'YYYYMMDD')
+					  and  rownum        = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm-result" type="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO">
+	
+		<result property="clrsPrjcCd" column="CLRS_PRJC_CD"/>
+		<result property="clrsPrjcDrId" column="CLRS_PRJC_DR_ID"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rgstDt" column="RGST_DT"/>
+		<result property="clrsPrjcUnslCtn" column="CLRS_PRJC_UNSL_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm (임상연구정보조회) 
+        Description :                                           apd_clncpat_s01$S01_임상연구정보조회 apd_rcrptnt_s91
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-selectOnePtntClrsInfm */
+				CLRS_PRJC_CD as CLRS_PRJC_CD        /* 임상연구과제코드 */
+			 ,  CLRS_PRJC_DR_ID as CLRS_PRJC_DR_ID     /* 임상연구과제의사ID */
+			 ,  PTNO as PTNO                /* 환자번호 */
+			 ,  RGST_DT as RGST_DT             /* 등록일시 */
+			 ,  CLRS_PRJC_UNSL_CTN as CLRS_PRJC_UNSL_CTN  /* 임상연구과제특이내용 */
+		 from  MDCLNCPAT a
+		where  a.PTNO = #{ptno}
+		  and  rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-updateClrsPrjcCd (임상연구과제코드 수정) 
+        Description :                                           mdd_clncpat_u02$I01_임상연구과제코드 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-updateClrsPrjcCd"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-updateClrsPrjcCd */
+		            MDCLNCPAT
+		       set
+		            CLRS_PRJC_CD      = #{clrsPrjcCd}
+		         ,  LAST_UPDR_ID      = #{gvUserId}
+		         ,  LAST_UPDT_IP      = #{gvUserIp}
+		         ,  LAST_UPDT_DT      = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where
+		            CLRS_PRJC_CD    = #{chbeClrsPrjcCd}
+		       and  CLRS_PRJC_DR_ID = #{clrsPrjcDrId}
+		       and  PTNO            = #{ptno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-insertClrsPrjcCd (임상연구환자등록 단건등록) 
+        Description :                                           mdd_clncpat_i01$I01_임상연구환자등록 단건등록
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-insertClrsPrjcCd"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzClncRsrcDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzClncRsrcDAO-insertClrsPrjcCd */
+		      into  MDCLNCPAT
+		            (
+		            CLRS_PRJC_CD
+		         ,  CLRS_PRJC_DR_ID
+		         ,  PTNO
+		         ,  RGST_DT
+		         ,  CLRS_PRJC_UNSL_CTN
+		         ,  FRST_RGSR_ID
+		         ,  FRST_RGST_IP
+		         ,  FRST_RGST_DT
+		         ,  FRST_RGST_CLNT_PRGM_ID
+		         ,  FRST_RGST_SRVR_PRGM_ID
+		         ,  LAST_UPDR_ID
+		         ,  LAST_UPDT_IP
+		         ,  LAST_UPDT_DT
+		         ,  LAST_UPDT_CLNT_PRGM_ID
+		         ,  LAST_UPDT_SRVR_PRGM_ID
+		            )
+		    values  (
+		            #{clrsPrjcCd}
+		         ,  #{clrsPrjcDrId}
+		         ,  #{ptno}
+		         ,  current_timestamp
+		         ,  #{clrsPrjcUnslCtn}
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		            )         
+	</insert>
+
+</mapper>

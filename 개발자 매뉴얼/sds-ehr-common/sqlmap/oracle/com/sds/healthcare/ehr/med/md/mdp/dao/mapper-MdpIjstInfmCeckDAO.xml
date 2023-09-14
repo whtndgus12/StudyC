@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpIjstInfmCeckDAO_sql.xml 
+    Description :                                      주사제 안정성DAO
+                  -->
+<mapper namespace="MdpIjstInfmCeckDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO">
+	
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="dgmtRgstTypeCd" column="DGMT_RGST_TYPE_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="orclCd" column="ORCL_CD"/>
+		<result property="pwdrDslwYn" column="PWDR_DSLW_YN"/>
+		<result property="pwdrClsfCd" column="PWDR_CLSF_CD"/>
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="ordrPsblDvsnCd" column="ORDR_PSBL_DVSN_CD"/>
+		<result property="ststDvsnCd" column="STST_DVSN_CD"/>
+		<result property="fludGrpCd" column="FLUD_GRP_CD"/>
+		<result property="mixRprsPdctCd" column="MIX_RPRS_PDCT_CD"/>
+		<result property="diltYn" column="DILT_YN"/>
+		<result property="sktsYn" column="SKTS_YN"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd (항암제대표상품코드 조회) 
+        Description :                                           항암제대표상품코드 조회.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listMixRprsPdctCd */
+		<![CDATA[
+		with MDPR_TB as (
+		select  trim(regexp_substr(#{ordrCdCtn}, '[^|]+', 1, level)) as MDPR_CD
+		 from dual
+		 connect by instr(#{ordrCdCtn}, '|', 1, level-1) > 0
+		)
+		select 
+		        a.MDPR_CD 
+		     ,  a.DGMT_RGST_TYPE_CD 
+		     ,  a.MDPR_NM 
+		     ,  c.ORDR_CLTY_CD 
+		     ,  c.ORCL_CD 
+		     ,  a.PWDR_DSLW_YN 
+		     ,  a.PWDR_CLSF_CD 
+		     ,  a.DRUS_CD 
+		     ,  c.ORDR_PSBL_DVSN_CD 
+		     ,  c.STST_DVSN_CD 
+		     ,  a.FLUD_GRP_CD 
+		     ,  b.MIX_RPRS_PDCT_CD     /* 항암제 대표상품 */
+		     ,  b.DILT_YN 
+		     ,  nvl(b.SKTS_YN, 'N') as SKTS_YN
+		     ,  c.DRAP_DVSN_CD
+		  from  SDDDGCDMT a
+		     ,  SDIJSTMAT b 
+		     ,  MDORDRCMT c
+		 where  a.MDPR_CD in (select MDPR_CD from MDPR_TB)
+		   and  b.MIX_RPRS_PDCT_CD(+) = a.MIX_RPRS_PDCT_CD
+		   and  a.MDPR_CD = c.ORDR_CD
+		 order  by b.DILT_YN
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO">
+	
+		<result property="gubun" column="GUBUN"/>
+		<result property="mixRprsPdctCd" column="MIX_RPRS_PDCT_CD"/>
+		<result property="fludGrpCd" column="FLUD_GRP_CD"/>
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm (주사제안정성 희석수액 정보조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstDiflInfm */
+		<![CDATA[
+		with MDPR_TB as (
+		select  trim(regexp_substr(#{mixRprsPdctCtn}, '[^|]+', 1, level)) as MIX_RPRS_PDCT_CD
+		 from dual
+		 connect by instr(#{mixRprsPdctCtn}, '|', 1, level-1) > 0
+		)
+		select  a.GUBUN 
+		     ,  a.MIX_RPRS_PDCT_CD
+		     ,  a.FLUD_GRP_CD 
+		     ,  a.MDPR_CD 
+		     ,  a.MDPR_NM 
+		  from  ( 
+		        select 'A' AS GUBUN 
+		             ,  a.MIX_RPRS_PDCT_CD 
+		             ,  a.FLUD_GRP_CD 
+		             ,  b.MDPR_CD 
+		             ,  b.MDPR_NM 
+		          from  ( 
+		                select  a.MIX_RPRS_PDCT_CD 
+		                     ,  DECODE(DIFL_CD, '01', 'XWI', '02','XNS','03','X5DW','04','XHS','05','XDI2A' , '06', 'XND' ) FLUD_GRP_CD 
+		                  from  SDIJSTFLT a 
+		                ) a 
+		             ,  SDDDGCDMT b
+		         where  
+		               a.MIX_RPRS_PDCT_CD in (select MIX_RPRS_PDCT_CD from MDPR_TB)
+		           and a.FLUD_GRP_CD = b.FLUD_GRP_CD 
+		         group 
+		            by  a.MIX_RPRS_PDCT_CD, a.FLUD_GRP_CD, b.MDPR_CD, b.MDPR_NM 
+		        ) a 
+		 order  by GUBUN, MDPR_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstTaboDiflInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO">
+	
+		<result property="gubun" column="GUBUN"/>
+		<result property="mixRprsPdctCd" column="MIX_RPRS_PDCT_CD"/>
+		<result property="fludGrpCd" column="FLUD_GRP_CD"/>
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="mdprNm" column="MDPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstTaboDiflInfm (주사제 안정성 금기희석수액 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstTaboDiflInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstTaboDiflInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-listIjstTaboDiflInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		with MDPR_TB as (
+		select  trim(regexp_substr(#{mixRprsPdctCtn}, '[^|]+', 1, level)) as MIX_RPRS_PDCT_CD
+		 from dual
+		 connect by instr(#{mixRprsPdctCtn}, '|', 1, level-1) > 0
+		)
+		select  a.GUBUN
+		     ,  a.MIX_RPRS_PDCT_CD
+		     ,  a.FLUD_GRP_CD
+		     ,  a.MDPR_CD
+		     ,  a.MDPR_NM
+		  from  (
+		        select  'B' AS GUBUN
+		             ,  t.MIX_RPRS_PDCT_CD
+		             ,  t.FLUD_GRP_CD
+		             ,  b.MDPR_CD
+		             ,  b.MDPR_NM
+		          from  (
+		                select  a.MIX_RPRS_PDCT_CD
+		                     ,  decode(TABO_FLUD_CD, '01', 'XWI', '02', 'XNS', '03', 'X5DW', '04', 'XHS', '05', 'XDI2A', '06', 'XND') FLUD_GRP_CD
+		                  from  SDIJSTLTT a      /* mix 금기수액 */
+		                 where  a.MIX_RPRS_PDCT_CD in (select MIX_RPRS_PDCT_CD from MDPR_TB)
+		                 union    /* Only인 경우에는 점적정맥주사용수액 내 희석 수액 목록을 제외한 나머지 수액을 금기수액에 추가   */
+		                select  MIX_RPRS_PDCT_CD 
+		                     ,  decode(DIFL_CD, '01', 'XWI', '02', 'XNS', '03', 'X5DW', '04', 'XHS', '05', 'XDI2A', '06', 'XND') FLUD_GRP_CD
+		                  from  (                         
+		                        select  a.MIX_RPRS_PDCT_CD
+		                             ,  c.DIFL_CD
+		                          from  SDIJSTLTT a
+		                             ,  SDIJSTFLT b
+		                             ,  (
+		                                 select '01' as DIFL_CD from dual union all
+		                                 select '02' as DIFL_CD from dual union all
+		                                 select '03' as DIFL_CD from dual union all
+		                                 select '04' as DIFL_CD from dual union all
+		                                 select '05' as DIFL_CD from dual union all
+		                                 select '06' as DIFL_CD from dual 
+		                                ) c
+		                         where  a.MIX_RPRS_PDCT_CD in (select MIX_RPRS_PDCT_CD from MDPR_TB)
+		                           and  a.TABO_FLUD_CD = '07'                       /* Only */
+		                           and  a.RCNS_DILT_DVSN_CD = '02'                  /* 점적정맥주사용 수액내 회석정보의 금기수액 */
+		                           and  b.MIX_RPRS_PDCT_CD = a.MIX_RPRS_PDCT_CD
+		                         minus
+		                        select  a.MIX_RPRS_PDCT_CD
+		                             ,  b.DIFL_CD
+		                          from  SDIJSTLTT a
+		                             ,  SDIJSTFLT b
+		                         where  a.MIX_RPRS_PDCT_CD in (select MIX_RPRS_PDCT_CD from MDPR_TB)
+		                           and  a.TABO_FLUD_CD = '07'
+		                           and  a.RCNS_DILT_DVSN_CD = '02'
+		                           and  b.MIX_RPRS_PDCT_CD = a.MIX_RPRS_PDCT_CD
+		                        )
+		                ) t
+		             ,  SDDDGCDMT b
+		         where 
+		                b.FLUD_GRP_CD  = t.FLUD_GRP_CD
+		           and  t.MIX_RPRS_PDCT_CD in (select MIX_RPRS_PDCT_CD from MDPR_TB)
+		         group  
+		            by  t.MIX_RPRS_PDCT_CD
+		             ,  t.FLUD_GRP_CD
+		             ,  b.MDPR_CD
+		             ,  b.MDPR_NM 
+		        ) a
+		 order  
+		    by  GUBUN
+		     ,  MIX_RPRS_PDCT_CD 
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="errRsltCtn" column="ERR_RSLT_CTN"/>
+		<result property="ordrNmCtn" column="ORDR_NM_CTN"/>
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="pwdijYn" column="PWDIJ_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIjstInfmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIjstInfmCeckDAO-selectOneDual */
+		select  '' as ORDR_CD
+		     ,  0  as ORDR_SNO
+		     ,  '' as ERR_RSLT_CTN
+		     ,  '' as ORDR_NM_CTN
+		     ,  '' as DRUS_CD
+		     ,  '' as PWDIJ_YN
+		  from  dual;
+	</select>
+
+
+
+</mapper>

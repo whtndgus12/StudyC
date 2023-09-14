@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmBtchMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcmBtchMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO">
+	
+		<result property="prfmYmd" column="PRFM_YMD"/>
+		<result property="btchWorkId" column="BTCH_WORK_ID"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="rsltNrmlYn" column="RSLT_NRML_YN"/>
+		<result property="prsgRsltDvsnCd" column="PRSG_RSLT_DVSN_CD"/>
+		<result property="rsltCtn" column="RSLT_CTN"/>
+		<result property="btchWorkDetlStrtDt" column="BTCH_WORK_DETL_STRT_DT"/>
+		<result property="btchWorkDetlFnshDt" column="BTCH_WORK_DETL_FNSH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt (배치 결과 조회) 
+        Description :                                           배치 결과 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt-result" useCache="true" flushCache="false">
+		 select /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRslt */
+				   to_char(CREATE_TIME, 'YYYYMMDD') as PRFM_YMD
+				 , JOB_NAME as BTCH_WORK_ID
+				 , JOB_NAME as PRGM_ID
+				 , case when STATUS = 'COMPLETED' then 'Y' else 'N' end  as RSLT_NRML_YN
+				 , case when STATUS = 'COMPLETED' then 'C'
+		                  when STATUS = 'STARTED' then 'S'
+		                  when STATUS = 'STOPPED' then 'P'
+		                  when STATUS = 'WAITING' then 'W'
+		                   else 'F'
+		            end  as PRSG_RSLT_DVSN_CD
+				 , STATUS as RSLT_CTN
+		       /*,  a.REPC_CNT as PRSG_CCT*/
+			 	 , to_char(a.CREATE_TIME, 'YYYYMMDDHH24MISS')  as BTCH_WORK_DETL_STRT_DT
+				 , to_char(a.UPDATE_TIME, 'YYYYMMDDHH24MISS')  as BTCH_WORK_DETL_FNSH_DT
+		   from afb.batch_job_execution a
+		 where a.CREATE_TIME BETWEEN to_date(#{prfmYmd} || '000000', 'YYYYMMDDHH24MISS') AND to_date(#{prfmYmd} || '235959', 'YYYYMMDDHH24MISS')
+		     and (a.JOB_NAME  = #{btchWorkId} or a.JOB_NAME = #{prgmId})
+		     and a.JOB_ID         = (select max(c.JOB_ID)
+		                                      from afb.batch_job_execution c
+		                                    where c.CREATE_TIME BETWEEN to_date(#{prfmYmd} || '000000', 'YYYYMMDDHH24MISS') AND to_date(#{prfmYmd} || '235959', 'YYYYMMDDHH24MISS')
+		                                        and (c.JOB_NAME    = #{btchWorkId} or c.JOB_NAME = #{prgmId})
+		                                    )
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO">
+	
+		<result property="prfmYmd" column="PRFM_YMD"/>
+		<result property="btchWorkId" column="BTCH_WORK_ID"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="rsltNrmlYn" column="RSLT_NRML_YN"/>
+		<result property="prsgRsltDvsnCd" column="PRSG_RSLT_DVSN_CD"/>
+		<result property="rsltCtn" column="RSLT_CTN"/>
+		<result property="btchWorkDetlStrtDt" column="BTCH_WORK_DETL_STRT_DT"/>
+		<result property="btchWorkDetlFnshDt" column="BTCH_WORK_DETL_FNSH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmBtchMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId-result" useCache="true" flushCache="false">
+		 select /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmBtchMngmDAO-selectOneBtchRsltByJobId */
+				   to_char(CREATE_TIME, 'YYYYMMDD') as PRFM_YMD
+				 , JOB_NAME as BTCH_WORK_ID
+				 , JOB_NAME as PRGM_ID
+				 , case when STATUS = 'COMPLETED' then 'Y' else 'N' end  as RSLT_NRML_YN
+				 , case when STATUS = 'COMPLETED' then 'C'
+		                  when STATUS = 'STARTED' then 'S'
+		                  when STATUS = 'STOPPED' then 'P'
+		                  when STATUS = 'WAITING' then 'W'
+		                   else 'F'
+		            end  as PRSG_RSLT_DVSN_CD
+				 , STATUS as RSLT_CTN
+		       /*,  a.REPC_CNT as PRSG_CCT*/
+			 	 , to_char(a.CREATE_TIME, 'YYYYMMDDHH24MISS')  as BTCH_WORK_DETL_STRT_DT
+				 , to_char(a.UPDATE_TIME, 'YYYYMMDDHH24MISS')  as BTCH_WORK_DETL_FNSH_DT
+		   from afb.batch_job_execution a
+		 where 1=1
+		     and a.JOB_ID         = #{jobId}
+	</select>
+
+
+
+</mapper>

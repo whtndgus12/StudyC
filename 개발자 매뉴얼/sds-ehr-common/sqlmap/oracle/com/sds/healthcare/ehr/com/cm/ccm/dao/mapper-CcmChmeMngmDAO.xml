@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmChmeMngmDAO_sql.xml 
+    Description :                                      문자메시지 관리
+                  -->
+<mapper namespace="CcmChmeMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr-result" type="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmeMngmDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="chmeDvsnCd" column="CHME_DVSN_CD"/>
+		<result property="sno" column="SNO"/>
+		<result property="chrcPhrsCtn" column="CHRC_PHRS_CTN"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr (문자메시지문구조회 팝업) 
+        Description :                                           문자메시지문구조회 팝업
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmeMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr"  parameterType="com.sds.healthcare.ehr.com.cm.ccm.vo.CcmChmeMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cm-ccm-dao-CcmChmeMngmDAO-listChmePhrsInqr */
+							   DPRT_CD as DPRT_CD,
+							   CHME_DVSN_CD as CHME_DVSN_CD,
+							   SNO as SNO,
+							   CHRC_PHRS_CTN as CHRC_PHRS_CTN,
+							   USE_YN as USE_YN,
+							   FRST_RGSR_ID as FRST_RGSR_ID,
+							   '' as RTUR_VL_1,
+							   ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUX_004' and COMN_DTLS_CD = CHME_DVSN_CD )  as RTUR_VL_2,
+							   '' as RTUR_VL_3,
+							   '' as RTUR_VL_4
+						 from  CCCHMEPMT
+						where
+						CHME_DVSN_CD like nvl(#{chmeDvsnCd}, '%' )
+			   /*            and  DPRT_CD = :cms_chmepmt_003[0].dprt_cd */
+						  and  FRST_RGSR_ID = nvl(#{frstRgsrId}, FRST_RGSR_ID)
+						  and  USE_YN = #{useYn}
+						order by CHME_DVSN_CD
+		]]>
+	</select>
+
+
+
+</mapper>

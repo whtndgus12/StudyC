@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrSaveInrfDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpOrdrSaveInrfDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneComnCdDetlCtn */
+				   a.COMN_GRP_CD as COMN_GRP_CD                                   /*  공통그룹코드 */
+				,  a.COMN_DTLS_CD as COMN_DTLS_CD                                /*  공통세부코드 */
+				,  a.DETL_CD_NM as DETL_CD_NM                                         /*  상세코드명 */
+				,  a.DETL_CD_DSCR_CTN as DETL_CD_DSCR_CTN                     /*  상세코드설명내용 */
+				,  to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD                 /*  시작일자 */
+				,  to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD                /*  종료일자 */
+				,  a.SCRN_DSPL_SQNC as SCRN_DSPL_SQNC                         /*  화면표시순서 */
+		  from  CCCMCDDMT a
+		where
+		          a.COMN_GRP_CD  = #{comnGrpCd}
+		  and   a.COMN_DTLS_CD = #{comnDtlsCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn (임시 약처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           AS-IS: mdd_medordt_s61 임시 약처방 실처방전환 또는 취소시 원처방 유무 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		 select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprDrugOrdrCnvnTrgtEn */
+		          case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		   from  MDMEDORDT a
+		      ,  APRCRPTNT b
+		  where  a.MDRP_NO = b.MDRP_NO
+		    and  a.MDRP_NO    = #{mdrpNo}
+		    and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		    and  DC_DVSN_CD  <![CDATA[ <> ]]> 'X'
+		    and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn (임시 검사처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           AS-IS: mdd_exmordt_s61 임시 검사처방 실처방전환 또는 취소시 원처방 유무를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprExmnOrdrCnvnTrgtEn */
+		         case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		  from  MDEXMORDT a
+		     ,  APRCRPTNT b
+		 where  a.MDRP_NO      = b.MDRP_NO
+		   and  a.MDRP_NO      = #{mdrpNo}
+		   and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		   and  DC_DVSN_CD  <![CDATA[ <> ]]> 'X'
+		   and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn (임시 처치처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 처치처방 실처방전환 또는 취소시 원처방 유무를 조회한다. AS-IS: mdd_trtordt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprOrdrFeeOrdrCnvnTrgtEn */
+		            case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		     from  MDTRTORDT a
+		        ,  APRCRPTNT b
+		    where  a.MDRP_NO = b.MDRP_NO
+		      and  a.MDRP_NO   = #{mdrpNo}
+		      and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD  <![CDATA[ <> ]]> 'X'
+		      and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn (임시 혈액처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 혈액처방 실처방전환 또는 취소시 원처방 유무를 조회한다. AS-IS: mdd_bldordt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBlodOrdrCnvnTrgtEn */
+		           case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		    from  MDBLDORDT a
+		       ,  APRCRPTNT b
+		   where  a.MDRP_NO = b.MDRP_NO
+		     and  a.MDRP_NO   = #{mdrpNo}
+		     and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		     and  DC_DVSN_CD  <![CDATA[ <> ]]> 'X'
+		     and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn (임시 재활처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 재활처방 실처방전환 또는 취소시 원처방 유무를 조회한다. AS-IS: mdd_rehordt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprRhblOrdrCnvnTrgtEn */
+		           case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		    from  MDREHORDT a
+		       ,  APRCRPTNT b
+		   where  a.MDRP_NO = b.MDRP_NO
+		     and  a.MDRP_NO     = #{mdrpNo}
+		     and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		     and  DC_DVSN_CD  <![CDATA[  <> ]]> 'X'
+		     and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn (임시 기본처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 기본처방 실처방전환 또는 취소시 원처방 유무 조회한다. AS-IS: mdd_basordt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprBsisOrdrCnvnTrgtEn */
+		            case when count ( a.PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		     from  MDBASORDT a
+		        ,  APRCRPTNT b
+		    where  a.MDRP_NO = b.MDRP_NO
+		      and  a.MDRP_NO   = #{mdrpNo}
+		      and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD  <![CDATA[ <> ]]> 'X'
+		      and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn (임시 CIV처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 CIV처방 실처방전환 또는 취소시 원처방 유무를 조회한다. AS-IS: mdd_civordt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprCivOrdrCnvnTrgtEn */
+		            case when count ( PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		     from  MDCIVORDT
+		    where  ( ORGL_INJC_ORDR_YMD, ORGL_INJC_ORDR_SNO ) in
+		           ( select  ORDR_YMD, ORDR_SNO
+		               from  MDMEDORDT a
+		                  ,  APRCRPTNT b
+		              where  a.MDRP_NO = b.MDRP_NO
+		                and  a.MDRP_NO = #{mdrpNo}
+		                and  DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' ) 
+		            )
+		      and  DC_DVSN_CD <![CDATA[  <> ]]> 'X'
+		      and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ordrEn" column="ORDR_EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn (임시 추가 특기 사항 처방 실처방전환 또는 취소시 원처방 유무 조회) 
+        Description :                                           임시 추가 특기 사항 처방 실처방전환 또는 취소시 원처방 유무를 조회한다. AS-IS: mdd_padunnt_s61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-selectOneTmprAdtnSpabSbjcOrdrOrglOrdrEn */
+		        case when count ( PTNO ) <![CDATA[ > ]]> 0 then 'Y' else 'N'end as ORDR_EN
+		    from  MDPADUNNT a
+		   where  MDRP_NO = #{mdrpNo}
+		     and  ( ORGL_ORDR_YMD, ORGL_ORDR_SNO ) in
+		                                              ( select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDBASORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'A'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		                                                 union  all
+		                                                select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDMEDORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'B'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		                                                 union  all
+		                                                select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDEXMORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'C'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		                                                 union  all
+		                                                select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDTRTORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'D'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		                                                 union  all
+		                                                select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDBLDORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'E'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		                                                 union  all
+		                                                select  ORDR_YMD, ORDR_SNO
+		                                                  from  MDREHORDT sa
+		                                                     ,  APRCRPTNT sb
+		                                                 where  sa.MDRP_NO = sb.MDRP_NO
+		                                                   and  a.ORTA_DVSN_CD = 'F'
+		                                                   and  sa.MDRP_NO = #{mdrpNo}
+		                                                   and  sa.DC_DVSN_CD  in ( #{afiOrglOrdrDcDvsnCd}, 'Y' ) 
+		                                              )
+		     and  DC_DVSN_CD <![CDATA[  <> ]]> 'X'
+		     and  rownum = 1 
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprDrugOrdrRomOrdrAllCnvn (임시 약처방 실처방전환 또는 취소시 원처방 일괄 처리) 
+        Description :                                           AS-IS: mdd_medordt_u61 임시 약처방 실처방전환 또는 취소시 원처방을 일괄 처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprDrugOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprDrugOrdrRomOrdrAllCnvn */
+		           MDMEDORDT a
+		      set  DC_DVSN_CD        = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID       = nvl(#{dcOddrId}, #{gvUserId}) /*  DC처방의사ID */
+		        ,  DC_ORDR_DT       = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                               /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                               /*  최종수정SMC서버프로그램ID */
+		      <if test='afiOrglOrdrDcDvsnCd != "O"'>
+		        ,  ORFR_CD = case when ODKI_CD = 'D' and #{afiOrglOrdrDcDvsnCd} = 'C'
+		                          then 'E'
+		                          else (case when ORFR_CD = 'E'                                           /*  응급처방인데 */
+		                                            and #{afiOrglOrdrDcDvsnCd} = 'C'                /*  항암가처방 */
+		                                            and #{dcDvsnCd} = 'N'                               /* 실처방 전환인 경우 */
+		                                            and nvl( MIX_KIND_CD , 'N' ) <![CDATA[ <> ]]> '1'             /*  약국혼합조제가 아니면 진도테이블에 데이터가 없으면 약국에서 끌고가지 않음 */
+		                                     then 'I' 
+		                                     else ORFR_CD 
+		                                 end)  /* 약국에서 자동으로 가져가는 조건을 제외하고는 추가로 변경함 */ 
+		                      end
+		        ,  SHTR_ADMS_DRUG_YN = case when  #{afiOrglOrdrDcDvsnCd} = 'C' and #{dcDvsnCd} = 'N' then 'Y' else SHTR_ADMS_DRUG_YN end /*단기입원약여부*/
+		      </if>
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[  <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprExmnOrdrRomOrdrAllCnvn (임시 검사처방 실처방전환 또는 취소시 원처방 일괄 처리) 
+        Description :                                           AS-IS: mdd_exmordt_u61 임시 검사처방 실처방전환 또는 취소시 원처방을 일괄 처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprExmnOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprExmnOrdrRomOrdrAllCnvn */
+		           MDEXMORDT a
+		      set  DC_DVSN_CD  = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                  /*  최종수정SMC클라이언트프로그램ID */
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                  /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[ <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprOrdrFeeOrdrRomOrdrAllCnvn (임시 처방료처방 실처방전환 또는 취소시 원처방을 일괄 처리) 
+        Description :                                           임시 처방료처방 실처방전환 또는 취소시 원처방을 일괄 처리한다. AS-IS: mdd_trtordt_u61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprOrdrFeeOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprOrdrFeeOrdrRomOrdrAllCnvn */
+		           MDTRTORDT a
+		      set  DC_DVSN_CD        = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                  /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                  /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[ <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBlodOrdrRomOrdrAllCnvn (임시 수혈처방 실처방전환 또는 취소시 원처방 일괄 처리) 
+        Description :                                           AS-IS: mdd_bldordt_u61 임시 수혈처방 실처방전환 또는 취소시 원처방을 일괄 처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBlodOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBlodOrdrRomOrdrAllCnvn */
+		           MDBLDORDT a
+		      set  DC_DVSN_CD = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null  /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end  /*  DC구분코드 */
+		        ,  DC_ODDR_ID       = #{dcOddrId}  /*  DC처방의사ID */
+		        ,  DC_ORDR_DT       = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' )  /*  DC처방일시 */
+		        ,  LAST_UPDR_ID     = #{gvUserId}  /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp}  /*  최종수정IP */
+		        ,  LAST_UPDT_DT     = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' )  /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}  /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}  /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[  <>  ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprRhblOrdrRomOrdrAllCnvn (임시 재활처방 실처방전환 또는 취소시 원처방 일괄 처리) 
+        Description :                                           임시 재활처방 실처방전환 또는 취소시 원처방을 일괄 처리한다. AS-IS: mdd_rehordt_u61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprRhblOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprRhblOrdrRomOrdrAllCnvn */
+		           MDREHORDT a
+		      set  DC_DVSN_CD        = case when DC_DVSN_CD = 'Y' then 'X' else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId} /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[ <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBsisOrdrRomOrdrAllCnvn (임시 기본처방 실처방전환 또는 취소시 원처방 일괄 처리) 
+        Description :                                           임시 기본처방 실처방전환 또는 취소시 원처방 일괄 처리한다. AS-IS: mdd_basordt_u61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBsisOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprBsisOrdrRomOrdrAllCnvn */
+		           MDBASORDT a
+		      set  DC_DVSN_CD        = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId} /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO           = #{mdrpNo}
+		      and  DC_DVSN_CD        in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		      and  DC_DVSN_CD      <![CDATA[  <>  ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprCivOrdrRomOrdrAllCnvn (임시 CIV처방 실처방전환 또는 취소시 원처방 처리) 
+        Description :                                           임시 CIV처방 실처방전환 또는 취소시 원처방을 처리한다. AS-IS: mdd_civordt_u61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprCivOrdrRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprCivOrdrRomOrdrAllCnvn */
+		           MDCIVORDT
+		      set  DC_DVSN_CD = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId} /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} /*  최종수정SMC서버프로그램ID */
+		    where  ( ORGL_INJC_ORDR_YMD, ORGL_INJC_ORDR_SNO ) in
+		           ( select  ORDR_YMD, ORDR_SNO
+		               from  MDMEDORDT a
+		              where  MDRP_NO = #{mdrpNo}
+		                and  DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		            )
+		     and  DC_DVSN_CD <![CDATA[ <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprAdtnSpabSbjcRomOrdrAllCnvn (임시 추가특이내용처방 실처방전환 또는 취소시 원처방 처리) 
+        Description :                                           임시 추가특이내용처방 실처방전환 또는 취소시 원처방을 처리한다. AS-IS: mdd_padunnt_u61
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprAdtnSpabSbjcRomOrdrAllCnvn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-updateTmprAdtnSpabSbjcRomOrdrAllCnvn */
+		           MDPADUNNT a
+		      set  DC_DVSN_CD = case when DC_DVSN_CD = 'Y' then case when DC_CNNU_ID is not null /*  DC 간호확인된 d/c 처방은 삭제처리한다. */
+		                                    then 'X'
+		                                    else 'Y' end
+		                                    else #{dcDvsnCd} end /*  DC구분코드 */
+		        ,  DC_ODDR_ID        = #{dcOddrId} /*  DC처방의사ID */
+		        ,  DC_ORDR_DT        = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  DC처방일시 */
+		        ,  LAST_UPDR_ID      = #{gvUserId} /*  최종수정자ID */
+		        ,  LAST_UPDT_IP      = #{gvUserIp} /*  최종수정IP */
+		        ,  LAST_UPDT_DT      = to_date ( #{dcOrdrDt}, 'YYYYMMDDhh24miss' ) /*  최종수정일시 */
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId} /*  최종수정SMC클라이언트프로그램ID */
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} /*  최종수정SMC서버프로그램ID */
+		    where  MDRP_NO = #{mdrpNo}
+		      and  ( ORGL_ORDR_YMD, ORGL_ORDR_SNO ) in
+		           ( select  ORDR_YMD, ORDR_SNO
+		               from  MDBASORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'A'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		              union  all
+		             select  ORDR_YMD, ORDR_SNO
+		               from  MDMEDORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'B'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		              union  all
+		             select  ORDR_YMD, ORDR_SNO
+		               from  MDEXMORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'C'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		              union  all
+		             select  ORDR_YMD, ORDR_SNO
+		               from  MDTRTORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'D'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		              union  all
+		             select  ORDR_YMD, ORDR_SNO
+		               from  MDBLDORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'E'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		              union  all
+		             select  ORDR_YMD, ORDR_SNO
+		               from  MDREHORDT sa
+		              where  sa.MDRP_NO = #{mdrpNo}
+		                and  a.ORTA_DVSN_CD = 'F'
+		                and  sa.DC_DVSN_CD in ( #{afiOrglOrdrDcDvsnCd}, 'Y' )
+		            )
+		      and  DC_DVSN_CD       <![CDATA[ <> ]]> 'X'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-deletePtntTmprClncDx (대진의 변경으로 기등록된 환자임시임상진단 삭제처리) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-deletePtntTmprClncDx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-deletePtntTmprClncDx */
+		delete 
+		  from  MDPACLNTT a
+		 where  MDRP_NO = #{mdrpNo}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ptdvCd" column="PTDV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="chdrId" column="CHDR_ID"/>
+		<result property="orocDprtCd" column="OROC_DPRT_CD"/>
+		<result property="subTypeCd" column="SUB_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr () 
+        Description :                                           항암확정 처방을 실처방으로 전환시 퇴원약이 있는지 조회한다..
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSaveInrfDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSaveInrfDAO-listValdDschDrugInqr */
+		select  a.PTNO
+		     ,  to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD
+		     ,  a.CODV_CD as PTDV_CD
+		     ,  a.MCDP_CD
+		     ,  a.CHDR_ID
+		     ,  a.OROC_DPRT_CD
+		     ,  a.SUB_TYPE_CD
+		  from  ( 
+		        select  PTNO
+		             ,  ORDR_YMD
+		             ,  CODV_CD
+		             ,  MCDP_CD
+		             ,  CHDR_ID
+		             ,  FRNS_DPRT_CD as OROC_DPRT_CD
+		             ,  SUB_TYPE_CD
+		          from  MDMEDORDT a
+		         where  a.MDRP_NO = #{mdrpNo}
+		           and  a.ODKI_CD = 'D'
+		           and  a.ORFR_CD = 'E'
+		           and  nvl(PHDP_PRIN_YN, 'N') <![CDATA[ <> ]]> 'Y'
+		           and  DC_DVSN_CD = 'N'
+		         group  
+		            by  PTNO, ORDR_YMD, CODV_CD, MCDP_CD, CHDR_ID, FRNS_DPRT_CD, SUB_TYPE_CD
+		        ) a
+	</select>
+
+
+
+</mapper>

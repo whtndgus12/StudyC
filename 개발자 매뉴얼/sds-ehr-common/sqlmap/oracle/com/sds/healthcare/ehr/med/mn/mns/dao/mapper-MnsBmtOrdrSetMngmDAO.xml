@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnsBmtOrdrSetMngmDAO_sql.xml 
+    Description :                                      장기이식 Protocol 마스터 처방셋 연결 항목 관리
+                  -->
+<mapper namespace="MnsBmtOrdrSetMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetDltn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetDltn"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  >
+		<![CDATA[
+		    delete  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetDltn */ /*+ med_bmtpmit_d02$I01_BMT Protocol 마스터 처방셋 연결 항목 삭제 */
+		      from  MEBMTPMIT
+		     where  BMT_PRCL_ID      = #{bmtPrclId}
+		       and  OSET_DETL_SNO    = case when #{osetDetlSno} > 0 then #{osetDetlSno}
+		                                    else OSET_DETL_SNO
+		                               end
+		       and  OSET_DETL_SNO    > 0
+			]]>
+	</delete>
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo-result" type="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO">
+	
+		<result property="rsltVl" column="RSLT_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetInfo */ /*+ med_bmtpmit_s01$S01_BMT Protocol 마스터 시작일 지정 항목 여부 체크 */
+		            case when sum(vl) > 0 then 'Y'
+		                 else                  'N'
+		            end as RSLT_VL
+		      from  (
+		            select  case when count(*) > 0 then  1  -- candidate
+		                         else                   -1  -- NOT candidate
+		                    end                             as vl
+		              from  MECTRLMMT
+		             where  EMR_CTRL_CD      = 'MEB_111'
+		               and  EMR_DTLS_CTRL_CD = #{ordrCd}
+		             union  all
+		            select  case when count(*) > 0 then -1  -- SHOULD NOT
+		                         else                    0  -- MIGHT BE
+		                    end
+		              from  MEBMTPMIT
+		             where  BMT_STRT_SCDL_APLY_ITEM_YN = 'Y'
+		               and  BMT_PRCL_ID = #{inptVl3}
+		            )
+			]]>
+	</select>
+	
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertRerfAtchFileRgst () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertRerfAtchFileRgst"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  >
+		<![CDATA[
+			insert  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertBmtOrdrSetItemRgst */ /*+ med_bmtpmit_i03$I01_BMT Protocol 마스터 처방셋 연결 항목 추가 DAM */
+			  into  MEBMTPMIT
+				 (  BMT_PRCL_ITEM_ID
+				 ,  BMT_PRCL_ID
+				 ,  BMT_PRCL_ITEM_NM
+				 ,  OSET_DETL_SNO
+				 ,  OSET_CD
+				 ,  OSET_SNO
+				 ,  OSET_DVSN_CD
+				 ,  SORT_SQNC
+				 ,  BMT_STRT_SCDL_APLY_ITEM_YN
+				 ,  FRST_RGSR_ID
+				 ,  FRST_RGST_IP
+				 ,  FRST_RGST_DT
+				 ,  FRST_RGST_CLNT_PRGM_ID
+				 ,  FRST_RGST_SRVR_PRGM_ID
+				 ,  LAST_UPDR_ID
+				 ,  LAST_UPDT_IP
+				 ,  LAST_UPDT_DT
+				 ,  LAST_UPDT_CLNT_PRGM_ID
+				 ,  LAST_UPDT_SRVR_PRGM_ID
+				 )
+			select  ( select  nvl(max(to_number(BMT_PRCL_ITEM_ID)), 0) + 1
+						from  MEBMTPMIT
+					)
+				 ,  #{inptVl3}
+				 ,  ( select  nvl2(INGR_NM, substr(INGR_NM, 1, 100), substr(ORDR_NM, 1, 100))
+						from  MDORDRCMT
+					   where  ORDR_CD   = #{ordrCd}
+						 and  APST_YMD <= trunc(sysdate)
+						 and  APFN_YMD >= trunc(sysdate)+1
+						 and  ROWNUM    < 2
+					)
+				 ,  #{osetDetlSno}
+				 ,  #{osetCd}
+				 ,  #{osetSno}
+				 ,  #{osetDvsnCd}
+				 ,  case when #{sortSqnc} < 1 then
+							  (
+								 select  nvl(max(sort_sqnc), 0)+1
+								   from  MEBMTPMIT
+								  where  BMT_PRCL_ID = #{bmtPrclId}
+							  )
+						 else #{sortSqnc}
+					end
+				 ,  #{bmtStrtScdlAplyItemYn}
+				 ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+				 ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+			  from  DUAL
+	]]>	  
+	</insert>
+		
+		
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertBmtOrdrSetPmstRgst () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertBmtOrdrSetPmstRgst"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  >
+		<![CDATA[
+			insert  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-insertBmtOrdrSetPmstRgst */ /*+ med_bmtpmst_i03$I01_BMT Protocol 마스터 처방셋연결 시작일지정항목 일정 등록 DAM */
+			  into  MEBMTPMST
+				 (  BMT_PRCL_ID
+				 ,  BMT_PRCL_ITEM_ID
+				 ,  BMT_PRCL_APLY_DDCN
+				 ,  BMT_PRCL_APLY_CD
+				 ,  FRST_RGSR_ID
+				 ,  FRST_RGST_IP
+				 ,  FRST_RGST_DT
+				 ,  FRST_RGST_CLNT_PRGM_ID
+				 ,  FRST_RGST_SRVR_PRGM_ID
+				 ,  LAST_UPDR_ID
+				 ,  LAST_UPDT_IP
+				 ,  LAST_UPDT_DT
+				 ,  LAST_UPDT_CLNT_PRGM_ID
+				 ,  LAST_UPDT_SRVR_PRGM_ID
+				 )
+			values
+				 (  #{inptVl3}
+				 ,  (
+					select  max(i.BMT_PRCL_ITEM_ID)
+					  from  MEBMTPMIT i
+					 where  i.BMT_PRCL_ID      = #{inptVl3}
+					   and  i.OSET_DETL_SNO    = #{osetDetlSno}
+					)
+				 ,  0
+				 ,  '1'
+				 ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+				 ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+				 )
+	]]>	  
+	</insert>	
+	
+	<!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetPmstDltn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetPmstDltn"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  >
+		<![CDATA[
+		    delete  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-deleteBmtOrdrSetPmstDltn */ /*+ med_bmtpmst_d04$I01_BMT Protocol 마스터 처방셋연결 항목 일정 삭제 DAM */
+		      from  MEBMTPMST
+			 where  BMT_PRCL_ID  = #{inptVl3}
+			   and  BMT_PRCL_ITEM_ID in (select  BMT_PRCL_ITEM_ID
+										   from  MEBMTPMIT
+										  where  BMT_PRCL_ID   = #{inptVl3}
+											and  OSET_DETL_SNO = case when #{osetDetlSno} > 0 then #{osetDetlSno}
+																	  else OSET_DETL_SNO
+																 end
+										)
+			]]>
+	</delete>
+	
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo-result" type="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO">
+	
+		<result property="rsltVl" column="RSLT_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsBmtOrdrSetMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsBmtOrdrSetMngmDAO-selectOneBmtOrdrSetDtInfo */
+					case when count(OSET_DETL_SNO) > 1 then 'Y'
+						 else                               'N'
+		            end as RSLT_VL
+			  from  MDOSETDTT
+			 where  OSET_CD       = #{osetCd}
+			   and  OSET_SNO      = #{osetSno}
+			   and  OSET_DVSN_CD  = #{osetDvsnCd}
+			   and  DRBN_NO       = #{drbnNo}
+		            )
+			]]>
+	</select>
+</mapper>

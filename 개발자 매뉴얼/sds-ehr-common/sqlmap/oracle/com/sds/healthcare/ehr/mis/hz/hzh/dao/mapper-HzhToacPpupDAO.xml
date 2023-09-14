@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhToacPpupDAO_sql.xml 
+    Description :                                      계정과목_팝업 DAO
+                  -->
+<mapper namespace="HzhToacPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhToacPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="toacCd" column="TOAC_CD"/>
+		<result property="sttmJrnzNm" column="STTM_JRNZ_NM"/>
+		<result property="useStrtYmd" column="USE_STRT_YMD"/>
+		<result property="useFnshYmd" column="USE_FNSH_YMD"/>
+		<result property="useYn" column="USE_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup (HZH010F7_1_Popup_계정과목_조회_DAM) 
+        Description :                                           hzd_toaccdt_l91$S01_계정과목_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhToacPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhToacPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup-result" useCache="true" flushCache="false">
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhToacPpupDAO-listToacPpup */
+			   rownum       as SQNC         /*순서 */
+			  ,TOAC_CD      as TOAC_CD      /*계정과목코드 */
+			  ,STTM_JRNZ_NM as STTM_JRNZ_NM /*전표기표명 */
+			  ,USE_STRT_YMD as USE_STRT_YMD /*사용시작일자 */
+			  ,USE_FNSH_YMD as USE_FNSH_YMD /*사용종료일자 */
+			  ,USE_YN       as USE_YN       /*사용여부 */
+		   from
+			   (select
+					TOAC_CD                           TOAC_CD      /*계정과목코드 */
+				   ,STTM_JRNZ_NM                      STTM_JRNZ_NM /*전표기표명 */
+				   ,USE_STRT_YMD                      USE_STRT_YMD /*사용시작일자 */
+				   ,USE_FNSH_YMD                      USE_FNSH_YMD /*사용종료일자 */
+				   ,case when to_char(trunc(sysdate),'yyyymmdd') between USE_STRT_YMD and USE_FNSH_YMD
+									  then 'Y'
+									  else 'N'
+					end                               USE_YN /*사용여부 */
+				from
+					HZTOACCDT /*(HZ)계정과목(MDM연계) */
+				where
+					BSPL_CD                   = #{bsplCd}                    /*사업장코드 */
+				and JRNZ_ACON_YN              = 'Y'
+				and ACON_CLSF_CD           like replace(#{dvsnCd}, 'A', '%') /*계정분류코드 */
+		--고대 특화 사업계획서 예산
+		<if test='bdgtClsfCd != null  and bdgtClsfCd != "" and bdgtClsfCd =="9"'>
+				and BDGT_MNGM_TYPE_CD in ('2', '3') /* K2 2022.11.21 기존 사업계획서예산분류코드 : 1:관리안함/2:미결통제/3:잔고관리  PJTPD_MNGM_TYPE_CD */
+		</if>
+		<if test='bdgtClsfCd != null and !bdgtClsfCd.equals("") and bdgtClsfCd !="9"'>
+				and BDGT_CLSF_CD = #{bdgtClsfCd}       /*예산분류코드[GA009-1:부서예산/2:학회비예산/3:연구과제예산] */
+		</if>
+		--한양대 특화 회계유형
+		<if test='acnsTypeCd != null and !acnsTypeCd.equals("")'>
+				and ACNS_TYPE_CD = #{acnsTypeCd}       /*회계유형코드 */
+		</if>
+				and (   (    #{unstMngmTypeCd}  = 'O'
+						 and UNST_MNGM_TYPE_CD  <![CDATA[   <>  ]]>'1'
+						)
+					 or UNST_MNGM_TYPE_CD like #{unstMngmTypeCd} || '%'   /*미결관리유형코드[GA005-1:관리안함/2:미결통제/3:잔고관리] */
+					)
+				and (   (    'C'        = #{srchCd}           /*검색코드[C:계정과목코드] */
+						 and TOAC_CD like #{srchCdNm} || '%' /*검색코드명 */
+						)
+					 or (    'N'             = #{srchCd}                  /*검색코드[N:전표기표명] */
+						 and STTM_JRNZ_NM like '%' || #{srchCdNm} || '%' /*검색코드명 */
+						)
+					)
+				and (   #{useYn} = 'A' /*사용여부[A:전체] */
+					 or (    'Y'          = #{useYn} /*사용여부[Y:사용] */
+						 and to_char(trunc(sysdate),'yyyymmdd') between USE_STRT_YMD and USE_FNSH_YMD
+						)
+					 or (    'N'           = #{useYn} /*사용여부[N:미사용] */
+						 and to_char(trunc(sysdate),'yyyymmdd') not between USE_STRT_YMD and USE_FNSH_YMD
+						)
+					)
+				order by TOAC_CD
+			   )
+	</select>
+
+
+
+</mapper>

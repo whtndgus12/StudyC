@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpPtntBsifDAO_sql.xml 
+    Description :                                      환자기본정보DAO
+                  -->
+<mapper namespace="MdpPtntBsifDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="lastScinCd" column="LAST_SCIN_CD"/>
+		<result property="lastScinNm" column="LAST_SCIN_NM"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="codvNm" column="CODV_NM"/>
+		<result property="srilPtntCd" column="SRIL_PTNT_CD"/>
+		<result property="rrobPtntEn" column="RROB_PTNT_EN"/>
+		<result property="frstRgstYmd" column="FRST_RGST_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx (환자중증이력 조회) 
+        Description :                                           환자중증이력 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listPtntSrilHx */
+		select  /* 환자중증이력 조회 */
+		        a.MCDP_CD                                       as MCDP_CD              /* 진료과코드 */
+		     ,  (   select  ABRV_DPRT_CD
+		              from  HZDEPTMMT
+		             where  DPRT_CD = a.MCDP_CD
+		        )                                               as ABRV_MCDP_CD         /* 약어진료과코드 */
+		     ,  a.LAST_SCIN_CD                                  as LAST_SCIN_CD         /* 최종상병코드 */
+		     ,  fn_md_diagname_s2(a.LAST_SCIN_CD, 'E', min(a.FRST_RGST_YMD)) as LAST_SCIN_NM   /*  최종상병명 */
+		     ,  a.CODV_CD                                       as CODV_CD              /* 내원구분코드 */
+		     ,  (   select  nvl(DETL_CD_NM, a.CODV_CD)
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD     =   'AP025'
+		               and  COMN_DTLS_CD    =   a.CODV_CD
+		        )                                               as CODV_NM
+		     ,  case
+		            when a.SRIL_PTNT_CD in ('706', '707') then null
+		            when a.SRIL_PTNT_CD is not null then 'Y'
+		            end                                         as SRIL_PTNT_CD         /* 중증환자코드 */
+		     ,  nvl(a.RROB_PTNT_EN, 'N')                        as RROB_PTNT_EN         /* 희귀난치성환자유무 */
+		     ,  to_char(min(a.FRST_RGST_YMD), 'yyyymmdd')       as FRST_RGST_YMD        /* 등록일자 */
+		     ,  to_char(max(a.FNSH_YMD), 'yyyymmdd')            as FNSH_YMD             /* 종료일자 */
+		  from  MDPEDCANT a
+		 where  a.PTNO      =   #{ptno}
+		   and  a.FRST_RGST_YMD <![CDATA[   <   ]]> nvl(FNSH_YMD, to_date('29991231', 'yyyymmdd'))
+		 group
+		    by  MCDP_CD
+		     ,  LAST_SCIN_CD
+		     ,  CODV_CD
+		     ,  case
+		            when a.SRIL_PTNT_CD in ('706', '707') then null
+		            when a.SRIL_PTNT_CD is not null then 'Y'
+		            end
+		     ,  nvl(RROB_PTNT_EN, 'N')
+		 order
+		    by  to_char(max(a.FNSH_YMD), 'yyyymmdd') desc
+		     ,  to_char(min(a.FRST_RGST_YMD), 'yyyymmdd') desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="cnplRdexCd" column="CNPL_RDEX_CD"/>
+		<result property="cnplNm" column="CNPL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm (감면정보 조회) 
+        Description :                                           감면정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-listRdexInfm */
+		select  /* 감면코드조회 */
+		        CNPL_RDEX_CD    as CNPL_RDEX_CD         /* 계약처감면코드 */
+		     ,  CNPL_NM         as CNPL_NM              /* 계약처명 */
+		  from  ACCNCNPLT a     /* 계약처 */
+		     ,  (   select  /* 환자 감면정보 조회 */
+		                    a.BSIS_RDEX_CD      as BSIS_RDEX_CD     /* 기본감면코드    */
+		              from  ACCNERTPT a     /* 직원감면대상자 */
+		             where  a.PTNO  =   #{ptno}
+		               and  trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+		               and  rownum = 1
+		        ) b
+		 where  trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+		   and  a.CNPL_RDEX_CD like b.BSIS_RDEX_CD || '%'
+		   and  a.CNPL_RDEX_DVSN_CD in ('R', 'A')           -- 'ACB_001' / 'A' 공용, 'R' 감면
+		 order
+		    by  a.CNPL_RDEX_CD
+		     ,  a.APST_YMD desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="frrn" column="FRRN"/>
+		<result property="brrn" column="BRRN"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="dethYmd" column="DETH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="psptNo" column="PSPT_NO"/>
+		<result property="frgnIdntCd" column="FRGN_IDNT_CD"/>
+		<result property="frgnRgstNo" column="FRGN_RGST_NO"/>
+		<result property="ssn" column="SSN"/>
+		<result property="btypVrinPcbkNoCtn" column="BTYP_VRIN_PCBK_NO_CTN"/>
+		<result property="zpcd" column="ZPCD"/>
+		<result property="zpadNm" column="ZPAD_NM"/>
+		<result property="deadNm" column="DEAD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif (환자기본정보 조회) 
+        Description :                                           환자기본정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntBsif */
+		select  /* 환자기본정보 조회_MdpPtntBsifDAO-selectOnePtntBsif */
+		        a.PTNO                                      as PTNO
+		     ,  a.PTNT_NM                                   as PTNT_NM                  -- 환자명
+		     ,  a.FRRN                                      as FRRN                     -- 앞주민등록번호
+		     ,  a.BRRN                                      as BRRN                     -- 뒤주민등록번호
+		     ,  a.GEND_CD                                   as GEND_CD                  -- 성별코드
+		     ,  to_char(a.BTDT, 'YYYYMMDD')                 as BTDT                     -- 생년월일
+		     ,  to_char(a.DETH_YMD, 'YYYYMMDD')             as DETH_YMD                 -- 사망일자
+		     ,  a.RMRK_CTN                                  as RMRK_CTN                 -- 비고내용
+		     ,  a.PSPT_NO                                   as PSPT_NO                  -- 여권번호
+		     ,  a.FRGN_IDNT_CD                              as FRGN_IDNT_CD             -- 외국인식별코드
+		     ,  a.FRGN_RGST_NO                              as FRGN_RGST_NO             -- 외국인등록번호
+		     ,  a.SSN                                       as SSN                      -- SSN
+		     ,  b.BTYP_VRIN_PCBK_NO_CTN                     as BTYP_VRIN_PCBK_NO_CTN    -- B형수직감염수첩번호내용
+		     ,  c.ZPCD                                      as ZPCD                     -- 우편번호
+		     ,  c.ZPAD_NM                                   as ZPAD_NM                  -- 우편번호주소명
+		     ,  c.DEAD_NM                                   as DEAD_NM                  -- 상세주소명
+		  from  APPTPTNTT a
+		     ,  APPTADIFT b         -- 환자부가정보
+		     ,  APPTADRST c         -- 환자주소
+		 where  a.ptno              =   #{ptno}
+		   and  b.PTNO          (+) =   a.PTNO
+		   and  c.PTNO          (+) =   a.PTNO
+		   and  c.ADRS_USGE_CD  (+) =   'A'
+		   and  c.ADRS_SNO      (+) =   1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cnpnDvsnCd" column="CNPN_DVSN_CD"/>
+		<result property="cnpnSno" column="CNPN_SNO"/>
+		<result property="ovrsTlnoYn" column="OVRS_TLNO_YN"/>
+		<result property="ptntTlno" column="PTNT_TLNO"/>
+		<result property="ptntTlnoCtn" column="PTNT_TLNO_CTN"/>
+		<result property="pnrlCd" column="PNRL_CD"/>
+		<result property="smsrTrgtDvsnCd" column="SMSR_TRGT_DVSN_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn (환자연락처 조회) 
+        Description :                                           환자연락처 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePtntCnpn */
+		select  /* 환자연락처 조회_MdpPtntBsifDAO-selectOnePtntCnpn */
+		        PTNO                                            as PTNO
+		     ,  CNPN_DVSN_CD                                    as CNPN_DVSN_CD             /* 연락처구분코드   */
+		     ,  CNPN_SNO                                        as CNPN_SNO                 /* 연락처일련번호   */
+		     ,  OVRS_TLNO_YN                                    as OVRS_TLNO_YN             /* 해외전화번호여부 */
+		     ,  PTNT_TLNO                                       as PTNT_TLNO
+		     ,  fn_ap_wrap_telno(PTNT_TLNO, OVRS_TLNO_YN)       as PTNT_TLNO_CTN
+		     ,  PNRL_CD                                         as PNRL_CD
+		     ,  SMSR_TRGT_DVSN_CD                               as SMSR_TRGT_DVSN_CD        /* SMS대상구분코드  */
+		     ,  RMRK_CTN                                        as RMRK_CTN                 /* 비고내용         */
+		  from  APPTCNPNT       -- 환자연락처
+		 where  PTNO            =   #{ptno}
+		   and  CNPN_DVSN_CD    =   #{cnpnDvsnCd}
+		   and  CNPN_SNO        =   #{cnpnSno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="istyCd" column="ISTY_CD"/>
+		<result property="istyNm" column="ISTY_NM"/>
+		<result property="istyAsstCd" column="ISTY_ASST_CD"/>
+		<result property="istyAsstNm" column="ISTY_ASST_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm (최근진료정보 조회) 
+        Description :                                           최근진료정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneLtstMdcrInfm */
+		select  /*+ index_desc(a APRCRPTNT_I03) 최근수진 보험유형 조회 */
+		        to_char(a.MDCR_DT, 'yyyyddmmhh24miss')                  as MDCR_DT
+		     ,  a.MDRP_NO                                               as MDRP_NO
+		     ,  a.ISTY_CD                                               as ISTY_CD              /* 보험유형코드(AI003) */
+		     ,  (   select  DETL_CD_NM
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD  = 'AI003'
+		               and  COMN_DTLS_CD =  ISTY_CD
+		        )                                                       as ISTY_NM
+		     ,  a.ISTY_ASST_CD                                          as ISTY_ASST_CD         /* 유형보조(AI004) */
+		     ,  (   select  DETL_CD_NM
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD  = 'AI004'
+		               and  COMN_DTLS_CD =  ISTY_ASST_CD
+		        )                                                       as ISTY_ASST_NM
+		  from  APRCRPTNT a
+		 where  PTNO        =   #{ptno}
+		   and  a.CODV_CD in ('I', 'O', 'E')
+		   and  a.CNCL_DT is null
+		   and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="afiClno" column="AFI_CLNO"/>
+		<result property="afiHousTlno" column="AFI_HOUS_TLNO"/>
+		<result property="afiOcplTlno" column="AFI_OCPL_TLNO"/>
+		<result property="afiEtcTlno" column="AFI_ETC_TLNO"/>
+		<result property="pnrlCdBp" column="PNRL_CD_BP"/>
+		<result property="pnrlCdBh" column="PNRL_CD_BH"/>
+		<result property="pnrlCdBo" column="PNRL_CD_BO"/>
+		<result property="pnrlCdEa" column="PNRL_CD_EA"/>
+		<result property="grdnClno1" column="GRDN_CLNO1"/>
+		<result property="grdnClno2" column="GRDN_CLNO2"/>
+		<result property="pnrlCdIa" column="PNRL_CD_IA"/>
+		<result property="pnrlCdIb" column="PNRL_CD_IB"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy (selectOneDummy) 
+        Description :                                           selectOneDummy
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOneDummy */
+		select  ''          as AFI_CLNO             -- 전화번호(휴대폰)
+		     ,  ''          as AFI_HOUS_TLNO        -- 전화번호(집)
+		     ,  ''          as AFI_OCPL_TLNO        -- 전화번호(회사)
+		     ,  ''          as AFI_ETC_TLNO         -- 전화번호(기타)
+		     ,  '12'        as PNRL_CD_BP           -- 환자관계코드_휴대폰
+		     ,  '12'        as PNRL_CD_BH           -- 환자관계코드_집
+		     ,  '12'        as PNRL_CD_BO           -- 환자관계코드_회사
+		     ,  '12'        as PNRL_CD_EA           -- 환자관계코드_기타
+		     ,  ''          as GRDN_CLNO1           -- 보호자1휴대전화
+		     ,  ''          as GRDN_CLNO2           -- 보호자2휴대전화
+		     ,  '12'        as PNRL_CD_IA           -- 보호자1관계코드_기타
+		     ,  '12'        as PNRL_CD_IB           -- 보호자2관계코드_기타
+		  from  dual         
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePnrlNm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePnrlNm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePnrlNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePnrlNm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpPtntBsifDAO-selectOnePnrlNm-result" useCache="true" flushCache="false">
+		SELECT 	COMN_DTLS_CD as COMN_DTLS_CD,
+				DETL_CD_NM as DETL_CD_NM
+		  FROM	CCCMCDDMT
+		 WHERE COMN_GRP_CD = 'AP216'  
+		   AND COMN_DTLS_CD = #{comnDtlsCd}		
+	</select>
+
+
+
+</mapper>

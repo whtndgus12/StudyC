@@ -1,0 +1,1588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpApntPtntDAO_sql.xml 
+    Description :                                      예약환자관련DAO
+                  -->
+<mapper namespace="MdpApntPtntDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="codvNm" column="CODV_NM"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="dsplSqnc" column="DSPL_SQNC"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001 (툴바_환자당일수진상태 조회) 
+        Description :                                           툴바_환자당일수진상태 조회 mdd_rcrptnt_l14
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-dao-MdpApntPtntDAO-listApntPtnt0001 */
+		select  /*+ mdd_rcrptnt_l14$S01_툴바_환자당일수진상태 조회_DAM */
+		        tot.PTNO
+		     ,  tot.HSLC_DVSN_CD                                                        /* 병원위치구분코드 */
+		     ,  tot.CODV_CD                                                             /* 내원구분코드(AP025) */
+			 ,  decode(tot.DSPL_SQNC,'6', '가정호스피스',
+		                                         ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+				                                     from CCCMCDDMT F_A, CCCMCDDLT F_B
+		                                            where F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		                                              and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		                                              and F_A.COMN_GRP_CD  = 'AP025'
+		                                              and F_A.COMN_DTLS_CD =  tot.CODV_CD
+		                                              and F_B.LNGG_CD(+)   = nvl( '', '*') )
+		                      )  as CODV_NM  /* 내원구분명 */
+		     ,  tot.MDRP_NO                                                             /* 진료접수번호     */
+		     ,  tot.MDDR_ID
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A
+		           where F_A.USER_ID = tot.MDDR_ID )                        as MDDR_NM
+		     ,  tot.MDCR_YMD                                                            /* 진료일자         */
+		     ,  tot.MDCR_DT                                                             /* 진료일시         */
+		     ,  tot.DSPL_SQNC
+		     ,  tot.MCDP_CD
+		  from
+		        (
+		        select /* 입원 */
+		                rcr.PTNO
+		             ,  rcr.HSLC_DVSN_CD
+		             ,  rcr.CODV_CD
+		             ,  rcr.MDRP_NO
+		             ,  rcr.MDDR_ID
+		             ,  to_char(rcr.MDCR_YMD,'YYYYMMDD')            MDCR_YMD
+		             ,  to_char(rcr.MDCR_DT ,'YYYYMMDDHH24MISS')    MDCR_DT
+		             ,  '1'                                         DSPL_SQNC
+		             ,  rcr.MCDP_CD
+		          from  APRCRPTNT rcr
+		         where  1=1
+		           and  rcr.PTNO            =   #{ptno}
+		           and  rcr.CODV_CD         =   'I'                     -- 입원
+		           and  (
+		                  (nvl(rcr.DSCH_DT,to_date('29991231','YYYYMMDD')) = to_date('29991231','yyyymmdd') )  -- 퇴원일시
+		                  or
+		                  (rcr.DSCH_DT   between trunc(sysdate) and sysdate + 1)                /* 오늘 퇴원한 환자 */
+		                )
+		           <![CDATA[
+		           and  rcr.MDCR_YMD       <=  trunc(sysdate)           -- 02C에서 미래일자로 접수번호 생성되므로, 구별하기 위함
+		           ]]>
+		           and  rcr.CNCL_DT is null                             -- 취소일시
+		           <![CDATA[
+		           and  rownum < 2
+		           ]]>
+		        union all
+		        select  /* 응급 : MM_ERRPA_L2 기준으로 활성 기준 잡음  */
+		                rcr.PTNO
+		             ,  rcr.HSLC_DVSN_CD
+		             ,  rcr.CODV_CD
+		             ,  rcr.MDRP_NO
+		             ,  nvl(eer.DSCH_ITDR_ID,eer.COHS_PNTM_DR_ID)   MDDR_ID
+		             ,  to_char(eer.COHS_DT,'YYYYMMDD')             MDCR_YMD
+		             ,  to_char(eer.COHS_DT,'YYYYMMDDHH24MISS')     MDCR_DT
+		             ,  '2'                                         DSPL_SQNC
+		             ,  eer.MCDP_CD
+		          from  MNEERRPAT eer
+		             ,  APRCRPTNT rcr
+		         where  1=1
+		           and  eer.PTNO                =   #{ptno}
+		           -- and  eer.CHOT_DT is null                                      -- 퇴실일시
+		           and  eer.STHS_YN             =   'Y'                             -- 재원여부
+		           <![CDATA[
+		           and  nvl(eer.ERMR_RSLT_CD, '0') <> '4'                           -- 응급진료결과코드 /2000년 이전 코드 현재 삭제 : 만약을 위해 체크함
+		           ]]>
+		           and  rcr.MDRP_NO             =   eer.MDRP_NO                     -- 진료번호
+		           and  rcr.CODV_CD             =   'E'                             -- 응급
+		           and  rcr.CNCL_DT is null
+		           <![CDATA[
+		           and  rownum < 2
+		           ]]>
+		        union all
+		        select /* 외래 */
+		                rcr.PTNO
+		             ,  rcr.HSLC_DVSN_CD
+		             ,  rcr.CODV_CD
+		             ,  rcr.MDRP_NO
+		             ,  rcr.MDDR_ID
+		             ,  to_char(rcr.MDCR_YMD,'YYYYMMDD')            MDCR_YMD
+		             ,  to_char(rcr.MDCR_DT ,'YYYYMMDDHH24MISS')    MDCR_DT
+		             ,  '3'                                         DSPL_SQNC
+		             ,  rcr.MCDP_CD
+		          from  APRCRPTNT rcr
+		         where  1=1
+		           and  rcr.PTNO                =   #{ptno}
+		           and  rcr.CODV_CD             =   'O'                             -- 외래
+		           and  rcr.MDCR_YMD            =   trunc(sysdate)                  -- 진료일자가 오늘
+		           and  ( (#{mcdpCd} is null ) or
+		                  (rcr.MCDP_CD          =   #{mcdpCd} )
+		                )                                                           -- 진료과코드(간호는 진료과 상관없이 조회되어야 한다.)
+		           and  nvl(rcr.MCFE_RCPC_CD,'N') != 'R'                            -- 진찰료수납여부(Y/N)
+		           and  rcr.CNCL_DT is null                                         -- 취소일시
+		         union all
+		         select  /* 가정간호 */
+		                fhn.PTNO                                          as PTNO           -- 환자번호
+		             ,  fhn.HSLC_DVSN_CD                                  as HSLC_DVSN_CD   -- 병원위치구분코드
+		             ,  'H'                                               as CODV_CD        -- 내원구분코드(AP025)
+		             ,  null                                              as MDRP_NO        -- 진료접수번호
+		             ,  fhr.CHDR_ID                                       as MDDR_ID        -- 지정의사ID(asis주치의사)
+		             ,  to_char(fhr.HHCR_REFR_YMD, 'YYYYMMDD')            as MDCR_YMD       -- 의뢰일자
+		             ,  to_char(fhr.HHCR_REFR_YMD, 'YYYYMMDD')||'000000'  as MDCR_DT        -- 의뢰일시
+		             ,  '5'                                               as DSPL_SQNC
+		             ,  fhr.HHCR_REFR_DPRT_CD                             as MCDP_CD        -- 가정간호의뢰부서코드
+		          from  MNFHNMAMT fhn        -- 가정간호환자
+		             ,  MNFHNRQMT fhr        -- 가정간호의뢰
+		         where  fhn.PTNO                =   #{ptno}
+		           and  fhn.TRMT_YMD            =   to_date('29991231', 'yyyymmdd')         -- 종결일자
+		           and  fhr.PTNO                =   fhn.PTNO
+		           and  fhr.HHCR_RGST_YMD       =   fhn.HHCR_RGST_YMD
+		           <![CDATA[
+		           and  rownum < 2
+		           ]]>
+		         union all
+		       select /* 가정형호스피스 */      
+		                fhn.PTNO                                                                                        as PTNO           -- 환자번호
+		             ,  'M'                                                                                             as HSLC_DVSN_CD   -- 병원위치구분코드
+		             ,  'H'                                                                                             as CODV_CD        -- 내원구분코드(AP025)
+		             ,  nvl(fhr.MDRP_NO, null)                                                                          as MDRP_NO        -- 진료접수번호
+		             ,  nvl(fhr.MDDR_ID, fhn.MDDR_ID)                                                                   as MDDR_ID        -- 지정의사ID(asis주치의사)
+		             ,  nvl(to_char(fhr.MDCR_YMD,'YYYYMMDD'), to_char(fhn.REFR_YMD, 'YYYYMMDD'))                        as MDCR_YMD       -- 의뢰일자
+		             ,  nvl(to_char(fhr.MDCR_DT ,'YYYYMMDDHH24MISS'),to_char(fhn.REFR_YMD, 'YYYYMMDD')||'000000')       as MDCR_DT        -- 의뢰일시
+		             ,  '6'                                                                                             as DSPL_SQNC
+		             ,  nvl(fhr.MCDP_CD, fhn.MCDP_CD)                                                                   as MCDP_CD        
+		          from  MNKHHMAMT fhn, APRCRPTNT fhr          -- 가정형 호스피스 환자
+		         where  fhn.PTNO                =    #{ptno}
+		           and  fhn.REFR_STTS_CD        =   'C'   -- 진행중인 환자          
+		           and  fhr.PTNO(+)             = fhn.PTNO
+		           and  fhr.MDCR_YMD(+)         = trunc(sysdate)
+		           and  fhr.MDDR_ID(+)          = fhn.MDDR_ID
+		           and  fhr.CODV_CD(+)          = 'H'
+		           and  fhr.CNCL_DT(+) is null
+		           and  ( (#{mcdpCd} is null ) or
+		                  (fhr.MCDP_CD(+)  =   #{mcdpCd} )
+		                )                                                           -- 진료과코드(간호는 진료과 상관없이 조회되어야 한다.)
+		           and  nvl(fhr.MCFE_RCPC_CD(+),'N') != 'R'                            -- 진찰료수납여부(Y/N)
+		           and  (
+		                  (fhr.ISTY_ASST_CD(+)= 'PH') or
+		                  (fhr.ISTY_ASST_CD(+)= 'PI') or
+		                  (fhr.ISTY_ASST_CD(+)= 'PJ') or
+		                  (fhr.ISTY_ASST_CD(+)= 'PK') or
+		                  (fhr.ISTY_ASST_CD(+)= 'PL') 
+		                )  
+		           <![CDATA[
+		           and  rownum < 2
+		           ]]>        
+		        ) tot 
+		 order
+		    by  tot.DSPL_SQNC
+		     ,  tot.MDRP_NO     desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ptntAlisNm" column="PTNT_ALIS_NM"/>
+		<result property="ptntEnsnLsnm" column="PTNT_ENSN_LSNM"/>
+		<result property="ptntEnsnNm" column="PTNT_ENSN_NM"/>
+		<result property="frrn" column="FRRN"/>
+		<result property="brrn" column="BRRN"/>
+		<result property="bsovAftrPtno" column="BSOV_AFTR_PTNO"/>
+		<result property="bsrn" column="BSRN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ntnlCd" column="NTNL_CD"/>
+		<result property="psptNo" column="PSPT_NO"/>
+		<result property="ptntInfwPathCd" column="PTNT_INFW_PATH_CD"/>
+		<result property="inccPtntYn" column="INCC_PTNT_YN"/>
+		<result property="rqprNm" column="RQPR_NM"/>
+		<result property="rqprTlnoCtn" column="RQPR_TLNO_CTN"/>
+		<result property="rqstInprId" column="RQST_INPR_ID"/>
+		<result property="rqstInptDt" column="RQST_INPT_DT"/>
+		<result property="dethYmd" column="DETH_YMD"/>
+		<result property="dethYmdRgsrId" column="DETH_YMD_RGSR_ID"/>
+		<result property="prtsRsrn" column="PRTS_RSRN"/>
+		<result property="prtsNm" column="PRTS_NM"/>
+		<result property="inifAgrmYn" column="INIF_AGRM_YN"/>
+		<result property="snstInfmAgrmYn" column="SNST_INFM_AGRM_YN"/>
+		<result property="uniqIdntInfmAgrmYn" column="UNIQ_IDNT_INFM_AGRM_YN"/>
+		<result property="inifAgrmRgstSystNm" column="INIF_AGRM_RGST_SYST_NM"/>
+		<result property="inifAgrmSgntYn" column="INIF_AGRM_SGNT_YN"/>
+		<result property="scryYn" column="SCRY_YN"/>
+		<result property="insrQlfcExclYn" column="INSR_QLFC_EXCL_YN"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="emailDmanNm" column="EMAIL_DMAN_NM"/>
+		<result property="cashRcptUseNo" column="CASH_RCPT_USE_NO"/>
+		<result property="ovrsRsdtYn" column="OVRS_RSDT_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="aboBltyCd" column="ABO_BLTY_CD"/>
+		<result property="rhBltyCd" column="RH_BLTY_CD"/>
+		<result property="hghtVl" column="HGHT_VL"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="ltstOprtYmd" column="LTST_OPRT_YMD"/>
+		<result property="ltstOprtSno" column="LTST_OPRT_SNO"/>
+		<result property="afiLtstOprtNm" column="AFI_LTST_OPRT_NM"/>
+		<result property="ltstMdcrYmd" column="LTST_MDCR_YMD"/>
+		<result property="btypVrinPcbkNoCtn" column="BTYP_VRIN_PCBK_NO_CTN"/>
+		<result property="dndpPtno" column="DNDP_PTNO"/>
+		<result property="dsblYn" column="DSBL_YN"/>
+		<result property="mdppBdwgVl" column="MDPP_BDWG_VL"/>
+		<result property="emrPtntEnsnNm" column="EMR_PTNT_ENSN_NM"/>
+		<result property="mnpsYn" column="MNPS_YN"/>
+		<result property="adorYn" column="ADOR_YN"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="afiCodvNm" column="AFI_CODV_NM"/>
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="afiAbrvMcdpCd" column="AFI_ABRV_MCDP_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="pdaNo1" column="PDA_NO_1"/>
+		<result property="istyCd" column="ISTY_CD"/>
+		<result property="istyAsstCd" column="ISTY_ASST_CD"/>
+		<result property="afiIstyAsstNm" column="AFI_ISTY_ASST_NM"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="smdrId" column="SMDR_ID"/>
+		<result property="afiSmdrNm" column="AFI_SMDR_NM"/>
+		<result property="admsOtdvCd" column="ADMS_OTDV_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="afiMccnNm" column="AFI_MCCN_NM"/>
+		<result property="mccnMcdpCd" column="MCCN_MCDP_CD"/>
+		<result property="mdcrGr52Yn" column="MDCR_GR52_YN"/>
+		<result property="clrsPrjcCd" column="CLRS_PRJC_CD"/>
+		<result property="cnplCd" column="CNPL_CD"/>
+		<result property="rdexCd" column="RDEX_CD"/>
+		<result property="fvdvCd" column="FVDV_CD"/>
+		<result property="afiFvdvNm" column="AFI_FVDV_NM"/>
+		<result property="vatTrgtCd" column="VAT_TRGT_CD"/>
+		<result property="chfrRptnDvsnCd" column="CHFR_RPTN_DVSN_CD"/>
+		<result property="mainChkrId" column="MAIN_CHKR_ID"/>
+		<result property="subChkrId" column="SUB_CHKR_ID"/>
+		<result property="chckRqstDt" column="CHCK_RQST_DT"/>
+		<result property="lastChckDt" column="LAST_CHCK_DT"/>
+		<result property="chckSttsCd" column="CHCK_STTS_CD"/>
+		<result property="mcrcDt" column="MCRC_DT"/>
+		<result property="mcfeRcpcCd" column="MCFE_RCPC_CD"/>
+		<result property="mcrcYn" column="MCRC_YN"/>
+		<result property="cnclDt" column="CNCL_DT"/>
+		<result property="cnreCd" column="CNRE_CD"/>
+		<result property="abcEnfrYmd" column="ABC_ENFR_YMD"/>
+		<result property="abcMccnCd" column="ABC_MCCN_CD"/>
+		<result property="abcMcdpCd" column="ABC_MCDP_CD"/>
+		<result property="abcEfdpCd" column="ABC_EFDP_CD"/>
+		<result property="abcOddrId" column="ABC_ODDR_ID"/>
+		<result property="abcEndrId" column="ABC_ENDR_ID"/>
+		<result property="mdcrApntAplcYmd" column="MDCR_APNT_APLC_YMD"/>
+		<result property="cnvnAdmsDt" column="CNVN_ADMS_DT"/>
+		<result property="mcfePrcn50AssnYn" column="MCFE_PRCN50_ASSN_YN"/>
+		<result property="mcfeClrcAplyExclYn" column="MCFE_CLRC_APLY_EXCL_YN"/>
+		<result property="mcclStrtDt" column="MCCL_STRT_DT"/>
+		<result property="grdnMdcrDvsnCd" column="GRDN_MDCR_DVSN_CD"/>
+		<result property="apntCapaDvsnCd" column="APNT_CAPA_DVSN_CD"/>
+		<result property="capaAdtnResnCd" column="CAPA_ADTN_RESN_CD"/>
+		<result property="fvrvCapaDvsnCd" column="FVRV_CAPA_DVSN_CD"/>
+		<result property="mdcrAndvCd" column="MDCR_ANDV_CD"/>
+		<result property="afiMdcrAndvNm" column="AFI_MDCR_ANDV_NM"/>
+		<result property="dschExmnApntYn" column="DSCH_EXMN_APNT_YN"/>
+		<result property="mdcrWaitSqnc" column="MDCR_WAIT_SQNC"/>
+		<result property="frstAmprId" column="FRST_AMPR_ID"/>
+		<result property="ampmDvsnCd" column="AMPM_DVSN_CD"/>
+		<result property="ordrIstyCd" column="ORDR_ISTY_CD"/>
+		<result property="ordrIstyAsstCd" column="ORDR_ISTY_ASST_CD"/>
+		<result property="hmpgMdcrSpdrCtn" column="HMPG_MDCR_SPDR_CTN"/>
+		<result property="hlmmRptnYn" column="HLMM_RPTN_YN"/>
+		<result property="mdcrYn" column="MDCR_YN"/>
+		<result property="admsApntNo" column="ADMS_APNT_NO"/>
+		<result property="errmArvlDt" column="ERRM_ARVL_DT"/>
+		<result property="lastMcclDt" column="LAST_MCCL_DT"/>
+		<result property="admsArvlDt" column="ADMS_ARVL_DT"/>
+		<result property="aorArvlDt" column="AOR_ARVL_DT"/>
+		<result property="dschIdctDt" column="DSCH_IDCT_DT"/>
+		<result property="dlrmPrpdYn" column="DLRM_PRPD_YN"/>
+		<result property="ermcMnfeAssnCd" column="ERMC_MNFE_ASSN_CD"/>
+		<result property="erMainMcdpCd" column="ER_MAIN_MCDP_CD"/>
+		<result property="oprtSno" column="OPRT_SNO"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="afiAbrvWardCd" column="AFI_ABRV_WARD_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="sckbNo" column="SCKB_NO"/>
+		<result property="careWardCd" column="CARE_WARD_CD"/>
+		<result property="afiAbrvCareWardCd" column="AFI_ABRV_CARE_WARD_CD"/>
+		<result property="carePtrmNo" column="CARE_PTRM_NO"/>
+		<result property="careSckbNo" column="CARE_SCKB_NO"/>
+		<result property="dproWardCd" column="DPRO_WARD_CD"/>
+		<result property="dproPtrmNo" column="DPRO_PTRM_NO"/>
+		<result property="dproSckbNo" column="DPRO_SCKB_NO"/>
+		<result property="dschItdrId" column="DSCH_ITDR_ID"/>
+		<result property="dschIdctDt" column="DSCH_IDCT_DT"/>
+		<result property="dschPrrnDt" column="DSCH_PRRN_DT"/>
+		<result property="dschDt" column="DSCH_DT"/>
+		<result property="dschSttsCd" column="DSCH_STTS_CD"/>
+		<result property="mdcrDschRsltCd" column="MDCR_DSCH_RSLT_CD"/>
+		<result property="scrgChtrYn" column="SCRG_CHTR_YN"/>
+		<result property="chckFinsYn" column="CHCK_FINS_YN"/>
+		<result property="dschChckRqstYn" column="DSCH_CHCK_RQST_YN"/>
+		<result property="dschChckFinsDt" column="DSCH_CHCK_FINS_DT"/>
+		<result property="chafSpsdId" column="CHAF_SPSD_ID"/>
+		<result property="hodyChkrId" column="HODY_CHKR_ID"/>
+		<result property="prrtChckYmd" column="PRRT_CHCK_YMD"/>
+		<result property="chckRqprId" column="CHCK_RQPR_ID"/>
+		<result property="chckRqstCncrId" column="CHCK_RQST_CNCR_ID"/>
+		<result property="chckRqstCnclDt" column="CHCK_RQST_CNCL_DT"/>
+		<result property="acspChckYn" column="ACSP_CHCK_YN"/>
+		<result property="drgYn" column="DRG_YN"/>
+		<result property="drgCd" column="DRG_CD"/>
+		<result property="drgNo" column="DRG_NO"/>
+		<result property="afiDrgSimsVl" column="AFI_DRG_SIMS_VL"/>
+		<result property="drDrgNo" column="DR_DRG_NO"/>
+		<result property="drgNm" column="DRG_NM"/>
+		<result property="prpdPtno" column="PRPD_PTNO"/>
+		<result property="prpdAdmsDt" column="PRPD_ADMS_DT"/>
+		<result property="lastSptnClamYmd" column="LAST_SPTN_CLAM_YMD"/>
+		<result property="sptnClamBaseYmd" column="SPTN_CLAM_BASE_YMD"/>
+		<result property="rmtrAplcYn" column="RMTR_APLC_YN"/>
+		<result property="rmtrAplcDt" column="RMTR_APLC_DT"/>
+		<result property="mainRmtrWntdGradCd" column="MAIN_RMTR_WNTD_GRAD_CD"/>
+		<result property="subRmtrWntdGradCd" column="SUB_RMTR_WNTD_GRAD_CD"/>
+		<result property="rmtrAplcRmrkCtn" column="RMTR_APLC_RMRK_CTN"/>
+		<result property="rmtrUpdrId" column="RMTR_UPDR_ID"/>
+		<result property="dadvCd" column="DADV_CD"/>
+		<result property="ceckPtcfCd" column="CECK_PTCF_CD"/>
+		<result property="mdcrMemoCtn" column="MDCR_MEMO_CTN"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="pdaNo2" column="PDA_NO_2"/>
+		<result property="ampaCd" column="AMPA_CD"/>
+		<result property="injrOpfcCd" column="INJR_OPFC_CD"/>
+		<result property="ptadAsgnId" column="PTAD_ASGN_ID"/>
+		<result property="befrDschSttsCd" column="BEFR_DSCH_STTS_CD"/>
+		<result property="otviAmptMccsAdjmYmd" column="OTVI_AMPT_MCCS_ADJM_YMD"/>
+		<result property="careAobrRtDvsnCd" column="CARE_AOBR_RT_DVSN_CD"/>
+		<result property="opcaPymnYnRmrkCtn" column="OPCA_PYMN_YN_RMRK_CTN"/>
+		<result property="hodyYn" column="HODY_YN"/>
+		<result property="skbbYn" column="SKBB_YN"/>
+		<result property="jontMcdpYn" column="JONT_MCDP_YN"/>
+		<result property="erGohsAdmsReadYn" column="ER_GOHS_ADMS_READ_YN"/>
+		<result property="erPrvlRptnYn" column="ER_PRVL_RPTN_YN"/>
+		<result property="dschMccsOpcaPymnYn" column="DSCH_MCCS_OPCA_PYMN_YN"/>
+		<result property="mobrYn" column="MOBR_YN"/>
+		<result property="apntMdreCd" column="APNT_MDRE_CD"/>
+		<result property="inphCd" column="INPH_CD"/>
+		<result property="dndpApdvCd" column="DNDP_APDV_CD"/>
+		<result property="ctprPcbkSno" column="CTPR_PCBK_SNO"/>
+		<result property="mcfeClclRt" column="MCFE_CLCL_RT"/>
+		<result property="pacsInqrYn" column="PACS_INQR_YN"/>
+		<result property="flupYn" column="FLUP_YN"/>
+		<result property="mtfrDscrYn" column="MTFR_DSCR_YN"/>
+		<result property="thdyMdcrYn" column="THDY_MDCR_YN"/>
+		<result property="elbdInrfTrnmYn" column="ELBD_INRF_TRNM_YN"/>
+		<result property="smcrDscrYn" column="SMCR_DSCR_YN"/>
+		<result property="viaAdmsRcstCd" column="VIA_ADMS_RCST_CD"/>
+		<result property="careRptnYn" column="CARE_RPTN_YN"/>
+		<result property="careRptnDt" column="CARE_RPTN_DT"/>
+		<result property="careRcpsId" column="CARE_RCPS_ID"/>
+		<result property="frstChckDt" column="FRST_CHCK_DT"/>
+		<result property="admsItdrId" column="ADMS_ITDR_ID"/>
+		<result property="afiAdmsItdrNm" column="AFI_ADMS_ITDR_NM"/>
+		<result property="sclwQldvCd" column="SCLW_QLDV_CD"/>
+		<result property="onbrDvsnCd" column="ONBR_DVSN_CD"/>
+		<result property="onbrRtBadvCd" column="ONBR_RT_BADV_CD"/>
+		<result property="srilPtntSlctCd" column="SRIL_PTNT_SLCT_CD"/>
+		<result property="unslOpnnCtn" column="UNSL_OPNN_CTN"/>
+		<result property="dlvyCtn" column="DLVY_CTN"/>
+		<result property="labrStepCd" column="LABR_STEP_CD"/>
+		<result property="ptntLctnCd" column="PTNT_LCTN_CD"/>
+		<result property="afiPtntLctnNm" column="AFI_PTNT_LCTN_NM"/>
+		<result property="qlfcCnfrCd" column="QLFC_CNFR_CD"/>
+		<result property="admsObjcCd" column="ADMS_OBJC_CD"/>
+		<result property="admsObjcDetlCtn" column="ADMS_OBJC_DETL_CTN"/>
+		<result property="bckpDvsnCd" column="BCKP_DVSN_CD"/>
+		<result property="rptnWodvCd" column="RPTN_WODV_CD"/>
+		<result property="lastOrdrYmd" column="LAST_ORDR_YMD"/>
+		<result property="clflCrtnDt" column="CLFL_CRTN_DT"/>
+		<result property="antpSthsDdcn" column="ANTP_STHS_DDCN"/>
+		<result property="mdcrDdcn" column="MDCR_DDCN"/>
+		<result property="blodRcepRqdcPrinYmd" column="BLOD_RCEP_RQDC_PRIN_YMD"/>
+		<result property="rgorLastOrdrYmd" column="RGOR_LAST_ORDR_YMD"/>
+		<result property="onbrIncrYmd" column="ONBR_INCR_YMD"/>
+		<result property="chrtArvlDt" column="CHRT_ARVL_DT"/>
+		<result property="chrtRtrnDt" column="CHRT_RTRN_DT"/>
+		<result property="chrtYn" column="CHRT_YN"/>
+		<result property="dietMedvCd" column="DIET_MEDV_CD"/>
+		<result property="dietCd" column="DIET_CD"/>
+		<result property="sposNm" column="SPOS_NM"/>
+		<result property="sposBtdt" column="SPOS_BTDT"/>
+		<result property="smcrAplnTlnoCtn" column="SMCR_APLN_TLNO_CTN"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="mainScinYn" column="MAIN_SCIN_YN"/>
+		<result property="mainScinCd" column="MAIN_SCIN_CD"/>
+		<result property="mainScinNm" column="MAIN_SCIN_NM"/>
+		<result property="stndPtntYn" column="STND_PTNT_YN"/>
+		<result property="cagPtntYn" column="CAG_PTNT_YN"/>
+		<result property="chcnYn" column="CHCN_YN"/>
+		<result property="dptrPsblYn" column="DPTR_PSBL_YN"/>
+		<result property="refeYn" column="REFE_YN"/>
+		<result property="afiLntrSthsResnNm" column="AFI_LNTR_STHS_RESN_NM"/>
+		<result property="afiRcrdWrtgTrgtYn" column="AFI_RCRD_WRTG_TRGT_YN"/>
+		<result property="hhcrRgstYmd" column="HHCR_RGST_YMD"/>
+		<result property="afiPtntActvYn" column="AFI_PTNT_ACTV_YN"/>
+		<result property="rcrdCrtnPntmMdrpNo" column="RCRD_CRTN_PNTM_MDRP_NO"/>
+		<result property="idhcTrgtYn" column="IDHC_TRGT_YN"/>
+		<result property="idhcStrtDt" column="IDHC_STRT_DT"/>
+		<result property="idhcFnshDt" column="IDHC_FNSH_DT"/>
+		<result property="chotDt" column="CHOT_DT"/>
+		<result property="antcAdmnIdctYn" column="ANTC_ADMN_IDCT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002 (환자공통정보 조회) 
+        Description :                                           환자공통정보 조회 mdd_ptptntt_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listApntPtnt0002 */
+		        ptp.PTNO                                                                                 /* 환자번호                  */
+		     ,  ptp.PTNT_NM                                                                              /* 환자명                    */
+		     ,  ptp.PTNT_ALIS_NM                                                                         /* 환자별칭명                */
+		     ,  ptp.PTNT_ENSN_LSNM                                                                       /* 환자영문성                */
+		     ,  ptp.PTNT_ENSN_NM                                                                         /* 환자영문명                */
+		     ,  ptp.FRRN                                                                                 /* 앞주민등록번호            */
+		     ,  ptp.BRRN                                                                                 /* 뒤주민등록번호            */
+		     ,  ptp.BSOV_AFTR_PTNO                                                                       /* 합본이후환자번호          */
+		     ,  ptp.BSRN                                                                                 /* 사업자등록번호            */
+		     ,  to_char(ptp.BTDT, 'YYYYMMDD')                                       as BTDT              /* 생년월일                  */
+		     ,  case
+		          when (ptp.FRRN is not null)
+		               and (SUBSTR(ptp.FRRN, 3,2) between '01' and '12')
+		               and (SUBSTR(ptp.FRRN, 5,2) between '01' and '31')
+		            then trunc( months_between(trunc(sysdate), to_date(case when substr(ptp.BRRN, 1, 1) in ('1', '2') then '19'
+		                                                                    when substr(ptp.BRRN, 1, 1) in ('3', '4') then '20'
+		                                                                    else decode( sign(to_number(ptp.FRRN)-to_number(to_char(trunc(sysdate), 'yymmdd'))), 1, '19', '20')
+		                                                               end || FRRN, 'yyyymmdd')
+		                                      ) / 12
+		                      )
+		          when ptp.BTDT is not null
+		            then trunc(months_between(trunc(sysdate), ptp.BTDT)/ 12)
+		          else null
+		        end   as AGE_VL                 /* 나이(연령값)  성능이슈 펑션 제거  fn_ap_age_s(ptp.PTNO,trunc(sysdate))     */
+		     ,  ptp.GEND_CD                                                                              /* 성별코드                  */
+		     ,  ptp.NTNL_CD                                                                              /* 국적코드                  */
+		     ,  ptp.PSPT_NO                                                                              /* 여권번호                  */
+		     ,  ptp.PTNT_INFW_PATH_CD                                                                    /* 환자유입경로코드          */
+		     ,  ptp.INCC_PTNT_YN                                                                         /* 국제진료소환자여부        */
+		     ,  ptp.RQPR_NM                                                                              /* 요청자명                  */
+		     ,  ptp.RQPR_TLNO_CTN                                                                        /* 요청자전화번호내용        */
+		     ,  ptp.RQST_INPR_ID                                                                         /* 요청입력자ID              */
+		     ,  to_char(ptp.RQST_INPT_DT, 'YYYYMMDDHH24MISS')                       as RQST_INPT_DT      /* 요청입력일시              */
+		     ,  to_char(ptp.DETH_YMD, 'YYYYMMDD')                                   as DETH_YMD          /* 사망일자                  */
+		     ,  ptp.DETH_YMD_RGSR_ID                                                                     /* 사망일자등록자ID          */
+		     ,  ptp.PRTS_RSRN                                                                            /* 부모주민등록번호          */
+		     ,  ptp.PRTS_NM                                                                              /* 부모명                    */
+		     ,  ptp.INIF_AGRM_YN                                                                         /* 개인정보동의여부          */
+		     ,  ptp.SNST_INFM_AGRM_YN                                                                    /* 민감정보동의여부          */
+		     ,  ptp.UNIQ_IDNT_INFM_AGRM_YN                                                               /* 고유식별정보동의여부      */
+		     ,  ptp.INIF_AGRM_RGST_SYST_NM                                                               /* 개인정보동의등록시스템명  */
+		     ,  ptp.INIF_AGRM_SGNT_YN                                                                    /* 개인정보동의서명여부      */
+		     ,  ptp.SCRY_YN                                                                              /* 보안여부                  */
+		     ,  ptp.INSR_QLFC_EXCL_YN                                                                    /* 보험자격제외여부          */
+		     ,  ptp.EMAIL_ID                                                                             /* 이메일ID                  */
+		     ,  ptp.EMAIL_DMAN_NM                                                                        /* 이메일도메인명            */
+		     ,  ptp.CASH_RCPT_USE_NO                                                                     /* 현금영수증사용번호        */
+		     ,  ptp.OVRS_RSDT_YN                                                                         /* 해외거주자여부            */
+		     ,  ptp.RMRK_CTN                                                                             /* 비고내용                  */
+		     ,  pta.ABO_BLTY_CD                                                                          /* ABO혈액형코드             */
+		     ,  pta.RH_BLTY_CD                                                                           /* RH혈액형코드              */
+		     --,  pta.HGHT_VL                                                                              /* 신장값                    */
+		     ,  (select  ITEM_RCRD_VL
+		           from  (
+		                 select  domt.PTNO
+		                      ,  bmmt.BODY_MSRN_ITEM_SNO as ITEM_SNO
+		                      ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		                      ,  bmmt.BODY_MSRN_RCRD_DT  as ITEM_RCRD_DT
+		                      ,  case
+		                           when (upper(bmmt.BODY_MSRN_UNIT_CD) = 'G' and              /* 단위 컬럼 추가 g으로 측정되는 경우 kg 전환 처리 */
+		                                 REGEXP_INSTR(bmmt.BODY_MSRN_RCRD_VL, '[^0-9]') = 0) then to_char(to_number(bmmt.BODY_MSRN_RCRD_VL)/1000, 'FM990.999' )
+		                                                                                     else bmmt.BODY_MSRN_RCRD_VL
+		                         end  as ITEM_RCRD_VL
+		                      ,  dense_rank() over(partition by bmmt.BODY_MSRN_ITEM_SNO
+		                                               order by to_char(bmmt.BODY_MSRN_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		                   from  MECFSDOMT domt
+		                      ,  MECFSBMMT bmmt
+		                      ,  MECFSDAMT damt
+		                      ,  APRCRPTNT ptnt
+		                  where  ptnt.MDRP_NO = #{mdrpNo}
+		                    and  domt.PTNO          = ptnt.PTNO
+		                    and  bmmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		                    and  bmmt.BODY_MSRN_RCRD_DT >= trunc(sysdate) - 365 /* 최근1년 조회 */
+		                    and  bmmt.BODY_MSRN_RCRD_DT  < trunc(sysdate) + 1
+		                    and  damt.CNOS_ITEM_SNO = bmmt.BODY_MSRN_ITEM_SNO
+		                    and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_BM'
+		                    and  damt.CNOS_ITEM_NM = 'HT'
+		                )
+		         where  rank = 1
+		           and  rownum = 1) as HGHT_VL
+		     ,  (select  ITEM_RCRD_VL
+		           from  (
+		                 select  domt.PTNO
+		                      ,  bmmt.BODY_MSRN_ITEM_SNO as ITEM_SNO
+		                      ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		                      ,  bmmt.BODY_MSRN_RCRD_DT  as ITEM_RCRD_DT
+		                      ,  case
+		                           when (upper(bmmt.BODY_MSRN_UNIT_CD) = 'G' and              /* 단위 컬럼 추가 g으로 측정되는 경우 kg 전환 처리 */
+		                                 REGEXP_INSTR(bmmt.BODY_MSRN_RCRD_VL, '[^0-9]') = 0) then to_char(to_number(bmmt.BODY_MSRN_RCRD_VL)/1000, 'FM990.999' )
+		                                                                                     else bmmt.BODY_MSRN_RCRD_VL
+		                         end  as ITEM_RCRD_VL
+		                      ,  dense_rank() over(partition by bmmt.BODY_MSRN_ITEM_SNO
+		                                               order by to_char(bmmt.BODY_MSRN_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		                   from  MECFSDOMT domt
+		                      ,  MECFSBMMT bmmt
+		                      ,  MECFSDAMT damt
+		                      ,  APRCRPTNT ptnt
+		                  where  ptnt.MDRP_NO = #{mdrpNo}
+		                    and  domt.PTNO          = ptnt.PTNO
+		                    and  bmmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		                    and  bmmt.BODY_MSRN_RCRD_DT >= trunc(sysdate) - 365 /* 최근1년 조회 */
+		                    and  bmmt.BODY_MSRN_RCRD_DT  < trunc(sysdate) + 1
+		                    and  damt.CNOS_ITEM_SNO = bmmt.BODY_MSRN_ITEM_SNO
+		                    and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_BM'
+		                    and  damt.CNOS_ITEM_NM = 'WT'
+		                )
+		         where  rank = 1
+		           and  rownum = 1) as BDWG_VL                                                                              /* 체중값                    */
+		     , case when rcr.CODV_CD = 'I'
+		                then (select to_char(MAX(x.OPRT_YMD),'yyyymmdd')
+							    from MDOPSCHET x
+							   where x.MDRP_NO = rcr.MDRP_NO
+								 and x.PTNO    = rcr.PTNO
+								 and x.OPRT_STTS_CD in ('6','7','8')
+								 and x.OPSC_CNRE_CD is null -- 취소
+							  )
+				else to_char(pta.LTST_OPRT_YMD, 'YYYYMMDD') end          as LTST_OPRT_YMD     /* 최근수술일자              */
+			 , case when rcr.CODV_CD = 'I'
+			            then (select MAX(x.OPRT_SNO)
+								from MDOPSCHET x
+							   where x.MDRP_NO  = rcr.MDRP_NO
+								 and x.PTNO     = rcr.PTNO
+								 and x.OPRT_YMD = (select max(z.OPRT_YMD) from MDOPSCHET z where z.PTNO = x.PTNO and z.MDRP_NO = x.MDRP_NO and z.OPRT_STTS_CD in ('6','7','8') and z.OPSC_CNRE_CD is null)
+								 and x.OPRT_STTS_CD in ('6','7','8')
+								 and x.OPSC_CNRE_CD is null -- 취소
+							  )
+				 else pta.LTST_OPRT_SNO                      end          as LTST_OPRT_SNO     /* 최근수술일련번호            */
+			 , case when rcr.CODV_CD = 'I'
+						 then (select nvl(MAX(y.OPAF_OPRT_NM_1), MAX(y.OPBE_OPRT_NM_1))
+								 from MDOPSCHET x
+									   , MDOPRECHV y
+								where x.MDRP_NO  = rcr.MDRP_NO
+								  and x.PTNO     = rcr.PTNO
+								  and x.OPRT_YMD = (select max(z.OPRT_YMD) from MDOPSCHET z where z.PTNO = x.PTNO and z.MDRP_NO = x.MDRP_NO and z.OPRT_STTS_CD in ('6','7','8') and z.OPSC_CNRE_CD is null)
+								  and x.OPRT_SNO = (select max(z.OPRT_SNO) from MDOPSCHET z where z.PTNO = x.PTNO and z.OPRT_YMD = x.OPRT_YMD and z.MDRP_NO = x.MDRP_NO and z.OPRT_STTS_CD in ('6','7','8') and z.OPSC_CNRE_CD is null)
+								  and x.OPRT_STTS_CD in ('6','7','8')
+								  and x.OPSC_CNRE_CD is null -- 취소
+								  and x.PTNO 	 		= y.PTNO
+								  and x.OPRT_YMD  = y.OPRT_YMD
+								  and x.OPRT_SNO   = y.OPRT_SNO
+							   )
+				else (select  /*+ index_desc(ops MDOPSCHET_PK)*/
+			                  nvl(MAX(y.OPAF_OPRT_NM_1), MAX(y.OPBE_OPRT_NM_1))
+			            from  MDOPSCHET ops
+			                 ,MDOPRECHV y
+			           where  ops.PTNO              = ptp.PTNO                  /* (환자번호)    */
+			             and  ops.OPRT_YMD          = trunc(pta.LTST_OPRT_YMD)  /* (최근수술일자)*/
+			            --//and  ops.OPRT_SNO          = pta.LTST_OPRT_SNO
+			             and  ops.DFNT_YN           = 'Y'                       /* 확정여부 */
+			             and  nvl(ops.CNCL_YN,'N')  = 'N'                       /* 취소여부 */
+			             and  ops.OPRT_STTS_CD not in ('1','9')
+			             and ops.PTNO               = y.PTNO
+					     and ops.OPRT_YMD           = y.OPRT_YMD
+					     and ops.OPRT_SNO           = y.OPRT_SNO
+			             and  rownum = 1
+			          )                                      end	      as AFI_LTST_OPRT_NM  /* AFI최근수술명             */
+		     ,  to_char(pta.LTST_MDCR_YMD, 'YYYYMMDD')                              as LTST_MDCR_YMD     /* 최근진료일자              */
+		     ,  pta.BTYP_VRIN_PCBK_NO_CTN                                                                /* B형수직감염수첩번호내용   */
+		     ,  pta.DNDP_PTNO                                                                            /* 치과환자번호              */
+		     ,  pta.DSBL_YN                                                                              /* 장애여부                  */
+		     ,  pta.MDPP_BDWG_VL                                                                         /* 투약용체중값              */
+		     ,  pta.EMR_PTNT_ENSN_NM                                                                     /* EMR환자영문명             */
+		     ,  pta.MNPS_YN                                                                              /* 폐경여부                  */
+		     ,  pta.ADOR_YN                                                                              /* 추가처방여부              */
+		     ,  rcr.MDRP_NO                                                                              /* 진료접수번호              */
+		     ,  rcr.CODV_CD                                                                              /* 내원구분코드              */
+		     ,  (select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		           from CCCMCDDMT F_A, CCCMCDDLT F_B
+		          where F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		            and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		            and F_A.COMN_GRP_CD  = 'AP025'
+		            and F_A.COMN_DTLS_CD =  rcr.CODV_CD
+		            and F_B.LNGG_CD(+) = nvl( '', '*'))                             as AFI_CODV_NM       /* AFI내원구분명             */
+		     ,  to_char(rcr.MDCR_YMD, 'YYYYMMDD')                                   as MDCR_YMD          /* 진료일자                  */
+		     ,  rcr.MCDP_CD                                                                              /* 진료과코드                */
+		     ,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A
+		           where F_A.DPRT_CD = rcr.MCDP_CD group by F_A.ABRV_DPRT_CD )      as AFI_ABRV_MCDP_CD  /* AFI약어진료과코드         */
+		     ,  ( select F_A.KORN_DPRT_NM from HZDEPTMMT F_A
+		           where F_A.DPRT_CD = rcr.MCDP_CD group by F_A.KORN_DPRT_NM )      as MCDP_NM           /* 진료과명                  */
+		     ,  rcr.MDDR_ID                                                                              /* 진료의사ID                */
+		     ,  (select USER_NM from CCUSRDPHT where USER_ID = rcr.MDDR_ID)         as MDDR_NM           /* 진료의사명                */
+		     ,  (   select  b.PDA_NO
+		              from  CCUSRDPHT a
+		                 ,  CCUSERAMT b
+		             where  a.USER_ID   =   rcr.MDDR_ID
+		               and  b.LGIN_ID   =   a.LGIN_ID
+		        )                                                                   as PDA_NO_1          /* 진료의 PDA번호            */
+		     ,  rcr.ISTY_CD                                                                              /* 보험유형코드(AI003)       */
+		     ,  rcr.ISTY_ASST_CD                                                                         /* 보험유형보조코드(AI004)   */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'AI004'
+		             and F_A.COMN_DTLS_CD =  rcr.ISTY_ASST_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )                           as AFI_ISTY_ASST_NM  /* 보험유형보조명(AI004)     */
+		     ,  case when rcr.CODV_CD = 'O' then to_char(rcr.MDCR_DT, 'YYYYMMDD') || '000000'            /* : 임시방편 : 상단 주석 참조 */
+		        else to_char(rcr.MDCR_DT, 'YYYYMMDDHH24MISS')
+		         end as MDCR_DT           /* 진료일시                  */
+		     ,  rcr.SMDR_ID                                                                              /* 선택의사ID                */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = rcr.SMDR_ID )                   as AFI_SMDR_NM       /* AFI선택의사명             */
+		     ,  rcr.ADMS_OTDV_CD                                                                         /* 입원외래구분코드          */
+		     ,  rcr.HSLC_DVSN_CD                                                                         /* 병원위치구분코드          */
+		     ,  rcr.MCCN_CD                                                                              /* 진료센터코드              */
+		     ,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A
+		           where F_A.DPRT_CD = rcr.MCCN_CD
+		           group by F_A.ABRV_DPRT_CD )                                      as AFI_MCCN_NM       /*AFI진료센터명*/
+		     ,  case when (rcr.CODV_CD = 'O') and (rcr.MCCN_CD <> FN_CC_GET_DPRT_CD('DPRT_M')) /* 외래진료이고 센터소속 진료과일 때 */
+		             then (select  ORDR_DPRT_CD
+		                     from  HZDEPTMMT
+		                    where  DPRT_CD = rcr.MCCN_CD
+		                      and  CNTR_DVSN_YN = 'Y')
+		             else ''
+		         end as MCCN_MCDP_CD    /* 외래진료시 센터내에 소속된 진료과일 경우 센터내 진료과 코드를 조회한다. 2021.01.27 obh */
+		     ,  rcr.MDCR_GR52_YN                                                                         /* 진료52차등여부            */
+		     ,  rcr.CLRS_PRJC_CD                                                                         /* 임상연구과제코드          */
+		     ,  rcr.CNPL_CD                                                                              /* 계약처코드                */
+		     ,  rcr.RDEX_CD                                                                              /* 감면코드                  */
+		     ,  rcr.FVDV_CD                                                                              /* 초재진구분코드(AP019)     */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'AP019'
+		             and F_A.COMN_DTLS_CD =  rcr.FVDV_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )                           as AFI_FVDV_NM       /* AFI초재진구분명(AP019)    */
+		     ,  rcr.VAT_TRGT_CD                                                                          /* 부가세대상코드            */
+		     ,  rcr.CHFR_RPTN_DVSN_CD                                                                    /* 무료접수구분코드          */
+		     ,  rcr.MAIN_CHKR_ID                                                                         /* 주심사자ID                */
+		     ,  rcr.SUB_CHKR_ID                                                                          /* 부심사자ID                */
+		     ,  rcr.CHCK_RQST_DT                                                                         /* 심사요청일시              */
+		     ,  to_char(rcr.LAST_CHCK_DT, 'YYYYMMDDHH24MISS') as LAST_CHCK_DT                            /* 최종심사일시              */
+		     ,  rcr.CHCK_STTS_CD                                                                         /* 심사상태코드              */
+		     ,  to_char(rcr.MCRC_DT, 'YYYYMMDDHH24MISS')                            as MCRC_DT           /* 진료비수납일시            */
+		     ,  rcr.MCFE_RCPC_CD                                                                         /* 진찰료수납코드            */
+		     ,  rcr.MCRC_YN                                                                              /* 진료비수납여부            */
+		     ,  to_char(rcr.CNCL_DT, 'YYYYMMDD')                                    as CNCL_DT           /* 취소일시                  */
+		     ,  rcr.CNRE_CD                                                                              /* 취소사유코드              */
+		     ,  to_char(rcr.ABC_ENFR_YMD, 'YYYYMMDD')                               as ABC_ENFR_YMD      /* ABC시행일자               */
+		     ,  rcr.ABC_MCCN_CD                                                                          /* ABC진료센터코드           */
+		     ,  rcr.ABC_MCDP_CD                                                                          /* ABC진료과코드             */
+		     ,  rcr.ABC_EFDP_CD                                                                          /* ABC시행부서코드           */
+		     ,  rcr.ABC_ODDR_ID                                                                          /* ABC처방의사ID             */
+		     ,  rcr.ABC_ENDR_ID                                                                          /* ABC시행의사ID             */
+		     ,  to_char(rcr.MDCR_APNT_APLC_YMD, 'YYYYMMDD')                         as MDCR_APNT_APLC_YMD/* 진료예약신청일자          */
+		     ,  to_char(rcr.CNVN_ADMS_DT, 'YYYYMMDDHH24MISS')                       as CNVN_ADMS_DT      /* 전환입원일시              */
+		     ,  rcr.MCFE_PRCN50_ASSN_YN                                                                  /* 진찰료50퍼센트산정여부    */
+		     ,  rcr.MCFE_CLRC_APLY_EXCL_YN                                                               /* 진찰료임상연구비적용제외여부*/
+		     ,  to_char(rcr.MCCL_STRT_DT, 'YYYYMMDDHH24MISS')                       as MCCL_STRT_DT      /* 진료비계산시작일시        */
+		     ,  rcr.GRDN_MDCR_DVSN_CD                                                                    /* 보호자진료구분코드        */
+		     ,  rcr.APNT_CAPA_DVSN_CD                                                                    /* 예약CAPA구분코드          */
+		     ,  rcr.CAPA_ADTN_RESN_CD                                                                    /* CAPA추가사유코드          */
+		     ,  rcr.FVRV_CAPA_DVSN_CD                                                                    /* 초재진CAPA구분코드        */
+		     ,  rcr.MDCR_ANDV_CD                                                                         /* 진료예약구분코드(AP008)   */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'AP008'
+		             and F_A.COMN_DTLS_CD =  rcr.MDCR_ANDV_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )                           as AFI_MDCR_ANDV_NM  /* AFI진료예약구분명(AP008)  */
+		     ,  rcr.DSCH_EXMN_APNT_YN                                                                    /* 퇴원검사예약여부          */
+		     ,  rcr.MDCR_WAIT_SQNC                                                                       /* 진료대기순서              */
+		     ,  rcr.FRST_AMPR_ID                                                                         /* 최초예약자ID              */
+		     ,  rcr.AMPM_DVSN_CD                                                                         /* 오전오후구분코드          */
+		     ,  rcr.ORDR_ISTY_CD                                                                         /* 처방보험유형코드          */
+		     ,  rcr.ORDR_ISTY_ASST_CD                                                                    /* 처방보험유형보조코드      */
+		     ,  rcr.HMPG_MDCR_SPDR_CTN                                                                   /* 홈페이지진료전문의사내용  */
+		     ,  ' ' as HLMM_RPTN_YN                                                                      /* 헬로맘접수여부(삭제)      */
+		     ,  rcr.MDCR_YN                                                         as MDCR_YN           /* 진료여부(NULL도 필요하므로 NVL처리안함) */
+		     ,  rcr.ADMS_APNT_NO                                                                         /* 입원예약번호              */
+		     ,  to_char(rcr.ERRM_ARVL_DT, 'YYYYMMDDHH24MISS')                       as ERRM_ARVL_DT      /* 응급실도착일시            */
+		     ,  to_char(rcr.LAST_MCCL_DT, 'YYYYMMDDHH24MISS')                       as LAST_MCCL_DT      /* 최종진료비계산일시        */
+		     ,  to_char(rcr.ADMS_ARVL_DT, 'YYYYMMDDHH24MISS')                       as ADMS_ARVL_DT      /* 입원도착일시              */
+		     ,  to_char(rcr.AOR_ARVL_DT, 'YYYYMMDDHH24MISS')                        as AOR_ARVL_DT       /* AOR도착일시               */
+		     ,  to_char(rcr.QLFC_INQR_YMD, 'YYYYMMDD')                              as DSCH_IDCT_DT      /* 자격조회일자              */
+		     ,  rcr.DLRM_PRPD_YN                                                                         /* 분만장산모여부            */
+		     ,  rcr.ERMC_MNFE_ASSN_CD                                                                    /* 응급의학관리료산정코드    */
+		     ,  rcr.ER_MAIN_MCDP_CD                                                                      /* 응급주진료과코드          */
+		     ,  rcr.OPRT_SNO                                                                             /* 수술일련번호              */
+		     ,  rcr.WARD_CD                                                                              /* 병동코드                  */
+		     ,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A
+		           where F_A.DPRT_CD = rcr.WARD_CD
+		           group by F_A.ABRV_DPRT_CD )                                      as AFI_ABRV_WARD_CD  /* AFI약어병동코드           */
+		     ,  rcr.PTRM_NO                                                                              /* 병실번호                  */
+		     ,  rcr.SCKB_NO                                                                              /* 병상번호                  */
+		     ,  rcr.CARE_WARD_CD                                                                         /* 간호병동코드              */
+		     ,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A
+		           where F_A.DPRT_CD = rcr.CARE_WARD_CD
+		           group by F_A.ABRV_DPRT_CD )                                      as AFI_ABRV_CARE_WARD_CD  /* AFI약어간호병동코드  */
+		     ,  rcr.CARE_PTRM_NO                                                                         /* 간호병실번호              */
+		     ,  rcr.CARE_SCKB_NO                                                                         /* 간호병상번호              */
+		     ,  rcr.DPRO_WARD_CD                                                                         /* 이중방병동코드            */
+		     ,  rcr.DPRO_PTRM_NO                                                                         /* 이중방병실번호            */
+		     ,  rcr.DPRO_SCKB_NO                                                                         /* 이중방병상번호            */
+		     ,  rcr.DSCH_ITDR_ID                                                                         /* 퇴원지시의사ID            */
+		     ,  to_char(rcr.DSCH_IDCT_DT, 'YYYYMMDDHH24MISS')                       as DSCH_IDCT_DT      /* 퇴원지시일시              */
+		     ,  to_char(rcr.DSCH_PRRN_DT, 'YYYYMMDDHH24MISS')                       as DSCH_PRRN_DT      /* 퇴원예정일시              */
+		     ,  to_char(rcr.DSCH_DT, 'YYYYMMDDHH24MISS')                            as DSCH_DT           /* 퇴원일시(재원=29991231)   */
+		     ,  rcr.DSCH_STTS_CD                                                                         /* 퇴원상태코드(AI084)       */
+		     ,  rcr.MDCR_DSCH_RSLT_CD                                                                    /* 진료퇴원결과코드          */
+		     ,  rcr.SCRG_CHTR_YN                                                                         /* 선별심사대상여부          */
+		     ,  rcr.CHCK_FINS_YN                                                                         /* 심사완료여부              */
+		     ,  rcr.DSCH_CHCK_RQST_YN                                                                    /* 퇴원심사요청여부          */
+		     ,  to_char(rcr.DSCH_CHCK_FINS_DT, 'YYYYMMDDHH24MISS')                  as DSCH_CHCK_FINS_DT /* 퇴원심사완료일시          */
+		     ,  rcr.CHAF_SPSD_ID                                                                         /* 심사이후특정기호ID        */
+		     ,  rcr.HODY_CHKR_ID                                                                         /* 휴일심사자ID              */
+		     ,  to_char(rcr.PRRT_CHCK_YMD, 'YYYYMMDD')                              as PRRT_CHCK_YMD     /* 우선심사일자              */
+		     ,  rcr.CHCK_RQPR_ID                                                                         /* 심사요청자ID              */
+		     ,  rcr.CHCK_RQST_CNCR_ID                                                                    /* 심사요청취소자ID          */
+		     ,  to_char(rcr.CHCK_RQST_CNCL_DT, 'YYYYMMDDHH24MISS')                  as CHCK_RQST_CNCL_DT /* 심사요청취소일시          */
+		     ,  rcr.ACSP_CHCK_YN                                                                         /* 현장심사여부              */
+		     ,  rcr.DRG_YN                                                                               /* DRG여부                   */
+		     ,  rcr.DRG_CD                                                                               /* DRG코드                   */
+		     ,  rcr.DRG_NO                                                                               /* DRG번호                   */
+		     ,  substr(rcr.DRG_NO, length(rcr.DRG_NO), 1)                           as AFI_DRG_SIMS_VL   /* AFI_DRG중증도값           */
+		     ,  rcr.DR_DRG_NO                                                                            /* 의사DRG번호               */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD  = 'MM441'
+		             and F_A.COMN_DTLS_CD =  rcr.DR_DRG_NO
+		             and F_B.LNGG_CD(+)   = nvl( '', '*') )                         as DRG_NM            /* DRG 명(MM441)             */
+		     ,  rcr.PRPD_PTNO                                                                            /* 산모환자번호              */
+		     ,  rcr.PRPD_ADMS_DT                                                                         /* 산모입원일시              */
+		     ,  to_char(rcr.LAST_SPTN_CLAM_YMD, 'YYYYMMDD')                         as LAST_SPTN_CLAM_YMD/* 최종분리청구일자          */
+		     ,  to_char(rcr.SPTN_CLAM_BASE_YMD, 'YYYYMMDD')                         as SPTN_CLAM_BASE_YMD/* 분리청구기준일자          */
+		     ,  rcr.RMTR_APLC_YN                                                                         /* 전실신청여부              */
+		     ,  to_char(rcr.RMTR_APLC_DT, 'YYYYMMDDHH24MISS')                       as RMTR_APLC_DT      /* 전실신청일시              */
+		     ,  rcr.MAIN_RMTR_WNTD_GRAD_CD                                                               /* 주전실희망등급코드        */
+		     ,  rcr.SUB_RMTR_WNTD_GRAD_CD                                                                /* 부전실희망등급코드        */
+		     ,  rcr.RMTR_APLC_RMRK_CTN                                                                   /* 전실신청비고내용          */
+		     ,  rcr.RMTR_UPDR_ID                                                                         /* 전실수정자ID              */
+		     ,  rcr.DADV_CD                                                                              /* 주야구분코드              */
+		     ,  rcr.CECK_PTCF_CD                                                                         /* 체크환자분류코드(AP038)   */
+		     ,  rcr.MDCR_MEMO_CTN                                                                        /* 진료메모내용              */
+		     ,  rcr.GNDR_ID                                                                              /* 주치의사ID                */
+		     ,  (select USER_NM from CCUSRDPHT where USER_ID = rcr.GNDR_ID)         as GNDR_NM           /* 주치의사(담당의사)명      */
+		     ,  (   select  b.PDA_NO
+		              from  CCUSRDPHT a
+		                 ,  CCUSERAMT b
+		             where  a.USER_ID   =   rcr.GNDR_ID
+		               and  b.LGIN_ID   =   a.LGIN_ID
+		        )                                                                   as PDA_NO_2          /* 주치의 PDA번호            */
+		     ,  rcr.AMPA_CD                                                                              /* 입원경로코드              */
+		     ,  rcr.INJR_OPFC_CD                                                                         /* 상해외인코드              */
+		     ,  rcr.PTAD_ASGN_ID                                                                         /* 원무담당자ID              */
+		     ,  rcr.BEFR_DSCH_STTS_CD                                                                    /* 이전퇴원상태코드          */
+		     ,  to_char(rcr.OTVI_AMPT_MCCS_ADJM_YMD,'YYYYMMDD')                     as OTVI_AMPT_MCCS_ADJM_YMD /* 외래경유입원환자진료비정산일자  */
+		     ,  rcr.CARE_AOBR_RT_DVSN_CD                                                                 /* 간호입원외래부담율구분코드*/
+		     ,  rcr.OPCA_PYMN_YN_RMRK_CTN                                                                /* 오픈카드결제여부비고내용  */
+		     ,  rcr.HODY_YN                                                                              /* 휴일여부                  */
+		     ,  rcr.SKBB_YN                                                                              /* 환아여부                  */
+		     /* 공동진료과여부 컬럼이 삭제되어 N으로 조회 -> 추후 제거 */
+		     ,  'N' as JONT_MCDP_YN
+		     ,  rcr.ER_GOHS_ADMS_READ_YN                                                                 /* 응급통원입원재정산여부    */
+		     ,  rcr.ER_PRVL_RPTN_YN                                                                      /* 응급가접수여부            */
+		     ,  rcr.DSCH_MCCS_OPCA_PYMN_YN                                                               /* 퇴원진료비오픈카드결제여부*/
+		     ,  nvl((select  'Y'
+		               from  dual
+		              where  exists ( select  'Y'
+		                                from  APPTGMRPT g /* 그룹임원관계자 */
+		                               where  g.PTNO               = rcr.PTNO
+		                                 and  g.MOBR_RLTN_CD       = '01'        /* 임원관계코드 (AP140): 01 본인 */
+		                                 and  trunc(sysdate) between g.APST_YMD
+		                                                         and g.APFN_YMD)
+		/* 기부자관리 테이블 없음(2017-04-17) */
+		--                 or  exists ( select  'Y'
+		--                                from  HACNRBMST h  /*기부자관리*/
+		--                               where  1 = 1
+		--                                 and  h.PTNO                 = rcr.PTNO
+		--                                 and  h.MDCR_RSPCT_DVSN_CD  is not null         /* 진료예우구분코드 : HAZ_001 , Asis : GG078*/
+		--                                 and  h.MDCR_RSPCT_EXPT_YMD >= trunc(sysdate) ) /* 진료예우만료일자 */
+		        ), 'N')                                                             as MOBR_YN           /* 원내임원여부              */
+		     ,  rca.APNT_MDRE_CD                                                                         /* 예약변경사유코드          */
+		     ,  rca.INPH_CD                                                                              /* 안내문구코드              */
+		     ,  rca.DNDP_APDV_CD                                                                         /* 치과적용구분코드          */
+		     ,  rca.CTPR_PCBK_SNO                                                                        /* 접촉자수첩일련번호        */
+		     ,  rca.MCFE_CLCL_RT                                                                         /* 진찰료계산율              */
+		     ,  rca.PACS_INQR_YN                                                                         /* PACS조회여부              */
+		     ,  rca.FLUP_YN                                                                              /* FollowUp여부              */
+		     ,  ' ' as MTFR_DSCR_YN                                                                      /* 메포민설명여부(삭제)      */
+		     ,  rca.THDY_MDCR_YN                                                                         /* 당일진료여부              */
+		     ,  rca.ELBD_INRF_TRNM_YN                                                                    /* 전광판인터페이스송신여부  */
+		     ,  ' ' as SMCR_DSCR_YN                                                                      /* 선택진료설명여부(삭제)    */
+		     ,  rca.VIA_ADMS_RCST_CD                                                                     /* 경유입원수납상태코드      */
+		     ,  rca.CARE_RPTN_YN                                                                         /* 간호접수여부              */
+		     ,  to_char(rca.CARE_RPTN_DT, 'YYYYMMDDHH24MISS')                       as CARE_RPTN_DT      /* 간호접수일시              */
+		     ,  rca.CARE_RCPS_ID                                                                         /* 간호접수자ID              */
+		     ,  to_char(rca.FRST_CHCK_DT, 'YYYYMMDDHH24MISS')                       as FRST_CHCK_DT      /* 최초심사일시              */
+		     ,  rca.ADMS_ITDR_ID                                                                         /* 입원지시의사ID            */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A
+		           where F_A.USER_ID = rca.ADMS_ITDR_ID )                           as AFI_ADMS_ITDR_NM  /* AFI입원지시의사명         */
+		     ,  rca.SCLW_QLDV_CD                                                                         /* 차상위자격구분코드        */
+		     ,  rca.ONBR_DVSN_CD                                                                         /* 본인부담구분코드          */
+		     ,  rca.ONBR_RT_BADV_CD                                                                      /* 본인부담율기준구분코드    */
+		     ,  rca.SRIL_PTNT_SLCT_CD                                                                    /* 중증환자선택코드          */
+		     ,  rca.UNSL_OPNN_CTN                                                                        /* 특이소견내용              */
+		     ,  rca.DLVY_CTN                                                                             /* 전달내용                  */
+		     ,  rca.LABR_STEP_CD                                                                         /* 진통단계코드              */
+		     ,  rca.PTNT_LCTN_CD                                                                         /* 환자위치코드(MM181)       */
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD  = 'MM181'                                                      /* 없어 */
+		             and F_A.COMN_DTLS_CD =  rca.PTNT_LCTN_CD
+		             and F_B.LNGG_CD(+)   = nvl( '', '*') )                         as AFI_PTNT_LCTN_NM  /* AFI환자위치명(MM181)      */
+		     ,  rca.QLFC_CNFR_CD                                                                         /* 자격확인코드              */
+		     ,  rca.ADMS_OBJC_CD                                                                         /* 입원목적코드              */
+		     ,  rca.ADMS_OBJC_DETL_CTN                                                                   /* 입원목적상세내용          */
+		     ,  rca.BCKP_DVSN_CD                                                                         /* 백업구분코드              */
+		     ,  rca.RPTN_WODV_CD                                                                         /* 접수작업구분코드          */
+		     ,  to_char(rca.LAST_ORDR_YMD, 'YYYYMMDD')                              as LAST_ORDR_YMD     /* 최종처방일자              */
+		     ,  to_char(rca.CLFL_CRTN_DT, 'YYYYMMDDHH24MISS')                       as CLFL_CRTN_DT      /* 청구파일생성일시          */
+		     ,  rca.ANTP_STHS_DDCN                                                                       /* 예상재원일수              */
+		     ,  rca.MDCR_DDCN                                                                            /* 진료일수                  */
+		     ,  to_char(rca.BLOD_RCEP_RQDC_PRIN_YMD, 'YYYYMMDD')                    as BLOD_RCEP_RQDC_PRIN_YMD/* 혈액수령요청서출력일자 */
+		     ,  rca.RGOR_LAST_ORDR_YMD                                                                   /* 정규처방최종처방일자      */
+		     ,  rca.ONBR_INCR_YMD                                                                        /* 본인부담증가일자          */
+		     ,  to_char(rca.CHRT_ARVL_DT, 'YYYYMMDDHH24MISS')                       as CHRT_ARVL_DT      /* 차트도착일시              */
+		     ,  to_char(rca.CHRT_RTRN_DT, 'YYYYMMDDHH24MISS')                       as CHRT_RTRN_DT      /* 차트반납일시              */
+		     ,  rca.CHRT_YN                                                                              /* 차트여부                  */
+		     ,  rca.DIET_MEDV_CD                                                                         /* 식사끼니구분코드          */
+		     ,  rca.DIET_CD                                                                              /* 식사코드                  */
+		     ,  rca.SPOS_NM                                                                              /* 배우자명                  */
+		     ,  to_char(rca.SPOS_BTDT, 'YYYYMMDD')                                  as SPOS_BTDT         /* 배우자생년월일            */
+		     ,  rca.SMCR_APLN_TLNO_CTN                                                                   /* 선택진료신청자전화번호내용*/
+		     ,  rca.SCIN_CD                                                                              /* 상병코드                  */
+		     ,  rca.MAIN_SCIN_YN                                                                         /* 주상병여부                */
+		     ,  rca.MAIN_SCIN_CD                                                                         /* 주상병코드                */
+		     ,  rca.MAIN_SCIN_NM                                                                         /* 주상병명                  */
+		     ,  rca.STND_PTNT_YN                                                                         /* 표준환자여부              */
+		     ,  rca.CAG_PTNT_YN                                                                          /* CAG환자여부               */
+		     ,  rca.CHCN_YN                                                                              /* 소아암여부                */
+		     ,  rca.DPTR_PSBL_YN                                                                         /* 전과가능여부              */
+		     ,  rca.REFE_YN                                                                              /* Refer여부              */
+		     ,  (select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		           from CCCMCDDMT F_A, CCCMCDDLT F_B
+		          where F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		            and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		            and F_A.COMN_GRP_CD  = 'AP234'
+		            and F_A.COMN_DTLS_CD = (select rcl.LNTR_STHS_RESN_CD
+		                                      from APRCLSRST rcl
+		                                     where rcl.MDRP_NO = rcr.MDRP_NO and rownum < 2)
+		            and F_B.LNGG_CD(+)   = nvl ('', '*')
+		        )                                                                   as AFI_LNTR_STHS_RESN_NM /* AFI장기재원사유명  */
+		     ,  case when ( (exists (select 'Y'
+		                               from MDDRGPTMT d            /* DRG환자  */
+		                              where d.MDRP_NO   = rcr.MDRP_NO
+		                                and d.APFN_YMD is null ))
+		                    and
+		                    (not exists (select  drg.PTNO
+		                                   from  MDDRGCHKT drg     /*(DRG환자의료질향상점검표)*/
+		                                  where  drg.MDRP_NO = rcr.MDRP_NO))
+		                    and  ( (rcr.CODV_CD = 'I' and  trunc(sysdate) = trunc(rcr.DSCH_PRRN_DT))   /* 입원환자는 퇴원예정일에 띄워줌*/
+		                           or (rcr.CODV_CD != 'I')   /* 그 외에는 표시  */
+		                         )
+		                  ) then 'Y' else 'N'                                 /* 원무에서 등록된내역이있고 점검표작성이 없고 퇴원예정이 오늘인 경우  */
+		        end                                                           as AFI_RCRD_WRTG_TRGT_YN  /* AFI기록작성대상여부  */
+		     ,  case when rcr.ISTY_ASST_CD in(select MDCR_DTLS_CTRL_CD from MZCTRLMMT where MDCR_CTRL_CD ='MDK_0171') then         
+		              (select  to_char(fhn.REFR_YMD,'yyyymmdd')
+		               from  MNKHHMAMT fhr         /* 가정간호의뢰 */
+		                  ,  MNKHHREQT fhn         /* 가정간호환자 */
+		              where  1=1
+		                and  fhr.PTNO                = rcr.PTNO                            /*(환자번호)*/
+		                and  fhr.REFR_STTS_CD        = 'C'                                 /*의뢰 진행상태   */
+		                and  fhr.MCDP_CD             = rcr.MCDP_CD                         /*(대표의뢰과코드)*/
+		                and  fhr.MDDR_ID             = rcr.MDDR_ID                         /*(지정의사ID)*/
+		                and  fhn.PTNO                = fhr.PTNO
+		                and  fhn.RE_REFR_YMD         = (select  max( xx.RE_REFR_YMD )
+		                                                  from  MNKHHREQT xx
+		                                                 where  xx.PTNO         = fhn.PTNO
+		                                                   and  xx.REFR_YMD     = fhn.REFR_YMD                                               
+		                                               )                        
+		                and  rownum < 2
+		              )
+		        else        
+		            (select  to_char(fhn.HHCR_RGST_YMD,'yyyymmdd')
+		               from  MNFHNRQMT fhr         /* 가정간호의뢰 */
+		                  ,  MNFHNMAMT fhn         /* 가정간호환자 */
+		              where  1=1
+		                and  fhn.PTNO                = rcr.PTNO                            /*(환자번호)*/
+		                and  fhn.TRMT_YMD            = to_date('29991231','yyyymmdd')      /*(종결일자)*/
+		                and  fhn.RPRS_RFDP_CD        = rcr.MCDP_CD                         /*(대표의뢰과코드)*/
+		                and  fhr.CHDR_ID             = rcr.MDDR_ID                         /*(지정의사ID)*/
+		                and  fhr.PTNO                = fhn.PTNO
+		                and  fhr.HHCR_RGST_YMD       = fhn.HHCR_RGST_YMD
+		                and  rownum < 2
+		            )                                                                 
+		        end    as HHCR_RGST_YMD     /*가정간호등록일자*/
+		     ,  case
+		          when rcr.CNCL_DT = to_date('29991231','yyyymmdd') then 'N'    /* 02C, 01C 가입원의 경우 N */
+		          when rcr.CODV_CD = 'I' then (case when ( (nvl(rcr.DSCH_DT,to_date('29991231','YYYYMMDD')) = to_date('29991231','yyyymmdd') )
+		                                                   or
+		                                                   (rcr.DSCH_DT   between trunc(sysdate) and sysdate + 1)                /* 퇴원 안했거나 오늘 퇴원한 환자 */
+		                                                 )
+		                                                 and rcr.MDCR_YMD <=  trunc(sysdate)  then 'Y' else 'N' end)
+		          when rcr.CODV_CD in ('O', 'G', 'F') then (case when rcr.MDCR_YMD =   trunc(sysdate)
+		                                                              and nvl(rcr.MCFE_RCPC_CD,'N') != 'R' then 'Y' else 'N' end)
+		          when rcr.CODV_CD = 'E' then (case when nvl((select 'Y'
+		                                                        from dual
+		                                                       where exists (select eer.MDRP_NO                            /* 응급 : MM_ERRPA_L2 기준으로 활성 기준 잡음  */
+		                                                                       from MNEERRPAT eer
+		                                                                      where eer.MDRP_NO = rcr.MDRP_NO
+		                                                                        and eer.STHS_YN = 'Y'
+		                                                                        and nvl(eer.ERMR_RSLT_CD, '0') <> '4'  )  /* 응급진료결과코드 / 4 : 2000년 이전 코드 현재 삭제 : 만약을 위해 체크함 */
+		                                                     ), 'N') = 'Y' then 'Y'
+		                                            else 'N' end)
+		          when rcr.CODV_CD = 'D' then (case when ( (nvl(rcr.DSCH_DT,to_date('29991231','YYYYMMDD')) = to_date('29991231','yyyymmdd') )
+		                                                   or
+		                                                   (rcr.DSCH_DT   between trunc(sysdate) and sysdate + 1)                /* 퇴원 안했거나 오늘 퇴원한 환자 */
+		                                                 )
+		                                            then 'Y' else 'N' end)
+		        end                                                                 as AFI_PTNT_ACTV_YN    /* AFI환자활성여부 */
+		     ,  case
+		          when rcr.CODV_CD  = 'H'
+		            then (select  fhr.MDRP_NO
+		                    from  MNFHNRQMT fhr
+		                   where  fhr.PTNO              = rcr.PTNO
+		                     and  fhr.HHCR_RGST_YMD     = to_date(#{hhcrRgstYmd}, 'YYYYMMDD')
+		                     and  fhr.HHCR_REFR_DPRT_CD = rcr.MCDP_CD
+		                     and  (fhr.HHCR_REFR_YMD, fhr.HHCR_REFR_SNO)         /* 가장 최근 의뢰내역 가져오기 */
+		                            = (select  max(x.HHCR_REFR_YMD)
+		                                    ,  max(x.HHCR_REFR_SNO)          /* 가정간호의뢰일련번호 */
+		                                 from  MNFHNRQMT x
+		                                where  x.PTNO              = fhr.PTNO
+		                                  and  x.HHCR_RGST_YMD     = fhr.HHCR_RGST_YMD
+		                                  and  x.HHCR_REFR_DPRT_CD = fhr.HHCR_REFR_DPRT_CD  /* 가정간호의뢰부서코드 */
+		                                  and  x.HHCR_REFR_YMD     = (select  max( x.HHCR_REFR_YMD )
+		                                                                from  MNFHNRQMT xx
+		                                                               where  xx.PTNO              = x.PTNO
+		                                                                 and  xx.HHCR_RGST_YMD     = x.HHCR_RGST_YMD
+		                                                                 and  xx.HHCR_REFR_DPRT_CD = x.HHCR_REFR_DPRT_CD /* 가정간호의뢰부서코드 */
+		                                                             )
+		                              )
+		                 )
+		            else 0
+		        end as  RCRD_CRTN_PNTM_MDRP_NO  /* 기록생성시점진료접수번호 <= 가정간호의뢰시점 진료접수번호 */
+		     , rcr.IDHC_TRGT_YN                                                     as IDHC_TRGT_YN    /* 심층진료대상여부 */
+		     , to_char(rcr.IDHC_STRT_DT, 'yyyymmddhh24mi')                          as IDHC_STRT_DT    /* 심층진료시작일시 */
+		     , to_char(rcr.IDHC_FNSH_DT, 'yyyymmddhh24mi')                          as IDHC_FNSH_DT    /* 심층진료종료일시 */
+			 , to_char(rct.CHOT_DT, 'yyyymmddhh24mi')                               as CHOT_DT         /* 퇴실일시 */
+			 , nvl(rca.ANTC_ADMN_IDCT_YN, 'N')                                      as ANTC_ADMN_IDCT_YN	/* 진료접수부가내역 항암투여지시여부 */
+		  from  APPTPTNTV ptp   /* 환자             */
+		     ,  APPTADIFT pta   /* 환자부가정보     */
+		     ,  APRCRPTNT rcr   /* 진료접수         */
+		     ,  APRCADBLT rca   /* 진료접수부가내역 */
+			 ,  MNEERRPAT rct    /* 응급환자정보조사 */
+		 where  1=1  /* 환자구분(I/E/D)(AP) */
+		   and  (
+		         (rcr.CODV_CD <> 'O')
+		         or
+		         ((rcr.CODV_CD = 'O') and (nvl(rcr.MCFE_RCPC_CD,'N') != 'R'))     /* 외래환자 (복수상병 관련조건 삭제) -  진찰료수납여부(Y/N) 확인 R : 환불 */
+		        )
+		   and  (  /* 추후 정리 */
+		          ((nvl(#{codvCd},'all') != 'e') and (rcr.CNCL_DT is null)) or
+		          (nvl(#{codvCd},'all')  = 'e') or                                     /* 취소일시 - 응급실퇴실 환자면 취소일자 있어도 조회한다. */
+		          (rcr.CNCL_DT = to_date('29991231','yyyymmdd'))                                           /* 02C, 01C 가입원*/
+		        )
+		   and  rcr.MDRP_NO          = #{mdrpNo}                                       /* 진료접수번호 */
+		   and  rcr.PTNO             = ptp.PTNO
+		   and  rcr.MDRP_NO          = rca.MDRP_NO(+) /*부가*/
+		   and  ptp.PTNO             = pta.PTNO(+)    /*부가*/
+		   and  rcr.MDRP_NO        = rct.MDRP_NO(+)
+		   and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="wodvVl" column="WODV_VL"/>
+		<result property="bornDt" column="BORN_DT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001 () 
+        Description :                                           툴바모아정보조회(신생아/산모) mdd_mnwdelv_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-listNwbrPrpd0001 */
+		<![CDATA[
+		select  /*+ mdd_mnwdelv_l01$S01_툴바_모아정보 */
+		       'BABY'                                     as WODV_VL   /* 산모 환자번호로 아기정보 조회  */
+		     ,  to_char(a.BORN_DT, 'YYYYMMDDHH24MISS')    as BORN_DT   /* 출생일시 */
+		     ,  c.GEND_CD
+		     ,  FN_AP_AGE_S(a.NWBR_PTNO, SYSDATE)  as AGE_VL
+		     ,  c.PTNO
+		     ,  c.PTNT_NM
+		  from  MNWDELVDT a
+		     ,  APRCRPTNT b
+		     ,  APPTPTNTT c
+		 where  a.PTNO          = #{ptno}
+		   and  a.BABY_DETH_YN  = 'N'                         /* 아기사망여부 */
+		   and  a.NWBR_PTNO    is not null
+		   and  b.MDRP_NO       = a.MDRP_NO
+		   and  b.CNCL_DT      is null
+		   and  c.PTNO          = a.NWBR_PTNO
+		   and  FN_AP_AGE_S(a.NWBR_PTNO, SYSDATE) <= 5   /* 아기 나이 5세 이하인 경우만 대상 */
+		union all
+		select  'MOM'                                     as WODV_VL   /* 아기 환자번호로 산모정보 조회  */
+		     ,  to_char(c.BTDT, 'YYYYMMDDHH24MISS')       as BORN_DT   /* 생년월일 */
+		     ,  c.GEND_CD
+		     ,  FN_AP_AGE_S(a.NWBR_PTNO, SYSDATE)
+		     ,  c.PTNO
+		     ,  c.PTNT_NM
+		  from  MNWDELVDT a
+		     ,  APRCRPTNT b
+		     ,  APPTPTNTT c
+		 where  a.NWBR_PTNO     = #{ptno}
+		   and  a.BABY_DETH_YN  = 'N'                         /* 아기사망여부 */
+		   and  b.MDRP_NO       = a.MDRP_NO
+		   and  b.CNCL_DT      is null
+		   and  c.PTNO          = a.PTNO
+		   and  FN_AP_AGE_S(a.NWBR_PTNO, SYSDATE) <= 5   /* 아기 나이 5세 이하인 경우만 대상 */
+		 order
+		    by  BORN_DT
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="sdpfExreCd" column="SDPF_EXRE_CD"/>
+		<result property="trnfSdefYn" column="TRNF_SDEF_YN"/>
+		<result property="enrmYn" column="ENRM_YN"/>
+		<result property="otptYn" column="OTPT_YN"/>
+		<result property="erYn" column="ER_YN"/>
+		<result property="dlysYn" column="DLYS_YN"/>
+		<result property="agdcYn1" column="AGDC_YN_1"/>
+		<result property="cnptClsfNm" column="CNPT_CLSF_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001 () 
+        Description :                                           환자기준추가정보조회 mdd_apptptn_s10
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0001 */
+		select  /* 툴바_환자번호 기준 추가정보 */
+		        (select decode(min(kkk), '99','',min(kkk))
+		           from (select  ptno
+		                      ,  DBPR_DVSN_CD
+		                      ,  DSBL_GRAD_VL
+		                      ,  case
+		                           when DBPR_DVSN_CD = 'N'       and DSBL_GRAD_VL in ('1','2','3') then '17'  /* 국가유공자의 경우 1,2,3 등급*/
+		                           when DBPR_DVSN_CD is not null and DSBL_GRAD_VL in ('1','2')     then '19'  /* 1,2급 장애인 */
+		                         else '99' end as kkk
+		                   from  APPTDSBLT ptd
+		                  where  ptd.PTNO = #{ptno}
+		                )
+		        )                               as SDPF_EXRE_CD
+		     ,  case
+		            when exists (   select  1
+		                              from  MDBLDORDT a
+		                                 ,  MZCTRLMMT b
+		                             where  a.PTNO                  =   ptp.PTNO
+		                               and  a.DC_DVSN_CD            =   'N'
+		                               and  b.MDCR_CTRL_CD          =   'MDI_8210'
+		                               and  b.MDCR_CTRL_CHRC_VL1    =   'E'
+		                               and  b.MDCR_DTLS_CTRL_CD     =   a.ORDR_CD
+		                               and  a.ORDR_YMD between b.APST_YMD and b.APFN_YMD
+		                        ) then 'Y'
+		            when exists (   select  1
+		                              from  MDEXMORDT a
+		                                 ,  MZCTRLMMT b
+		                             where  a.PTNO                  =   ptp.PTNO
+		                               and  a.DC_DVSN_CD            =   'N'
+		                               and  b.MDCR_CTRL_CD          =   'MDI_8210'
+		                               and  b.MDCR_CTRL_CHRC_VL1    =   'C'
+		                               and  b.MDCR_DTLS_CTRL_CD     =   a.ORDR_CD
+		                               and  a.ORDR_YMD between b.APST_YMD and b.APFN_YMD
+		                        ) then 'Y'
+		            else 'N'
+		            end                         as TRNF_SDEF_YN
+		     ,  (select max(ENRM_YN  )
+		           from (select  'Y'  ENRM_YN
+		                   from  MEDOCMBST            /* 진료기록 */
+		                  where  PTNO              = #{ptno}
+		                    and  CHRT_OTAM_DVSN_CD = 'I'               /* 차트외래입원구분코드 */
+		                    and  RCKI_CD       not in (FN_CC_GET_CNST_VL('MED_002', 'S_KPNG_RCRD'), '999')   /* 기록종류코드 : as-is  ('97', '98', '999')  MERCKIMPT 기록종류매핑 참조 수정 */
+		                    and  RCRD_TYPE_CD      in('1','4','5','6') --//1 : 서식, 2 : 프로그램, 3 : 광파일, 4 : OCR동의서, 5 : 전자동의서, 6 : 설문, 7 : 타병원, 8 : 수기서식
+		                    and  rownum = 1
+		                 union  all
+		                 select  'Y'  ENRM_YN
+		                   from  MNRRECOMT         /* 환자간호기록 : as-is MNRECOMT but 간호기록지가 통합 됨, 내원구분 조건 추가 */
+		                  where  PTNO    = #{ptno}
+		                    and  CODV_CD = 'I'
+		                    and  rownum  = 1
+		                  union  all
+		                 select  'Y' ENRM_YN
+		                   from  MECFSDOMT         /* 임상관찰기록 : as-is MNVITALT 병동VITALSIGN기록 내원구분코드 'I' 만확인  */
+		                  where  PTNO   = #{ptno}
+		                    and  CODV_CD = 'I'
+		                    and  rownum  = 1
+		                )
+		        )                               as ENRM_YN
+		     ,  (select  'Y'
+		           from  MEDOCMBST        /* 진료기록 */
+		          where  PTNO              = #{ptno}
+		            and  CHRT_OTAM_DVSN_CD = 'O'
+		            and  RCKI_CD       not in (FN_CC_GET_CNST_VL('MED_002', 'S_KPNG_RCRD'), '999')    /* 기록종류코드 : as-is  ('97', '98', '999')  MERCKIMPT 기록종류매핑 참조 수정 */
+		            and  RCRD_TYPE_CD      in ('1','4','5','6') --//1 : 서식, 2 : 프로그램, 3 : 광파일, 4 : OCR동의서, 5 : 전자동의서, 6 : 설문, 7 : 타병원, 8 : 수기서식
+		            and  CODV_CD       not in ('E', 'e')
+		            and  rownum   = 1
+		        )                               as OTPT_YN
+		     ,  (select max(ER_YN)
+		          from (select  /*+ INDEX(MEDOCMBST, MEDOCMBST_I06) */
+		                        'Y' as  ER_YN
+		                  from  MEDOCMBST   /* 진료기록 */
+		                 where  PTNO              = #{ptno}
+		                   and  CHRT_OTAM_DVSN_CD = 'O'
+		                   and  RCKI_CD       not in (FN_CC_GET_CNST_VL('MED_002', 'S_KPNG_RCRD'), '999')    /* 기록종류코드 : as-is  ('97', '98', '999')  MERCKIMPT 기록종류매핑 참조 수정 */
+		                   and  RCRD_TYPE_CD      in ('1','4','5','6') --//1 : 서식, 2 : 프로그램, 3 : 광파일, 4 : OCR동의서, 5 : 전자동의서, 6 : 설문, 7 : 타병원, 8 : 수기서식
+		                   and  CODV_CD           in ('E', 'e')
+		                   and  rownum  = 1
+		                 union  all
+		                select  'Y' as  ER_YN
+		                  from  MNEERRPAT   /* 응급환자정보조사 */
+		                 where  PTNO   = #{ptno}
+		                   and  rownum = 1
+		               )
+		        )                               as ER_YN
+		     ,  (select  'Y'
+		           from  MNHPATBAT hpa
+		          where  1=1
+		            and  hpa.PTNO          = ptp.PTNO
+		            and  hpa.DLDV_CD       = 'PD'       /* 복막투석 */
+		            and  hpa.NWRM_ITDR_ID is not null
+		            and  nvl(hpa.FNSH_YMD, to_date('29991231', 'yyyymmdd')) = to_date('29991231', 'yyyymmdd')
+		        )                               as DLYS_YN
+		     ,  ''                              as AGDC_YN_1        -- 동의서여부1 : 수혈동의서여부(MdpOrdrSaveChupDAO-listTrnfAgdcExstYn)
+		     , (select max(CNRN_GRAD_DVSN_CD)
+		          from APCNPTMMT
+		         where PTNO = ptp.PTNO
+		           and CNPT_DVSN_CD in ('3', '4')
+		            and LAST_UPDT_DT = (select max(LAST_UPDT_DT)
+		                                  from APCNPTMMT t
+		                                 where t.PTNO = ptp.PTNO
+		                               ) 
+		         group by PTNO) as CNPT_CLSF_NM /* 관심환자분류명 */
+		  from  APPTPTNTT ptp
+		 where  1 = 1
+		   and  ptp.PTNO       = #{ptno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="afiCpAplyPtntCtn" column="AFI_CP_APLY_PTNT_CTN"/>
+		<result property="afiCpPrrnPtntCtn" column="AFI_CP_PRRN_PTNT_CTN"/>
+		<result property="cpAplyYn" column="CP_APLY_YN"/>
+		<result property="afiOpfeCeckYn" column="AFI_OPFE_CECK_YN"/>
+		<result property="lntrSthsRgsrId" column="LNTR_STHS_RGSR_ID"/>
+		<result property="chdrCnfrYmd" column="CHDR_CNFR_YMD"/>
+		<result property="mdtePldcRgsrId" column="MDTE_PLDC_RGSR_ID"/>
+		<result property="itphTlno" column="ITPH_TLNO"/>
+		<result property="ninlDxDvsnNm" column="NINL_DX_DVSN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002 () 
+        Description :                                           접수번호기준 추가정보 조회 mdd_aprcrpt_s70
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneAdtnInfo0002 */
+		select  /*+ mdd_aprcrpt_s70$S01_툴바_진료접수번호 기준 추가정보 */
+		        (select FN_MD_GET_CPPAT_INFO( rcr.PTNO
+		                                           , rcr.MDRP_NO                                    /* 진료접수번호      */
+		                                           , ''                                             /* 기준일자 yyyymmdd - null이면 오늘 기준임*/
+		                                           , rcr.CODV_CD                                    /* 내원구분코드      */
+		                                           , rcr.MCDP_CD                                    /* 진료과코드        */
+		                                           , rcr.MDDR_ID                                    /* 진료의사ID        */
+		                                           )
+		           from dual)                                               as AFI_CP_APLY_PTNT_CTN /*AFI_CP적용환자내용 (종료된내역은 조회되지않음) */
+		     ,  case when rcr.CODV_CD = 'O' then null
+		                                    else (select FN_MD_GET_CPPRRN_INFO( rcr.PTNO
+		                                                                             , rcr.CODV_CD                 /* 내원구분코드      */
+		                                                                             , #{oprtYmd}                  /* 수술일자 yyyymmdd */
+		                                                                             , #{oprtSno}                  /* 수술순번 */
+		                                                                             , #{orocCd}                   /* 처방발생원코드 */
+		                                                                             , rcr.MDRP_NO                 /* 진료접수번호 */
+		                                                                             , rcr.MCDP_CD                 /* 진료과코드 */
+		                                                                             , rcr.MDDR_ID                 /* 진료의사ID */
+		                                                                             )
+		                                            from dual)
+		        end                                                         as AFI_CP_PRRN_PTNT_CTN /*AFI_CP예정환자내용 */
+		     , (SELECT DECODE(NVL(COUNT(*), 0), 0, 'N', 'Y') 
+				  FROM MDCPPATBT
+				 WHERE PTNO = rcr.PTNO
+				   AND MDRP_NO = rcr.MDRP_NO
+				   AND CP_DLTN_YMD IS NULL)                                 as CP_APLY_YN	/* CP적용내역유무 (진료접수번호 기준으로 CP적용내역있는 경우 Y) */
+		     ,  nvl(( select  'Y'
+		                from  APRCRPTNT srcr
+		               where  srcr.MDRP_NO = rcr.MDRP_NO
+		                 and  exists (select ops.PTNO
+		                                from MDOPSCHET ops                    /* 수술스케줄 */
+		                               where  1=1
+		                                 and  ops.PTNO              = srcr.PTNO       /* 환자번호 */
+		                                 and  ops.OPRT_YMD         <![CDATA[ >= ]]> srcr.MDCR_YMD   /* 수술일자 */
+		                                 and  ops.CODV_CD           = srcr.CODV_CD
+		                                 and  ops.DFNT_YN           = 'Y'            /* 확정여부 */
+		                                 and  nvl(ops.CNCL_YN,'N')  = 'N'            /* 취소여부 */
+		                                 and  ops.OPRT_STTS_CD not in ('1','9')      /* 수술상태코드*/
+		                                 and  ops.OPRM_CHOT_DT     is not null
+		                             )     /* 환자 입원 이후 확정된 수술 정보가 존재하고 */
+		                 and  not exists (select  ord.PTNO
+		                                    from  MDTRTORDT ord  /* 처방료처방 */
+		                                       ,  AIMFMDFET mfm  /*수가코드*/
+		                                   where  ord.MDRP_NO                = srcr.MDRP_NO
+		                                     and  ord.ORCL_CD                = 'OP1'         /* 처방분류코드(AI048)*/
+		                                     and  nvl(ord.DC_DVSN_CD, 'N')  != 'X'           /* DC구분코드         */
+		                                     and  nvl(ord.RTRN_STTS_CD, 'N') = 'N'           /* 반납상태코드       */
+		                                     and  mfm.MDFE_CD = ord.ORDR_CD                  /* 수가코드=처방코드  */
+		                                     and  mfm.MDAC_CLSF_CD           = '09'          /* 수가누적분류코드   */
+		                                     and  ord.ORDR_YMD between mfm.APST_YMD and mfm.APFN_YMD
+		                                 )  /* 수술관련 처방료처방이 존재하지 않는 경우 */
+		            ) , 'N')                                              as AFI_OPFE_CECK_YN /* AFI수술료체크여부 */
+		     ,  rcl.LNTR_STHS_RGSR_ID                     /* 장기재원등록자ID   */
+		     ,  to_char(rcl.CHDR_CNFR_YMD, 'YYYYMMDD') as CHDR_CNFR_YMD   /* 지정의사확인일자 */
+		     ,  rcl.MDTE_PLDC_RGSR_ID                     /* 치료계획서등록자ID */
+		     ,  FN_MN_PATWARDTELNO_S(rcr.MDRP_NO)                  as ITPH_TLNO       /* 구내 전화번호 : 환자 내원구분에 따른 담당간호사 전화번호 */
+		     , (select '평균: ' || ADMS_MEAN_DDCN || '일 하한: ' || DRG_LWLM_VL || '일 상한: ' || DRG_UPLM_VL || '일'
+				  from AIMFRDRGT drg
+		         where drg.DRG_VRSN_ID = 'NDRG'
+		           and rcr.DRG_NO = drg.RDRG_NO
+		           and rcr.MDCR_YMD between drg.APST_YMD AND drg.APFN_YMD
+		           and rownum = 1) ninl_dx_dvsn_nm
+		  from  APRCRPTNT rcr
+		     ,  APRCLSRST rcl
+		 where  1=1
+		   and  rcr.MDRP_NO    = #{mdrpNo}
+		   and  rcl.MDRP_NO (+)= rcr.MDRP_NO
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="afiCutnMngmYn" column="AFI_CUTN_MNGM_YN"/>
+		<result property="ptntMemoCtn" column="PTNT_MEMO_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001 () 
+        Description :                                           툴바_버튼부정보조회 mdd_meptmem_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneBtnInfo0001 */
+		        (   select  case FN_QD_ISLT_CUTN_VL(ptp.PTNO)
+		                        when '1' then case
+		                                      when FN_QD_CAUTION_COLOR_VL(ptp.PTNO) is null then '1'   /* 1 : 격리 */
+		                                                                                    else '3'   /* 3 : 격리+코션 */
+		                                      end
+		                        when '2' then '2'                                                      /* 2 : 코션 */
+		                                 else ''
+		                        end
+		              from  dual
+		        )                       as AFI_CUTN_MNGM_YN     -- 1: 격리감염, 2: 감염, 3: 격리
+		     ,  (   select  /*+ INDEX_DESC(ptm MEPTMEMOT_PK) */
+		                    case
+		                        when length(trim(ptm.EMR_PTNT_MEMO_CTN))    <![CDATA[   >   ]]> 100 then
+		                            substr(trim(ptm.EMR_PTNT_MEMO_CTN), 1, 100) || '...'
+		                        else ptm.EMR_PTNT_MEMO_CTN
+		                        end
+		              from  MEPTMEMOT ptm
+		             where  ptm.ptno                =   ptp.PTNO
+		               and  ptm.PTNT_MEMO_DVSN_CD   =   'N'             -- 환자메모구분코드 : 비의학적
+		               and  (   (WRTR_ID = #{userId})                   /* 작성자ID  : 본인이 작성한건 */
+		                        or
+		                        (   VWNG_ATHR_CD ='Y'                   /* 보기권한코드 : 'Y' */
+		                            and (   WRDP_CD =   (   select  MDCR_DPRT_CD
+		                                                      from  CCUSRDPHT
+				                                             where  USER_ID     =   #{userId}
+		                                                )               /* 작성과코드   : 동일과 이거나   */
+		                                    or OTDP_PUBL_YN ='Y'        /* 타과공개여부 : 타과 공개이거나 */
+		                                )
+		                        )
+		                    )
+		              and  rownum = 1
+		        )                       as PTNT_MEMO_CTN
+		  from  APPTPTNTT ptp
+		 where  ptp.PTNO    =   #{ptno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="inqrCnt" column="INQR_CNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001 () 
+        Description :                                           질병건수조회 mdd_iopdzst_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOntDzCct0001 */
+		select  /*+ mdd_iopdzst_s01$S01_툴바_환자별질병 조회_DAM */
+		        count(PTNO) INQR_CNT
+		  from
+		        RMIOPDZST
+		 where  PTNO = #{ptno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="chdrId" column="CHDR_ID"/>
+		<result property="chdrNm" column="CHDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001 () 
+        Description :                                           툴바_최종수진일주치의 정보 조회 mdd_padiagt_s17
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneLtstMddr0001 */
+		<![CDATA[
+		select  /*+ mdd_padiagt_s17$S01_툴바_최종수진일주치의 정보 조회 */
+		        to_char(rcr.MDCR_DT, 'YYYYMMDDHH24MISS') as MDCR_DT
+		     ,  pad.CHDR_ID
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = pad.CHDR_ID ) as CHDR_NM
+		  from
+		        MDPADIAGT pad
+		     ,  APRCRPTNT rcr
+		 where  1 = 1
+		   and  pad.MDRP_NO = (select max(sr.MDRP_NO) KEEP(dense_rank LAST order by sr.MDCR_DT, sr.MDRP_NO) as MDRP_NO
+		                         from MDPADIAGT sp
+		                            , APRCRPTNT sr
+		                        where sp.PTNO     = #{ptno}                    /* 환자번호             */
+		                          and sp.MCDP_CD  = #{mcdpCd}                  /* 진료과코드           */
+		                          and sr.MDRP_NO  = sp.MDRP_NO
+		                          and sr.MDCR_YMD < sysdate    /* 최종수진일이 미래일자가 되는 것 방지 2022.01.10 kChang */  
+		                      )
+		   and rcr.MDRP_NO = pad.MDRP_NO
+		   and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="pggsWeekCnt" column="PGGS_WEEK_CNT"/>
+		<result property="pggsDdcn" column="PGGS_DDCN"/>
+		<result property="bornDt" column="BORN_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001 () 
+        Description :                                           툴바_재태기간조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOnePggsInfo0001 */
+		select  /*+ mdd_wbabpat_s01$S01_툴바_재태기간 조회 */
+		        case
+		          when ih.MDRP_NO is not null then ih.PGGS_WEEK_CNT
+		                                      else oh.PGGS_WEEK_CNT
+		        end  as PGGS_WEEK_CNT   /* 임신재태주수 */
+		     ,  case
+		          when ih.MDRP_NO is not null then ih.PGGS_DDCN
+		                                      else oh.PGGS_DDCN
+		        end  as PGGS_DDCN       /* 임신재태일수 */
+		     ,  case
+		          when ih.MDRP_NO is not null then to_char(ih.BORN_DT, 'YYYYMMDDHH24MI')
+		                                      else to_char(oh.BORN_DT, 'YYYYMMDDHH24MI')
+		        end  as BORN_DT         /* 출생일시     */
+		  from  APRCRPTNT rcr
+		     ,  MNWDELVDT ih /* 분만장아기정보     : to-be 부터는 원내 출생의 경우 여기에만 재태정보 있음 */
+		     ,  MNWBABPAT oh /* 신생아간호정보조사 */
+		 where  rcr.MDRP_NO     = #{mdrpNo}
+		   and  ih.NWBR_PTNO (+)= rcr.PTNO
+		   and  oh.NWBR_PTNO (+)= rcr.PTNO
+		   and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="unclAmt" column="UNCL_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001 () 
+        Description :                                           환자미수금조회 mdd_acuruco_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneUnclAmt0001 */
+		select  /*+ mdd_acuruco_s01$S01_외래환자 미수금 직접조회 DAM */
+		        sum(uru.UCOC_AMT - uru.UNCL_RCPC_AMT) as UNCL_AMT
+		  from
+		        ACURUCOCT uru
+		 where  uru.PTNO         = #{ptno}      /* 환자번호             */
+		   and  uru.MCDP_CD      = #{mcdpCd}    /* 진료과코드           */
+		   and  uru.UNCL_DVSN_CD = '3'          /* 미수구분코드-개인미수 */
+		   and  uru.CODV_CD      = 'O'          /* 외래환자              */
+		   and  uru.UNCL_AMRT_CD = 'N'          /* 미수상각코드-미납     */
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="trnfSdefYn1" column="TRNF_SDEF_YN1"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy (selectOneDummy) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneDummy */
+		select  'Y'         as TRNF_SDEF_YN1
+		     ,  ''          as DPRT_CD
+		  from  dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO">
+	
+		<result property="ecogTrgtYn" column="ECOG_TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn (암병기 및 ECOG 기록지 및 동의서 준비 대상여부 체크) 
+        Description :                                           암병기 및 ECOG 기록지 및 동의서 준비 대상여부 체크
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpApntPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpApntPtntDAO-selectOneCancClstEcogTrgtYn */
+		select decode(count(d.ORDR_CD),0,'N','Y') as ECOG_TRGT_YN
+		from
+		           (
+		   select a.MDRP_NO   as MDRP_NO
+		          , a.PTNO    as PTNO
+		          , a.DSCH_DT as DSCH_DT
+		      from APRCRPTNT a -- 진료접수
+		   where a.PTNO        = #{ptno}
+		        and a.CODV_CD = 'I'
+		        and a.CNCL_DT is null
+		        and a.MDCR_DT = (select /*+ NO_UNNEST */
+				                        max(x.MDCR_DT)
+		                           from APRCRPTNT x -- 진료접수
+		                          where x.PTNO = a.PTNO
+		                            and x.CODV_CD = a.CODV_CD
+		                            and x.CNCL_DT is null)
+		           ) a
+		   , MDPADIAGT b -- 환자상병내역
+		   , MZCTRLMMT c -- 진료제어정보
+		   , MDTRTORDT d -- 처방료처방
+		   , MZCTRLMMT e -- 진료제어정보
+		where
+		     b.MDRP_NO = a.MDRP_NO
+		     and c.MDCR_CTRL_CD = 'MDP_730_001'
+		     and c.MDCR_DTLS_CTRL_CD = b.SCIN_CD
+		     and d.MDRP_NO = a.MDRP_NO
+		     and e.MDCR_CTRL_CD = 'MDP_730_002'
+		     and e.MDCR_DTLS_CTRL_CD = d.ORDR_CD
+		     and not exists (select /*+ NO_UNNEST */
+			                        1
+		                       from APRCRPTNT f -- 진료접수
+		                      where f.PTNO = a.PTNO
+		                        and f.CODV_CD = 'O'
+		                        and f.MDCR_YMD between trunc(a.DSCH_DT)+1
+		                        and trunc(sysdate)-1
+		                        and f.MCDP_CD = fn_cc_get_dprt_cd('DPRT_BES')
+		                        and f.CNCL_DT is null
+		                        and f.MDCR_YN = 'Y'
+		                        and f.MDCR_ANDV_CD in ('1','2','4','I'))
+	</select>
+
+
+
+</mapper>

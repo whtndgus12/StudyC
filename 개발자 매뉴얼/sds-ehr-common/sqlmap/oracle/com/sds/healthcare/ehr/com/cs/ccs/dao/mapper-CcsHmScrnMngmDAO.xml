@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsHmScrnMngmDAO_sql.xml 
+    Description :                                      메뉴 그룹
+                  -->
+<mapper namespace="CcsHmScrnMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteHmScrnStup (홈화면 설정 삭제) 
+        Description :                                           csd_uhscsmt_d02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteHmScrnStup"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO"  >
+		<![CDATA[
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteHmScrnStup_홈화면 설정 삭제 */
+		from		CSUHSCSMT a
+		where	a.LGIN_ID = #{lginId}
+		and		a.PRGM_ID not in (	select tp.PRGM_ID
+												from (	select	ta.PRGM_ID,
+															 			nvl(ttb.MENU_EXRN_YN, 'N') as MENU_EXRN_YN_1,
+															 			nvl(ttb.MENU_ACTV_YN, 'N') as MENU_ACTV_YN,
+															 			ta.MENU_FRMT_CD
+															from (	select	c.HGRN_MENU_ID,
+																	  				c.MENU_GRP_ID,
+																	  				c.MENU_ID,
+																	  				c.MENU_FRMT_CD,
+																	  				c.PRGM_ID
+																 		from		CSMNUSRMT a,
+																	  				CSMGLMGMT b,
+																	  				CSMNGRPMT c
+																		where	a.LGIN_ID     = #{lginId}
+																  		and		a.APST_DT     < sysdate
+																  		and a.APFN_DT     > sysdate
+																  		and a.MENU_GRP_ID = b.MENU_GRP_ID
+																  		and b.APST_DT     < sysdate
+																  		and b.APFN_DT     > sysdate
+																  		and b.MENU_GRP_ID = c.MENU_GRP_ID
+																  		and c.APST_DT     < sysdate
+																  		and c.APFN_DT     > sysdate
+															  		) ta,
+															 		(	select	tta.MENU_GRP_ID,
+																	  				tta.MENU_ID,
+																	  				decode(tta.MENU_EXRN_YN, 0, 'N', 'Y') as MENU_EXRN_YN,
+																	  				decode(tta.MENU_ACTV_YN, 0, 'N', 'Y') as MENU_ACTV_YN
+																 		from (	select	tb.MENU_GRP_ID,
+																			  					tb.MENU_ID,
+																			  					(	select	count(*)
+																				  					from		CSUOMPRMT ra
+																				 					where	ra.LGIN_ID       = #{lginId}
+																				   					and		ra.APST_DT       < sysdate
+																				   					and		ra.APFN_DT       > sysdate
+																				   					and		tb.MENU_GRP_ID   = ra.MENU_GRP_ID
+																								) as CON_CHECK,
+																			  					tb.MENU_EXRN_YN,
+																			  					tb.MENU_ACTV_YN
+																		 			from (	select	c.MENU_GRP_ID,
+																					   						c.MENU_ID,
+																					   						sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN,
+																					   						sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+																				  				from		CSUOMPRMT a,
+																					   						CSMNUATMT b,
+																					   						CSMNATIMT c
+																				 				where	a.LGIN_ID       = #{lginId}
+																				   				and		a.APST_DT       < sysdate
+																				   				and		a.APFN_DT       > sysdate
+																				   				and 		a.MENU_ATHR_ID  = b.MENU_ATHR_ID
+																				   				and 		a.MENU_GRP_ID   = b.MENU_GRP_ID
+																				   				and 		b.APST_DT       < sysdate
+																				   				and 		b.APFN_DT       > sysdate
+																				   				and 		b.MENU_ATHR_ID  = c.MENU_ATHR_ID
+																				   				and 		b.MENU_GRP_ID   = c.MENU_GRP_ID
+																				   				and 		c.APST_DT       < sysdate
+																				   				and 		c.APFN_DT       > sysdate
+																								group by c.MENU_GRP_ID, c.MENU_ID
+																			   				) tb
+																	   		) tta
+																		where tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+															   	) ttb
+													   where ta.MENU_GRP_ID   = ttb.MENU_GRP_ID(+)
+														 and ta.MENU_ID       = ttb.MENU_ID(+)
+													 ) tp
+											   where tp.MENU_EXRN_YN_1 <> 'Y'
+												 and tp.MENU_ACTV_YN   <> 'Y'
+												 and tp.MENU_FRMT_CD    = 'F'
+											  group by tp.PRGM_ID
+											)
+					]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn (메뉴권한 삭제된 사용자 홈화면 삭제) 
+        Description :                                           csd_urhommt_d02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO"  >
+		<![CDATA[
+				   delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn_메뉴권한 삭제된 사용자 홈화면 삭제  */
+				   from    CSURHOMMT xa
+				   where   xa.MENU_GRP_ID   = #{menuGrpId}
+					 and   xa.MENU_ID       in ( select tta.MENU_ID
+												 from   (select tb.LGIN_ID
+															  , tb.MENU_GRP_ID
+															  , tb.MENU_ID
+															  , ( select count(*)
+																  from   CSUOMPRMT ra  /*  메뉴권한사용자관계 */
+																  where  ra.LGIN_ID       = tb.LGIN_ID
+																	and  ra.MENU_GRP_ID   = tb.MENU_GRP_ID
+																	and  ra.APST_DT       < sysdate
+																	and  ra.APFN_DT       > sysdate
+																 ) as CON_CHECK
+															  , tb.MENU_EXRN_YN
+															  , tb.MENU_ACTV_YN
+														 from  ( select a.LGIN_ID
+																	  , c.MENU_GRP_ID
+																	  , c.MENU_ID
+																	  , sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN
+																	  , sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+																 from   CSUOMPRMT a  /*  메뉴권한사용자관계 */
+																	  , CSMNUATMT b  /*  메뉴권한 */
+																	  , CSMNATIMT c  /*  메뉴권한상세정보 */
+																 where  a.APST_DT       < sysdate
+																   and  a.APFN_DT       > sysdate
+																   and  a.MENU_ATHR_ID  = b.MENU_ATHR_ID
+																   and  a.MENU_GRP_ID   = b.MENU_GRP_ID
+																   and  b.APST_DT       < sysdate
+																   and  b.APFN_DT       > sysdate
+																   and  a.MENU_ATHR_ID  = c.MENU_ATHR_ID
+																   and  a.MENU_GRP_ID   = c.MENU_GRP_ID
+																   and  c.APST_DT       < sysdate
+																   and  c.APFN_DT       > sysdate
+																   and  a.MENU_GRP_ID   = #{menuGrpId}
+																 group by a.LGIN_ID, c.MENU_GRP_ID, c.MENU_ID
+																) tb
+														) tta
+												 where  tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+												   and  xa.LGIN_ID = tta.LGIN_ID
+											   )
+					]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn2 (사용자별 메뉴권한 적용 사용자 홈화면 삭제) 
+        Description :                                           csd_urhommt_d03
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn2"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsHmScrnMngmDVO"  >
+		<![CDATA[
+				   delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsHmScrnMngmDAO-deleteUserHmScrn2_사용자별 메뉴권한 적용 사용자 홈화면 삭제 */
+				   from    CSURHOMMT a
+				   where   a.LGIN_ID     = #{lginId}
+					 and   a.MENU_ID not in ( select  b.MENU_ID
+											  from    ( select  xa.MENU_GRP_ID
+															  , xa.MENU_ID
+															  , nvl(xb.MENU_EXRN_YN, 'N') as MENU_EXRN_YN_1
+															  , nvl(xb.MENU_ACTV_YN, 'N') as MENU_ACTV_YN
+														from    ( select   c.MENU_GRP_ID
+																		 , c.MENU_ID
+																  from     CSMNUSRMT a /*  메뉴그룹사용자관계 */
+																		 , CSMGLMGMT b /*  메뉴그룹목록관리 */
+																		 , CSMNGRPMT c /*  통합메뉴 */
+																  where    a.LGIN_ID     = #{lginId}
+																	and    a.APST_DT     < sysdate
+																	and    a.APFN_DT     > sysdate
+																	and    a.MENU_GRP_ID = b.MENU_GRP_ID
+																	and    b.APST_DT     < sysdate
+																	and    b.APFN_DT     > sysdate
+																	and    b.MENU_GRP_ID = c.MENU_GRP_ID
+																	and    c.APST_DT     < sysdate
+																	and    c.APFN_DT     > sysdate
+																) xa
+															  , ( select  tta.MENU_GRP_ID
+																		, tta.MENU_ID
+																		, decode(tta.MENU_EXRN_YN, 0, 'N', 'Y') as MENU_EXRN_YN
+																		, decode(tta.MENU_ACTV_YN, 0, 'N', 'Y') as MENU_ACTV_YN
+																  from  ( select  tb.MENU_GRP_ID
+																				, tb.MENU_ID
+																				, ( select  count(*)
+																					from    CSUOMPRMT ra
+																					where   ra.LGIN_ID       = #{lginId}
+																					  and   ra.APST_DT       < sysdate
+																					  and   ra.APFN_DT       > sysdate
+																					  and   tb.MENU_GRP_ID   = ra.MENU_GRP_ID
+																				  ) as CON_CHECK
+																				, tb.MENU_EXRN_YN
+																				, tb.MENU_ACTV_YN
+																		  from ( select   c.MENU_GRP_ID
+																						, c.MENU_ID
+																						, sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN
+																						, sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+																				 from     CSUOMPRMT a  /*  메뉴권한사용자관계 */
+																						, CSMNUATMT b  /*  메뉴권한 */
+																						, CSMNATIMT c  /*  메뉴권한상세정보 */
+																				 where    a.LGIN_ID       = #{lginId}
+																				   and    a.APST_DT       < sysdate
+																				   and    a.APFN_DT       > sysdate
+																				   and    a.MENU_ATHR_ID  = b.MENU_ATHR_ID
+																				   and    a.MENU_GRP_ID   = b.MENU_GRP_ID
+																				   and    b.APST_DT       < sysdate
+																				   and    b.APFN_DT       > sysdate
+																				   and    b.MENU_ATHR_ID  = c.MENU_ATHR_ID
+																				   and    b.MENU_GRP_ID   = c.MENU_GRP_ID
+																				   and    c.APST_DT       < sysdate
+																				   and    c.APFN_DT       > sysdate
+																				 group by c.MENU_GRP_ID
+																						, c.MENU_ID
+																			   ) tb
+																		  ) tta
+																  where tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+																) xb
+														where   xa.MENU_GRP_ID   = xb.MENU_GRP_ID(+)
+														  and   xa.MENU_ID       = xb.MENU_ID(+)
+													  ) b
+											  where   b.MENU_EXRN_YN_1 = 'N'
+												and   b.MENU_ACTV_YN   = 'N'
+												and   a.MENU_GRP_ID = b.MENU_GRP_ID
+											)
+					]]>
+	</delete>
+
+</mapper>

@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmWardDrugRtrnMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnmWardDrugRtrnMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="mdtnLcdvCd" column="MDTN_LCDV_CD"/>
+		<result property="frnsCtrlDvsnCd" column="FRNS_CTRL_DVSN_CD"/>
+		<result property="frnsVlm" column="FRNS_VLM"/>
+		<result property="ntm" column="NTM"/>
+		<result property="ddcn" column="DDCN"/>
+		<result property="clncExamDrugYn" column="CLNC_EXAM_DRUG_YN"/>
+		<result property="pcknUnadQty" column="PCKN_UNAD_QTY"/>
+		<result property="totlQtyClclCd" column="TOTL_QTY_CLCL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listPrtiRtrnYnInqr */   /*+ mnd_mdmedor_s04$S01_부분반납여부조회 단건조회DAM */
+				   nvl(a.MDTN_LCDV_CD, 'M') as MDTN_LCDV_CD
+				,  a.FRNS_CTRL_DVSN_CD as FRNS_CTRL_DVSN_CD
+				,  a.FRNS_VLM as FRNS_VLM                        /*  불출용량 */
+				,  decode( nvl(a.NTM, 0) , 0, 1, a.NTM) as NTM
+				,  a.DDCN as DDCN
+				,  b.CLNC_EXAM_DRUG_YN as CLNC_EXAM_DRUG_YN
+				,  a.PCKN_UNAD_QTY as PCKN_UNAD_QTY
+				,  b.TOTL_QTY_CLCL_CD as TOTL_QTY_CLCL_CD
+			 from  MDMEDORDT a
+				,  MDORDRCMT b
+			where
+				   a.PTNO     = #{ptno}
+			  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  a.ORDR_SNO = #{ordrSno}
+			  and  a.MDTN_NO  = case when fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_410') = 'Y' then
+										  nvl((select x.mdtn_no
+												 from mdmedordt x
+												where x.ptno = #{ptno}
+												  and x.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+												  and x.ordr_sno = #{ordrSno}    /*  응급발행은 실처방 번호 받음. 실처방에 투약번호 생성됨. */
+												  ), #{mdtnNo})
+									 else #{mdtnNo}
+								 end /*  투약번호, 응급실 발행처방인 경우 실투약번호 가져옴 */
+			  and  b.ORDR_CD  = a.ORDR_CD
+			  and  rownum = 1
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnUpdt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnUpdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnUpdt */   /*+ sdd_jdgrtnt_u41$I01_약반납 단건저장DAM */
+				   SDJDGRTNT
+			  set
+				   MDTN_LCDV_CD      = nvl(#{mdtnLcdvCd}, 'M')  /*  투약위치구분코드 */
+				,  PTRM_NO           = #{ptrmNo}                 /*  병실번호         */
+				,  SCKB_NO           = #{sckbNo}                 /*  병상번호         */
+				,  DRUG_RTRE_CD      = #{drugRtreCd}            /*  약반납사유코드   */
+				,  RTRN_RQST_CQY     = decode(#{rtrnRqstCqy}, 0, 0,
+										decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+										  decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{rtrnRqstCqy}))) /*  반납요청수량 */
+				,  PTAD_RTRN_QTY     = case when (SELECT x.MDCR_DTLS_CTRL_CD
+												    FROM MZCTRLMMT x
+												   WHERE x.MDCR_CTRL_CD = 'MNW916') = 'ORDR_QTY' then
+														decode(#{ptadRtrnQty}, 0, 0,
+																decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+																		decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{ptadRtrnQty})))
+											else
+												decode(#{rtrnRqstCqy}, 0, 0,
+													decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+													  decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{rtrnRqstCqy})))
+										end
+				,  RTRN_RQPR_ID      = decode(#{wodvCd}, 'B', RTRN_RQPR_ID, #{rtrnRqprId})    /*  반납요청자ID */
+				,  RTRN_RQST_IP      = decode(#{wodvCd}, 'B', RTRN_RQPR_ID, #{gvUserIp})     /*  반납요청IP */
+				,  MDPR_RTRN_NTM     = #{mdprRtrnNtm}       /*  약품반납횟수 */
+				,  DSCH_ATMT_RTRN_YN = #{dschAtmtRtrnYn}   /*  퇴원자동반납여부 */
+				,  FRNS_RTRN_CQY     = decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B',
+											  decode(#{mdprRtrnNtm}, 0, null, #{frnsVlm}), null)    /*  불출반납수량 */
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')    /*  처방일자 */
+			  and  MDTN_NO      = #{mdtnNo}      /*  투약번호 */
+			  and  ORDR_SNO     = #{ordrSno}     /*  처방일련번호 */
+			  and  (
+					  /*  반납일시 없이 update 들어오는 경우 있음. 자동잔량반납같은 경우.*/
+					  /*  잔량반납이외에 다른 반납정보가 먼저 들어온 경우 잔량처리하면서 기존 반납을 update 치면 안됨. */
+					  (nvl(#{drugRtreCd}, '*') = '6' and DRUG_RTRE_CD = nvl(#{drugRtreCd}, '*') and 1=1) or
+					  (nvl(#{drugRtreCd}, '*') <> '6' and
+						  RTRN_RQST_DT = to_date(#{rtrnRqstDt}, 'YYYYMMDDHH24MISS'))    /*  반납요청일시 */
+				   )
+			  and  PTNO         = #{ptno}         /*  환자번호 */
+			  and  nvl(RTRN_YN, 'N') != 'Y'        /*  반납여부 */
+			  and  nvl(REFN_YN, 'N') != 'R'        /*  환불여부 */
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugRtrnInpt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugRtrnInpt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		<![CDATA[
+		   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugRtrnInpt */   /*+ sdd_jdgrtnt_i41$I01_약반납신규저장 단건입력DAM */
+			 into  SDJDGRTNT
+				   (
+				   ORDR_YMD
+				,  MDTN_LCDV_CD
+				,  MDTN_NO_DVSN_CD
+				,  MDTN_NO
+				,  ORDR_SNO
+				,  RTRN_RQST_YMD
+				,  RTRN_RQST_DT
+				,  PTNO
+				,  PTDV_CD
+				,  ARVL_DPRT_CD
+				,  PTRM_NO
+				,  SCKB_NO
+				,  RTRN_DETL_DVSN_CD
+				,  DRUG_RTRE_CD
+				,  MDPR_CD
+				,  CARE_ITDV_CD
+				,  SHDT_CD
+				,  TEAM_CD
+				,  PTAD_RTRN_QTY
+				,  RTRN_RQST_CQY
+				,  RTRN_RQPR_ID
+				,  RTRN_RQST_IP
+				,  MDPR_RTRN_NTM
+				,  STDL_DVSN_CD
+				,  RTRN_DVSN_CD
+				,  STDL_DETL_DVSN_CD
+				,  DSCH_ATMT_RTRN_YN
+				,  FRNS_RTRN_CQY
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				   )
+		   values  (
+				   to_date(#{ordrYmd}, 'YYYYMMDD')
+				,  nvl(#{mdtnLcdvCd}, 'M')
+				,  case when (select x.oroc_dprt_cd
+								from mdmedordt x
+							   where x.ptno = #{ptno}
+								 and x.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+								 and x.ordr_sno = #{ordrSno}) = fn_cc_get_dprt_cd('WARD_ER') then   /* 172300 */
+							nvl( (select x.mdtn_no_dvsn_cd
+									from mdmedordt x
+								   where x.ptno = #{ptno}
+									 and x.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+									 and x.ordr_sno = #{ordrSno}     /*  응급실 발행은 실처방 sno 넘어옴. */
+								  ), #{mdtnNoDvsnCd})
+						else #{mdtnNoDvsnCd}
+					end
+				,  case when (select x.oroc_dprt_cd
+								from mdmedordt x
+							   where x.ptno = #{ptno}
+								 and x.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+								 and x.ordr_sno = #{ordrSno}) = fn_cc_get_dprt_cd('WARD_ER') then  /* 172300 */
+							nvl( (select x.mdtn_no
+									from mdmedordt x
+								   where x.ptno = #{ptno}
+									 and x.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+									 and x.ordr_sno = #{ordrSno}     /*  응급실 발행은 실처방 sno 넘어옴. */
+								 ), #{mdtnNo})
+						else #{mdtnNo}
+					end
+				,  #{ordrSno}
+				,  decode(#{wodvCd}, 'B', to_date(#{ordrYmd}, 'YYYYMMDD'),
+						decode(#{etcYn}, 'Y', to_date(#{rtrnRqstDt2}, 'YYYYMMDDHH24MISS'), trunc(sysdate)))
+				,  decode(#{wodvCd}, 'B', to_date(#{ordrYmd} || to_char(sysdate, 'HH24MISS'), 'YYYYMMDDHH24MISS'),
+						decode(#{etcYn}, 'Y', to_date(#{rtrnRqstDt2}|| to_char(sysdate, 'HH24MISS'), 'YYYYMMDDHH24MISS'), sysdate))
+				,  #{ptno}
+				,  #{ptdvCd}
+				,  #{arvlDprtCd}
+				,  #{ptrmNo}
+				,  #{sckbNo}
+				,  #{rtrnDetlDvsnCd}
+				,  #{drugRtreCd}
+				,  #{mdprCd}
+				,  #{careItdvCd}
+				,  #{shdtCd}
+				,  #{teamCd}
+				,  case when (SELECT x.MDCR_DTLS_CTRL_CD
+							    FROM MZCTRLMMT x
+							   WHERE x.MDCR_CTRL_CD = 'MNW916') = 'ORDR_QTY' then
+									decode(#{ptadRtrnQty}, 0, 0,
+											decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+													decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{ptadRtrnQty})))
+						else
+							decode(#{rtrnRqstCqy}, 0, 0,
+								decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+								  decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{rtrnRqstCqy})))
+					end
+				,  decode(#{rtrnRqstCqy}, 0, 0,
+						decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+								decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, #{rtrnRqstCqy})))
+				,  nvl(#{rtrnRqprId}, #{gvUserId})
+				,  #{gvUserIp}
+				,  #{mdprRtrnNtm}
+				,  #{stdlDvsnCd}
+				,  'N'
+				,  #{stdlDetlDvsnCd}
+				,  #{dschAtmtRtrnYn}
+				,  decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', decode(#{mdprRtrnNtm}, 0, null, #{frnsVlm}),
+						null)
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				   )
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnOrdrUpdt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnOrdrUpdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnOrdrUpdt */   /*+ mdd_medordt_u17$I01_약반납처방수정 단건수정DAM */
+				   MDMEDORDT
+			  set
+				   DRRT_DVSN_CD  = '3'             /*  약반납구분 1:의사, 2:약국, 3:간호사 */
+				,  DRUG_RTRE_CD  = #{drugRtreCd}   /*  반납사유코드 */
+				,  DRRT_CNNU_ID  = #{rtrnRqprId}   /*  약반납확인간호사 */
+				,  PHRM_RTRN_QTY =
+				   nvl((
+				   select  decode(QTY, 0, 0, decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B', #{frnsVlm},
+							   decode(#{clncExamDrugYn}, 'X', #{pcknUnadQty}, QTY)))
+					 from
+						   (
+						   select
+								   sum(decode(#{totlQtyClclCd}, 'OT', 1, MDPR_RTRN_NTM)) * #{drugAdmnQty} as QTY
+							 from
+								   SDJDGRTNT
+							where  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+							  and  PTNO     = #{ptno}
+							  and  MDTN_NO  = #{mdtnNo}
+							  and  ORDR_SNO = #{ordrSno}
+							  and  RTRN_DETL_DVSN_CD <> 'Z'
+						   )
+				   ), 99999999999999999999)  /* 약국반납량, null 들어가는 경우 있어서 아얘 입력안되게 막음. 누군지 걸리기만해라. */
+				,  PACL_AFTR_DRRT_QTY =
+				   nvl((
+					   select
+							   sum(PTAD_RTRN_QTY)
+						 from
+							   SDJDGRTNT
+						where  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+						  and  PTNO         = #{ptno}
+						  and  MDTN_NO      = #{mdtnNo}
+						  and  ORDR_SNO     = #{ordrSno}
+						  and  MDTN_LCDV_CD = nvl(#{mdtnLcdvCd}, 'M')
+						  and  RTRN_DETL_DVSN_CD <> 'Z'
+					   ), 99999999999999999999) /* 원무계산이후약반납량, 원무반납량에 null이 들어가는 경우 있어서 아얘 입력안되게 막음. 누군지 걸리기만 해라 */
+				,  FRNS_RTRN_CQY     = decode(substr(#{frnsCtrlDvsnCd}, 1, 1), 'B',
+						decode(#{mdprRtrnNtm}, 0, null, #{frnsVlm}), null)
+				,  SRRQ_CMNT_CTN     = decode(#{etcYn}, 'Y', #{srrqCmntCtn}, SRRQ_CMNT_CTN)
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}         /*  환자번호 */
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD') /*  처방일자 */
+			  and  ORDR_SNO = #{ordrSno}     /*  처방순번 */
+			]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="injcPlacCd" column="INJC_PLAC_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugRtrnInjcPlacCdInqr */   /*+ mnd_sdpordd_s01$S01_약반납 처방조제상세 주사장소코드 단건조회 DAM */
+				   case when ((select count(*)
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and fn_mn_check_orocdprtcd(x.oroc_dprt_cd, 'W') = 'Y' 
+								  and rownum = 1) = '1') and
+							 ((select count(*)
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and fn_mn_check_orocdprtcd(x.FRNS_DPRT_CD, 'W') = 'Y' 
+								  and rownum = 1) = '1') and
+							 ((select x.PTAD_CODV_CD
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and rownum = 1) <> 'O') then        /*  병동환자인데 퇴원약이 외래로 났을경우는 조제상세테이블의 주사장소가 들어가야맞다. */
+							   nvl(
+								   (select x.care_ward_cd
+									  from APRCRPTNT x
+									 where x.mdrp_no = (select y.mdrp_no
+														  from mdmedordt y
+														 where y.ptno = #{ptno}
+														   and y.ordr_ymd = to_date(#{ordrYmd}, 'YYYYMMDD')
+														   and y.ordr_sno = #{ordrSno}
+														   and rownum = 1)
+								   ), INJC_PLAC_CD)
+						when ((select count(*)
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and fn_mn_check_orocdprtcd(x.oroc_dprt_cd, 'W') = 'Y' 
+								  and rownum = 1) = '1') and
+							 ((select count(*)
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and fn_mn_check_orocdprtcd(x.FRNS_DPRT_CD, 'W') <> 'Y' 
+								  and rownum = 1) = '1') and
+							 ((select x.PTAD_CODV_CD
+								 from mdmedordt x
+								where x.ptno = a.ptno
+								  and x.ordr_ymd = a.ordr_ymd
+								  and x.ordr_sno = a.ordr_sno
+								  and rownum = 1) <> 'O') then        /*  병동환자인데 퇴원약이 외래로 났을경우는 조제상세테이블의 주사장소가 들어가야맞다. */
+							   INJC_PLAC_CD
+						else INJC_PLAC_CD
+					end as INJC_PLAC_CD /*  주사장소코드 */
+			 from
+				   SDPORDDET a /*  처방조제상세 */
+			where
+				   a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  a.ORDR_SNO = #{ordrSno}
+			  and  a.PTNO     = #{ptno}
+			  and  a.cmmd_stts_cd <= '5'
+			  and  rownum = 1
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="etcCot" column="ETC_COT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDrugPrgrSttsMdfcInqr */   /*+ mnd_mdmedor_s10$S01_약처방 진행상태 변경내역 조회 */
+				   count(*) as ETC_COT
+			 from  MDMEDORDT
+			where
+				   DRUG_ORDR_PRSS_CD >= '5'
+			  and  PTNO = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="daySckbTeamCd" column="DAY_SCKB_TEAM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listDaySckbTeamInqr */   /*+ mnd_wbteamt_s05$S01_DAY 팀코드 조회 */
+				   DAY_SCKB_TEAM_CD as DAY_SCKB_TEAM_CD
+			 from  MNWBTEAMT
+			where
+				   WARD_CD = #{wardCd}
+			  and  PTRM_NO = #{ptrmNo}
+			  and  SCKB_NO = #{sckbNo}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="rtrnYn" column="RTRN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listExcsRtrnYnInqr */   /*+ mnd_mdmedor_s11$S01_초과반납여부 조회 */
+				   decode(sign(#{ntm} * #{ddcn} - #{mdprRtrnNtm} - TOTL_MDPR_RTRN_NTM), -1, 'N', 'Y') as RTRN_YN
+			 from  (
+				   select  sum(MDPR_RTRN_NTM) as TOTL_MDPR_RTRN_NTM
+					 from  SDJDGRTNT
+					where  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+					  and  PTNO     = #{ptno}
+					  and  MDTN_NO  = #{mdtnNo}
+					  and  ORDR_SNO = #{ordrSno}
+					  and  RTRN_DETL_DVSN_CD <> 'Z'
+				   )
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="ststDvsnCd" column="STST_DVSN_CD"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="drugOrdrPrssCd" column="DRUG_ORDR_PRSS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-listOtptDrugRtrnVrfc */   /*+ mnd_sdjdgrt_l99$S01_외래 약반납 검증 */
+		            nvl(b.stst_dvsn_cd, '-') as STST_DVSN_CD
+		         ,  nvl(a.rcst_cd, '-') as RCST_CD
+		         ,  nvl(a.drug_ordr_prss_cd, '-') as DRUG_ORDR_PRSS_CD
+		      from  mdmedordt a
+		         ,  mdordrcmt b
+		     where  a.ptno = #{ptno}
+		       and  a.ordr_ymd = to_date(#{ordrYmd}, 'yyyymmdd')
+		       and  a.mdtn_no = #{mdtnNo}
+		       and  a.ordr_sno = #{ordrSno}
+		       and  b.ordr_cd = a.ordr_cd
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOne001 */
+		SELECT 
+		      #{codvCd} as CODV_CD
+			, #{mdcrDt} as MDCR_DT
+			, #{ordrCd} as ORDR_CD
+		from dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugDCRtrnInpt (퇴원DC 약반납) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugDCRtrnInpt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-insertDrugDCRtrnInpt */
+		INSERT
+		 into  SDJDGRTNT
+		       (
+		       ORDR_YMD
+		    ,  MDTN_LCDV_CD
+		    ,  MDTN_NO_DVSN_CD
+		    ,  MDTN_NO
+		    ,  ORDR_SNO
+		    ,  RTRN_RQST_YMD
+		    ,  RTRN_RQST_DT
+		    ,  PTNO
+		    ,  PTDV_CD
+		    ,  ARVL_DPRT_CD
+		    ,  PTRM_NO
+		    ,  SCKB_NO
+		    ,  RTRN_DETL_DVSN_CD
+		    ,  DRUG_RTRE_CD
+		    ,  MDPR_CD
+		    ,  CARE_ITDV_CD
+		    ,  SHDT_CD
+		    ,  TEAM_CD
+		    ,  PTAD_RTRN_QTY
+		    ,  RTRN_RQST_CQY
+		    ,  RTRN_RQPR_ID
+		    ,  RTRN_RQST_IP
+		    ,  MDPR_RTRN_NTM
+		    ,  STDL_DVSN_CD
+		    ,  RTRN_DVSN_CD
+		    ,  STDL_DETL_DVSN_CD
+		    ,  DSCH_ATMT_RTRN_YN
+		    ,  FRNS_RTRN_CQY
+		    ,  FRST_RGSR_ID
+		    ,  FRST_RGST_IP
+		    ,  FRST_RGST_DT
+		    ,  FRST_RGST_CLNT_PRGM_ID
+		    ,  FRST_RGST_SRVR_PRGM_ID
+		    ,  LAST_UPDR_ID
+		    ,  LAST_UPDT_IP
+		    ,  LAST_UPDT_DT
+		    ,  LAST_UPDT_CLNT_PRGM_ID
+		    ,  LAST_UPDT_SRVR_PRGM_ID
+		       )
+		select
+		       to_char(a.ORDR_YMD, 'yyyy-mm-dd') as ORDR_YMD  /* 처방일자      */
+		    ,  a.MDTN_LCDV_CD                              /* 투약번호구분코드 */
+		    ,  a.MDTN_NO_DVSN_CD                                 /* 투약위치구분코드 */
+		    ,  a.MDTN_NO                                      /* 투약번호      */
+		    ,  a.ORDR_SNO                                     /* 처방 일련번호   */
+		    ,  trunc(sysdate) as RTRN_RQST_YMD                /* 반납요청일자    */
+		    ,  sysdate as  RTRN_RQST_DT                       /* 반납요청일시    */
+		    ,  a.PTNO
+		    ,  a.CODV_CD as PTDV_CD                           /* 환자구분코드    */
+		    ,  a.FRNS_DPRT_CD as ARVL_DPRT_CD                             /* 도착부서코드    */
+		    ,  d.PTRM_NO as PTRM_NO                           /* 병실번호       */
+		    ,  d.SCKB_NO as SCKB_NO                           /* 병상번호       */
+		    ,  'B' as RTRN_DETL_DVSN_CD                       /* 반납상세구분코드 : 미수령반납  */
+		    ,  '5' as DRUG_RTRE_CD                            /* 약반납사유코드 : 5 미수령 반납      */
+		    ,  c.MDPR_CD                                      /* 약품코드       */
+		    ,  'R' as CARE_ITDV_CD                            /* 간호입력구분코드 : 정상/미수령 최초 반납 및 잔량 반납 */
+		    ,  '' as SHDT_CD                                  /* 교대근무코드     */
+		    ,  '' as TEAM_CD                                  /* 팀코드         */
+		    ,  (a.PCKN_UNAD_QTY  * a.NTM * a.DDCN  ) as PTAD_RTRN_QTY                        /* 원무반납량  : 계산 필요     */
+		    ,  c.INVN_TOTL_QTY as RTRN_RQST_CQY               /* 반납요청수량      */
+		    ,  #{gvUserId} as RTRN_RQPR_ID                    /* 반납요청자ID     */
+		    ,  #{gvUserIp} as RTRN_RQST_IP                    /* 반납요청IP      */
+		    ,  (a.NTM * a.DDCN) as MDPR_RTRN_NTM                            /* 약품반납횟수      */
+		    ,  'R' as STDL_DVSN_CD                            /* 입출고구분코드  : 입원반납   */
+		    ,  'N' as RTRN_DVSN_CD                            /* 반납구분코드 : N 간호반납     */
+		    ,  'E' as STDL_DETL_DVSN_CD                       /* 입출고상세구분코드   */
+		    ,  '' as DSCH_ATMT_RTRN_YN                        /* 퇴원자동반납여부    */
+		    ,  '' as FRNS_RTRN_CQY               /* 불출반납수량      */
+		    ,  #{gvUserId}
+		    ,  #{gvUserIp}
+		    ,  sysdate
+		    ,  #{gvClntPrgmId}
+		    ,  #{gvSrvrPrgmId}
+		    ,  #{gvUserId}
+		    ,  #{gvUserIp}
+		    ,  sysdate
+		    ,  #{gvClntPrgmId}
+		    ,  #{gvSrvrPrgmId}
+		  from  MDMEDORDT a
+		     ,  SDPORDBAT b  /* 처방조제기본  */
+		     ,  SDPORDDET c  /* 처방조제상세  */
+		     ,  APRCRPTNT d
+		 where  1=1
+		   and  a.PTNO            = #{ptno}
+		   and  a.ORDR_SNO        = #{ordrSno}
+		   and  a.ORDR_YMD        = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and  b.PTNO            = a.PTNO
+		   and  b.ORDR_YMD        = a.ORDR_YMD
+		   and  b.MDTN_LCDV_CD    = a.MDTN_LCDV_CD
+		   and  b.MDTN_NO_DVSN_CD = a.MDTN_NO_DVSN_CD
+		   and  b.MDTN_NO         = a.MDTN_NO
+		   and  c.ORDR_YMD        = b.ORDR_YMD
+		   and  c.MDTN_LCDV_CD    = b.MDTN_LCDV_CD
+		   and  c.MDTN_NO_DVSN_CD = b.MDTN_NO_DVSN_CD
+		   and  c.MDTN_NO         = b.MDTN_NO
+		   and  c.ORDR_SNO        = a.ORDR_SNO
+		   and  d.MDRP_NO         = a.MDRP_NO
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOnedrugOrdrPrssCd-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="drugOrdrPrssCd" column="DRUG_ORDR_PRSS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOnedrugOrdrPrssCd (약조제 상태 내역 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOnedrugOrdrPrssCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOnedrugOrdrPrssCd"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOnedrugOrdrPrssCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneDrugOrdrPrssCd */
+		select a.DRUG_ORDR_PRSS_CD
+		  from MDMEDORDT a
+		 where 1=1
+		   and a.PTNO  = #{ptno}
+		   and a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and a.ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnPressCd (약반납 상태 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnPressCd"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDrugRtrnPressCd */
+		update  MDMEDORDT
+		   set  CMMD_BEFR_RTRN_DVSN_CD  = 'Y'     -- 조제이전반납구분코드 
+		     ,  CMMD_BEFR_RTRN_DT       = sysdate -- 조제이전반납일시 
+		     ,  CMMD_BEFR_RTPR_ID       = #{gvUserId} -- 조제이전반납자ID 
+		     ,  LAST_UPDR_ID      = #{gvUserId}
+		     ,  LAST_UPDT_IP      = #{gvUserIp}
+		     ,  LAST_UPDT_DT      = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  1=1
+		   and  PTNO  = #{ptno}
+		   and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and  ORDR_SNO = #{ordrSno} 
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO">
+	
+		<result property="drugOrdrPrssCd" column="DRUG_ORDR_PRSS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-selectOneTest */
+		          a.DRUG_ORDR_PRSS_CD as DRUG_ORDR_PRSS_CD   
+		  from MDMEDORDT a
+		 where 1=1
+		   and a.PTNO  = #{ptno}
+		   and a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and a.ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDcDrugRtrn (퇴원약 DC) 
+        Description :                                           퇴원약 dc 처리시 반납량 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDcDrugRtrn"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmWardDrugRtrnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmWardDrugRtrnMngmDAO-updateDcDrugRtrn */
+		update MDMEDORDT
+		   set PHRM_RTRN_QTY = (PCKN_UNAD_QTY * ntm * ddcn)
+		     ,  PACL_AFTR_DRRT_QTY = (PCKN_UNAD_QTY * ntm * ddcn)
+		     ,  DRRT_DVSN_CD          = '1'             /*  약반납구분 1:의사, 2:약국, 3:간호사 */
+			 ,  DRUG_RTRE_CD          = '5'              /*  반납사유코드 : 4 수령반납, 5 미수령 반납  */
+		     ,  RTRN_RQST_DT          = sysdate      /*  반납요청시간 */
+			 ,  RTRN_RQPR_ID          = #{gvUserId}    /*  반납요청자ID */
+		     ,  LAST_UPDR_ID          = #{gvUserId}
+		     ,  LAST_UPDT_IP          = #{gvUserIp}
+		     ,  LAST_UPDT_DT          = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where PTNO          = #{ptno}
+		   and ORDR_YMD      = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and ORDR_SNO      = #{ordrSno} 
+	</update>
+
+</mapper>

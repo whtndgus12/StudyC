@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrctItemDAO_sql.xml 
+    Description :                                      처방제어항목DAO
+                  -->
+<mapper namespace="MdpOrctItemDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctItemCd" column="ORCT_ITEM_CD"/>
+		<result property="orctItemDvsnCd" column="ORCT_ITEM_DVSN_CD"/>
+		<result property="orctItemSno" column="ORCT_ITEM_SNO"/>
+		<result property="orctItemCtn" column="ORCT_ITEM_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem (처방제어항목전체조회) 
+        Description :                                           처방제어항목전체조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrctItem */
+		        ORCT_CD
+		     ,  ORCT_ITEM_CD
+		     ,  ORCT_ITEM_DVSN_CD
+		     ,  ORCT_ITEM_SNO     
+		     ,  replace(listagg(nvl(ORCT_ITEM_CTN, '##'), '@^') within group (order by ORCT_SNO), '##', '') as ORCT_ITEM_CTN
+		  from
+		        MDPORCTIT
+		 where  ORCT_CD in
+		        (
+		        select  ORCT_CD
+		          from  MDPORCTCT
+		         where  ORCT_PNTM_CD = '001'     /* 처방발행시 */
+		           and  MAIN_YN      = 'Y'       /* MAIN여부 */
+		           and  RBMS_APLY_YN = 'Y'       /* 룰적용여부 */
+		 <if test='orctCd != null and orctCd != ""'>
+		           and  ORCT_CD      = #{orctCd}
+		 </if>
+		        )
+		   and  trunc(sysdate) between ORCT_ITEM_VALD_STRT_YMD
+		                           and ORCT_ITEM_VALD_FNSH_YMD
+		<![CDATA[
+		   and  ORCT_ITEM_DVSN_CD not in ('2', '3', '4', 'Z')
+		]]>
+		 group
+		    by  ORCT_CD
+		     ,  ORCT_ITEM_CD
+		     ,  ORCT_ITEM_DVSN_CD
+		     ,  ORCT_ITEM_SNO
+		 order
+		    by  ORCT_CD
+		     ,  ORCT_ITEM_DVSN_CD
+		     ,  ORCT_ITEM_SNO
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctRmrkCtn" column="ORCT_RMRK_CTN"/>
+		<result property="orctWrnnLevlCd" column="ORCT_WRNN_LEVL_CD"/>
+		<result property="typeVl" column="TYPE_VL"/>
+		<result property="adddCtn1" column="ADDD_CTN_1"/>
+		<result property="adddCtn2" column="ADDD_CTN_2"/>
+		<result property="adddCtn3" column="ADDD_CTN_3"/>
+		<result property="adddCtn4" column="ADDD_CTN_4"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg (메시지 및 필요한 파라메터 조회) 
+        Description :                                           처방 안내 메시지 및 필요한 파라메터를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneMesg */
+		        a.ORCT_CD
+		     ,  a.ORCT_RMRK_CTN
+		     ,  decode(a.ORCT_WRNN_LEVL_CD, '3', 'A', '2', 'B', 'C') as ORCT_WRNN_LEVL_CD
+		     ,  (select ORCT_ITEM_CTN from MDPORCTIT where ORCT_CD = a.ORCT_CD and ORCT_ITEM_CD = 'typeVl') as TYPE_VL
+		     ,  (select ORCT_ITEM_CTN from MDPORCTIT where ORCT_CD = a.ORCT_CD and ORCT_ITEM_CD = 'addd1') as ADDD_CTN_1
+		     ,  (select ORCT_ITEM_CTN from MDPORCTIT where ORCT_CD = a.ORCT_CD and ORCT_ITEM_CD = 'addd2') as ADDD_CTN_2
+		     ,  (select ORCT_ITEM_CTN from MDPORCTIT where ORCT_CD = a.ORCT_CD and ORCT_ITEM_CD = 'addd3') as ADDD_CTN_3
+		     ,  (select ORCT_ITEM_CTN from MDPORCTIT where ORCT_CD = a.ORCT_CD and ORCT_ITEM_CD = 'addd4') as ADDD_CTN_4
+		  from  MDPORCTCT a
+		 where  ORCT_CD = #{orctCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctRmrkCtn" column="ORCT_RMRK_CTN"/>
+		<result property="orctWrnnLevlCd" column="ORCT_WRNN_LEVL_CD"/>
+		<result property="typeVl" column="TYPE_VL"/>
+		<result property="adddCtn1" column="ADDD_CTN_1"/>
+		<result property="adddCtn2" column="ADDD_CTN_2"/>
+		<result property="adddCtn3" column="ADDD_CTN_3"/>
+		<result property="adddCtn4" column="ADDD_CTN_4"/>
+		<result property="mesgCtn" column="MESG_CTN"/>
+		<result property="rsltVl" column="RSLT_VL"/>
+		<result property="userInptVl1" column="USER_INPT_VL1"/>
+		<result property="userInptVl2" column="USER_INPT_VL2"/>
+		<result property="userInptVl3" column="USER_INPT_VL3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg (메시지 생성 데이터 전체 목록을 조회한다.) 
+        Description :                                           메시지 생성 데이터 전체 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMesg */
+		        a.ORCT_CD
+		     ,  a.ORCT_RMRK_CTN
+		     ,  decode(a.ORCT_WRNN_LEVL_CD, '3', 'A', '2', 'B', 'C') as ORCT_WRNN_LEVL_CD
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'typeVl' , B.ORCT_ITEM_CTN , NULL ) )   as TYPE_VL
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'addd1'  , B.ORCT_ITEM_CTN , NULL ) )   as ADDD_CTN_1
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'addd2'  , B.ORCT_ITEM_CTN , NULL ) )   as ADDD_CTN_2
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'addd3'  , B.ORCT_ITEM_CTN , NULL ) )   as ADDD_CTN_3
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'addd4'  , B.ORCT_ITEM_CTN , NULL ) )   as ADDD_CTN_4
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'msg'    , B.ORCT_ITEM_CTN , NULL ) )   as MESG_CTN
+		     ,  max(decode ( B.ORCT_ITEM_CD , 'rsltVl' , B.ORCT_ITEM_CTN , NULL ) )   as RSLT_VL
+		     ,  '' as USER_INPT_VL1
+		     ,  '' as USER_INPT_VL2
+		     ,  '' as USER_INPT_VL3
+		  from  MDPORCTCT a
+		     ,  MDPORCTIT b
+		 where  a.ORCT_CD = b.ORCT_CD(+)
+		 <if test='orctCd != null and orctCd != ""'>
+		   and  a.ORCT_CD = #{orctCd}
+		 </if>
+		 group by a.ORCT_CD, a.ORCT_RMRK_CTN,  decode(a.ORCT_WRNN_LEVL_CD, '3', 'A', '2', 'B', 'C')
+		 order
+		    by  ORCT_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctBassCtn" column="ORCT_BASS_CTN"/>
+		<result property="orctItemDvsnCd" column="ORCT_ITEM_DVSN_CD"/>
+		<result property="orctItemCd" column="ORCT_ITEM_CD"/>
+		<result property="orctItemSno" column="ORCT_ITEM_SNO"/>
+		<result property="orctItemCtn" column="ORCT_ITEM_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule (처방코드선택룰 목록 조회) 
+        Description :                                           처방코드선택룰 목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrCdSlctRule */
+		        a.ORCT_CD
+		     ,  a.ORCT_BASS_CTN
+		     ,  b.ORCT_ITEM_DVSN_CD
+		     ,  b.ORCT_ITEM_CD
+		     ,  b.ORCT_ITEM_SNO
+		     ,  replace(listagg(nvl(b.ORCT_ITEM_CTN, '##'), '@^') within group (order by ORCT_SNO), '##', '') as ORCT_ITEM_CTN
+		  from  
+		        MDPORCTCT a
+		     ,  MDPORCTIT b
+		 where
+		        a.ORCT_PNTM_CD = #{orctPntmCd}
+		   and  a.MAIN_YN = #{mainYn}
+		 <if test='orctCd != null and orctCd != ""'>
+		   and  a.ORCT_CD = #{orctCd}
+		 </if>
+		   and  a.RBMS_APLY_YN = 'Y'	/* 적용여부가 Y인 것만 */
+		   and  a.ORCT_CD = b.ORCT_CD
+		   and  b.ORCT_ITEM_DVSN_CD not in ('2', '3', '4')
+		 group
+		    by  a.ORCT_CD
+		     ,  a.ORCT_BASS_CTN
+		     ,  b.ORCT_ITEM_DVSN_CD
+		     ,  b.ORCT_ITEM_CD
+		     ,  b.ORCT_ITEM_SNO
+		 order
+		    by  ORCT_Cd
+		     ,  ORCT_ITEM_SNO
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="mdcrDtlsCtrlCd" column="MDCR_DTLS_CTRL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd (진료제어코드 목록 조회) 
+        Description :                                           진료제어코드 목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listMdcrDtlsCtrlCd */
+		        MDCR_DTLS_CTRL_CD
+		  from
+		        MZCTRLMMT
+		 where
+		        MDCR_CTRL_CD = #{mdcrCtrlCd}
+		  and   trunc(sysdate) between APST_YMD and APFN_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctPntmCd" column="ORCT_PNTM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd (처방제어시점코드 조회) 
+        Description :                                           처방제어시점코드 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-selectOneOrctPtnmCd */
+		        ORCT_PNTM_CD
+		  from  MDPORCTCT
+		 where  ORCT_CD = #{orctCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO">
+	
+		<result property="orctPntmCd" column="ORCT_PNTM_CD"/>
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctItemCd" column="ORCT_ITEM_CD"/>
+		<result property="orctItemCtn" column="ORCT_ITEM_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm (처방 제어 Rule 조회 (속도 계선을 위해 RULE 정보 중 일부를 처방 로딩시 가져옴)) 
+        Description :                                           처방 제어 Rule 조회 (속도 계선을 위해 RULE 정보 중 일부를 처방 로딩시 가져옴)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrctItemDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm-result" useCache="true" flushCache="false">
+		 select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrctItemDAO-listOrdrRlenInfm */
+		           a.ORCT_PNTM_CD
+		        ,  b.ORCT_CD
+		        ,  b.ORCT_ITEM_CD
+		        ,  b.ORCT_ITEM_CTN
+		  from  MDPORCTCT a  
+		        ,  MDPORCTIT b
+		where  a.RBMS_APLY_YN = 'Y'
+		   and  a.ORCT_PNTM_CD in ( select MDCR_DTLS_CTRL_CD from  MZCTRLMMT where  MDCR_CTRL_CD = 'MDP_002' )
+		   and  a.ORCT_CD = b.ORCT_CD 
+		   and  b.ORCT_ITEM_CD in ( select MDCR_DTLS_CTRL_CD from  MZCTRLMMT where  MDCR_CTRL_CD = 'MDP_001' )
+	</select>
+
+
+
+</mapper>

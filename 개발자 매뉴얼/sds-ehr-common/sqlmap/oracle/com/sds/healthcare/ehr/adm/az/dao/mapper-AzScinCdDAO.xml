@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzScinCdDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzScinCdDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd-result" type="com.sds.healthcare.ehr.adm.az.vo.AzScinCdDVO">
+	
+		<result property="scinKornNm" column="SCIN_KORN_NM"/>
+		<result property="mdcrUseYn" column="MDCR_USE_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzScinCdDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzScinCdDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd-result" useCache="true" flushCache="false">
+		 select   /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzScinCdDAO-selectOneScinCd */
+		          a.SCIN_KORN_NM as SCIN_KORN_NM
+		        , a.MDCR_USE_YN as MDCR_USE_YN
+		   from  MRBSSCINT a
+		  where  a.SCIN_CD       = #{scinCd}
+		    and  trunc(sysdate)  between a.APLY_YMD
+		                             and a.FNSH_YMD + .99999
+		    <if test = 'mdcrUseYn != null and mdcrUseYn != ""'>
+		    and  a.MDCR_USE_YN = #{mdcrUseYn}
+		    </if>
+		    and  rownum = 1
+	</select>
+
+
+
+</mapper>

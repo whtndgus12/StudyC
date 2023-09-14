@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsAthrGrpMngmDAO_sql.xml 
+    Description :                                      권한그룹관리
+                  -->
+<mapper namespace="CcsAthrGrpMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck (리스트조건체크) 
+        Description :                                           csd_earcimt_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneListCndtChck_리스트 조건 */
+					count(*) as RTUR_VL
+		from		(	select	PRGM_ID
+						from		CSEARCIMT
+						where	APST_DT < sysdate
+						and		APFN_DT > sysdate
+						and		CNDT_TRGT_ITEM_CD = 'R008'
+						and		CNDT_TRGT_ITEM_VL = #{cndtTrgtItemVl}
+						union all
+						select	PRGM_ID
+						from		CSFARCIMT
+						where	APST_DT < sysdate
+						and		APFN_DT > sysdate
+						and		CNDT_TRGT_ITEM_CD = 'R008'
+						and		CNDT_TRGT_ITEM_VL = #{cndtTrgtItemVl}
+					) a
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItem (권한그룹조건항목 삭제) 
+        Description :                                           csd_agcitmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItem_권한그룹조건항목 삭제 */
+		from		CSAGCITMT
+		where	ATHR_GRP_CNDT_ID = #{athrGrpCndtId}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItemDetl (권한그룹조건항목상세 삭제) 
+        Description :                                           csd_agcidmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItemDetl"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-deleteAthrGrpCndtItemDetl_권한그룹조건항목상세 삭제 */
+		from		CSAGCIDMT
+		where	ATHR_GRP_CNDT_ID = #{athrGrpCndtId}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO">
+	
+		<result property="athrGrpCndtId" column="ATHR_GRP_CNDT_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn (권한그룹조건항목채번) 
+        Description :                                           csd_agcitmt_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn-result" useCache="true" flushCache="false">
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-selectOneAthrGrpCndtItemNorn_권한그룹조건 항목 채번 */
+					'L' || lpad(to_number(substr( nvl(max(ATHR_GRP_CNDT_ID), '00000'), 2, 4)) +1, 4, '0') as ATHR_GRP_CNDT_ID
+		from		CSAGCITMT
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItem (권한그룹조건항목등록) 
+        Description :                                           csd_agcitmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItem_권한그룹조건항목 등록 */
+		into  CSAGCITMT(BSDV_CD
+							   , ATHR_GRP_CNDT_ID
+							   , ATHR_GRP_CNDT_NM
+							   , FRST_RGSR_ID
+							   , FRST_RGST_IP
+							   , FRST_RGST_DT
+							   , FRST_RGST_CLNT_PRGM_ID
+							   , FRST_RGST_SRVR_PRGM_ID
+							   , LAST_UPDR_ID
+							   , LAST_UPDT_IP
+							   , LAST_UPDT_DT
+							   , LAST_UPDT_CLNT_PRGM_ID
+							   , LAST_UPDT_SRVR_PRGM_ID
+							   )
+					 values( #{bsdvCd}
+							   , #{athrGrpCndtId}
+							   , #{athrGrpCndtNm}
+							   , #{gvUserId}
+							   , #{gvUserIp}
+							   , sysdate
+							   , #{gvClntPrgmId}
+							   , #{gvSrvrPrgmId}
+							   , #{gvUserId}
+							   , #{gvUserIp}
+							   , sysdate
+							   , #{gvClntPrgmId}
+							   , #{gvSrvrPrgmId}
+				   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItemDetl (권한그룹조건항목상세등록) 
+        Description :                                           csd_agcidmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItemDetl"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsAthrGrpMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsAthrGrpMngmDAO-insertAthrGrpCndtItemDetl_권한그룹조건항목상세 등록 */
+		into		CSAGCIDMT( ATHR_GRP_CNDT_ID
+									   , ATHR_GRP_CNDT_ITEM_VL
+									   , ATHR_GRP_CNDT_DPRT_CD
+									   , FRST_RGSR_ID
+									   , FRST_RGST_IP
+									   , FRST_RGST_DT
+									   , FRST_RGST_CLNT_PRGM_ID
+									   , FRST_RGST_SRVR_PRGM_ID
+									   , LAST_UPDR_ID
+									   , LAST_UPDT_IP
+									   , LAST_UPDT_DT
+									   , LAST_UPDT_CLNT_PRGM_ID
+									   , LAST_UPDT_SRVR_PRGM_ID
+									   )
+									 values( #{athrGrpCndtId}
+										   , #{athrGrpCndtItemVl}
+										   , #{athrGrpCndtDprtCd}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+	</insert>
+
+</mapper>

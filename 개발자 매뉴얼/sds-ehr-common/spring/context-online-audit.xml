@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int-jmx="http://www.springframework.org/schema/integration/jmx"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<bean id="auditLogInterceptor" class="com.sds.healthcare.ehr.com.sy.aud.AuditLoggingInterceptor">
+		<property name="auditLogPublishingLogger">
+			<bean id="auditLogPublisher" class="com.sds.healthcare.ehr.com.sy.aud.AuditLogPublisher">
+				<property name="taskExecutor" ref="auditLogTaskExecutor"></property>
+				<property name="queue" ref="auditLoggingQueue"></property>
+			</bean>
+		</property>
+		<property name="hxTrgSvcList">
+			<list>
+				<!--
+				<value>CcuGetPrgmfmtListSID</value>
+				-->		 								 
+			</list>
+		</property>
+		<property name="sysClssCd" value="EHR" />
+		<property name="auditCodeIdentifier">
+			<bean id="ehrAuditCodeIdentifier" class="com.sds.healthcare.ehr.com.sy.aud.EHRAuditCodeIndentifier" />
+		</property>
+	</bean>
+
+	<bean id="auditLogTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="30" />
+		<property name="maxPoolSize" value="300" />
+		<property name="queueCapacity" value="10000" />
+		<property name="keepAliveSeconds" value="5" />
+		<property name="threadNamePrefix" value="AuditLogTask-" />
+	</bean>
+
+	<bean id="auditLoggingQueue" class="java.util.concurrent.LinkedBlockingQueue" />
+	
+	<bean id="auditLogConsumer" class="com.sds.healthcare.ehr.com.sy.aud.AuditLogConsumer">
+			<property name="taskExecutor" ref="auditLogTaskExecutor"></property>
+			<property name="queue" ref="auditLoggingQueue"></property>
+			<property name="consumeSize" value="300"></property>
+			<property name="transactionTemplate">
+				<bean class="org.springframework.transaction.support.TransactionTemplate">
+					<property name="transactionManager" ref="onlineTxManager" />
+					<property name="propagationBehavior" value="3"></property>
+				</bean>
+			</property>
+	</bean>
+	
+	<task:scheduler id="auditLogScheduler" pool-size="5" />
+
+	<task:scheduled-tasks scheduler="auditLogScheduler">		
+		<task:scheduled ref="auditLogConsumer" method="consume" fixed-delay="2000" />
+	</task:scheduled-tasks>
+</beans>

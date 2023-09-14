@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaMddrMcdpComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaMddrMcdpComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="smcrYn" column="SMCR_YN"/>
+		<result property="ceckSbjcCtn" column="CECK_SBJC_CTN"/>
+		<result property="dndpDtdpCd" column="DNDP_DTDP_CD"/>
+		<result property="smcrQlfcYn" column="SMCR_QLFC_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo (의사정보 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneMddrInfo */
+			   a.MCDP_CD           as MCDP_CD             /*  진료과 코드(무의미코드)    */	
+			,  a.MDDR_ID            as MDDR_ID
+			,  a.SMCR_YN            as SMCR_YN	
+			,  a.CECK_SBJC_CTN      as CECK_SBJC_CTN
+			,  a.DNDP_DTDP_CD      as DNDP_DTDP_CD        /*  치과세부과코드(무의미코드) */	
+		    ,  a.SMCR_QLFC_YN as SMCR_QLFC_YN                                     /* 선택진료자격여부*/
+		 from
+			   APDSDRDPT a                          /*  의사별 진료과  */
+		where
+			   a.MDDR_ID       =  #{mddrId}           
+		<![CDATA[
+			and  a.APFN_YMD >=trunc(sysdate)
+		]]>				  
+		  and  rownum          = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="mdcrSbdpCd" column="MDCR_SBDP_CD"/>
+		<result property="dndpDtdpCd" column="DNDP_DTDP_CD"/>
+		<result property="mdcrYn" column="MDCR_YN"/>
+		<result property="smcrQlfcYn" column="SMCR_QLFC_YN"/>
+		<result property="smcrYn" column="SMCR_YN"/>
+		<result property="smcrDetlDvsnCd" column="SMCR_DETL_DVSN_CD"/>
+		<result property="spdrQlfcYn" column="SPDR_QLFC_YN"/>
+		<result property="tcstPrapYmd" column="TCST_PRAP_YMD"/>
+		<result property="fvrvCapaDvsnCd" column="FVRV_CAPA_DVSN_CD"/>
+		<result property="mxmmCapaCnt" column="MXMM_CAPA_CNT"/>
+		<result property="ceckSbjcCtn" column="CECK_SBJC_CTN"/>
+		<result property="mesgDsplYn" column="MESG_DSPL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrMcdpComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrMcdpComnDAO-selectOneDrMcdp */
+		       a.MCDP_CD as MCDP_CD
+		    ,  a.MDDR_ID as MDDR_ID
+		    ,  a.APST_YMD as APST_YMD
+		    ,  a.APFN_YMD as APFN_YMD
+		    ,  a.MDCR_SBDP_CD as MDCR_SBDP_CD
+		    ,  a.DNDP_DTDP_CD as DNDP_DTDP_CD
+		    ,  a.MDCR_YN as MDCR_YN
+		    ,  a.SMCR_QLFC_YN as SMCR_QLFC_YN
+		    ,  a.SMCR_YN as SMCR_YN
+		    ,  a.SMCR_DETL_DVSN_CD as SMCR_DETL_DVSN_CD
+		    ,  a.SPDR_QLFC_YN as SPDR_QLFC_YN
+		    ,  a.TCST_PRAP_YMD as TCST_PRAP_YMD
+		    ,  a.FVRV_CAPA_DVSN_CD as FVRV_CAPA_DVSN_CD
+		    ,  a.MXMM_CAPA_CNT as MXMM_CAPA_CNT
+		    ,  a.CECK_SBJC_CTN as CECK_SBJC_CTN
+		    ,  a.MESG_DSPL_YN as MESG_DSPL_YN
+		   from  APDSDRDPT a
+		  where  a.MCDP_CD = #{mcdpCd}
+		    and  a.MDDR_ID = nvl(#{mddrId}, a.MCDP_CD)
+		    and  nvl(#{inqrYmd}, trunc(sysdate)) between a.APST_YMD and a.APFN_YMD
+		    <if test="mdcrYn != null">
+		    and  nvl(a.MDCR_YN, 'N')      = #{mdcrYn}
+		    </if>
+		    and  rownum = 1
+	</select>
+
+
+
+</mapper>

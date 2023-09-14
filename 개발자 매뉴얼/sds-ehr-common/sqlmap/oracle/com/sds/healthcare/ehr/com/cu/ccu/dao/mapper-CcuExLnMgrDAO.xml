@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuExLnMgrDAO_sql.xml 
+    Description :                                      외부연계관리DAO
+                  -->
+<mapper namespace="CcuExLnMgrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO">
+	
+		<result property="extlLnkdId" column="EXTL_LNKD_ID"/>
+		<result property="extlLnkdNm" column="EXTL_LNKD_NM"/>
+		<result property="cnctYn" column="CNCT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLn */
+		SELECT EXTL_LNKD_ID
+		          , EXTL_LNKD_NM
+		          , CNCT_YN
+		  FROM CUEXRLNMT
+		 WHERE 1 = 1
+		<if test="extlLnkdId != null and extlLnkdId != ''">
+		  AND EXTL_LNKD_ID = #{extlLnkdId}
+		</if>
+		 UNION ALL  
+		select 'EHR_CARD_VAN' AS "EXTL_LNKD_ID"
+		     , '카드 신용결제' AS "EXTL_LNKD_NM"
+		     , MCCS_DTLS_CTRL_NM AS "CNCT_YN"
+		  from ACCTRLMMT
+		 where MCCS_CTRL_CD = 'ACA_VAN' 
+		   and MCCS_DTLS_CTRL_CD = 'CODE'
+		 UNION ALL
+		SELECT 'EHR_NHIC' AS "EXTL_LNKD_ID"
+		     , '건강보험공단' AS "EXTL_LNKD_NM"
+		     , CAST(PTNT_CTRL_NMBR_VL1 AS VARCHAR2(1)) AS "CNCT_YN" 
+		  FROM APCTRLMMT
+		 WHERE PTNT_DTLS_CTRL_CD = 'NHIC_CMMN'
+		 UNION ALL
+		SELECT 'EHR_KIMS' AS "EXTL_LNKD_ID"
+		     , 'KIMS' AS "EXTL_LNKD_NM"
+		     , RBMS_APLY_YN AS "CNCT_YN" 
+		  FROM MDPORCTCT
+		 where ORCT_CD = 'O2000006'
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLn (외부연계 등록) 
+        Description :                                           외부연계 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLn */
+			INSERT 
+			  INTO CUEXRLNMT(EXTL_LNKD_ID
+			                             , EXTL_LNKD_NM
+			                             , CNCT_YN
+			                             , FRST_RGSR_ID
+							             , FRST_RGST_IP
+							             , FRST_RGST_DT
+							             , FRST_RGST_CLNT_PRGM_ID
+							             , FRST_RGST_SRVR_PRGM_ID
+							             , LAST_UPDR_ID
+							             , LAST_UPDT_IP
+							             , LAST_UPDT_DT
+							             , LAST_UPDT_CLNT_PRGM_ID
+							             , LAST_UPDT_SRVR_PRGM_ID)
+			 VALUES(#{extlLnkdId}
+			           , #{extlLnkdNm}
+			           , #{cnctYn}
+			           , #{gvUserId}
+		               , #{gvUserIp}
+		               , sysdate
+		               , #{gvClntPrgmId}
+		               , #{gvSrvrPrgmId}
+		               , #{gvUserId}
+		               , #{gvUserIp}
+		               , sysdate
+		               , #{gvClntPrgmId}
+		               , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateExLn (외부연계 수정) 
+        Description :                                           외부연계 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateExLn */
+		<![CDATA[
+		UPDATE  CUEXRLNMT
+		   SET EXTL_LNKD_NM = #{extlLnkdNm}
+		     , CNCT_YN = #{cnctYn} 
+		     , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+			 , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		]]>
+		<if test="extlLnkdId != 'NETWORK'">
+		 WHERE  EXTL_LNKD_ID = #{extlLnkdId}
+		</if>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLn (외부연계 삭제) 
+        Description :                                           외부연계 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLn */
+		DELETE 
+		  FROM CUEXRLNMT
+		 WHERE  EXTL_LNKD_ID = #{extlLnkdId}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO">
+	
+		<result property="extlLnkdId" column="EXTL_LNKD_ID"/>
+		<result property="extlLnkdNm" column="EXTL_LNKD_NM"/>
+		<result property="cnctYn" column="CNCT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn (외부연계조회) 
+        Description :                                           외부연계조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-selectOneExLn */
+		SELECT EXTL_LNKD_ID
+		     , EXTL_LNKD_NM
+		     , CNCT_YN
+		  FROM CUEXRLNMT
+		 WHERE  EXTL_LNKD_ID = #{extlLnkdId}
+		 UNION ALL
+		SELECT B.EXTL_LNKD_ID
+		     , B.EXTL_LNKD_NM
+		     , B.CNCT_YN
+		  FROM CUEXRLNDT A
+		     , CUEXRLNMT B
+		 WHERE A.EXTL_LNKD_ID = B.EXTL_LNKD_ID
+		   AND A.EXTL_LNKD_DETAIL_ID = #{extlLnkdId}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateCardVanExLn (카드연계수정) 
+        Description :                                           카드연계수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateCardVanExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateCardVanExLn */
+		UPDATE ACCTRLMMT
+		   SET MCCS_DTLS_CTRL_NM = #{cnctYn}
+		 WHERE MCCS_CTRL_CD = 'ACA_VAN' 
+		   and MCCS_DTLS_CTRL_CD = 'CODE'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNHICExLn (건강보험공단연계) 
+        Description :                                           건강보험공단연계
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNHICExLn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNHICExLn */
+		UPDATE APCTRLMMT
+		   SET PTNT_CTRL_NMBR_VL1 = #{ptntCtrlNmbrVl1}
+		 WHERE PTNT_DTLS_CTRL_CD = 'NHIC_CMMN'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateKIMS () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateKIMS"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateKIMS */
+		UPDATE MDPORCTCT
+		   SET RBMS_APLY_YN = #{cnctYn}
+		 where ORCT_CD = 'O2000006'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNedis (Nedis 수정) 
+        Description :                                           Nedis 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNedis"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-updateNedis */
+		UPDATE CUEXRLNMT
+		   SET CNCT_YN = #{cnctYn}
+		 WHERE EXTL_LNKD_ID LIKE '/mnm-cf-emih%'
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO">
+	
+		<result property="extlLnkdId" column="EXTL_LNKD_ID"/>
+		<result property="extlLnkdDetailId" column="EXTL_LNKD_DETAIL_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-listExLnDetail */
+		SELECT EXTL_LNKD_ID
+		     , EXTL_LNKD_DETAIL_ID
+		  FROM CUEXRLNDT
+		 WHERE EXTL_LNKD_ID = #{extlLnkdId}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLnDetail (연계상세 등록) 
+        Description :                                           연계상세 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLnDetail"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-insertExLnDetail */
+		INSERT 
+		  INTO CUEXRLNDT(EXTL_LNKD_ID
+									 , EXTL_LNKD_DETAIL_ID
+									 , FRST_RGSR_ID
+									 , FRST_RGST_IP
+									 , FRST_RGST_DT
+									 , FRST_RGST_CLNT_PRGM_ID
+									 , FRST_RGST_SRVR_PRGM_ID
+									 , LAST_UPDR_ID
+									 , LAST_UPDT_IP
+									 , LAST_UPDT_DT
+									 , LAST_UPDT_CLNT_PRGM_ID
+									 , LAST_UPDT_SRVR_PRGM_ID)
+		 VALUES(#{extlLnkdId}
+				   , #{extlLnkdDetailId}
+				   , #{gvUserId}
+				   , #{gvUserIp}
+				   , sysdate
+				   , #{gvClntPrgmId}
+				   , #{gvSrvrPrgmId}
+				   , #{gvUserId}
+				   , #{gvUserIp}
+				   , sysdate
+				   , #{gvClntPrgmId}
+				   , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLnDetail (외부연계상세 삭제) 
+        Description :                                           외부연계상세 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLnDetail"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuExLnMgrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuExLnMgrDAO-deleteExLnDetail */
+		DELETE 
+		  FROM CUEXRLNDT
+		 WHERE EXTL_LNKD_ID = #{extlLnkdId}
+		   AND EXTL_LNKD_DETAIL_ID = #{extlLnkdDetailId}
+	</delete>
+
+</mapper>

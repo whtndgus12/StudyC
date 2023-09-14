@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrLogPrsgDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpOrdrLogPrsgDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertDgstItrcAndDplcLog () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertDgstItrcAndDplcLog"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  >
+		<![CDATA[
+			   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertDgstItrcAndDplcLog_약품상호작용 및 중복 log */
+				 into  MDDURLOGT
+					(
+					   ORDR_YMD               /*  처방일자             */
+					,  MDRP_NO
+					,  DPLC_LOG_SNO
+					,  PTNO                   /*  환자번호             */
+					,  MCDP_CD                /*  진료과               */
+					,  CODV_CD                /*  환자구분             */
+					,  ODDR_ID                /*  처방의사             */
+					,  BEFR_ORDR_CD           /*  이전처방코드         */
+					,  NEW_ORDR_CD            /*  신규처방코드         */
+					,  PAST_ORDR_CTN          /*  과거처방정보         */
+					,  BEFR_ORDR_NM           /*  이전처방명           */
+					,  NEW_ORDR_NM            /*  신규처방명           */
+					,  RPMD_ID1               /*  효능/성분1           */
+					,  RPMD_ID2               /*  효능/성분2           */
+					,  EFCC_INGR_NM1          /*  효능/성분명1         */
+					,  EFCC_INGR_NM2          /*  효능/성분명2         */
+					,  OTDP_YN                /*  타과                 */
+					,  DPLC_DDCN              /*  중복일수             */
+					,  DVSN_NM                /*  구분                 */
+					,  MOHW_TABO_YN
+					,  RESN_CTN
+					/*  서버 프로그램 전환시 자동 추가된 항목 */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					)
+			   values
+					(
+					   to_date(#{ordrYmd}, 'YYYYMMDD') /*  처방일자             */
+					,  #{mdrpNo}
+					,  (
+					   select  nvl(max(DPLC_LOG_SNO), 0) + 1
+						 from  MDDURLOGT
+						where  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+						  and  MDRP_NO  = #{mdrpNo}
+					   )
+					,  #{ptno}                /*  환자번호             */
+					,  #{mcdpCd}             /*  진료과               */
+					,  #{codvCd}             /*  환자구분             */
+					,  #{oddrId}             /*  처방의사             */
+					,  #{befrOrdrCd}        /*  이전처방코드         */
+					,  #{newOrdrCd}         /*  신규처방코드         */
+					,  #{pastOrdrCtn}       /*  과거처방정보         */
+					,  #{befrOrdrNm}        /*  이전처방명           */
+					,  #{newOrdrNm}         /*  신규처방명           */
+					,  #{rpmdId1}           /*  효능/성분1           */
+					,  #{rpmdId2}           /*  효능/성분2           */
+					,  #{efccIngrNm1}      /*  효능/성분명1         */
+					,  #{efccIngrNm2}      /*  효능/성분명2         */
+					,  #{otdpYn}             /*  타과                 */
+					,  #{dplcDdcn}           /*  중복일수             */
+					,  #{dvsnNm}             /*  구분                 */
+					,  #{mohwTaboYn}
+					,  #{resnCtn}
+					/*  서버 프로그램 전환시 자동 추가된 항목 */
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					)
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertPtntOrdrCtrlLog (로그 등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertPtntOrdrCtrlLog"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  >
+		<![CDATA[
+			   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertPtntOrdrCtrlLog */   /*+ mdd_porctlt_i01$I01_처방제어로그 다건등록DAM */
+				 into  MDPORCTLT
+					(
+					   ORCT_LOG_OCRN_YMD
+					,  ORCT_LOG_SNO
+					,  ORCT_CD
+					,  ORCT_SNO
+					,  LOG_ORDV_CD
+					,  PTNO
+					,  ORDR_YMD
+					,  ORDR_SNO
+					,  ORCT_SLCT_ITEM_CD
+					,  ORCT_SLCT_CTN
+					,  ORCT_ITEM_DVSN_CD
+					,  ORCT_ITEM_CD
+					,  MESG_CD
+					,  MESG_CTN
+					,  MESG_ADDD_CTN
+					/*  AUDIT */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					)
+			   values (
+					  trunc(sysdate)
+				   ,  (
+					  select  nvl(max(to_number(ORCT_LOG_SNO)), 0) + 1
+						from  MDPORCTLT
+					   where  ORCT_LOG_OCRN_YMD = trunc(sysdate)
+					  )
+				   ,  #{orctCd}
+				   ,  0
+				   ,  #{logOrdvCd}
+				   ,  #{ptno}
+				   ,  to_date(#{ordrYmd}, 'YYYYMMDD')
+				   ,  #{ordrSno}
+				   ,  #{orctSlctItemCd}
+				   ,  #{orctSlctCtn}
+				   ,  #{orctItemDvsnCd}
+				   ,  #{orctItemCd}
+				   ,  #{mesgCd}
+				   ,  #{mesgCtn}
+				   ,  #{mesgAdddCtn}
+				   /*  AUDIT */
+				   ,  #{gvUserId}
+				   ,  #{gvUserIp}
+				   ,  sysdate
+				   ,  #{gvClntPrgmId}
+				   ,  #{gvSrvrPrgmId}
+				   ,  #{gvUserId}
+				   ,  #{gvUserIp}
+				   ,  sysdate
+				   ,  #{gvClntPrgmId}
+				   ,  #{gvSrvrPrgmId}
+				   )
+			]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="rbmsAplyYn" column="RBMS_APLY_YN"/>
+		<result property="orctItemCd" column="ORCT_ITEM_CD"/>
+		<result property="logCrtnYn" column="LOG_CRTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogSaveTrgtList_로그저장대상목록 다건조회 */
+				   ORCT_CD as ORCT_CD
+				,  RBMS_APLY_YN as RBMS_APLY_YN
+				,  ORCT_ITEM_CD as ORCT_ITEM_CD
+		        ,  LOG_CRTN_YN as LOG_CRTN_YN
+			 from  (
+				   select  a.ORCT_CD
+						,  a.RBMS_APLY_YN
+						,  a.LOG_CRTN_YN
+						,  b.ORCT_ITEM_CD
+						,  rank() over (partition by b.ORCT_CD order by nvl(b.ORCT_ITEM_DVSN_CD, 0) desc) as RNK
+					 from  MDPORCTCT a
+						,  MDPORCTIT b
+					where  a.ORCT_PNTM_CD = '001'  /* 001: 처방내림 */
+					  and  a.ORCT_CD = b.ORCT_CD(+)
+					  and  (
+							  (b.ORCT_ITEM_DVSN_CD(+) = '2' and b.ORCT_ITEM_CD(+) = #{dprtCd})
+						   or (b.ORCT_ITEM_DVSN_CD(+) = '3' and b.ORCT_ITEM_CD(+) = #{userId})
+						   or (b.ORCT_ITEM_DVSN_CD(+) = '4')       /*  3: 병원 전체 */
+						   )
+				   )
+			where  nvl(RNK, 0) = 1
+			order
+			   by  ORCT_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogRgstTrgtInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO">
+	
+		<result property="orctCd" column="ORCT_CD"/>
+		<result property="orctSno" column="ORCT_SNO"/>
+		<result property="orctItemDvsnCd" column="ORCT_ITEM_DVSN_CD"/>
+		<result property="afiOrctItemDvsnNm" column="AFI_ORCT_ITEM_DVSN_NM"/>
+		<result property="orctItemCd" column="ORCT_ITEM_CD"/>
+		<result property="afiOrctItemNm" column="AFI_ORCT_ITEM_NM"/>
+		<result property="orctItemCtn" column="ORCT_ITEM_CTN"/>
+		<result property="orctItemValdStrtYmd" column="ORCT_ITEM_VALD_STRT_YMD"/>
+		<result property="orctItemValdStrtYmd" column="ORCT_ITEM_VALD_STRT_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogRgstTrgtInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogRgstTrgtInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogRgstTrgtInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-listLogRgstTrgtInfm-result" useCache="true" flushCache="false">
+		select  /*+ mdd_porctit_l02$S01_처방제어 항목조회 */
+		            ORCT_CD                                      /* 처방제어코드            */
+		         ,  ORCT_SNO                                     /* 처방제어일련번호        */
+		         ,  ORCT_ITEM_DVSN_CD                            /* 처방제어항목구분코드    */
+		         ,  decode(ORCT_ITEM_DVSN_CD, '2', '진료과', '3', '사용자', '4', '병원') as AFI_ORCT_ITEM_DVSN_NM      /* 처방제어항목구분명 */
+		         ,  ORCT_ITEM_CD                                 /* 처방제어항목코드        */
+		         ,  case when ORCT_ITEM_DVSN_CD = '2' then
+		              (select KORN_DPRT_NM from HZDEPTMMT
+		                where DPRT_CD = ORCT_ITEM_CD)
+		                 when ORCT_ITEM_DVSN_CD = '3' then
+		              (select USER_NM from CCUSRDPHT
+		                where USER_ID = ORCT_ITEM_CD)
+		                 when ORCT_ITEM_DVSN_CD = '4' then 'ALL'
+		                 else '' end as AFI_ORCT_ITEM_NM         /* 처방제어항목명          */
+		         ,  ORCT_ITEM_CTN                                /* 처방제어문구내용        */
+		         ,  to_char(ORCT_ITEM_VALD_STRT_YMD, 'YYYYMMDD') as ORCT_ITEM_VALD_STRT_YMD /* 처방제어항목유효시작일자*/
+		         ,  to_char(ORCT_ITEM_VALD_FNSH_YMD, 'YYYYMMDD') as ORCT_ITEM_VALD_STRT_YMD /* 처방제어항목유효종료일자*/
+		      from
+		            MDPORCTIT
+		     where
+		            ORCT_CD = #{orctCd}
+		       and  ORCT_ITEM_DVSN_CD in ('2', '3', '4')
+		     order
+		        by  ORCT_CD
+		         ,  ORCT_SNO
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-deleteLogRgstTrgtInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-deleteLogRgstTrgtInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-deleteLogRgstTrgtInfm */
+		delete  /*+ mdd_porctit_d01$D01_처방제어 항목 삭제 */
+		      from
+		            MDPORCTIT
+		     where
+		               ORCT_CD  = #{orctCd}            /* 처방제어코드        */
+		       and  ORCT_SNO = #{orctSno}           /* 처방제어일련번호    */
+		       and  ORCT_ITEM_DVSN_CD in ('2', '3', '4')
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertLogRgstTrgtInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertLogRgstTrgtInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrLogPrsgDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrLogPrsgDAO-insertLogRgstTrgtInfm */
+		insert  /*+ mdd_porctit_i01$I01_처방제어 항목 저장 */
+		      into  MDPORCTIT
+		         (
+		            ORCT_CD                                      /* 처방제어코드            */
+		         ,  ORCT_SNO                                     /* 처방제어일련번호        */
+		         ,  ORCT_ITEM_DVSN_CD                            /* 처방제어항목구분코드    */
+		         ,  ORCT_ITEM_CD                                 /* 처방제어항목코드        */
+		         ,  ORCT_ITEM_CTN                                /* 처방제어문구내용        */
+		         ,  ORCT_ITEM_VALD_STRT_YMD                      /* 처방제어항목유효시작일자*/
+		         ,  ORCT_ITEM_VALD_FNSH_YMD                      /* 처방제어항목유효종료일자*/
+		         /* AUDIT */
+		         ,  FRST_RGSR_ID
+		         ,  FRST_RGST_IP
+		         ,  FRST_RGST_DT
+		         ,  FRST_RGST_CLNT_PRGM_ID
+		         ,  FRST_RGST_SRVR_PRGM_ID
+		         ,  LAST_UPDR_ID
+		         ,  LAST_UPDT_IP
+		         ,  LAST_UPDT_DT
+		         ,  LAST_UPDT_CLNT_PRGM_ID
+		         ,  LAST_UPDT_SRVR_PRGM_ID
+		         )
+		      values
+		        (
+		           #{orctCd}                                     /* 처방제어코드            */
+		        ,  (
+		           select  nvl(max(ORCT_SNO), 0) + 1
+		             from  MDPORCTIT
+		            where  ORCT_CD = #{orctCd}
+		           )                                                                /* 처방제어일련번호        */
+		        ,  #{orctItemDvsnCd}                            /* 처방제어항목구분코드    */
+		        ,  #{orctItemCd}                                 /* 처방제어항목코드        */
+		        ,  nvl(#{orctItemCtn}, '.')                      /* 처방제어문구내용        */
+		        ,  to_date(nvl(#{orctItemValdStrtYmd}, '19700101'), 'YYYYMMDD') /* 처방제어항목유효시작일자*/
+		        ,  to_date(nvl(#{orctItemValdFnshYmd}, '29991231'), 'YYYYMMDD') /* 처방제어항목유효종료일자*/
+		        /* AUDIT */
+		        ,  #{gvUserId}
+		        ,  #{gvuserIp}
+		        ,  sysdate
+		        ,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+		        ,  #{gvUserId}
+		        ,  #{gvuserIp}
+		        ,  sysdate
+		        ,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+		        )
+	</insert>
+
+</mapper>

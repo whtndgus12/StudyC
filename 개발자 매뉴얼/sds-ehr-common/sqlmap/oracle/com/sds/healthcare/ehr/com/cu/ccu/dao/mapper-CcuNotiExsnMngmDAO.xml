@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuNotiExsnMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcuNotiExsnMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO">
+	
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="notcExsnSno" column="NOTC_EXSN_SNO"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="exsnCtn" column="EXSN_CTN"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn (노티예문 조회) 
+        Description :                                           노티예문 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		         select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-listNotcExsn */
+		   			A.RGSR_ID as RGSR_ID,
+		   			/* (select USER_NM from CCUSERAMT where LGIN_ID = A.RGSR_ID ) as USER_NM, */
+		   			B.USER_NM as USER_NM,
+		   			A.NOTC_EXSN_SNO as NOTC_EXSN_SNO,
+		   			A.TITL_NM as TITL_NM,
+		   			A.EXSN_CTN as EXSN_CTN,
+		   			C.KORN_DPRT_NM as KORN_DPRT_NM,
+		   			to_char(A.LAST_UPDT_DT,'YYYYMMDDHH24MISS') as RTUR_VL_1
+		   	  from  CUNOTIEMT A, CCUSRDPHT B, HZDEPTMMT C
+		   	 where  A.RGSR_ID = #{rgsrId}
+		   	   and  A.RGSR_ID = B.USER_ID
+		   	   and  B.MDCR_DPRT_CD = C.DPRT_CD(+)
+		   	 order by  A.LAST_UPDT_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO">
+	
+		<result property="notcExsnSno" column="NOTC_EXSN_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq (노티예문 max 일련번호 조회) 
+        Description :                                           노티예문 max 일련번호 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-selectOneNotiExsnSeq */
+						   nvl(max(NOTC_EXSN_SNO),0) + 1 as NOTC_EXSN_SNO
+					 from  CUNOTIEMT
+					where  RGSR_ID = #{rgsrId}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-insertNotiExsn (노티예문 저장) 
+        Description :                                           노티예문 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-insertNotiExsn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-insertNotiExsn */
+					 into  CUNOTIEMT
+						   (RGSR_ID,
+						   NOTC_EXSN_SNO,
+						   TITL_NM,
+						   EXSN_CTN,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID)
+				   values
+						   (#{rgsrId},
+						   #{notcExsnSno},
+						   #{titlNm},
+						   #{exsnCtn},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsn (노티예문 수정) 
+        Description :                                           노티예문 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsn */
+						   CUNOTIEMT
+					  set  TITL_NM           = #{titlNm},
+						   EXSN_CTN          = #{exsnCtn},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGSR_ID       = #{rgsrId}
+					  and  NOTC_EXSN_SNO = #{notcExsnSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-deleteNotiExsn (노티예문 삭제) 
+        Description :                                           노티예문 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-deleteNotiExsn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-deleteNotiExsn */
+					 from  CUNOTIEMT
+					where  RGSR_ID       = #{rgsrId}
+					  and  NOTC_EXSN_SNO = #{notcExsnSno}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsnInqrSqnc (노티예문 조회순서 수정) 
+        Description :                                           노티예문 조회순서 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsnInqrSqnc"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotiExsnMngmDVO"  >
+		<![CDATA[
+					   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotiExsnMngmDAO-updateNotiExsnInqrSqnc */
+							   CUNOTIEMT
+						  set  INQR_SQNC = #{inqrSqnc},
+							   LAST_UPDR_ID      = #{gvLginId},
+							   LAST_UPDT_IP      = #{gvUserIp},
+							   LAST_UPDT_DT      = sysdate,
+							   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+							   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+						where  RGSR_ID       = #{rgsrId}
+						  and  NOTC_EXSN_SNO = #{notcExsnSno}
+		]]>
+	</update>
+
+</mapper>

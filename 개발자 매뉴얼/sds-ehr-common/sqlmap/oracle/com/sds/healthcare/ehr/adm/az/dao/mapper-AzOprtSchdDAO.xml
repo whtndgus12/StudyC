@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzOprtSchdDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzOprtSchdDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo-result" type="com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO">
+	
+		<result property="mdcrDrgNo" column="MDCR_DRG_NO"/>
+		<result property="opsrId1" column="OPSR_ID1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo (수술예정환자 DRG 번호조회) 
+        Description :                                           apd_opschet_s04
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneMdcrDrgNo */
+				   MDCR_DRG_NO as MDCR_DRG_NO
+				,  OPSR_ID1 as OPSR_ID1
+			 from  MDOPSCHET a
+			where  a.PTNO          = #{ptno}
+			  and  a.OPRT_YMD     >= to_date(#{oprtYmd}, 'yyyymmdd')
+			  and  a.ORDP_CD       = #{ordpCd}
+			  and  a.OPRT_STTS_CD  = nvl(#{oprtSttsCd}, a.OPRT_STTS_CD)
+			  and  a.CNCL_YMD     is null
+			  and  rownum          = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct-result" type="com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO">
+	
+		<result property="oprtCct" column="OPRT_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct (수술건수조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzOprtSchdDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct-result" useCache="true" flushCache="false">
+		   select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzOprtSchdDAO-selectOneOprtCct */
+		          count(*) as OPRT_CCT
+		    from  MDOPSCHET b
+		   where  b.PTNO              = #{ptno}
+		     and  b.OPRT_YMD          = trunc(sysdate)
+		     and  b.OPPL_CD           = 'D'
+		<![CDATA[
+		     and  (b.OPRT_STTS_CD    >= '5'
+		]]>
+		         or not (b.OPSC_CHCK_STTS_CD is null
+		              or b.OPSC_CHCK_STTS_CD ='N'
+		              )
+		         )
+		     and  b.OPRT_STTS_CD     !='9'        /*  취소 */
+		     and  nvl(b.CNCL_YN, 'N') = 'N'
+	</select>
+
+
+
+</mapper>

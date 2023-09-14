@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnoInjcRptnMngmDAO_sql.xml 
+    Description :                                      주사실의 환자 입퇴실관리를 한다. 환자 입실시간/퇴실시간/호출들의 업무를 관리한다.
+                  -->
+<mapper namespace="MnoInjcRptnMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003-result" type="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="thdyApntMdcrDvsnNm" column="THDY_APNT_MDCR_DVSN_NM"/>
+		<result property="enrmYn" column="ENRM_YN"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="enrmDt" column="ENRM_DT"/>
+		<result property="actnFinsDt" column="ACTN_FINS_DT"/>
+		<result property="ptntInftPlacCd" column="PTNT_INFT_PLAC_CD"/>
+		<result property="sumCct" column="SUM_CCT"/>
+		<result property="sckbNo" column="SCKB_NO"/>
+		<result property="bedUseHhDvsnCd" column="BED_USE_HH_DVSN_CD"/>
+		<result property="mdbeDt" column="MDBE_DT"/>
+		<result property="mdafDt" column="MDAF_DT"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003 (주사실 접수입실상태 조회) 
+        Description :                                           mnd_ireceit_l03 환자의 선택한 주사실의 접수입실상태를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003 */   
+				   d.PTNO as PTNO,      /*  환자번호  */
+				   b.PTNT_NM as PTNT_NM,                           /*  환자명    */
+				   b.GEND_CD as GEND_CD,                           /*  성별      */
+				   fn_ap_age_s(d.PTNO,sysdate)  as AGE_VL ,                  /*  나이      */
+				   d.THDY_APNT_MDCR_DVSN_NM as THDY_APNT_MDCR_DVSN_NM,                                    /*  예약/당일 */
+				   decode(nvl(d.ENRM_YN,'N'), 'N',  decode(nvl(d.ENRM_CNCL_YN,'N'), 'N', 'N', 'C'),  /*  상황(미입실:N,취소:C,입실/미완료:I,완료:Y) */
+													decode(nvl(d.ACTN_FINS_YN,'N'), 'Y', 'Y',
+													decode(d.SUM_CCT, 0, 'I', '', 'I','Y')))  as ENRM_YN ,
+				   d.FRST_RGST_DT as FRST_RGST_DT,                 /*  접수시간  */
+				   d.ENRM_DT as ENRM_DT,                      /*  입실시간  */
+				   d.ACTN_FINS_DT as ACTN_FINS_DT,                 /*  완료시간  */
+				   d.PTNT_INFT_PLAC_CD as PTNT_INFT_PLAC_CD,            /*  nvl(d.patloc,f.locate) 위치 */
+				   d.SUM_CCT as SUM_CCT,                      /*  totactqty   */
+				   d.SCKB_NO as SCKB_NO,
+				   d.BED_USE_HH_DVSN_CD as BED_USE_HH_DVSN_CD,
+				   d.MDBE_DT as MDBE_DT, /* to_char(f.bftime, 'yyyymmddhh24mi'),                      /*  bftime  */
+				   d.MDAF_DT as MDAF_DT, /* to_char(f.aftime, 'yyyymmddhh24mi'),                       /*  aftime  */
+				   d.MCDP_CD as MCDP_CD
+			 from
+				   (select  distinct
+							PTNO,                                               /*  환자번호 */
+							max(THDY_APNT_MDCR_DVSN_NM)      THDY_APNT_MDCR_DVSN_NM,     /*  예약당일 명칭 */
+							max(x.PTNT_INFT_PLAC_CD)         PTNT_INFT_PLAC_CD,
+							max(x.SUM_CCT)                   SUM_CCT,
+							max(x.MCDP_CD)                   MCDP_CD,
+							max(x.MDBE_DT) MDBE_DT,                      /*  bftime  */
+							max(x.MDAF_DT) MDAF_DT,                       /*  aftime  */
+							max(x.SCKB_NO) SCKB_NO,
+							max(x.BED_USE_HH_DVSN_CD) BED_USE_HH_DVSN_CD,
+							max(x.FRST_RGST_DT) FRST_RGST_DT ,             /*  접수시간  */
+							max(x.ENRM_DT) ENRM_DT,                        /*  입실시간  */
+							max(x.ACTN_FINS_DT) ACTN_FINS_DT,              /*  완료시간  */
+							max(x.ENRM_YN) ENRM_YN, max(x.ENRM_CNCL_YN) ENRM_CNCL_YN, max(x.ACTN_FINS_YN) ACTN_FINS_YN
+					  from
+							(
+							 SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003 */   /*+ ordered use_nl(a b) index(a MNIOUTACT_I02) index(b MDMEDORDT_PK) */
+									 a.PTNO,                                               /*  환자번호 */
+									 max(decode(a.ORDR_YMD,to_date(#{inqrYmd},'yyyymmdd'),'당일','예약')) THDY_APNT_MDCR_DVSN_NM ,  /*  ORDSTAT, */
+									 max(a.PTNT_INFT_PLAC_CD)   PTNT_INFT_PLAC_CD,
+									 max(to_char(0))    SUM_CCT,
+									 max(a.MCDP_CD)                   MCDP_CD,
+									 '' MDBE_DT, '' MDAF_DT, '' SCKB_NO, '' BED_USE_HH_DVSN_CD, '' FRST_RGST_DT, '' ENRM_DT, '' ACTN_FINS_DT,
+									 '' ENRM_YN, '' ENRM_CNCL_YN, '' ACTN_FINS_YN
+							   from
+									 MNIOUTACT a,           /*  외래 Acting */
+									 MDMEDORDT b
+							  where
+									 a.IJAC_APNT_YMD = to_date(#{inqrYmd},'yyyymmdd') /*  처방일자 << 희망일자 */
+								and  a.PTNT_INFT_PLAC_CD   = #{mcdpCd}
+								and  a.PTNO      = decode(#{ptno},'',a.PTNO,#{ptno})
+								and  a.ORCL_CD   in ('IJ1', 'DG1')          /*  환자안내장소     2008.09.29 ORDCLS에 경구약 추가   */
+								and  b.PTNO      = a.PTNO
+								and  b.ORDR_YMD  = a.ORDR_YMD
+								and  b.ORDR_SNO  = a.ORDR_SNO
+								and  b.ORCL_CD   = a.ORCL_CD
+								and  nvl(b.PHRM_RTRN_QTY,0) = 0
+							 group by a.PTNO
+							 union all
+							 SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-listInjcRptnEnrmSttsList003 */   /*+ ordered use_nl(a b) index(a MNIOUTACT_I02) index(b MDTRTORDT_PK) */
+									 a.PTNO,                                                                         /*  환자번호 */
+									 max(decode(a.ORDR_YMD,to_date(#{inqrYmd},'yyyymmdd'),'당일','예약'))  THDY_APNT_MDCR_DVSN_NM,  /*  ORDSTAT, */
+									 max(a.PTNT_INFT_PLAC_CD)         PTNT_INFT_PLAC_CD,
+									 max(to_char(0))    SUM_CCT,
+									 max(a.MCDP_CD)                   MCDP_CD,
+									 '' MDBE_DT, '' MDAF_DT, '' SCKB_NO, '' BED_USE_HH_DVSN_CD, '' FRST_RGST_DT, '' ENRM_DT, '' ACTN_FINS_DT,
+									 '' ENRM_YN, '' ENRM_CNCL_YN, '' ACTN_FINS_YN
+							   from
+									 MNIOUTACT a,           /*  외래 Acting */
+									 MDTRTORDT b
+							  where
+									 a.IJAC_APNT_YMD = to_date(#{inqrYmd},'yyyymmdd') /*  처방일자 << 희망일자   */
+								and  a.PTNT_INFT_PLAC_CD   = #{mcdpCd}
+								and  a.PTNO     = decode(#{ptno},'',a.PTNO,#{ptno})
+								and  a.ORCL_CD  = 'OP1'
+								and  b.PTNO     = a.PTNO
+								and  b.ORDR_YMD = a.ORDR_YMD
+								and  b.ORDR_SNO = a.ORDR_SNO
+								and  b.ORCL_CD  = a.ORCL_CD
+							 group by a.ptno
+							 union all
+							 select
+									 PTNO,                                                                        /*  환자번호 */
+									 max(decode(ORDR_YMD,to_date(#{inqrYmd},'yyyymmdd'),'당일','예약'))  THDY_APNT_MDCR_DVSN_NM,  /*  ORDSTAT, */
+									 max(FRNS_DPRT_CD)            PTPT_CD,
+									 max(to_char(ACTN_NTM))  SUM_CCT,
+									 max(MCDP_CD)            MCDP_CD,
+									 '' MDBE_DT, '' MDAF_DT, '' SCKB_NO, '' BED_USE_HH_DVSN_CD, '' FRST_RGST_DT, '' ENRM_DT, '' ACTN_FINS_DT,
+									 '' ENRM_YN, '' ENRM_CNCL_YN, '' ACTN_FINS_YN
+							   from
+									 MDBLDORDT                      /*  수혈처방 */
+							  where
+									 TRNF_WNTD_DT = to_date(#{inqrYmd},'yyyymmdd')   /*  TRNF_WNTD_DT 수혈희망일시 */
+								and  PTNO = decode(#{ptno},'',PTNO,#{ptno})
+								and  FRNS_DPRT_CD   = #{mcdpCd}    /*  불출부서코드 */
+							 group by PTNO
+							 union all
+							 select
+									  PTNO,
+									  '' THDY_APNT_MDCR_DVSN_NM,  /*  ORDSTAT, */
+									  max(LCTN_CD) LCTN_CD,
+									  '' SUM_CCT,
+									  '' MCDP_CD,
+									  max(to_char(f.MDBE_DT, 'yyyymmddhh24mi')) MDBE_DT,                      /*  bftime  */
+									  max(to_char(f.MDAF_DT, 'yyyymmddhh24mi')) MDAF_DT,                      /*  aftime  */
+									  max(f.SCKB_NO) SCKB_NO,     /*  bedno */
+									  max(f.BED_USE_HH_DVSN_CD) BED_USE_HH_DVSN_CD,                           /*  class */
+									  max(to_char(f.FRST_RGST_DT, 'yyyymmddhh24mi')) FRST_RGST_DT  ,      /*  접수시간 regtime */
+									  max(to_char(f.ENRM_DT, 'yyyymmddhh24mi')) ENRM_DT ,                 /*  입실시간 inroomtm */
+									  max(to_char(f.ACTN_FINS_DT, 'yyyymmddhh24mi')) ACTN_FINS_DT ,       /*  완료시간 actingtm */
+									  max(f.ENRM_YN) ENRM_YN ,     /*  inroomyn  입실여부 */
+									  max(f.ENRM_CNCL_YN) ENRM_CNCL_YN ,    /*   patoutyn 입실취소여부 */
+									  max(f.ACTN_FINS_YN) ACTN_FINS_YN      /*   actingyn  액팅완료여부  */
+							   from
+									  MNIRECEIT f
+							  where
+									  (((nvl(to_char(f.MDAF_DT,'yyyymmdd'),'*') <> '*') and
+										(f.MDAF_DT  between to_date(#{inqrYmd},'yyyymmdd') and to_date(#{inqrYmd},'yyyymmdd')+0.99999))
+										 or
+									   (nvl(to_char(f.MDAF_DT,'yyyy-mm-dd'),'*') = '*'))
+								 and  f.INJC_PRRN_YMD = to_date(#{inqrYmd},'yyyymmdd')     /*  주사예정일자 */
+								 and  f.PTNO = decode(#{ptno},'',f.PTNO,#{ptno})
+								 and  f.LCTN_CD = #{mcdpCd}
+							   group by ptno
+							 )   x
+						group by x.PTNO
+				   ) d,
+				   APPTPTNTT b
+			where
+				   b.PTNO(+) = d.PTNO
+		   order by  1,6
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm001 (외래치료실 접수 처리) 
+        Description :                                           외래치료실 접수상태값을 접수상태로 업데이트
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		    insert    /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm001 */
+		      into  MNIRECEIT
+		         (
+		                PTNO                     /* 환자번호            */
+		             ,  LCTN_CD                 /* 위치코드           */
+		             ,  INJC_PRRN_YMD              /* 주사예정일자        */
+		             ,  INJC_RPTN_SNO            /* 주사접수일련번호 */
+		             ,  PTNT_NM                 /* 환자명              */
+		             ,  GEND_CD                 /* 성별                */
+		             ,  AGE_VL                     /* 나이                */
+		             ,  INJC_RPTN_STTS_DVSN_NM    /* 예약/당일           */
+		             ,  SCKB_NO                 /* Bed no(021,031)     */
+		             ,  BED_USE_HH_DVSN_CD         /* Class (021,031)     */
+		             ,  MDBE_DT                 /* 변경전(021,031)     */
+		             ,  MDAF_DT                 /* 변경후(021,031)     */
+		             ,  ENRM_YN                 /* 입실여부            */
+		             ,  ACTN_FINS_YN             /* 완료여부           */
+		             ,  ENRM_CNCL_YN             /* 취소여부-실시하지 않은경우 */
+		             ,  ARVL_RPTN_DT             /* 접수시간            */
+		             ,  ENRM_DT                 /* 입실시간            */
+		             ,  ACTN_FINS_DT             /* 완료시간            */
+		             ,  ENRM_CNCL_DT             /* 취소시간-실시하지 않은경우 */
+		             ,  OTPT_TERM_NO_NM          /* 입실시 지정한방    */
+		             ,  NWPT_YN                    /* 신환여부             */
+		             ,  ARVL_RCPS_ID             /* 접수자                */
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		             ,  FRST_RGSR_ID
+		             ,  FRST_RGST_IP
+		             ,  FRST_RGST_DT
+		             ,  FRST_RGST_CLNT_PRGM_ID
+		             ,  FRST_RGST_SRVR_PRGM_ID
+		             ,  LAST_UPDR_ID
+		             ,  LAST_UPDT_IP
+		             ,  LAST_UPDT_DT
+		             ,  LAST_UPDT_CLNT_PRGM_ID
+		             ,  LAST_UPDT_SRVR_PRGM_ID
+		         )
+		    values
+		         (
+		                #{ptno}                        /* 환자번호       */
+		             ,  #{ptptCd}                      /* 위치           */
+		             ,  to_date(#{mdcrYmd}, 'YYYYMMDD')
+		             ,    1
+		             ,  ( select F_A.PTNT_NM from APPTPTNTT F_A where F_A.PTNO = #{ptno} )/* 환자명  */
+		             ,  NVL(#{gendCd}, (SELECT X.GEND_CD FROM APPTPTNTT X WHERE X.PTNO = #{ptno}))                        /* 성별           */
+		             ,  NVL(#{ageVl}, fn_ap_age_s(#{ptno},sysdate))                      /* 나이           */
+		             ,  nvl(#{thdyApntMdcrDvsnNm}, 'BMT')      /* 예약/당일      */
+		             ,    ''
+		             ,    ''
+		             ,    ''
+		             ,    ''
+		             ,  decode(#{dvsnNm2},'I','Y','N') /* 입실여부       */
+		             ,  decode(#{dvsnNm2},'Y','Y','N') /* 완료여부       */
+		             ,  decode(#{dvsnNm2},'C','Y','N') /* 취소여부-실시하지 않은경우 */
+		             ,  sysdate
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  #{gvUserId}
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		             ,  #{gvUserId}
+		             ,  #{gvUserIp}
+		             ,  current_timestamp
+		             ,  #{gvClntPrgmId}
+		             ,  #{gvSrvrPrgmId}
+		             ,  #{gvUserId}
+		             ,  #{gvUserIp}
+		             ,  current_timestamp
+		             ,  #{gvClntPrgmId}
+		             ,  #{gvSrvrPrgmId}
+		         )
+		    ]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm002 (외래치료실 접수생성) 
+        Description :                                           mno_ireceit_m01
+                                                                외래치료실 접수생성 
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm002"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		    insert    /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-insertInjcRptnMngm002 */
+		      into  MNIRECEIT
+		         (
+		                PTNO                     /* 환자번호            */
+		             ,  LCTN_CD                 /* 위치코드           */
+		             ,  INJC_PRRN_YMD              /* 주사예정일자        */
+		             ,  INJC_RPTN_SNO            /* 주사접수일련번호 */
+		             ,  PTNT_NM                 /* 환자명              */
+		             ,  GEND_CD                 /* 성별                */
+		             ,  AGE_VL                     /* 나이                */
+		             ,  INJC_RPTN_STTS_DVSN_NM    /* 예약/당일           */
+		             ,  SCKB_NO                 /* Bed no(021,031)     */
+		             ,  BED_USE_HH_DVSN_CD         /* Class (021,031)     */
+		             ,  MDBE_DT                 /* 변경전(021,031)     */
+		             ,  MDAF_DT                 /* 변경후(021,031)     */
+		             ,  ENRM_YN                 /* 입실여부            */
+		             ,  ACTN_FINS_YN             /* 완료여부           */
+		             ,  ENRM_CNCL_YN             /* 취소여부-실시하지 않은경우 */
+		             ,  ARVL_RPTN_DT             /* 접수시간            */
+		             ,  ENRM_DT                 /* 입실시간            */
+		             ,  ACTN_FINS_DT             /* 완료시간            */
+		             ,  ENRM_CNCL_DT             /* 취소시간-실시하지 않은경우 */
+		             ,  OTPT_TERM_NO_NM          /* 입실시 지정한방    */
+		             ,  NWPT_YN                    /* 신환여부             */
+		             ,  ARVL_RCPS_ID             /* 접수자                */
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		             ,  FRST_RGSR_ID
+		             ,  FRST_RGST_IP
+		             ,  FRST_RGST_DT
+		             ,  FRST_RGST_CLNT_PRGM_ID
+		             ,  FRST_RGST_SRVR_PRGM_ID
+		             ,  LAST_UPDR_ID
+		             ,  LAST_UPDT_IP
+		             ,  LAST_UPDT_DT
+		             ,  LAST_UPDT_CLNT_PRGM_ID
+		             ,  LAST_UPDT_SRVR_PRGM_ID
+		         )
+		    values
+		         (
+		                #{ptno}                            /* 환자번호           */
+		             ,  #{ptptCd}                          /* 위치               */
+		             ,  to_date(#{mdcrYmd}, 'YYYYMMDD')    /*주사예정일자         */
+		             ,  #{injcRptnSno}                                        /* 주사접수일련번호 */
+		             ,  ( select F_A.PTNT_NM from APPTPTNTT F_A where F_A.PTNO = #{ptno} )/* 환자명  */
+		             ,  #{gendCd}                            /* 성별               */
+		             ,  #{ageVl}                          /* 나이               */
+		             ,  #{thdyApntMdcrDvsnNm}          /* 예약/당일          */
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  decode(#{dvsnNm2},'I','Y','N')     /* 입실여부           */
+		             ,  decode(#{dvsnNm2},'Y','Y','N')     /* 완료여부           */
+		             ,  decode(#{dvsnNm2},'C','Y','N')     /* 취소여부-실시하지 않은경우 */
+		             ,  sysdate
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  ''
+		             ,  #{gvUserId}
+		             /* 서버 프로그램 전환시 자동 추가된 항목 */
+		             , #{gvUserId}
+		             , #{gvUserIp}
+		             , current_timestamp
+		             , #{gvClntPrgmId}
+		             , #{gvSrvrPrgmId}
+		             , #{gvUserId}
+		             , #{gvUserIp}
+		             , current_timestamp
+		             , #{gvClntPrgmId}
+		             , #{gvSrvrPrgmId}
+		         )
+		    ]]>       
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmCncl015 (외래주사실 입실취소 수정) 
+        Description :                                           mnd_ireceit_u15 외래주사실 입실상태의 접수정보를 입실취소로 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmCncl015"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		/*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmCncl015 */
+		<![CDATA[
+		   update 
+		           MNIRECEIT
+		      set
+		           ENRM_CNCL_YN         = 'Y'
+		        ,  ENRM_CNCL_DT         = sysdate
+		        ,  ENRM_CNCR_ID         = #{gvUserId}
+		        ,  ENRM_YN              = 'N'
+		        ,  ACTN_FINS_YN         = 'N'
+		        ,  ACTN_FINS_DT         = ''
+		        ,  ACTN_FNPR_ID         = ''
+		        ,  ENRM_DT              = ''
+		        ,  ENRM_CNFM_ID         = ''
+		        ,  CHOT_DT              = ''
+		        ,  CHOT_ICPR_ID        = ''
+		        ,  OTPT_TERM_NO_NM     = ''
+		        /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		    where  PTNO          = #{ptno}
+		      and  LCTN_CD       = #{ptptCd}
+		      and  INJC_PRRN_YMD = to_date(#{mdcrYmd}, 'yyyymmdd')
+		      and  INJC_RPTN_SNO = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotPrsg016 (외래주사실 퇴실 수정) 
+        Description :                                           mnd_ireceit_u16 외래주사실 입실상태의 접수정보를 퇴실로 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotPrsg016"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		/*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotPrsg016 */
+		<![CDATA[
+		   update  
+		           MNIRECEIT  /* 외래치료실주사접수 */
+		      set
+		              CHOT_DT               = sysdate
+		        ,  CHOT_ICPR_ID           = #{gvUserId}
+		       /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		   where  PTNO                = #{ptno}
+		     and  LCTN_CD            = #{ptptCd}
+		     and  INJC_PRRN_YMD    = to_date(#{mdcrYmd}, 'yyyymmdd')
+		     and  INJC_RPTN_SNO     = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotCnclPrsg017 (외래주사실 퇴실취소 수정) 
+        Description :                                           mnd_ireceit_u17 외래주사실 퇴실상태의 접수정보를 퇴실취소(입실)로 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotCnclPrsg017"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   update  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotCnclPrsg017 */
+		           MNIRECEIT  /* 외래치료실주사접수 */
+		      set
+		           CHOT_DT               = ''
+		        ,  CHOT_ICPR_ID           = ''
+		       /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		   where  PTNO                = #{ptno}
+		     and  LCTN_CD            = #{ptptCd}
+		     and  INJC_PRRN_YMD    = to_date(#{mdcrYmd}, 'yyyymmdd')
+		     and  INJC_RPTN_SNO     = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnCncl012 (외래주사실 접수취소) 
+        Description :                                           mnd_ireceit_u12 접수시간, 접수자를 초기화하여 외래주사실 접수취소 처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnCncl012"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   update  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnCncl012 */
+		           MNIRECEIT /* 외래치료실주사접수 */
+		      set
+		           ARVL_RPTN_DT = ''
+		        ,  ARVL_RCPS_ID = ''
+		        /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		    where  PTNO          = #{ptno}            /*  환자번호         */
+		      and  LCTN_CD          = #{lctnCd}            /*  위치코드         */
+		      and  INJC_PRRN_YMD = to_date(#{injcPrrnYmd}, 'yyyymmdd')    /*  주사예정일자 */
+		      and  INJC_RPTN_SNO = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmHh013 (외래주사실 입실시간 수정) 
+        Description :                                           mnd_ireceit_u13 퇴실 후 외래주사실 입실시간을 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmHh013"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   update  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcEnrmHh013 */
+		           MNIRECEIT  /* 외래치료실주사접수 */
+		      set  ENRM_DT = to_date(#{enrmDt}, 'yyyymmddhh24mi')
+		        /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		    where  PTNO              = #{ptno}            /*  환자번호            */
+		      and  LCTN_CD            = #{lctnCd}        /*  위치코드         */
+		      and  INJC_PRRN_YMD    = to_date(#{injcPrrnYmd}, 'yyyymmdd')    /*  주사예정일자 */
+		      and  INJC_RPTN_SNO    = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotHh014 (외래주사실 퇴실시간 수정) 
+        Description :                                           mnd_ireceit_u14 퇴실완료 후 외래주사실 퇴실시간을 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotHh014"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   update  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcChotHh014 */
+		          MNIRECEIT  /* 외래치료실주사접수 */
+		     set  CHOT_DT = to_date(#{chotDt}, 'yyyymmddhh24mi')
+		       /*  서버 프로그램 전환시 자동 추가된 항목 */
+		       ,  LAST_UPDR_ID = #{gvUserId}
+		       ,  LAST_UPDT_IP = #{gvUserIp}
+		       ,  LAST_UPDT_DT = current_timestamp
+		       ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		       ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		   where  PTNO              = #{ptno}            /*  환자번호            */
+		     and  LCTN_CD            = #{lctnCd}        /*  위치코드         */
+		     and  INJC_PRRN_YMD    = to_date(#{injcPrrnYmd}, 'yyyymmdd')    /*  주사예정일자 */
+		     and  INJC_RPTN_SNO    = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm001 (외래치료실 접수 처리) 
+        Description :                                           mno_ireceit_m01
+                                                                외래치료실 접수상태값을 접수상태로 업데이트
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   update 
+		           /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm001 */
+		           MNIRECEIT
+		      set
+		           ENRM_YN              = 'Y'
+		        ,  ARVL_RPTN_DT         = decode(ARVL_RPTN_DT, null, sysdate, ARVL_RPTN_DT)
+		        ,  ENRM_DT              = decode(#{enrmYn}, 'Y', sysdate, ENRM_DT)
+		        ,  ENRM_CNFM_ID         = decode(#{enrmYn}, 'Y', #{gvUserId}, ENRM_CNFM_ID)
+		        ,  ENRM_CNCL_YN         = 'N'
+		        ,  ACTN_FINS_YN         = 'N'
+		        ,  OTPT_TERM_NO_NM        = #{enrmRoomDtlsNm}
+		        /*  서버 프로그램 전환시 자동 추가된 항목 */
+		        ,  LAST_UPDR_ID = #{gvUserId}
+		        ,  LAST_UPDT_IP = #{gvUserIp}
+		        ,  LAST_UPDT_DT = current_timestamp
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		    where  PTNO          = #{ptno}
+		      and  LCTN_CD       = #{ptptCd}
+		      and  INJC_PRRN_YMD = to_date(#{mdcrYmd}, 'yyyymmdd')
+		      and  INJC_RPTN_SNO = #{injcRptnSno}    /*  주사접수일련번호 */
+		    ]]>    
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm002 (외래치료실주사접수 접수처리) 
+        Description :                                           mno_ireceit_m01
+                                                                외래치료실주사접수 접수처리(현재시간, 사용자 update)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm002"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		    update    /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-updateInjcRptnMngm002 */
+		            MNIRECEIT
+		       set
+		            ARVL_RPTN_DT = sysdate
+		         ,  ARVL_RCPS_ID = #{gvUserId} 
+		         /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = current_timestamp
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO             = #{ptno}
+		       and  LCTN_CD          = #{ptptCd}
+		       and  INJC_PRRN_YMD    = to_date(#{mdcrYmd}, 'YYYYMMDD')
+		       and  INJC_RPTN_SNO    = #{injcRptnSno}
+		   ]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001-result" type="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO">
+	
+		<result property="cnt" column="CNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001 (외래치료실 접수일실퇴실 상태 조회) 
+        Description :                                           외래치료실 접수일실퇴실 상태 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr001 */
+		            COUNT(PTNO) as CNT
+		      from
+		            MNIRECEIT  /* 외래치료실주사접수 */
+		     where  PTNO          = #{ptno}
+		       and  LCTN_CD       = NVL(#{ptptCd}, LCTN_CD)
+		       and  INJC_PRRN_YMD = to_date(#{mdcrYmd}, 'yyyymmdd')
+		       and  ((#{injcRptnSno} = 0) or (INJC_RPTN_SNO = NVL(#{injcRptnSno}, INJC_RPTN_SNO)))
+		    ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002-result" type="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO">
+	
+		<result property="injcRptnSno" column="INJC_RPTN_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002 (주사접수 MAX 일련번호 조회) 
+        Description :                                           mno_ireceit_m01
+                                                                주사접수 MAX 일련번호 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select    /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-selectOneInjcRptnInqr002 */
+		            nvl(max(INJC_RPTN_SNO), 0) + 1 as INJC_RPTN_SNO
+		      from  MNIRECEIT
+		     where  PTNO            = #{ptno}
+		       and  LCTN_CD       = #{ptptCd}
+		       and  INJC_PRRN_YMD = to_date(#{mdcrYmd}, 'YYYYMMDD')
+		  ]]>       
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-deleteInjcRptnMngm001 (주사실 재접수 삭제) 
+        Description :                                           mnd_ireceit_d01
+                                                                주사실 재접수정보를 삭제한다. 
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-deleteInjcRptnMngm001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoInjcRptnMngmDVO"  >
+		<![CDATA[
+		   delete  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoInjcRptnMngmDAO-deleteInjcRptnMngm001 */
+		     from
+		           MNIRECEIT
+		    where
+		           PTNO          = #{ptno}
+		      and  LCTN_CD       = #{ptptCd}
+		      and  INJC_PRRN_YMD = to_date(#{mdcrYmd}, 'YYYYMMDD')
+		      and  INJC_RPTN_SNO = #{injcRptnSno}
+		    ]]>
+	</delete>
+
+</mapper>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsScrnDvdnStupDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsScrnDvdnStupDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertWorkspace (Workspace 목록 등록) 
+        Description :                                           Workspace 목록 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertWorkspace"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertWorkspace */
+				   into    CSWKSGPMT(MENU_GRP_ID
+										  , WORK_SCOP_SNO
+										  , WORK_SCOP_NM
+										  , BSIS_STUP_YN
+										  , PTIF_FXNG_YN
+										  , SCRN_DVDN_VL
+										  , ASST_SCRN_USE_YN
+										  , ASST_SCRN_DVDN_VL
+										  , PRIN_SQNC
+										  , FRST_RGSR_ID
+										  , FRST_RGST_IP
+										  , FRST_RGST_DT
+										  , FRST_RGST_CLNT_PRGM_ID
+										  , FRST_RGST_SRVR_PRGM_ID
+										  , LAST_UPDR_ID
+										  , LAST_UPDT_IP
+										  , LAST_UPDT_DT
+										  , LAST_UPDT_CLNT_PRGM_ID
+										  , LAST_UPDT_SRVR_PRGM_ID
+										   )
+						   select   #{menuGrpId}
+								  , min(WORK_SCOP_SNO) as WORK_SCOP_SNO
+								  , #{workScopNm}
+								  , #{bsisStupYn}
+								  , #{ptifFxngYn}
+								  , #{scrnDvdnVl}
+								  , #{asstScrnUseYn}
+								  , #{asstScrnDvdnVl}
+								  , #{prinSqnc}
+								  , #{gvLginId}
+								  , #{gvUserIp}
+								  , sysdate
+								  , #{gvClntPrgmId}
+								  , #{gvSrvrPrgmId}
+								  , #{gvLginId}
+								  , #{gvUserIp}
+								  , sysdate
+								  , #{gvClntPrgmId}
+								  , #{gvSrvrPrgmId}
+						   from   ( select  st_data + level as WORK_SCOP_SNO
+									from    ( select   0 as st_data
+													 , 5 as ed_data
+											  from     dual
+											)
+									connect by level <= ed_data
+									minus
+									select  WORK_SCOP_SNO
+									from    CSWKSGPMT
+									where   MENU_GRP_ID = #{menuGrpId}
+								  )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteWorkspace (Workspace 삭제) 
+        Description :                                           Workspace 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteWorkspace"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteWorkspace */
+				   from    CSWKSGPMT
+				   where   MENU_GRP_ID    = #{menuGrpId}
+					 and   WORK_SCOP_SNO  = #{workScopSno}
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO">
+	
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="workScopSno" column="WORK_SCOP_SNO"/>
+		<result property="scrnDvsnVl" column="SCRN_DVSN_VL"/>
+		<result property="scrnDvdnVl" column="SCRN_DVDN_VL"/>
+		<result property="dvdnLctnVl" column="DVDN_LCTN_VL"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+		<result property="scrnPrinStupVl" column="SCRN_PRIN_STUP_VL"/>
+		<result property="srchDvsnVl" column="SRCH_DVSN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup (화면영역설정 조회) 
+        Description :                                           화면영역설정 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listScrnScopStup */
+							a.MENU_GRP_ID              as MENU_GRP_ID
+						  , a.WORK_SCOP_SNO         as WORK_SCOP_SNO
+						  , a.SCRN_DVSN_VL            as SCRN_DVSN_VL
+						  , a.SCRN_DVDN_VL           as SCRN_DVDN_VL
+						  , a.DVDN_LCTN_VL            as DVDN_LCTN_VL
+						  , a.MENU_ID                     as MENU_ID
+						  , b.BSIS_LNGG_MENU_NM   as MENU_NM
+						  , a.INQR_SQNC                 as INQR_SQNC
+						  , a.SCRN_PRIN_STUP_VL     as SCRN_PRIN_STUP_VL
+		                  , '' as SRCH_DVSN_VL
+				   from     CSWKSITMT a
+						  , CSMNGRPMT b
+				   where    a.MENU_GRP_ID = b.MENU_GRP_ID
+					 and    a.MENU_ID     = b.MENU_ID
+					 and    b.APST_DT     < sysdate
+					 and    b.APFN_DT     > sysdate
+					 and    a.MENU_GRP_ID = #{menuGrpId}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteScrnScopStup (화면영역설정정보 삭제) 
+        Description :                                           화면영역설정정보 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteScrnScopStup"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-deleteScrnScopStup */
+				   from    CSWKSITMT
+				   where   MENU_GRP_ID    = #{menuGrpId}
+					 and   WORK_SCOP_SNO  = #{workScopSno}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertScrnScopStup (화면영역설정정보 등록) 
+        Description :                                           화면영역설정정보 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertScrnScopStup"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  >
+		<![CDATA[
+					   insert /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-insertScrnScopStup */
+					   into    CSWKSITMT(MENU_GRP_ID
+											  , WORK_SCOP_SNO
+											  , SCRN_DVSN_VL
+											  , SCRN_DVDN_VL
+											  , DVDN_LCTN_VL
+											  , MENU_ID
+											  , INQR_SQNC
+											  , SCRN_PRIN_STUP_VL
+											  , FRST_RGSR_ID
+											  , FRST_RGST_IP
+											  , FRST_RGST_DT
+											  , FRST_RGST_CLNT_PRGM_ID
+											  , FRST_RGST_SRVR_PRGM_ID
+											  , LAST_UPDR_ID
+											  , LAST_UPDT_IP
+											  , LAST_UPDT_DT
+											  , LAST_UPDT_CLNT_PRGM_ID
+											  , LAST_UPDT_SRVR_PRGM_ID
+											   )
+										 values(#{menuGrpId}
+											  , #{workScopSno}
+											  , #{scrnDvsnVl}
+											  , #{scrnDvdnVl}
+											  , #{dvdnLctnVl}
+											  , #{menuId}
+											  , #{inqrSqnc}
+											  , #{scrnPrinStupVl}
+											  , #{gvLginId}
+											  , #{gvUserIp}
+											  , sysdate
+											  , #{gvClntPrgmId}
+											  , #{gvSrvrPrgmId}
+											  , #{gvLginId}
+											  , #{gvUserIp}
+											  , sysdate
+											  , #{gvClntPrgmId}
+											  , #{gvSrvrPrgmId}
+											   )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO">
+	
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="workScopSno" column="WORK_SCOP_SNO"/>
+		<result property="workScopNm" column="WORK_SCOP_NM"/>
+		<result property="bsisStupYn" column="BSIS_STUP_YN"/>
+		<result property="ptifFxngYn" column="PTIF_FXNG_YN"/>
+		<result property="scrnDvdnVl" column="SCRN_DVDN_VL"/>
+		<result property="asstScrnUseYn" column="ASST_SCRN_USE_YN"/>
+		<result property="asstScrnDvdnVl" column="ASST_SCRN_DVDN_VL"/>
+		<result property="prinSqnc" column="PRIN_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp (메뉴그룹별 작업영역설정 조회) 
+        Description :                                           메뉴그룹별 작업영역설정 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-listWorkScopByMenuGrp */
+							a.MENU_GRP_ID as MENU_GRP_ID
+						  , a.WORK_SCOP_SNO as WORK_SCOP_SNO
+						  , a.WORK_SCOP_NM as WORK_SCOP_NM
+						  , a.BSIS_STUP_YN as BSIS_STUP_YN
+						  , a.PTIF_FXNG_YN as PTIF_FXNG_YN
+						  , a.SCRN_DVDN_VL as SCRN_DVDN_VL
+						  , a.ASST_SCRN_USE_YN as ASST_SCRN_USE_YN
+						  , a.ASST_SCRN_DVDN_VL as ASST_SCRN_DVDN_VL
+						  , nvl(a.PRIN_SQNC, 1) as PRIN_SQNC
+				     from CSWKSGPMT a
+				   where a.MENU_GRP_ID = #{menuGrpId}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-updateWorkScopByMenuGrp (메뉴그룹별작업영역설정 수정) 
+        Description :                                           메뉴그룹별작업영역설정 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-updateWorkScopByMenuGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnDvdnStupDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnDvdnStupDAO-updateWorkScopByMenuGrp */
+						   CSWKSGPMT
+				   set
+						   BSIS_STUP_YN        = #{bsisStupYn}
+						 , PTIF_FXNG_YN        = #{ptifFxngYn}
+						 , SCRN_DVDN_VL        = #{scrnDvdnVl}
+						 , ASST_SCRN_USE_YN    = #{asstScrnUseYn}
+						 , ASST_SCRN_DVDN_VL   = #{asstScrnDvdnVl}
+						 , PRIN_SQNC           = #{prinSqnc}
+						 , WORK_SCOP_NM        = #{workScopNm}
+						 , LAST_UPDR_ID        = #{gvLginId}
+						 , LAST_UPDT_IP        = #{gvUserIp}
+						 , LAST_UPDT_DT        = sysdate
+						 , LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+						 , LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+				   where   MENU_GRP_ID         = #{menuGrpId}
+					 and   WORK_SCOP_SNO       = #{workScopSno}
+		]]>
+	</update>
+
+</mapper>

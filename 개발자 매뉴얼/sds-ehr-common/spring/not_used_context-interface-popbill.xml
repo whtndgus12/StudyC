@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!--
+		LinkID : 링크허브에서 발급받은 파트너 링크아이디.
+		SecretKey : 링크허브에서 발급받는 비밀키.
+		IsTest : true이면 test.popbill.com으로 연결, 기본값은 false.
+	-->
+	<util:properties id="contextProperties" location="classpath:properties/shc_ehr_com-#{systemProperties['spring.profiles.active']}.properties" />
+
+	<context:component-scan base-package="com.sds.healthcare.ehr.mis.inf.etx.biz" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>
+
+	<beans:beans>
+		<!-- 세금계산서 Service Implementation Bean registration.	-->
+		<beans:bean id="taxinvoiceService" class="com.popbill.api.taxinvoice.TaxinvoiceServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 전자명세서 Service Implementation Bean registration.  -->
+		<beans:bean id="statementService" class="com.popbill.api.statement.StatementServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 현금영수증 Service Implementation Bean registration.  -->
+		<beans:bean id="cashbillService" class="com.popbill.api.cashbill.CashbillServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 	문자메시지 Service Implementation Bean registration.	-->
+		<beans:bean id="messageService" class="com.popbill.api.message.MessageServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 팩스 Service Implementation Bean registration.  -->
+		<beans:bean id="faxService" class="com.popbill.api.fax.FaxServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 홈택스 전자세금계산서 연계 Service Implementation Bean registration.  -->
+		<beans:bean id="htTaxinvoiceService" class="com.popbill.api.hometax.HTTaxinvoiceServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+
+		<!-- 홈택스 현금영수증 연계 Service Implementation Bean registration.  -->
+		<beans:bean id="htCashbillService" class="com.popbill.api.hometax.HTCashbillServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 휴폐업조회 Service Implementation Bean registration.  -->
+		<beans:bean id="closedownService" class="com.popbill.api.closedown.CloseDownServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean>
+
+		<!-- 카카오톡 Service Implementation Bean registration.  -->
+		<!-- beans:bean id="kakaoService" class="com.popbill.api.kakao.KakaoServiceImp">
+			<beans:property name="linkID" value="#{contextProperties.LinkID}"/>
+			<beans:property name="secretKey" value="#{contextProperties.SecretKey}"/>
+			<beans:property name="test" value="#{contextProperties.IsTest}"/>
+		</beans:bean -->
+
+
+		<!-- 전자세금계산서 Agent Bean  -->
+        <!-- beans:bean id="elcrTxinAgent" class="com.sds.healthcare.ehr.mis.inf.etx.biz.ElcrTxinAgent">
+        </beans:bean-->
+
+        <!-- Pop Bill 서비스 Bean  -->
+        <!--beans:bean id="elcrTxinPOPBillBiz" class="com.sds.healthcare.ehr.mis.inf.etx.biz.ElcrTxinPOPBillBiz">
+        </beans:bean-->
+
+        <!-- Smart Bill 서비스 Bean  -->
+        <!-- beans:bean id="elcrTxinSMARTBillBiz" class="com.sds.healthcare.ehr.mis.inf.etx.biz.ElcrTxinSMARTBillBiz">
+        </beans:bean-->
+	</beans:beans>
+
+</beans:beans>

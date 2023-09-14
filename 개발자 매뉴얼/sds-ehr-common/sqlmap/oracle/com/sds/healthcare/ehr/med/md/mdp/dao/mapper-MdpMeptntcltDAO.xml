@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpMeptntcltDAO_sql.xml 
+    Description :                                      환자최종기록정보 DAO
+                  -->
+<mapper namespace="MdpMeptntcltDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-insertMeptntclt01 () 
+        Description :                                           툴바_임신수유정보 입력 med_ptntclt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-insertMeptntclt01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-insertMeptntclt01 */
+		insert  /*+ med_ptntclt_i01$I01_툴바_임신수유정보 입력_DAM */
+		  into  MEPTNTCLT
+		     (
+		        PTNO                                 /* 환자번호 */
+		     ,  PTNT_CTRL_CD                         /* 환자제어코드  */
+		     ,  PTNT_CTRL_NM                         /* 환자제어명    */
+		     ,  PTNT_CTRL_CHRC_VL1                   /* 임신/수유여부 */
+		     ,  PTNT_CTRL_CHRC_VL2                   /* 임신의 경우 분만예정일 16.09.21 */
+		     /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		     )
+		values
+		     (
+		        #{ptno}                                     /* 환자번호       */
+		     ,  #{ptntCtrlCd}                               /* 환자제어코드(MED_124) 001 임신, 002 수유 */
+		     ,  (select ctl.EMR_DTLS_CTRL_NM || '(MED_124)'
+		           from MECTRLMMT ctl
+		          where EMR_CTRL_CD = 'MED_124'
+		            and EMR_DTLS_CTRL_CD = #{ptntCtrlCd})   /* 환자제어명 */
+		     ,  #{ptntCtrlChrcVl1}                          /* 임신/수유여부 */
+		     ,  #{ptntCtrlChrcVl2}                          /* 임신의 경우 분만예정일 16.09.21 */
+		     /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-updateMeptntclt01 () 
+        Description :                                           툴바_임신수유정보 수정 med_ptntclt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-updateMeptntclt01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-updateMeptntclt01 */
+		update  /*+ med_ptntclt_u01$U01_툴바_임신수유정보 수정_DAM */
+		        MEPTNTCLT
+		   set  PTNT_CTRL_CHRC_VL1     = #{ptntCtrlChrcVl1}        /* 임신/수유여부 */
+		     ,  PTNT_CTRL_CHRC_VL2     = #{ptntCtrlChrcVl2}        /* 임신의 경우 분만예정일 16.09.21 */
+		     /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  PTNO                   = #{ptno}                     /* 환자번호 */
+		   and  PTNT_CTRL_CD           = #{ptntCtrlCd}               /* 환자제어코드  */
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntCtrlCd" column="PTNT_CTRL_CD"/>
+		<result property="ptntCtrlNm" column="PTNT_CTRL_NM"/>
+		<result property="ptntCtrlChrcVl1" column="PTNT_CTRL_CHRC_VL_1"/>
+		<result property="ptntCtrlChrcVl2" column="PTNT_CTRL_CHRC_VL2"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001 () 
+        Description :                                           툴바_임신수유정보 조회 mdd_ptntclt_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMeptntcltDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMeptntcltDAO-selectOnePrgnLctt0001 */
+		select  /*+ mdd_ptntclt_s01$S01_툴바_임신수유정보 조회_DAM */
+		        clt.PTNO
+		     ,  clt.PTNT_CTRL_CD
+		     ,  clt.PTNT_CTRL_NM
+		     ,  nvl(clt.PTNT_CTRL_CHRC_VL1, 'N')                       as PTNT_CTRL_CHRC_VL_1 /* 임신/수유여부 */
+		     ,  clt.PTNT_CTRL_CHRC_VL2                                                        /* 분만예정일 16.09.21 추가 */
+		     ,  clt.LAST_UPDR_ID                                                              /* 최종수정자ID  */
+		     ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = clt.LAST_UPDR_ID ) as LAST_UPDR_NM        /* 최종수정자명  */
+		     ,  to_char(clt.LAST_UPDT_DT, 'YYYYMMDDHH24MISS')          as LAST_UPDT_DT        /* 최종수정일시  */
+		  from
+		        MEPTNTCLT clt
+		 where  clt.PTNO         = #{ptno}
+		   and  clt.PTNT_CTRL_CD = #{ptntCtrlCd}   -- MED_001-임신, MED_002-수유
+	</select>
+
+
+
+</mapper>

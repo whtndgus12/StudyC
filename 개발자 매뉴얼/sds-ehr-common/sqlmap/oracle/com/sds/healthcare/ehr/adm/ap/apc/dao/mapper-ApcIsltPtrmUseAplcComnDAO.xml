@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcIsltPtrmUseAplcComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcIsltPtrmUseAplcComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-insertIsltPtrmUseAPlc (격리병실사용신청 등록) 
+        Description :                                           apd_mdrcipr_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcIsltPtrmUseAplcComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-insertIsltPtrmUseAPlc"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcIsltPtrmUseAplcComnDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-insertIsltPtrmUseAPlc */
+		 into  APRCIPRAT
+			   (
+			   MDRP_NO                    /*  진료접수번호 */
+			,  ISLT_PTRM_USE_APLC_SNO     /*  격리병실사용신청일련번호 */
+			,  APST_YMD                   /*  적용시작일자 */
+			,  APFN_YMD                   /*  적용종료일자 */
+			,  APFN_RMRK_CTN              /*  적용종료비고내용 */
+			,  PTNO                       /*  환자번호 */
+			,  CODV_CD                    /*  내원구분코드 */
+			,  ADMS_DT                    /*  입원일시 */
+			,  MCDP_CD                    /*  진료과코드 */
+			,  MDDR_ID                    /*  진료의사ID */
+			,  WARD_CD                    /*  병동코드 */
+			,  PTRM_NO                    /*  병실번호 */
+			,  ISLT_RESN_CD               /*  격리사유코드 */
+			,  ISLT_RESN_CTN              /*  격리사유내용 */
+			,  RMRK_CTN                   /*  비고내용 */
+			,  APLC_DT                    /*  신청일시 */
+			,  APLN_ID                    /*  신청자ID */
+			,  PTCN_YN                    /*  원무확인여부 */
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			   )
+		values  (
+			   #{mdrpNo}
+			,  (select nvl(max(ISLT_PTRM_USE_APLC_SNO),0) + 1 
+				  from APRCIPRAT where MDRP_NO = #{mdrpNo})
+			,  to_date(#{apstYmd}, 'YYYYMMDD')
+			,  to_date(#{apfnYmd}, 'YYYYMMDD')
+			,  #{apfnRmrkCtn}
+			,  #{ptno}
+			,  #{codvCd}
+			,  to_date(#{admsDt}, 'YYYYMMDDHH24MISS')
+			,  #{mcdpCd}
+			,  #{mddrId}
+			,  #{wardCd}
+			,  #{ptrmNo}
+			,  #{isltResnCd}
+			,  #{isltResnCtn}
+			,  #{rmrkCtn}
+			,  sysdate
+			,  #{gvUserId}
+			,  #{ptcnYn}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-updatetIsltPtrmUseAPlc (격리병실사용신청 수정) 
+        Description :                                           apd_mdrcipr_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcIsltPtrmUseAplcComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-updatetIsltPtrmUseAPlc"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcIsltPtrmUseAplcComnDVO"  >
+		   update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcIsltPtrmUseAplcComnDAO-updatetIsltPtrmUseAPlc */
+				   APRCIPRAT
+			  set  
+			      LAST_UPDR_ID           = #{gvUserId}
+			    , LAST_UPDT_IP           = #{gvUserIp}
+			    , LAST_UPDT_DT           = sysdate
+			    , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			    , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+				<if test="apstYmd != null">
+				,  APST_YMD              = to_date(#{apstYmd}, 'YYYYMMDD')  /*  적용시작일자 */
+				</if>
+				<if test="apfnYmd != null">
+				,  APFN_YMD              = to_date(#{apfnYmd}, 'YYYYMMDD')  /*  적용종료일자 */
+				</if>
+				<if test="apfnRmrkCtn != null">		
+				,  APFN_RMRK_CTN         = #{apfnRmrkCtn}  /*  적용종료비고내용 */
+				</if>
+				<if test="isltResnCd != null">		
+				,  ISLT_RESN_CD          = #{isltResnCd}   /*  격리사유코드 */
+				</if>
+				<if test="isltResnCtn != null">		
+				,  ISLT_RESN_CTN         = #{isltResnCtn}  /*  격리사유내용 */
+				</if>
+				<if test="rmrkCtn != null">		
+				,  RMRK_CTN              = #{rmrkCtn}       /*  비고내용 */
+				</if>		
+				<if test="cnclYn != null">		
+				,  CNCL_YN           = #{cnclYn}                /*  취소여부 */
+				</if>		
+				<if test="cnclDt != null">				
+				,  CNCL_DT           = #{cnclDt}            /*  취소일시 */
+				</if>		
+				<if test="cncrId != null">		
+				,  CNCR_ID           = #{cncrId}   /*  취소자ID */   
+				</if>		
+			where  MDRP_NO                = #{mdrpNo}
+			  and  ISLT_PTRM_USE_APLC_SNO = #{isltPtrmUseAplcSno}
+	</update>
+
+</mapper>

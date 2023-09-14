@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnrSlScexDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnrSlScexDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnFins () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnFins"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnFins */
+		<![CDATA[
+			update  /*+ mnd_prepdt0_u04$I01_혈액은행 PREP처방 준비완료상태 처리 */
+		            MNIBLOODT
+		       set
+		            TRNF_ORDR_PRSS_CD  = case when nvl(#{evntTypCd}, ' ') = 'D' and
+		                                           nvl(PREP_ORDR_YN, 'N') = 'Y' then null
+		                                      else case when #{evntTypCd} = 'Z' and PRPN_RQST_DT is null then null
+		                                                else #{trnfOrdrPrssCd}
+		                                           end
+		                                 end
+		         ,  PRPN_RQST_DT       = case when nvl(#{evntTypCd}, ' ') = 'D' and
+		                                           nvl(PREP_ORDR_YN, 'N') = 'Y' then null
+		                                      else PRPN_RQST_DT
+		                                 end
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID      = #{gvUserId}
+				 ,  LAST_UPDT_IP      = #{gvUserIp}
+				 ,  LAST_UPDT_DT      = sysdate
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO              = #{ptno}
+		       and  ORDR_YMD          = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO          = #{ordrSno}
+		       and  (       (     #{trnfOrdrPrssCd} = 'D'
+		                      and BLOD_NO      is null
+		                      and (      nvl(PREP_ORDR_YN, 'N') = 'N'
+		                              or (
+		                                       nvl(PREP_ORDR_YN, 'N') = 'Y'
+		                                   and PRPN_RQST_DT = to_date(#{prpnRqstDt}, 'YYYYMMDDHH24MISS')
+		                                 )
+		                          )
+		                    )
+		                or  (     #{trnfOrdrPrssCd} = 'Z'
+		                      and BLOD_NO      is null
+		                    )
+		                or  (     #{evntTypCd} = 'Z'
+		                      and #{trnfOrdrPrssCd} = 'P'
+		                      and TRNF_ORDR_PRSS_CD in ('D', 'Z')
+		                    )
+		                or  (     #{trnfOrdrPrssCd} = 'P'
+		                      and nvl(#{evntTypCd}, 'A')     <> 'Z'
+		                      and (      (     nvl(TRNF_ORDR_PRSS_CD, '*') = '*'
+		                                   and (     nvl(PREP_ORDR_YN, 'N') = 'N'
+		                                          or PRPN_RQST_DT = to_date(#{prpnRqstDt}, 'YYYYMMDDHH24MISS')
+		                                       )
+		                                 )
+		                              or (     TRNF_ORDR_PRSS_CD           = 'R'
+		                                   and (BLOD_NO, FRNS_BLOD_ORDR_CD)
+		                                          in (
+		                                                  select  BLOD_NO, ORDR_BLDP_CD
+		                                                    from  SLBBLOUTT
+		                                                   where  PTNO          = #{ptno}                              /* 환자번호             */
+		                                                     and  ORDR_YMD      = to_date(#{ordrYmd}, 'YYYYMMDD')     /* 처방일자             */
+		                                                     and  ORDR_SNO      = #{ordrSno}
+		                                                     and  STDL_TYPE_CD  = 'B'
+		                                                     and  STDL_DVSN_CD in ('2', '3')
+		                                                     and  TKVR_DT      is null
+		                                             )
+		                                 )
+		                          )
+		                   )
+		               or  (     #{trnfOrdrPrssCd} = 'R'
+		                     and nvl(#{evntTypCd}, 'A')     <> 'Z'
+		                     and TRNF_ORDR_PRSS_CD           = 'P'
+		                     and (BLOD_NO, FRNS_BLOD_ORDR_CD)
+		                                         in (
+		                                                 select  BLOD_NO, ORDR_BLDP_CD
+		                                                   from  SLBBLOUTT
+		                                                  where  PTNO          = #{ptno}                              /* 환자번호             */
+		                                                    and  ORDR_YMD      = to_date(#{ordrYmd}, 'YYYYMMDD')     /* 처방일자             */
+		                                                    and  ORDR_SNO      = #{ordrSno}
+		                                                    and  STDL_TYPE_CD  = 'B'
+		                                                    and  STDL_DVSN_CD in ('2', '3')
+		                                                    and  TKVR_DT      is null
+		                                            )
+		                  )
+		            )
+		       and  (      PRPN_RQST_DT = to_date(#{prpnRqstDt}, 'YYYYMMDDHH24MISS')
+		                or nvl(PREP_ORDR_YN, 'N') = 'N'
+		                or #{trnfOrdrPrssCd} in ('D', 'Z')
+		                or #{evntTypCd} = 'Z'
+		            )
+		]]>  
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrOrdrStts () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrOrdrStts"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrOrdrStts */
+		<![CDATA[
+			update  /*+ mnd_prepdt0_u02$I01_혈액은행 PREP처방 처방상태 처리 */
+		            MNIBLOODT
+		       set
+		            PRPN_STRT_DT       = null
+		         ,  TRNF_ORDR_PRSS_CD  = null
+		         ,  BLOD_NO            = null
+		         ,  FRNS_BLOD_ORDR_CD  = null
+		         ,  STDL_DT            = null
+		         ,  STDL_SNO           = null
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID      = #{gvUserId}
+				 ,  LAST_UPDT_IP      = #{gvUserIp}
+				 ,  LAST_UPDT_DT      = sysdate
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO              = #{ptno}
+		       and  ORDR_YMD          = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO          = #{ordrSno}
+		       and  FRNS_BLOD_ORDR_CD = #{frnsBlodOrdrCd}
+		       and  BLOD_NO           = #{blodNo}
+		]]>  
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnStts () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnStts"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlbaPrepOrdrPrpnStts */
+		<![CDATA[
+			update  /*+ mnd_prepdt0_u01$I01_혈액은행 PREP처방 준비상태 처리  */
+		            MNIBLOODT
+		       set
+		            PRPN_STRT_DT       = sysdate
+		         ,  TRNF_ORDR_PRSS_CD  = 'P'
+		         ,  BLOD_NO            = #{blodNo}
+		         ,  FRNS_BLOD_ORDR_CD  = #{frnsBlodOrdrCd}
+		         ,  STDL_DT            = to_date(#{stdlDt}, 'YYYYMMDDHH24MISS')
+		         ,  STDL_SNO           = (select  STDL_SNO
+		                                    from  SLBBLOUTT
+		                                   where  PTNO         = #{ptno}
+		                                     and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                     and  ORDR_SNO     = #{ordrSno}
+		                                     and  BLOD_NO      = #{blodNo}
+		                                     and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                     and  STDL_TYPE_CD = 'B'
+		                                     and  STDL_DVSN_CD in ('2', '3')
+		                                     and  STDL_RESN_CD in ('6', '7', '8', '9', 'S')
+		                                 )
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID      = #{gvUserId}
+				 ,  LAST_UPDT_IP      = #{gvUserIp}
+				 ,  LAST_UPDT_DT      = sysdate
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  (PTNO, ORDR_YMD, ORDR_SNO, BLOD_NO_SNO)
+		              in (select PTNO, ORDR_YMD, ORDR_SNO, min(BLOD_NO_SNO)
+		                    from MNIBLOODT
+		                   where PTNO         = #{ptno}
+		                     and ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                     and ORDR_SNO     = #{ordrSno}
+		                     and (     PRPN_RQST_DT = to_date(#{prpnRqstDt}, 'YYYYMMDDHH24MISS')
+		                            or nvl(PREP_ORDR_YN, 'N') = 'N'
+		                         )
+		                     and BLOD_NO      is null
+		                   group by PTNO, ORDR_YMD, ORDR_SNO
+		                 )
+		]]> 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrFrnsRqprMdfc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrFrnsRqprMdfc"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrFrnsRqprMdfc */
+		update  /*+ mnd_prepdt0_u07$I01_혈액은행 PREP처방 불출요청자 변경 */
+		            MNIBLOODT
+		       set
+		            FRNS_RQPR_ID      = null
+		         ,  FRNS_RQST_DT      = null
+		         ,  TRNF_ORDR_PRSS_CD = 'R'
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  (PTNO, ORDR_YMD, ORDR_SNO, BLOD_NO_SNO)
+		              in (select PTNO, min(ORDR_YMD), min(ORDR_SNO), min(BLOD_NO_SNO)
+		                    from MNIBLOODT
+		                   where PTNO              = #{ptno}
+		                     and FRNS_RQPR_ID      = #{frnsRqprId}
+		                     and FRNS_RQST_DT      = to_date(#{frnsRqstDt}, 'YYYYMMDDHH24MISS')
+		                     and TRNF_ORDR_PRSS_CD = 'H'
+		                     and (     nvl(#{blodNo}, ' ') = ' '
+		                            or BLOD_NO = #{blodNo}
+		                         )
+		                   group by PTNO/*, ORDR_YMD , ORDR_SNO */
+		                 )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrSttsMdfcPrsg () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrSttsMdfcPrsg"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrSttsMdfcPrsg */
+		<![CDATA[		
+		update  /*+ mnd_prepdt0_u03$I01_혈액은행 PREP처방 상태변경 처리 */
+		            MNIBLOODT
+		       set
+		            TRNF_ORDR_PRSS_CD  = ( case when #{trnfOrdrPrssCd} = 'I'
+		                                             then case when nvl(rtrn_disc_resn_cd, ' ') = ' ' then 'S' else 'I' end
+		                                        when #{trnfOrdrPrssCd} = 'J'
+		                                             then case when nvl(rtrn_disc_resn_cd, ' ') = ' ' then 'S' else 'J' end
+		                                        when #{trnfOrdrPrssCd} = 'R'
+		                                             then case when KPNG_RQST_DT > FRNS_RQST_DT then 'R'
+		                                                       when FRNS_RQST_DT is not null then 'H'
+		                                                       else #{trnfOrdrPrssCd}
+		                                                  end
+		                                        else #{trnfOrdrPrssCd}
+		                                   end
+		                                 )
+		         ,  STDL_DT            = case when #{trnfOrdrPrssCd} in ('U', 'T')
+		                                           then to_date(#{stdlDt}, 'YYYYMMDDHH24MISS')
+		                                      when #{trnfOrdrPrssCd} in ('I', 'J')
+		                                           then (select  max(PRSG_DT)
+		                                                   from  SLBBLOUTT
+		                                                  where  PTNO         = #{ptno}
+		                                                    and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                                    and  ORDR_SNO     = #{ordrSno}
+		                                                    and  BLOD_NO      = #{blodNo}
+		                                                    and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                                    and  STDL_TYPE_CD = 'B'
+		                                                    and  STDL_RESN_CD in ('6', '7', '8', '9', 'S')
+		                                                )
+		                                      else STDL_DT
+		                                 end
+		         ,  STDL_SNO           = case when #{trnfOrdrPrssCd} = 'U'
+		                                           then (select  STDL_SNO
+		                                                   from  SLBBLOUTT
+		                                                  where  PTNO         = #{ptno}
+		                                                    and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                                    and  ORDR_SNO     = #{ordrSno}
+		                                                    and  BLOD_NO      = #{blodNo}
+		                                                    and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                                    and  STDL_TYPE_CD = 'B'
+		                                                    and  STDL_RESN_CD  in ('I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R')
+		                                                )
+		                                      when #{trnfOrdrPrssCd} = 'T'
+		                                           then (select  STDL_SNO
+		                                                   from  SLBBLOUTT
+		                                                  where  PTNO         = #{ptno}
+		                                                    and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                                    and  ORDR_SNO     = #{ordrSno}
+		                                                    and  BLOD_NO      = #{blodNo}
+		                                                    and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                                    and  STDL_TYPE_CD = 'B'
+		                                                    and  STDL_RESN_CD  in ('A', 'B', 'C', 'D', 'F')
+		                                                )
+		                                      when #{trnfOrdrPrssCd} in ('I', 'J')
+		                                           then (select  max(STDL_SNO) keep (DENSE_RANK last order by PRSG_DT)
+		                                                   from  SLBBLOUTT
+		                                                  where  PTNO         = #{ptno}
+		                                                    and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                                    and  ORDR_SNO     = #{ordrSno}
+		                                                    and  BLOD_NO      = #{blodNo}
+		                                                    and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                                    and  STDL_TYPE_CD = 'B'
+		                                                    and  STDL_RESN_CD in ('6', '7', '8', '9', 'S')
+		                                                )
+		                                      else STDL_SNO
+		                                 end
+		         ,  FRNS_RQPR_ID       = case when #{trnfOrdrPrssCd} = 'S' then nvl(#{frnsRqprId}, FRNS_RQPR_ID)
+		                                      when #{trnfOrdrPrssCd} = 'R' then case when KPNG_RQST_DT > FRNS_RQST_DT then null else FRNS_RQPR_ID end
+		                                      else FRNS_RQPR_ID
+		                                 end
+		         ,  FRNS_RQST_DT       = case when #{trnfOrdrPrssCd} = 'S'
+		                                           then case when nvl(#{frnsRqstDt}, ' ') = ' ' then FRNS_RQST_DT
+		                                                     else to_date(#{frnsRqstDt}, 'YYYYMMDDHH24MISS')
+		                                                end
+		                                      when #{trnfOrdrPrssCd} = 'R'
+		                                           then case when KPNG_RQST_DT > FRNS_RQST_DT then null else FRNS_RQST_DT end
+		                                      else FRNS_RQST_DT
+		                                 end
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID = #{gvUserId}
+		         ,  LAST_UPDT_IP = #{gvUserIp}
+		         ,  LAST_UPDT_DT = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO              = #{ptno}
+		       and  ORDR_YMD          = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO          = #{ordrSno}
+		       and  FRNS_BLOD_ORDR_CD = #{frnsBlodOrdrCd}
+		       and  BLOD_NO           = #{blodNo}
+		       and  (      (     #{trnfOrdrPrssCd} = 'T'
+		                     and TRNF_ORDR_PRSS_CD in ('S', 'I')
+		                   )
+		                or (     #{trnfOrdrPrssCd} = 'U'
+		                     and TRNF_ORDR_PRSS_CD in ('S', 'J', 'P', 'R')
+		                   )
+		                or #{trnfOrdrPrssCd} not in ('T', 'U')
+		            )
+		]]>		            
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-insertPrepOrdrPrpnFins () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-insertPrepOrdrPrpnFins"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-insertPrepOrdrPrpnFins */
+		<![CDATA[
+			insert  /*+ mnd_prepdt0_i02$I01_혈액은행 PREP처방 준비완료 추가 처리 */ 
+		      into  MNIBLOODT
+		         (
+		            PTNO
+		          , ORDR_YMD
+		          , ORDR_SNO
+		          , BLOD_NO_SNO
+		          , PRPN_RQST_DT
+		          , TRNF_ORDR_PRSS_CD
+		          , CNCL_YN
+		          , PRPN_STRT_DT
+		          , BLOD_NO
+		          , FRNS_BLOD_ORDR_CD
+		          , PREP_ORDR_YN
+		          , STDL_DT
+		          , STDL_SNO
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          , FRST_RGSR_ID
+		          , FRST_RGST_IP
+		          , FRST_RGST_DT
+		          , FRST_RGST_CLNT_PRGM_ID
+		          , FRST_RGST_SRVR_PRGM_ID
+		          , LAST_UPDR_ID
+		          , LAST_UPDT_IP
+		          , LAST_UPDT_DT
+		          , LAST_UPDT_CLNT_PRGM_ID
+		          , LAST_UPDT_SRVR_PRGM_ID
+		         )
+		    select  PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  case when nvl(#{blodNo}, ' ') = ' ' then 0
+		                 else nvl((
+		                            select BLOD_NO_SNO
+		                              from MNIBLOODT
+		                             where PTNO     = a.PTNO
+		                               and ORDR_YMD = a.ORDR_YMD
+		                               and ORDR_SNO = a.ORDR_SNO
+		                          ), 0)
+		            end + rownum
+		         ,  case when #{trnfOrdrPrssCd} = 'D' then null else ORDR_YMD end
+		         ,  case when STDL_RESN_CD in ('6', '7', '8', '9', 'S')
+		                 then case when TKVR_DT is not null then 'S'
+		                           when PRPN_DT is not null then 'R'
+		                           else 'P'
+		                      end
+		                 when STDL_RESN_CD in ('I', 'J', 'K', 'L', 'M') then 'U'
+		                 when STDL_RESN_CD in ('A', 'B', 'C', 'D', 'F') then 'T'
+		                 else ''
+		            end                     
+		         ,  null
+		         ,  PRPN_DT
+		         ,  BLOD_NO
+		         ,  ORDR_BLDP_CD
+		         ,  'N'
+		         ,  PRSG_DT
+		         ,  STDL_SNO
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         ,  #{gvUserId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		      from  SLBBLOUTT a
+		     where  PTNO           = #{ptno}                           /* 환자번호             */
+		       and  ORDR_YMD       = to_date(#{ordrYmd}, 'YYYYMMDD')  /* 처방일자             */
+		       and  STDL_TYPE_CD   = 'B'
+		       and  ORDR_SNO       = #{ordrSno}
+		       and  (PRSG_DT, PTNO, BLOD_NO, ORDR_BLDP_CD)
+		             in (
+		                     select max(PRSG_DT), PTNO, BLOD_NO, ORDR_BLDP_CD
+		                       from SLBBLOUTT
+		                      where PTNO         = #{ptno}
+		                        and ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                        and STDL_TYPE_CD = 'B'
+		                        and (     nvl(#{blodNo}, ' ') = ' '
+		                               or BLOD_NO = #{blodNo}
+		                            )
+		                        and (     nvl(#{frnsBlodOrdrCd}, ' ') = ' '
+		                               or ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                            )
+		                      group by PTNO, BLOD_NO, ORDR_BLDP_CD
+		                )
+		       and  a.PTNO     = '*'
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrRtrnStts () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrRtrnStts"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updatePrepOrdrRtrnStts */
+		update  /*+ mnd_prepdt0_u05$I01_혈액은행 PREP처방 반납상태 처리 */
+		            MNIBLOODT
+		       set
+		            TRNF_ORDR_PRSS_CD  = decode(#{trnfOrdrPrssCd}, 'C', 'U', #{trnfOrdrPrssCd})
+		         ,  CNCL_YN            = decode(#{trnfOrdrPrssCd}, 'C', 'Y', '')
+		         ,  STDL_DT            = to_date(#{stdlDt}, 'YYYYMMDDHH24MISS')
+		         ,  STDL_SNO           = (select  STDL_SNO
+		                                    from  SLBBLOUTT
+		                                   where  PTNO         = #{ptno}
+		                                     and  ORDR_YMD     = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                                     and  ORDR_SNO     = #{ordrSno}
+		                                     and  BLOD_NO      = #{blodNo}
+		                                     and  ORDR_BLDP_CD = #{frnsBlodOrdrCd}
+		                                     and  STDL_TYPE_CD = 'B'
+		                                     and  STDL_RESN_CD  in ('I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R')
+		                                 )
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID      = #{gvUserId}
+		         ,  LAST_UPDT_IP      = #{gvUserIp}
+		         ,  LAST_UPDT_DT      = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  PTNO              = #{ptno}
+		       and  ORDR_YMD          = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and  ORDR_SNO          = #{ordrSno}
+		       and  FRNS_BLOD_ORDR_CD = #{frnsBlodOrdrCd}
+		       and  BLOD_NO           = #{blodNo}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqst () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqst"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqst */
+		update  /*+ mnd_ibloodt_u01$I01_혈액반납폐기보관요청 저장 */
+		            MNIBLOODT
+		       set
+		            TRNF_ORDR_PRSS_CD  = #{trnfOrdrPrssCd}
+		         ,  RTRN_DISC_RESN_CD  = case when #{trnfOrdrPrssCd} = 'K' then RTRN_DISC_RESN_CD
+		                                      else #{rtrnDiscResnCd}
+		                                 end
+		         ,  RTRN_DISC_RMRK_CTN = case when #{trnfOrdrPrssCd} = 'K' then RTRN_DISC_RMRK_CTN
+		                                      else #{rtrnDiscRmrkCtn}
+		                                 end
+		         ,  RTRN_DISC_RQPR_ID  = case when #{trnfOrdrPrssCd} = 'K' then RTRN_DISC_RQPR_ID
+		                                      else #{rtrnDiscRqprId}
+		                                 end
+		         ,  RTRN_DISC_CNDR_ID  = case when #{trnfOrdrPrssCd} = 'K' then RTRN_DISC_CNDR_ID
+		                                      else #{rtrnDiscCndrId}
+		                                 end
+		         ,  RTRN_DISC_RQST_DT  = case when #{trnfOrdrPrssCd} = 'K' then RTRN_DISC_RQST_DT
+		                                      else sysdate
+		                                 end
+		         ,  KPNG_RQST_DT       = case when #{trnfOrdrPrssCd} = 'K' then sysdate
+		                                      else KPNG_RQST_DT
+		                                 end
+		         ,  KPNG_RQPR_ID       = case when #{trnfOrdrPrssCd} = 'K' then #{rtrnDiscRqprId}
+		                                      else KPNG_RQPR_ID
+		                                 end
+		         ,  KPNG_RQST_REET_CTN = case when #{trnfOrdrPrssCd} = 'K' then #{rtrnDiscRmrkCtn}
+		                                      else KPNG_RQST_REET_CTN
+		                                 end
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID       = #{gvUserId}
+		         ,  LAST_UPDT_IP       = #{gvUserIp}
+		         ,  LAST_UPDT_DT       = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		     where PTNO                = #{ptno}
+		       and ORDR_YMD            = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and ORDR_SNO            = #{ordrSno}
+		       and BLOD_NO             = #{blodNo}
+		       and FRNS_BLOD_ORDR_CD   = #{frnsBlodOrdrCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqstCncl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqstCncl"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrSlScexDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrSlScexDAO-updateBlodRtrnDiscKpngRqstCncl */
+		update  /*+ mnd_ibloodt_u02$I01_혈액반납폐기보관요청 취소 */
+		            MNIBLOODT
+		       set
+		            TRNF_ORDR_PRSS_CD  = #{trnfOrdrPrssCd}
+		         ,  RTRN_DISC_RESN_CD  = case when #{rtrnDiscRmrkCtn} = 'K' then RTRN_DISC_RESN_CD  else null end
+		         ,  RTRN_DISC_RMRK_CTN = case when #{rtrnDiscRmrkCtn} = 'K' then RTRN_DISC_RMRK_CTN else null end
+		         ,  RTRN_DISC_RQPR_ID  = case when #{rtrnDiscRmrkCtn} = 'K' then RTRN_DISC_RQPR_ID  else null end
+		         ,  RTRN_DISC_CNDR_ID  = case when #{rtrnDiscRmrkCtn} = 'K' then RTRN_DISC_CNDR_ID  else null end
+		         ,  RTRN_DISC_RQST_DT  = case when #{rtrnDiscRmrkCtn} = 'K' then RTRN_DISC_RQST_DT  else null end
+		         ,  KPNG_RQST_DT       = case when #{rtrnDiscRmrkCtn} = 'K' then null else KPNG_RQST_DT       end
+		         ,  KPNG_RQPR_ID       = case when #{rtrnDiscRmrkCtn} = 'K' then null else KPNG_RQPR_ID       end
+		         ,  KPNG_RQST_REET_CTN = case when #{rtrnDiscRmrkCtn} = 'K' then null else KPNG_RQST_REET_CTN end
+		            /* 서버 프로그램 전환시 자동 추가된 항목 */
+		         ,  LAST_UPDR_ID       = #{gvUserId}
+		         ,  LAST_UPDT_IP       = #{gvUserIp}
+		         ,  LAST_UPDT_DT       = sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		     where PTNO                = #{ptno}
+		       and ORDR_YMD            = to_date(#{ordrYmd}, 'YYYYMMDD')
+		       and ORDR_SNO            = #{ordrSno}
+		       and BLOD_NO             = #{blodNo}
+		       and FRNS_BLOD_ORDR_CD   = #{frnsBlodOrdrCd}
+	</update>
+
+</mapper>

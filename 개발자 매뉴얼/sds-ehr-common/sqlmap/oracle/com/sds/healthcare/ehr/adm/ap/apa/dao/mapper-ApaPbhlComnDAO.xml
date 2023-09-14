@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaPbhlComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaPbhlComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPbhlComnDVO">
+	
+		<result property="hldyYmd" column="HLDY_YMD"/>
+		<result property="dywkNm" column="DYWK_NM"/>
+		<result property="pbhlNm" column="PBHL_NM"/>
+		<result property="pbhlDvsnCd" column="PBHL_DVSN_CD"/>
+		<result property="afiPbhlDvsnNm" column="AFI_PBHL_DVSN_NM"/>
+		<result property="hsptMdcrYn" column="HSPT_MDCR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl (공휴일정보 리스트조회) 
+        Description :                                           apd_dspbhlt_l05
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPbhlComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPbhlComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl-result" useCache="true" flushCache="false">
+		 select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPbhlComnDAO-listPbhl */
+			   to_char(HLDY_YMD, 'yyyymmdd') as HLDY_YMD
+			 ,  to_char(HLDY_YMD, 'DY', 'NLS_DATE_LANGUAGE=KOREAN') as DYWK_NM
+			 ,  PBHL_NM as PBHL_NM
+			 ,  PBHL_DVSN_CD as PBHL_DVSN_CD
+		     ,  (
+				  select DETL_CD_NM
+				   from CCCMCDDMT
+				  where COMN_GRP_CD = 'AP021'
+					and COMN_DTLS_CD = PBHL_DVSN_CD
+			   ) as AFI_PBHL_DVSN_NM
+			,  HSPT_MDCR_YN as HSPT_MDCR_YN
+		 from  APDSPBHLT
+		where  HLDY_YMD between to_date(#{strtYmd}, 'yyyymmdd')
+							and to_date(#{fnshYmd}, 'yyyymmdd')
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,3007 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccUseramtDAO_sql.xml 
+    Description :                                      사용자 정보
+                  -->
+<mapper namespace="CccUseramtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="tmprPwdYn" column="TMPR_PWD_YN"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="pwdMdfcDt" column="PWD_MDFC_DT"/>
+		<result property="crntPwd" column="CRNT_PWD"/>
+		<result property="masterIp" column="MASTER_IP"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCccUseramt */
+				<![CDATA[
+				   select  /*+ ccd_useramt_s14$S01_임시 비밀번호여부 조회 */
+						   LGIN_ID as LGIN_ID,
+						   TMPR_PWD_YN as TMPR_PWD_YN,
+						   USER_STTS_CD as USER_STTS_CD,
+						   to_char(PWD_MDFC_DT, 'yyyymmddhh24miss') as PWD_MDFC_DT,
+		                   CRNT_PWD as CRNT_PWD /*임시 PJM*/,
+		                  (SELECT COMN_ENVR_STUP_ITEM_CHRC_VL
+							  FROM CCENSTIMT
+							 WHERE COMN_ENVR_STUP_GRP_CD = 'CSU_LOGIN_MASTER'
+							   AND COMN_ENVR_STUP_ITEM_CHRC_VL = #{gvUserIp}
+		                       AND ROWNUM = 1) AS "MASTER_IP"
+					 from
+						   CCUSERAMT
+					where
+						   LGIN_ID = #{gvLginId}
+					]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt1"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt1 */
+		update  /*+ ccd_useramt_u03$I01_EMRCPOE 사용자 접속시도 횟수 증가 DAM */
+						   CCUSERAMT
+					  set
+						   CNCT_ATMP_NTM = #{cnctAtmpNtm} + 1,
+						   LAST_UPDR_ID = #{gvLginId},
+						   LAST_UPDT_IP = #{gvUserIp},
+						   LAST_UPDT_DT = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where
+						   LGIN_ID = #{gvLginId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt2"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt2 */
+		update  /*+ ccd_useramt_u04$I01_EMRCPOE 사용자 상태코드 수정 DAM */
+			   			CCUSERAMT
+					  set
+			   			   USER_STTS_CD = '2',
+			   			   LAST_UPDR_ID = #{gvLginId},
+			   			   LAST_UPDT_IP = #{gvUserIp},
+			   			   LAST_UPDT_DT = sysdate,
+			   			   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+			   			   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where
+			   			 LGIN_ID = #{gvLginId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt3 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt3"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt3 */
+		update  /*+ ccd_useramt_u10$I01_EMRCPOE 사용자 정상 로그인 후 초기화 DAM */
+			   			CCUSERAMT
+					  set
+			   			   CRNT_CNCT_DT = sysdate,
+						   CRNT_CNCT_IP = #{gvUserIp},
+						   LAST_CNCT_DT = sysdate,
+						   LAST_CNCT_IP = #{gvUserIp},
+						   CNCT_ATMP_NTM = 0,
+			   			   LAST_UPDR_ID = #{gvLginId},
+			   			   LAST_UPDT_IP = #{gvUserIp},
+			   			   LAST_UPDT_DT = sysdate,
+			   			   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+			   			   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where
+						   LGIN_ID = #{gvLginId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="mnsbYn" column="MNSB_YN"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocdtNm" column="OCDT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="mdcrClasCd" column="MDCR_CLAS_CD"/>
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="emrRdngAthrCd" column="EMR_RDNG_ATHR_CD"/>
+		<result property="emrWrtgAthrCd" column="EMR_WRTG_ATHR_CD"/>
+		<result property="emrPrinAthrCd" column="EMR_PRIN_ATHR_CD"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="cnctAtmpNtm" column="CNCT_ATMP_NTM"/>
+		<result property="lastCnctDt" column="LAST_CNCT_DT"/>
+		<result property="lastCnctIp" column="LAST_CNCT_IP"/>
+		<result property="crntCnctDt" column="CRNT_CNCT_DT"/>
+		<result property="crntCnctIp" column="CRNT_CNCT_IP"/>
+		<result property="rtrmYn" column="RTRM_YN"/>
+		<result property="idNo" column="ID_NO"/>
+		<result property="natnCd" column="NATN_CD"/>
+		<result property="afiNatnNm" column="AFI_NATN_NM"/>
+		<result property="lnggCd" column="LNGG_CD"/>
+		<result property="lnggNm" column="LNGG_NM"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="ocrsNm" column="OCRS_NM"/>
+		<result property="wrknPartCd" column="WRKN_PART_CD"/>
+		<result property="wrknDprtNm" column="WRKN_DPRT_NM"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+		<result property="blhsNm" column="BLHS_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		with T_HZDEPTMMT As      
+		(
+			select b.*
+		      from HZDEPTMMT b -- 조직Master I/F(MDM연계)_T
+		     where b.USE_YN = 'Y'
+		]]>
+			<choose>
+				<when test='afiRturVl != null and "Y".equals(afiRturVl)'>
+					<![CDATA[
+						-- 하위부서포함일 경우...
+						and #{afiRturVl} = 'Y'
+					]]>
+					<if test='mdcrDprtCd != null and !"".equals(mdcrDprtCd)'>
+						<![CDATA[
+						start with b.ABRV_DPRT_CD = #{mdcrDprtCd} -- 약어부서코드
+		                connect by prior b.DPRT_CD = b.HRAF_HGRN_DPRT_CD -- 부서코드 = 인사상위부서코드
+						]]>
+					</if>
+				</when>
+				<when test='afiRturVl != null and "N".equals(afiRturVl)'>
+					<![CDATA[
+					  -- 하위부서포함이 아닌 경우...
+					  and #{afiRturVl} = 'N'	
+					]]>
+					<if test='mdcrDprtCd != null and !"".equals(mdcrDprtCd)'>
+						<![CDATA[
+							and b.ABRV_DPRT_CD = #{mdcrDprtCd} -- 약어부서코드   
+						]]>
+					</if>
+				</when>
+			</choose>
+		<![CDATA[    
+		) 
+		select  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listUserInfm */
+		        b.LGIN_ID as LGIN_ID
+		      , a.USER_ID as USER_ID
+		      , a.USER_NM as USER_NM
+		      , to_char(b.BTDT, 'YYYYMMDD') as BTDT
+		      , b.GEND_CD as GEND_CD
+		      , b.CLNO as CLNO
+		        --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		        --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+		    ,   nvl (   substrb (   b.exts_tlno ,   -4  )   ,   b.exts_tlno )   as  exts_tlno
+		      , b.PDA_NO as PDA_NO
+		      , b.EMAIL_ID as EMAIL_ID
+		      , b.EP_ID as EP_ID
+		      , b.USER_LCNS_NO as USER_LCNS_NO
+		      , b.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO
+		      , to_char(b.USER_SPCZ_DRLC_ACQS_YMD, 'YYYYMMDD') as USER_SPCZ_DRLC_ACQS_YMD
+		      , to_char(b.TRNN_STRT_YMD, 'YYYYMMDD') as TRNN_STRT_YMD
+		      , to_char(b.TRNN_FNSH_YMD, 'YYYYMMDD') as TRNN_FNSH_YMD
+		      , b.RMRK_CTN as RMRK_CTN
+		      , a.MNSB_YN as MNSB_YN
+		      , a.MDCR_DPRT_CD as MDCR_DPRT_CD
+		      , e.ABRV_DPRT_CD as ABRV_DPRT_CD
+		      , e.KORN_DPRT_NM as KORN_DPRT_NM
+		      , b.OCDT_CD as OCDT_CD
+		      , c.DETL_CD_NM as OCDT_NM
+		      , b.OCFM_CD as OCFM_CD
+		      , d.DETL_CD_NM as OCFM_NM
+		      , a.EXCF_CD as EXCF_CD
+		      , a.MDCR_CLAS_CD as MDCR_CLAS_CD
+		      , a.DTLS_EXCF_CD as DTLS_EXCF_CD
+		      , '' as EMR_RDNG_ATHR_CD
+		      , '' as EMR_WRTG_ATHR_CD
+		      , '' as EMR_PRIN_ATHR_CD
+		      , b.USER_ENSN_NM as USER_ENSN_NM
+		      , b.USER_STTS_CD as USER_STTS_CD
+		      , b.CNCT_ATMP_NTM as CNCT_ATMP_NTM
+		      , to_char(b.LAST_CNCT_DT, 'YYYYMMDD') as LAST_CNCT_DT
+		      , b.LAST_CNCT_IP as LAST_CNCT_IP
+		      , to_char(b.CRNT_CNCT_DT, 'YYYYMMDD') as CRNT_CNCT_DT
+		      , b.CRNT_CNCT_IP as CRNT_CNCT_IP
+		      , b.RTRM_YN as RTRM_YN
+		      , b.ID_NO as ID_NO
+		      , '' as NATN_CD
+		      , '' as AFI_NATN_NM
+		      , b.LNGG_CD as LNGG_CD
+		      , g.DETL_CD_NM as LNGG_NM
+		      , b.OCCL_CD as OCCL_CD
+		      , h.DETL_CD_NM as OCCL_NM
+		      , b.OCPS_CD as OCPS_CD
+		      , i.DETL_CD_NM as OCPS_NM
+		      , b.OCRS_CD as OCRS_CD
+		      , j.DETL_CD_NM as OCRS_NM
+		      , l.WRKN_PART_CD AS WRKN_PART_CD
+		      , m.KORN_DPRT_NM as WRKN_DPRT_NM
+		      , b.ORGL_HSPT_CD as HSPT_CD
+		      , n.DETL_CD_NM   as HSPT_NM
+		      , b.HSPT_OCFM_CD as HSPT_OCFM_CD
+		      , p.DETL_CD_NM   as BLHS_NM -- 소속병원
+		  from    ( select /*+ index(a CCUSRDPHT_PK) */
+		                 a.*
+		            from CCUSRDPHT a
+		           where #{userNm} is not null
+		             and a.USER_ID like #{userNm} || '%'
+		           union
+		          select /*+ index(a CCUSRDPHT_I04) */
+		                 a.*
+		            from CCUSRDPHT a
+		           where #{userNm} is not null
+		             and a.USER_NM like '%' || #{userNm} || '%'
+		           union
+		          select /*+ index(a CCUSRDPHT_I02) */
+		                 a.*
+		            from CCUSRDPHT a
+		           where #{userNm} is null
+		             and #{mdcrDprtCd} is not null
+		             and a.MDCR_DPRT_CD = #{mdcrDprtCd}
+		           union
+		          select /*+ ordered use_nl(e a) index(e HZDEPTMMT_I02) */
+		                 a.*
+		            from T_HZDEPTMMT e
+		               , CCUSRDPHT a
+		           where #{userNm} is null
+		             and #{mdcrDprtCd} is not null
+		             and a.MDCR_DPRT_CD = e.DPRT_CD
+		           union
+		          select
+		                 a.*
+		            from CCUSRDPHT a
+		           where #{userNm} is null
+		             and #{mdcrDprtCd} is null
+		         ) a
+		       , CCUSERAMV b
+		       , CCCMCDDMT c
+		       , CCCMCDDMT d
+		       --, HZDEPTMMT e
+		       , T_HZDEPTMMT e
+		       , CCCMCDDMT g
+		       , CCCMCDDMT h
+		       , CCCMCDDMT i
+		       , CCCMCDDMT j
+		]]>
+			<if test='afiRturVl1 != null and "Y".equals(afiRturVl1)'>
+				<![CDATA[
+					-- 비인사제거 일 경우...
+					, HZUSERMMT k  -- 사원Master I/F(MDM연계)
+				]]>
+			</if>	
+		       , HZUSERMMT l
+		       , HZDEPTMMT m	
+		       , CCCMCDDMT n	   
+			   , CCCMCDDMT p -- 소속병원 추출.
+		<![CDATA[
+		 where   a.LGIN_ID        = b.LGIN_ID
+		   and   c.COMN_GRP_CD(+) = 'GP009'
+		   and   b.OCDT_CD        = c.COMN_DTLS_CD(+)
+		   and   d.COMN_GRP_CD(+) = 'GP170'
+		   and   b.OCFM_CD        = d.COMN_DTLS_CD(+)
+		   ]]>
+			<if test='afiRturVl1 != null and "Y".equals(afiRturVl1)'>
+				<![CDATA[
+				-- 비인사제거 일 경우...
+				and   a.LGIN_ID = k.EMNO
+				]]>
+			</if>		
+		   	<if test='mdcrDprtCd != null and !"".equals(mdcrDprtCd)'>
+				<![CDATA[
+				and   a.MDCR_DPRT_CD   = e.DPRT_CD
+				]]>
+			</if>
+			<if test='mdcrDprtCd == null or "".equals(mdcrDprtCd)'>
+				<![CDATA[
+				and   a.MDCR_DPRT_CD   = e.DPRT_CD(+)
+				]]>
+			</if>
+		   <![CDATA[
+		   and   (
+		          (nvl(b.USER_STTS_CD, '9') in ('8', '9')) 
+		          or
+		          ((nvl(b.USER_STTS_CD, '9') not in ('8', '9')) and ((trunc(a.APST_YMD) <= trunc(sysdate)) and (a.APFN_YMD >= trunc(sysdate))))
+		         )
+		   and   g.COMN_GRP_CD(+) = 'CCC_003'
+		   and   b.LNGG_CD        = g.COMN_DTLS_CD(+)
+		   and   h.COMN_GRP_CD(+) = 'GP005'
+		   and   b.OCCL_CD        = h.COMN_DTLS_CD(+)
+		   and   i.COMN_GRP_CD(+) = 'GP008'
+		   and   b.OCPS_CD        = i.COMN_DTLS_CD(+)
+		   and   j.COMN_GRP_CD(+) = 'GP007'
+		   and   b.OCRS_CD        = j.COMN_DTLS_CD(+)
+		   and   ((nvl(#{userNm}, '*') = '*') or
+		          (a.USER_ID like #{userNm} || '%') or
+		          (a.USER_NM like '%' || #{userNm} || '%')
+		         )   
+		   and   ((nvl(#{ocdtCd},'*') = '*') or (b.OCDT_CD = #{ocdtCd}))
+		   and   ((nvl(#{ocfmCd},'*') = '*') or (b.OCFM_CD = #{ocfmCd}))
+		   and   ((nvl(#{lnggCd},'*') = '*') or (b.LNGG_CD = #{lnggCd}))
+		   and   ((nvl(#{occlCd},'*') = '*') or (b.OCCL_CD = #{occlCd}))
+		   and   ((nvl(#{ocpsCd},'*') = '*') or (b.OCPS_CD = #{ocpsCd}))
+		   and   ((nvl(#{ocrsCd},'*') = '*') or (b.OCRS_CD = #{ocrsCd}))
+		   and   (
+		            (nvl(#{rtrmYn},'*') = '*') or (#{rtrmYn} = 'N') or ((#{rtrmYn} = 'Y') and (nvl(b.USER_STTS_CD, '9') <> '9'))
+		         )
+		   and   ((nvl(#{hsptCd},'*') = '*') or (b.HSPT_CD = #{hsptCd}))
+		   and   a.LGIN_ID = l.EMNO(+)
+		   and   l.WRKN_PART_CD = m.DPRT_CD(+)
+				]]>
+				   <if test='orglHsptCdStr != null and !"".equals(orglHsptCdStr)'>
+				<![CDATA[
+				   and  B.ORGL_HSPT_CD IN(${orglHsptCdStr})
+				]]>
+				   </if>
+				   <if test='hsptOcfmCdStr != null and !"".equals(hsptOcfmCdStr)'>
+				<![CDATA[
+				   and  B.HSPT_OCFM_CD IN(${hsptOcfmCdStr})
+				]]>
+				   </if>
+				   <if test='occlCdStr != null and !"".equals(occlCdStr)'>
+				<![CDATA[
+				   and  B.OCCL_CD IN(${occlCdStr})
+				]]>
+				   </if>
+				   <if test='ocrsCdStr != null and !"".equals(ocrsCdStr)'>
+				<![CDATA[
+				   and  B.OCRS_CD IN(${ocrsCdStr})
+				]]>
+				   </if>
+				<![CDATA[
+				   and   n.COMN_GRP_CD(+) = 'CCC_009'
+				   and   b.ORGL_HSPT_CD   = n.COMN_DTLS_CD(+)
+				   and   p.COMN_GRP_CD(+) = 'CCC_009'
+				   and   b.HSPT_CD        = P.COMN_DTLS_CD(+)
+		 order 
+		    by   A.USER_ID asc, MNSB_YN desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocdtNm" column="OCDT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="rtrmYn" column="RTRM_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listEmrCpoeLginUsrInqr */
+		        <![CDATA[
+		           select  /*+ ccd_useramt_l09$S01_EMR/CPOE 로그인 사용자 조회 */
+		                   TA.LGIN_ID as LGIN_ID
+		                 , TA.USER_NM as USER_NM
+		                 , TA.USER_ENSN_NM as USER_ENSN_NM
+		                 , TA.BTDT as BTDT
+		                 , TA.GEND_CD as GEND_CD
+		                 , TA.CLNO as CLNO
+		                 , TA.EXTS_TLNO as EXTS_TLNO
+		                 , TA.PDA_NO as PDA_NO
+		                 , TA.EMAIL_ID as EMAIL_ID
+		                 , TA.EP_ID as EP_ID
+		                 , TA.USER_LCNS_NO as USER_LCNS_NO
+		                 , TA.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO
+		                 , TA.USER_SPCZ_DRLC_ACQS_YMD as USER_SPCZ_DRLC_ACQS_YMD
+		                 , ta.TRNN_STRT_YMD as TRNN_STRT_YMD
+		                 , ta.TRNN_FNSH_YMD as TRNN_FNSH_YMD
+		                 , ta.RMRK_CTN as RMRK_CTN
+		                 , ta.USER_STTS_CD as USER_STTS_CD
+		                 , ta.OCDT_CD as OCDT_CD
+		                 , ta.OCDT_NM as OCDT_NM
+		                 , ta.OCFM_CD as OCFM_CD
+		                 , ta.OCFM_NM as OCFM_NM
+		                 , ta.RTRM_YN as RTRM_YN
+		           from   (
+		                   select  a.LGIN_ID
+		                         , a.USER_NM
+		                         , a.USER_ENSN_NM
+		                         , to_char(a.BTDT, 'YYYY-MM-DD') as BTDT
+		                         , a.GEND_CD
+		                         , a.CLNO
+		                            --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		                            --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+		    					,   nvl (   substrb (   a.exts_tlno ,   -4  )   ,   a.exts_tlno )   as  exts_tlno
+		                         , a.PDA_NO
+		                         , a.EMAIL_ID
+		                         , a.EP_ID
+		                         , a.USER_LCNS_NO
+		                         , a.USER_SPCZ_DRLC_NO
+		                         , to_char(a.USER_SPCZ_DRLC_ACQS_YMD, 'YYYY-MM-DD') as USER_SPCZ_DRLC_ACQS_YMD
+		                         , to_char(a.TRNN_STRT_YMD, 'YYYY-MM-DD') as TRNN_STRT_YMD
+		                         , to_char(a.TRNN_FNSH_YMD, 'YYYY-MM-DD') as TRNN_FNSH_YMD
+		                         , a.RMRK_CTN
+		                         , a.USER_STTS_CD
+		                         , a.OCDT_CD
+		                         , c.DETL_CD_NM as OCDT_NM
+		                         , a.OCFM_CD
+		                         , d.DETL_CD_NM as OCFM_NM
+		                         , a.RTRM_YN
+		                  from    CCUSERAMV a
+		                        , CCUSRDPHT b
+		                        , CCCMCDDMT c
+		                        , CCCMCDDMT d
+		                  where   a.LGIN_ID = b.LGIN_ID(+)
+		                    and   c.COMN_GRP_CD(+) = 'GP009'
+		                    and   a.OCDT_CD        = C.COMN_DTLS_CD(+)
+		                    and   d.COMN_GRP_CD(+) = 'GP170'
+		                    and   a.OCFM_CD        = d.COMN_DTLS_CD(+)
+		                    and   ((nvl(#{userNm}, '*') = '*') or
+		                           (a.LGIN_ID like #{userNm} || '%') or
+		                           (a.USER_NM like '%' || #{userNm} || '%')
+		                          )
+		                    and   ((nvl(#{mdcrDprtCd}, '*') = '*') or
+		                           (b.MDCR_DPRT_CD =  #{mdcrDprtCd} )
+		                          )
+		                    and   ((nvl(#{userSttsCd}, '*') = '*') or
+		                            (a.USER_STTS_CD <> #{userSttsCd})
+		                           )
+		                    and   ((nvl(#{ocfmCd}, '*') = '*') or (a.OCFM_CD = #{ocfmCd}))
+		                    and   ((nvl(#{excfCd}, '*') = '*') or
+		                           (a.LGIN_ID in ( select  LGIN_ID
+		                                           from    CCUSRDPHT
+		                                           where   EXCF_CD = #{excfCd})))
+		             ) ta
+		           group by ta.LGIN_ID
+		                  , ta.USER_NM
+		                  , ta.USER_ENSN_NM
+		                  , ta.BTDT
+		                  , ta.GEND_CD
+		                  , ta.CLNO
+		                  , ta.EXTS_TLNO
+		                  , ta.PDA_NO
+		                  , ta.EMAIL_ID
+		                  , ta.EP_ID
+		                  , ta.USER_LCNS_NO
+		                  , ta.USER_SPCZ_DRLC_NO
+		                  , ta.USER_SPCZ_DRLC_ACQS_YMD
+		                  , ta.TRNN_STRT_YMD
+		                  , ta.TRNN_FNSH_YMD
+		                  , ta.RMRK_CTN
+		                  , ta.USER_STTS_CD
+		                  , ta.OCDT_CD
+		                  , ta.OCDT_NM
+		                  , ta.OCFM_CD
+		                  , ta.OCFM_NM
+		                  , ta.RTRM_YN
+		           order by ta.LGIN_ID
+		            ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="crntPwd" column="CRNT_PWD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="pwdMdfcDt" column="PWD_MDFC_DT"/>
+		<result property="crntCnctDt" column="CRNT_CNCT_DT"/>
+		<result property="crntCnctIp" column="CRNT_CNCT_IP"/>
+		<result property="lastCnctDt" column="LAST_CNCT_DT"/>
+		<result property="lastCnctIp" column="LAST_CNCT_IP"/>
+		<result property="userFnshYn" column="USER_FNSH_YN"/>
+		<result property="cnctAtmpNtm" column="CNCT_ATMP_NTM"/>
+		<result property="masterIp" column="MASTER_IP"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser () 
+        Description :                                           OCS 사용자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOCSUser */
+		select  /*+ csd_useramt_s03$S01_OCS 사용자 조회 */
+		            decode(CRNT_PWD, #{crntPwd}, 'true', 'false') AS "AFI_RTUR_VL",
+		            USER_NM,
+		            CRNT_PWD,
+		    		to_char(APST_YMD, 'YYYYMMDD') AS "APST_YMD",
+		    		to_char(APFN_YMD, 'YYYYMMDD') AS "APFN_YMD",
+		    		USER_STTS_CD,
+		    		to_char(PWD_MDFC_DT, 'YYYYMMDDHH24MISS') AS "PWD_MDFC_DT",
+		    		to_char(CRNT_CNCT_DT, 'YYYYMMDDHH24MISS') AS "CRNT_CNCT_DT",
+		    		CRNT_CNCT_IP,
+		    		to_char(LAST_CNCT_DT, 'YYYYMMDDHH24MISS') AS "LAST_CNCT_DT",
+		    		LAST_CNCT_IP,
+		    		decode(sign(sysdate - nvl(APFN_YMD, sysdate + 1)), 1, 'Y', 'N') AS "USER_FNSH_YN",
+		    		CNCT_ATMP_NTM,
+		           (select COMN_ENVR_STUP_ITEM_CHRC_VL
+						      from CCENSTIMT
+						     where COMN_ENVR_STUP_ITEM_CHRC_VL = #{gvUserIp}
+		                       and COMN_ENVR_STUP_GRP_CD = 'CSU_LOGIN_MASTER'
+		                       and ROWNUM = 1) AS "MASTER_IP"
+		      from  CCUSERAMT
+		     where  LGIN_ID = #{lginId}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="afiRturYn" column="AFI_RTUR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr (EMRCPOE 로그인 사용자 관리자 조회) 
+        Description :                                           EMRCPOE 로그인 사용자 관리자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrMngrInqr */
+						   decode(count(*), 0 ,'N', 'Y') as AFI_RTUR_YN
+				   from
+						   CCUSRDPHT a,
+						   CCENSTIMT b
+				   where b.COMN_ENVR_STUP_GRP_CD = 'CSU_UPDATE_AUTH'
+					 and b.COMN_ENVR_STUP_ITEM_CD = (
+													  select LGIN_ID
+														from CCUSRDPHT
+													   where USER_ID = #{gvLginId}
+														 and APST_YMD < sysdate
+														 and APFN_YMD > sysdate
+													 )
+					  and a.APST_YMD < sysdate
+					  and a.APFN_YMD > sysdate
+					  and b.APST_YMD < sysdate
+					  and b.APFN_YMD > sysdate
+					  and a.LGIN_ID = B.COMN_ENVR_STUP_ITEM_CD
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUserHxRgst (사용자 이력관리 등록) 
+        Description :                                           사용자 이력관리 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUserHxRgst"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		<![CDATA[
+		   insert /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUserHxRgst */
+		   into    CCUSERDHT( MDFC_HX_INPT_DT
+								   , MDFC_HX_TN
+								   , WODV_VL
+								   , LGIN_ID
+								   , USER_NM
+								   , USER_ENSN_NM
+								   , BTDT
+								   , GEND_CD
+								   , APST_YMD
+								   , APFN_YMD
+								   , USER_STTS_CD
+								   , CNCT_ATMP_NTM
+								   , LAST_CNCT_DT
+								   , LAST_CNCT_IP
+								   , CRNT_CNCT_DT
+								   , CRNT_CNCT_IP
+								   , CRNT_PWD
+								   , PWD_MDFC_DT
+								   , CLNO
+								   , EXTS_TLNO
+								   , PDA_NO
+								   , EMAIL_ID
+								   , EP_ID
+								   , USER_LCNS_NO
+								   , USER_SPCZ_DRLC_NO
+								   , USER_SPCZ_DRLC_ACQS_YMD
+								   , TRNN_STRT_YMD
+								   , TRNN_FNSH_YMD
+								   , RMRK_CTN
+								   , OCDT_CD
+								   , OCFM_CD
+								   , LNGG_CD
+								   , ID_NO
+								   , OCCL_CD
+								   , OCPS_CD
+								   , OCRS_CD
+								   , CRTF_ATHR_USE_YN
+								   , TMPR_PWD_YN
+								   , EMNO
+								   , FRST_RGSR_ID
+								   , FRST_RGST_IP
+								   , FRST_RGST_DT
+								   , FRST_RGST_CLNT_PRGM_ID
+								   , FRST_RGST_SRVR_PRGM_ID
+								   , LAST_UPDR_ID
+								   , LAST_UPDT_IP
+								   , LAST_UPDT_DT
+								   , LAST_UPDT_CLNT_PRGM_ID
+								   , LAST_UPDT_SRVR_PRGM_ID
+								   )
+		   select   to_date(to_char(sysdate, 'YYYYMMDDHH24MISS'), 'YYYYMMDDHH24MISS') as MDFC_HX_INPT_DT
+				  , CCUSERDHTQ.nextval
+				  , #{wodvVl}
+				  , LGIN_ID
+				  , USER_NM
+				  , USER_ENSN_NM
+				  , BTDT
+				  , GEND_CD
+				  , APST_YMD
+				  , APFN_YMD
+				  , decode(#{wodvVl}, 'D', '9', USER_STTS_CD)
+				  , CNCT_ATMP_NTM
+				  , LAST_CNCT_DT
+				  , LAST_CNCT_IP
+				  , CRNT_CNCT_DT
+				  , CRNT_CNCT_IP
+				  , CRNT_PWD
+				  , PWD_MDFC_DT
+				  , CLNO
+		            --  2022.02.17. KHS.    내선번호 exts_tlno가 ccuseramt에는 13자리로 늘려놓고 CCUSERDHT에는 4자리로 내비뒀네.. ㅡㅡ;;
+		            --                      내선번호에 4자리 이상 입력되어있는 경우 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+		        ,   nvl	(	substrb (   exts_tlno   ,   -4  )	,	exts_tlno	)
+				  , PDA_NO
+				  , EMAIL_ID
+				  , EP_ID
+				  , USER_LCNS_NO
+				  , USER_SPCZ_DRLC_NO
+				  , USER_SPCZ_DRLC_ACQS_YMD
+				  , TRNN_STRT_YMD
+				  , TRNN_FNSH_YMD
+				  , RMRK_CTN
+				  , OCDT_CD
+				  , OCFM_CD
+				  , LNGG_CD
+				  , ID_NO
+				  , OCCL_CD
+				  , OCPS_CD
+				  , OCRS_CD
+				  , CRTF_ATHR_USE_YN
+				  , TMPR_PWD_YN
+				  , EMNO
+				  , FRST_RGSR_ID
+				  , FRST_RGST_IP
+				  , FRST_RGST_DT
+				  , FRST_RGST_CLNT_PRGM_ID
+				  , FRST_RGST_SRVR_PRGM_ID
+				  , LAST_UPDR_ID
+				  , LAST_UPDT_IP
+				  , LAST_UPDT_DT
+				  , LAST_UPDT_CLNT_PRGM_ID
+				  , LAST_UPDT_SRVR_PRGM_ID
+		   from     CCUSERAMT a
+		   where    a.LGIN_ID = #{lginId}
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertPwdMdfcHx (패스워드변경이력 등록) 
+        Description :                                           패스워드변경이력 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertPwdMdfcHx"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		<![CDATA[
+		   insert /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertPwdMdfcHx */
+		   into    CSPASSHHT(LGIN_ID
+								  , PWD_MDFC_DT
+								  , PWD
+								  , FRST_RGSR_ID
+								  , FRST_RGST_IP
+								  , FRST_RGST_DT
+								  , FRST_RGST_CLNT_PRGM_ID
+								  , FRST_RGST_SRVR_PRGM_ID
+								  , LAST_UPDR_ID
+								  , LAST_UPDT_IP
+								  , LAST_UPDT_DT
+								  , LAST_UPDT_CLNT_PRGM_ID
+								  , LAST_UPDT_SRVR_PRGM_ID
+								   )
+							 values(#{lginId}
+								  , sysdate
+								  , #{pwd}
+								  , #{gvLginId}
+								  , #{gvUserIp}
+								  , sysdate
+								  , #{gvClntPrgmId}
+								  , #{gvSrvrPrgmId}
+								  , #{gvLginId}
+								  , #{gvUserIp}
+								  , sysdate
+								  , #{gvClntPrgmId}
+								  , #{gvSrvrPrgmId}
+								   )
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrOcsLginUserPwd (EMR/OCS 로그인 사용자 패스워드 변경) 
+        Description :                                           EMR/OCS 로그인 사용자 패스워드 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrOcsLginUserPwd"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrOcsLginUserPwd */
+				   CCUSERAMT
+		   set
+				   CRNT_PWD          = #{pwd}
+				 , USER_STTS_CD      = '1'
+				 , CNCT_ATMP_NTM     = 0
+				 , TMPR_PWD_YN       = null
+				 , PWD_MDFC_DT       = sysdate
+				 , LAST_UPDR_ID      = #{gvLginId}
+				 , LAST_UPDT_IP      = #{gvUserIp}
+				 , LAST_UPDT_DT      = sysdate
+				 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		   where
+				   LGIN_ID           = #{lginId}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrCpoeLginUser (EMR/CPOE 로그인 사용자 변경) 
+        Description :                                           EMR/CPOE 로그인 사용자 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrCpoeLginUser"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			<![CDATA[
+		 UPDATE  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateEmrCpoeLginUser */
+					   CCUSERAMT
+			   SET   CLNO = nvl(#{clno}, CLNO)
+		        --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		        --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 입력하도록 수정
+					 , EXTS_TLNO             =	nvl	(	substrb	(	#{extsTlno}	,	-4	)	,	#{extsTlno}	)
+					 , PDA_NO                = #{pdaNo}
+					 , EMAIL_ID = nvl(#{emailId}, EMAIL_ID)
+					 , TRNN_STRT_YMD         = to_date(#{trnnStrtYmd}, 'yyyymmdd')
+					 , TRNN_FNSH_YMD         = to_date(#{trnnFnshYmd}, 'yyyymmdd')
+					 , RMRK_CTN              = #{rmrkCtn}
+					 , APST_YMD              = to_date(#{apstYmd}, 'yyyymmdd')
+					 , APFN_YMD              = to_date(#{apfnYmd}, 'yyyymmdd')
+					 , USER_STTS_CD          = #{userSttsCd}
+					 , LNGG_CD               = #{lnggCd}
+					 , CNCT_ATMP_NTM         = #{cnctAtmpNtm}
+		             , OCFM_CD                 = #{ocfmCd}
+		             , OCFM_DETL_CD          = #{ocfmDetlCd}
+		             , HSPT_CD                 = #{hsptCd}
+					 , LAST_UPDR_ID          = #{gvLginId}
+					 , LAST_UPDT_IP          = #{gvUserIp}
+					 , LAST_UPDT_DT          = sysdate
+					 , LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+					 , LAST_UPDT_SRVR_PRGM_ID     = #{gvSrvrPrgmId}
+		WHERE   LGIN_ID               = #{lginId}
+				]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="clno" column="CLNO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL_3"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL_4"/>
+		<result property="afiRturVl5" column="AFI_RTUR_VL_5"/>
+		<result property="afiRturVl6" column="AFI_RTUR_VL_6"/>
+		<result property="afiRturVl7" column="AFI_RTUR_VL_7"/>
+		<result property="tmprPwdYn" column="TMPR_PWD_YN"/>
+		<result property="afiRturVl8" column="AFI_RTUR_VL_8"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck (사용자 전화번호 조회) 
+        Description :                                           사용자 전화번호 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTelNoForPwdCeck */
+		<![CDATA[
+						   select  /*+ ccd_useramt_s16$S01_사용자 전화번호 조회(패스워드 체크용) */
+								   a.CLNO as CLNO,
+								   substr(replace(a.CLNO,'-',''), 0, 3) as AFI_RTUR_VL_1,
+								   substr(replace(a.CLNO,'-',''), 4, 4) as AFI_RTUR_VL_2,
+								   substr(replace(a.CLNO,'-',''), 8, 4) as AFI_RTUR_VL_3,
+								   to_char(a.BTDT, 'yyyymmdd') as AFI_RTUR_VL_4,
+								   substr(to_char(a.BTDT, 'yyyymmdd'), 3,6) as AFI_RTUR_VL_5,
+								   substr(to_char(a.BTDT, 'yyyymmdd'), 3,4) as AFI_RTUR_VL_6,
+								   substr(to_char(a.BTDT, 'yyyymmdd'), 5,4) as AFI_RTUR_VL_7,
+								   b.TMPR_PWD_YN as TMPR_PWD_YN,
+								   c.EMPL_FRRN||c.EMPL_BRRN as AFI_RTUR_VL_8
+							 from
+								   CCUSERAMV a,
+								   CCUSERAMT b,
+								   HZUSERMMT c
+							where
+								   a.LGIN_ID = #{gvLginId}
+							   and a.LGIN_ID = b.LGIN_ID
+							   and a.LGIN_ID = c.EMNO
+							]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="pwdMdfcDt" column="PWD_MDFC_DT"/>
+		<result property="pwd" column="PWD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth (1개월 이내 사용한 비밀번호 리스트) 
+        Description :                                           1개월 이내 사용한 비밀번호 리스트
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listPwdListInaMonth */
+		 select  /*+ ccd_useramt_l20$S01_1개월 이내 사용한 비밀번호 리스트 */
+								   LGIN_ID as LGIN_ID,
+								   to_char(PWD_MDFC_DT, 'yyyymmddhh24miss') as PWD_MDFC_DT,
+								   PWD as PWD
+							from
+								  CSPASSHHT
+						   where
+								  LGIN_ID = #{gvLginId}
+							 and  PWD_MDFC_DT &gt; (sysdate-30)
+							 and  FRST_RGST_CLNT_PRGM_ID like '%CMA001F4'
+						order by
+								  PWD_MDFC_DT desc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="rmrkCtn1" column="RMRK_CTN1"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocdtNm" column="OCDT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="rtrmYn" column="RTRM_YN"/>
+		<result property="emno" column="EMNO"/>
+		<result property="isSameHspt" column="IS_SAME_HSPT"/>
+		<result property="hsptCdNm" column="HSPT_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr (EMR/CPOE 로그인 사용자 조회) 
+        Description :                                           EMR/CPOE 로그인 사용자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		 select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-pagingEmrCpoeLginUsrInqr */
+		        RNUM
+		      , LGIN_ID
+		      , USER_NM
+		      , USER_ENSN_NM
+		      , BTDT
+		      , GEND_CD
+		      , CLNO
+		      , EXTS_TLNO
+		      , PDA_NO
+		      , EMAIL_ID
+		      , EP_ID
+		      , USER_LCNS_NO
+		      , USER_SPCZ_DRLC_NO
+		      , USER_SPCZ_DRLC_ACQS_YMD
+		      , TRNN_STRT_YMD
+		      , TRNN_FNSH_YMD
+		      , RMRK_CTN
+			  , RMRK_CTN as RMRK_CTN1		/* vo 얻기위해서*/
+		      , USER_STTS_CD
+		      , OCDT_CD
+		      , OCDT_NM
+		      , OCFM_CD
+		      , OCFM_NM
+		      , RTRM_YN
+			  , EMNO
+		      , '' AS IS_SAME_HSPT
+		      , HSPT_CD_NM
+		 from( select ROWNUM as RNUM
+		             , S.*
+		       from (select  /*+ ccd_useramt_l09$S01_EMR/CPOE 로그인 사용자 조회 */
+		                   TA.LGIN_ID as LGIN_ID
+		                 , TA.USER_NM as USER_NM
+		                 , TA.USER_ENSN_NM as USER_ENSN_NM
+		                 , TA.BTDT as BTDT
+		                 , TA.GEND_CD as GEND_CD
+		                 , TA.CLNO as CLNO
+		                 , TA.EXTS_TLNO as EXTS_TLNO
+		                 , TA.PDA_NO as PDA_NO
+		                 , TA.EMAIL_ID as EMAIL_ID
+		                 , TA.EP_ID as EP_ID
+		                 , TA.USER_LCNS_NO as USER_LCNS_NO
+		                 , TA.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO
+		                 , TA.USER_SPCZ_DRLC_ACQS_YMD as USER_SPCZ_DRLC_ACQS_YMD
+		                 , ta.TRNN_STRT_YMD as TRNN_STRT_YMD
+		                 , ta.TRNN_FNSH_YMD as TRNN_FNSH_YMD
+		                 , ta.RMRK_CTN as RMRK_CTN
+		                 , ta.USER_STTS_CD as USER_STTS_CD
+		                 , ta.OCDT_CD as OCDT_CD
+		                 , ta.OCDT_NM as OCDT_NM
+		                 , ta.OCFM_CD as OCFM_CD
+		                 , ta.OCFM_NM as OCFM_NM
+		                 , ta.RTRM_YN as RTRM_YN
+						 , ta.EMNO
+						 , ta.HSPT_CD_NM
+		           from   (
+		                   select  a.LGIN_ID
+		                         , a.USER_NM
+		                         , a.USER_ENSN_NM
+		                         , to_char(a.BTDT, 'YYYY-MM-DD') as BTDT
+		                         , a.GEND_CD
+		                         , a.CLNO
+		                            --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		                            --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+		                        ,   nvl	(	substrb (   a.exts_tlno ,   -4  )	,	a.exts_tlno	)	as  exts_tlno                         
+		                         , a.PDA_NO
+		                         , a.EMAIL_ID
+		                         , a.EP_ID
+		                         , a.USER_LCNS_NO
+		                         , a.USER_SPCZ_DRLC_NO
+		                         , to_char(a.USER_SPCZ_DRLC_ACQS_YMD, 'YYYY-MM-DD') as USER_SPCZ_DRLC_ACQS_YMD
+		                         , to_char(a.TRNN_STRT_YMD, 'YYYY-MM-DD') as TRNN_STRT_YMD
+		                         , to_char(a.TRNN_FNSH_YMD, 'YYYY-MM-DD') as TRNN_FNSH_YMD
+		                         , a.RMRK_CTN
+		                         , a.USER_STTS_CD
+		                         , a.OCDT_CD
+		                         , c.DETL_CD_NM as OCDT_NM
+		                         , a.OCFM_CD
+		                         , d.DETL_CD_NM as OCFM_NM
+		                         , CASE a.USER_STTS_CD
+		                                 WHEN '9' THEN 'Y'
+		                                 ELSE 'N'
+		                               END AS "RTRM_YN"
+								 , e.EMNO
+								 , f.DETL_CD_NM as HSPT_CD_NM		
+		                  from    CCUSERAMT a
+		                        , CCUSRDPHT b
+		                        , CCCMCDDMT c
+		                        , CCCMCDDMT d
+								, HZUSERMMT e
+				                , CCCMCDDMT f
+		                  where   a.LGIN_ID = b.LGIN_ID(+)
+		                    and   c.COMN_GRP_CD(+) = 'GP009'
+		                    and   a.OCDT_CD        = C.COMN_DTLS_CD(+)
+		                    and   d.COMN_GRP_CD(+) = 'GP170'
+				            and   f.COMN_GRP_CD(+) = 'CCC_009'
+		                    and   a.OCFM_CD        = d.COMN_DTLS_CD(+)
+							and   a.LGIN_ID        = e.EMNO(+)
+						    and   a.hspt_cd        = f.COMN_DTLS_CD(+)
+		                    and   ((nvl(#{userNm}, '*') = '*') or
+		                           (a.LGIN_ID like #{userNm} || '%') or
+		                           (a.USER_NM like '%' || #{userNm} || '%')
+		                          )
+		                    and   ((nvl(#{mdcrDprtCd}, '*') = '*') or
+		                           (b.MDCR_DPRT_CD =  #{mdcrDprtCd} )
+		                          )
+		                    and   ((nvl(#{userSttsCd}, '*') = '*') or
+		                            (a.USER_STTS_CD <> #{userSttsCd})
+		                           )
+		                    and   ((nvl(#{ocfmCd}, '*') = '*') or (a.OCFM_CD = #{ocfmCd}))
+		                    and   ((nvl(#{excfCd}, '*') = '*') or
+		                           (a.LGIN_ID in ( select  LGIN_ID
+		                                           from    CCUSRDPHT
+		                                           where   EXCF_CD = #{excfCd})))
+		             ) ta
+		           group by ta.LGIN_ID
+		                  , ta.USER_NM
+		                  , ta.USER_ENSN_NM
+		                  , ta.BTDT
+		                  , ta.GEND_CD
+		                  , ta.CLNO
+		                  , ta.EXTS_TLNO
+		                  , ta.PDA_NO
+		                  , ta.EMAIL_ID
+		                  , ta.EP_ID
+		                  , ta.USER_LCNS_NO
+		                  , ta.USER_SPCZ_DRLC_NO
+		                  , ta.USER_SPCZ_DRLC_ACQS_YMD
+		                  , ta.TRNN_STRT_YMD
+		                  , ta.TRNN_FNSH_YMD
+		                  , ta.RMRK_CTN
+		                  , ta.USER_STTS_CD
+		                  , ta.OCDT_CD
+		                  , ta.OCDT_NM
+		                  , ta.OCFM_CD
+		                  , ta.OCFM_NM
+		                  , ta.RTRM_YN
+						  , ta.EMNO
+						  , ta.HSPT_CD_NM
+		           order by ta.LGIN_ID) S)
+		     where RNUM > cast(coalesce (#{nextKeyValue}, '0') as number)
+		       and RNUM <= cast(coalesce (#{nextKeyValue}, '0') as number) + #{pageSize}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal-result" useCache="true" flushCache="false">
+		<![CDATA[
+		  select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrTotal */
+		           COUNT(*) as TOTAL_DATA_COUNT
+		    from ( select *
+				    from  (
+						   select  a.LGIN_ID
+								 , a.USER_NM
+								 , a.USER_ENSN_NM
+								 , to_char(a.BTDT, 'YYYY-MM-DD') as BTDT
+								 , a.GEND_CD
+								 , a.CLNO
+								 , a.EXTS_TLNO
+								 , a.PDA_NO
+								 , a.EMAIL_ID
+								 , a.EP_ID
+								 , a.USER_LCNS_NO
+								 , a.USER_SPCZ_DRLC_NO
+								 , to_char(a.USER_SPCZ_DRLC_ACQS_YMD, 'YYYY-MM-DD') as USER_SPCZ_DRLC_ACQS_YMD
+								 , to_char(a.TRNN_STRT_YMD, 'YYYY-MM-DD') as TRNN_STRT_YMD
+								 , to_char(a.TRNN_FNSH_YMD, 'YYYY-MM-DD') as TRNN_FNSH_YMD
+								 , a.RMRK_CTN
+								 , a.USER_STTS_CD
+								 , a.OCDT_CD
+								 , c.DETL_CD_NM as OCDT_NM
+								 , a.OCFM_CD
+								 , d.DETL_CD_NM as OCFM_NM
+								 , a.RTRM_YN
+						  from    CCUSERAMV a
+								, CCUSRDPHT b
+								, CCCMCDDMT c
+								, CCCMCDDMT d
+						  where   a.LGIN_ID = b.LGIN_ID(+)
+							and   c.COMN_GRP_CD(+) = 'GP009'
+							and   a.OCDT_CD        = C.COMN_DTLS_CD(+)
+							and   d.COMN_GRP_CD(+) = 'GP170'
+							and   a.OCFM_CD        = d.COMN_DTLS_CD(+)
+							and   ((nvl(#{userNm}, '*') = '*') or
+								   (a.LGIN_ID like #{userNm} || '%') or
+								   (a.USER_NM like '%' || #{userNm} || '%')
+								  )
+							and   ((nvl(#{mdcrDprtCd}, '*') = '*') or
+								   (b.MDCR_DPRT_CD =  #{mdcrDprtCd} )
+								  )
+							and   ((nvl(#{userSttsCd}, '*') = '*') or
+									(a.USER_STTS_CD <> #{userSttsCd})
+								   )
+							and   ((nvl(#{ocfmCd}, '*') = '*') or (a.OCFM_CD = #{ocfmCd}))
+							and   ((nvl(#{excfCd}, '*') = '*') or
+								   (a.LGIN_ID in ( select  LGIN_ID
+												   from    CCUSRDPHT
+												   where   EXCF_CD = #{excfCd})))
+					 ) ta
+				   group by ta.LGIN_ID
+						  , ta.USER_NM
+						  , ta.USER_ENSN_NM
+						  , ta.BTDT
+						  , ta.GEND_CD
+						  , ta.CLNO
+						  , ta.EXTS_TLNO
+						  , ta.PDA_NO
+						  , ta.EMAIL_ID
+						  , ta.EP_ID
+						  , ta.USER_LCNS_NO
+						  , ta.USER_SPCZ_DRLC_NO
+						  , ta.USER_SPCZ_DRLC_ACQS_YMD
+						  , ta.TRNN_STRT_YMD
+						  , ta.TRNN_FNSH_YMD
+						  , ta.RMRK_CTN
+						  , ta.USER_STTS_CD
+						  , ta.OCDT_CD
+						  , ta.OCDT_NM
+						  , ta.OCFM_CD
+						  , ta.OCFM_NM
+						  , ta.RTRM_YN
+				   order by ta.LGIN_ID
+		)
+					]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="emitId" column="EMIT_ID"/>
+		<result property="emitNm" column="EMIT_NM"/>
+		<result property="exmnMesgCtn" column="EXMN_MESG_CTN"/>
+		<result property="exmnCeckKindCd" column="EXMN_CECK_KIND_CD"/>
+		<result property="exmnBaseVl" column="EXMN_BASE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn (유효성검사) 
+        Description :                                           유효성검사
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-listValdExmn */
+		select  /*+ csd_validmt_l01$S01_유효성 검사 List 조회 DAM */
+		    		EMIT_ID,
+		    		EMIT_NM,
+		    		EXMN_MESG_CTN,
+		    		EXMN_CECK_KIND_CD,
+		    		EXMN_BASE_VL
+		      from
+		      	  	CSVALIDMT
+		     where
+		     	 	EXMN_TMNG_CD = #{exmnTmngCd}  /* login 수행절차 */
+		       and  APLY_YN in ('M', 'Y')                            /* Mandatory, Yes */
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30 (패스워드 변경이력 - 카운트(30일)) 
+        Description :                                           패스워드 변경이력 - 카운트(30일)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore30 */
+		select  /*+ ccd_useramt_s10$S01_비밀번호 이력 조회 - 30 일 전 까지의 변경 이력 카운트 */
+		            to_char( count(*) ) AS "RTUR_VL"
+		      from  CSPASSHHT
+		     where  LGIN_ID     = #{lginId}
+			   and  PWD_MDFC_DT &gt; (sysdate-30)
+			   and  PWD = #{crntPwd2}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1 (패스워드 변경이력 - 카운트(1일)) 
+        Description :                                           패스워드 변경이력 - 카운트(1일)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxBefore1 */
+		select  /*+ ccd_useramt_s11$S01_비밀번호 이력 조회 - 1일(24시간) 전 까지의 변경 이력 카운트 */
+		            to_char( count(*) ) AS "RTUR_VL"
+		      from  CSPASSHHT
+		     where  LGIN_ID     = #{lginId}
+			   and  PWD_MDFC_DT &gt; (sysdate-1)
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updatePwd (비밀번호변경) 
+        Description :                                           비밀번호변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updatePwd"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updatePwd */
+		update  /*+ ccd_useramt_u09$I01_비밀번호변경 */
+		            CCUSERAMT
+		       set  CRNT_PWD = #{crntPwd2},
+		            USER_STTS_CD = '0',
+		            CNCT_ATMP_NTM = '0',
+		            TMPR_PWD_YN = '',
+		            PWD_MDFC_DT = sysdate,
+		            LAST_UPDR_ID           = #{gvUserId},
+		            LAST_UPDT_IP           = #{gvUserIp},
+		            LAST_UPDT_DT           =  sysdate,
+		            LAST_UPDT_CLNT_PRGM_ID      = #{gvClntPrgmId},
+		            LAST_UPDT_SRVR_PRGM_ID      = #{gvSrvrPrgmId}
+		     where  LGIN_ID  = #{lginId}
+		       and  CRNT_PWD = #{crntPwd}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="natnCd" column="NATN_CD"/>
+		<result property="lnggCd" column="LNGG_CD"/>
+		<result property="idNo" column="ID_NO"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="crtfAthrUseYn" column="CRTF_ATHR_USE_YN"/>
+		<result property="ocfmDetlCd" column="OCFM_DETL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId (OCS사용자 조회 (CccGetOcsUserByLginIdCSID)) 
+        Description :                                           OCS사용자 조회 (CccGetOcsUserByLginIdCSID)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneOcsUserByLginId */
+		select LGIN_ID as LGIN_ID
+			 , USER_NM as USER_NM
+			 , USER_ENSN_NM as USER_ENSN_NM
+			 , to_char(BTDT, 'YYYYMMDD') as BTDT
+			 , GEND_CD as GEND_CD
+			 , USER_STTS_CD as USER_STTS_CD
+			 , CLNO as CLNO
+			 --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+			 --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+			 ,   nvl	(	substrb (   exts_tlno   ,   -4  )	,	exts_tlno	)	as  exts_tlno				 
+			 , PDA_NO as PDA_NO
+			 , EMAIL_ID as EMAIL_ID
+			 , EP_ID as EP_ID
+			 , USER_LCNS_NO as USER_LCNS_NO
+			 , USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO
+			 , to_char(USER_SPCZ_DRLC_ACQS_YMD, 'YYYYMMDD') as USER_SPCZ_DRLC_ACQS_YMD
+			 , to_char(TRNN_STRT_YMD, 'YYYYMMDD') as TRNN_STRT_YMD
+			 , to_char(TRNN_FNSH_YMD, 'YYYYMMDD') as TRNN_FNSH_YMD
+			 , RMRK_CTN as RMRK_CTN
+			 , OCDT_CD as OCDT_CD
+			 , OCFM_CD as OCFM_CD
+			 , '' as NATN_CD
+			 , LNGG_CD as LNGG_CD
+			 , ID_NO as ID_NO
+			 , OCCL_CD as OCCL_CD
+			 , OCPS_CD as OCPS_CD
+			 , OCRS_CD as OCRS_CD
+			 , nvl(CRTF_ATHR_USE_YN, 'N') as CRTF_ATHR_USE_YN
+			 , OCFM_DETL_CD
+		  from CCUSERAMT
+		 where LGIN_ID = #{lginId}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUsrdPhtUsrPht (CCUSRDPHT 데이터 입력) 
+        Description :                                           CCUSRDPHT 데이터 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUsrdPhtUsrPht"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUsrdPhtUsrPht */
+			INSERT
+			  INTO CCUSRDPHT
+			       (
+			         USER_ID
+		               , USER_NM
+		               , USER_ENSN_NM
+		               , LGIN_ID
+		               , MDCR_DPRT_CD
+		               , APFN_YMD
+		               , APST_YMD
+		               , MNSB_YN
+		               , EXCF_CD
+		               , MDCR_CLAS_CD
+		               , DTLS_EXCF_CD
+		               , RMRK_CTN
+		               , HRAF_PRAP_DPRT_CD
+		               , STST_DPRT_CD
+		               , INFT_DPRT_CD
+		               , FRST_RGSR_ID
+		               , FRST_RGST_IP
+		               , FRST_RGST_DT
+		               , FRST_RGST_CLNT_PRGM_ID
+		               , FRST_RGST_SRVR_PRGM_ID
+			       , LAST_UPDR_ID
+				   , LAST_UPDT_IP
+				   , LAST_UPDT_DT
+				   , LAST_UPDT_CLNT_PRGM_ID
+				   , LAST_UPDT_SRVR_PRGM_ID
+				   )
+			VALUES(
+					 #{userId}
+		               , #{userNm}
+		               , #{userEnsnNm}
+		               , #{lginId}
+		               , #{mdcrDprtCd}
+		               , DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD'), TO_DATE(#{apfnYmd}, 'YYYYMMDD')) 					/* 적용종료일자   */
+		           , DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD'), TO_DATE(#{apstYmd}, 'YYYYMMDD')) 	/* 적용시작일자   */
+		               , #{mnsbYn}
+		               , #{excfCd}
+		               , #{mdcrClasCd}
+		               , #{dtlsExcfCd}
+		               , #{rmrkCtn}
+		               , #{hrafPrapDprtCd}
+		               , #{ststDprtCd}
+		               , #{inftDprtCd}
+		               , #{gvUserId}
+				   , #{gvUserIp}
+				   , sysdate
+				   , #{gvClntPrgmId}
+				   , #{gvSrvrPrgmId}
+				   , #{gvUserId}
+				   , #{gvUserIp}
+				   , sysdate
+				   , #{gvClntPrgmId}
+				   , #{gvSrvrPrgmId}
+				   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUseramt (CCUSERAMT 데이터 입력) 
+        Description :                                           CCUSERAMT 데이터 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUseramt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertUseramt */
+			<![CDATA[
+				 INSERT
+				   INTO CCUSERAMT(
+				   				   LGIN_ID 	 				/* 로그인ID */
+								 , USER_NM  				/* 사용자명 */
+								 , USER_ENSN_NM 			/* 사용자영문명 */
+								 , BTDT 					/* 생년월일 */
+								 , GEND_CD 					/* 성별코드 */
+								 , APST_YMD 				/* 적용시작일자 */
+								 , APFN_YMD 				/* 적용종료일자 */
+								 , USER_STTS_CD 			/* 사용자상태코드 */
+								 , CNCT_ATMP_NTM 			/* 접속시도횟수 */
+								 , LAST_CNCT_DT  			/* 최종접속일시 */
+								 , LAST_CNCT_IP  			/* 최종접속IP */
+								 , CRNT_CNCT_DT  			/* 현재접속일시 */
+								 , CRNT_CNCT_IP  			/* 현재접속IP */
+								 , CRNT_PWD  				/* 현재패스워드 */
+								 , PWD_MDFC_DT 				/* 패스워드변경일시 */
+								 , CLNO  					/* 휴대전화번호 */
+								 , EXTS_TLNO  				/* 내선전화번호 */
+								 , PDA_NO  					/* PDA번호 */
+								 , EMAIL_ID  				/* 이메일ID */
+								 , EP_ID  					/* EP_ID */
+								 , USER_LCNS_NO  			/* 사용자면허번호 */
+								 , USER_SPCZ_DRLC_NO  		/* 사용자전문의사면허번호 */
+								 , USER_SPCZ_DRLC_ACQS_YMD  /* 사용자전문의사면허취득일자 */
+								 , TRNN_STRT_YMD  			/* 연수시작일자 */
+								 , TRNN_FNSH_YMD  			/* 연수종료일자 */
+								 , RMRK_CTN  				/* 비고내용 */
+								 , OCDT_CD 					/* 직무코드 */
+								 , OCFM_CD  				/* 직종코드 */
+								 , LNGG_CD  				/* 언어코드 */
+								 , ID_NO  					/* ID번호 */
+								 , OCCL_CD  				/* 직급코드 */
+								 , OCPS_CD  				/* 직위코드 */
+								 , OCRS_CD  				/* 직책코드 */
+								 , TMPR_PWD_YN  			/* 임시패스워드여부 */
+								 , EMNO  					/* 사원번호 */
+								 , FRST_RGSR_ID  			/* 최초등록자ID */
+								 , FRST_RGST_IP  			/* 최초등록IP */
+								 , FRST_RGST_DT  			/* 최초등록일시 */
+								 , FRST_RGST_CLNT_PRGM_ID  	/* 최초등록클라이언트프로그램ID */
+								 , FRST_RGST_SRVR_PRGM_ID  	/* 최초등록서버프로그램ID */
+								 , LAST_UPDR_ID  			/* 최종수정자ID */
+								 , LAST_UPDT_IP  			/* 최종수정IP */
+								 , LAST_UPDT_DT  			/* 최종수정일시 */
+								 , LAST_UPDT_CLNT_PRGM_ID  	/* 최종수정클라이언트프로그램ID */
+								 , LAST_UPDT_SRVR_PRGM_ID  	/* 최종수정서버프로그램ID */
+								 , NURS_LCNS_NO  			/* 간호사 면허번호 */
+								 , DNDP_LCNS_NO 			/* 치과 면허번호 */
+								 , SOCL_SCWR_LCNS_NO  		/* 사회복지사 면허번호 */
+			                     , OCFM_DETL_CD 			/* 직종상세코드 */
+			                     , HSPT_CD 					/* 병원코드 */
+			                     , HSPT_OCFM_CD 			/* 병원직종코드 */
+			                     , ORGL_HSPT_CD 			/* 원병원코드 */
+							     )
+				           VALUES(
+				                   #{lginId}  									/* 로그인ID */
+								 , #{userNm}  									/* 사용자명 */
+								 , #{userEnsnNm}  								/* 사용자영문명 */
+								 , TO_DATE(#{btdt}, 'YYYYMMDDHH24MISS')  		/* 생년월일 */
+								 , #{gendCd}  									/* 성별코드 */	
+								 , DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')
+		                                  , TO_DATE(#{apstYmd}, 'YYYYMMDD'))    /* 적용시작일자   */
+		         				 , DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD')
+		                                  , TO_DATE(#{apfnYmd}, 'YYYYMMDD'))    /* 적용종료일자   */
+								 , #{userSttsCd}  								/* 사용자상태코드 */
+								 , #{cnctAtmpNtm}  								/* 접속시도횟수 */
+								 , TO_DATE(#{lastCnctDt}, 'YYYYMMDDHH24MISS')  	/* 최종접속일시 */
+								 , #{lastCnctIp}  								/* 최종접속IP */
+								 , TO_DATE(#{crntCnctDt}, 'YYYYMMDDHH24MISS')  	/* 현재접속일시 */
+								 , #{crntCnctIp}  								/* 현재접속IP */
+								 , #{crntPwd}  									/* 현재패스워드 */
+								 , TO_DATE(#{pwdMdfcDt}, 'YYYYMMDDHH24MISS')  	/* 패스워드변경일시 */
+								 , #{clno}  									/* 휴대전화번호 */
+								 --  2021.11.10. KHS. 메타에는 내선번호가 4자리인데 인사및 사용자 정보에 길이가 길어서 오류가 발생한다.
+		                         --                   뒤 4자리만 잘라서 넣는것으로 변경.
+		                         , nvl(substrb(#{extsTlno},-4),#{extsTlno})  								/* 내선전화번호 */
+								 , #{pdaNo}  									/* PDA번호 */
+								 , #{emailId} 		 							/* 이메일ID */
+								 , #{epId}  									/* EP_ID */
+								 , #{userLcnsNo}  								/* 사용자면허번호 */
+								 , #{userSpczDrlcNo}  							/* 사용자전문의사면허번호 */
+								 , TO_DATE(#{userSpczDrlcAcqsYmd}, 'YYYYMMDD')  /* 사용자전문의사면허취득일자 */
+								 , TO_DATE(#{trnnStrtYmd}, 'YYYYMMDD')  		/* 연수시작일자 */
+								 , TO_DATE(#{trnnFnshYmd}, 'YYYYMMDD')  		/* 연수종료일자 */
+								 , #{rmrkCtn}  									/* 비고내용 */
+								 , #{ocdtCd}  									/* 직무코드 */
+								 , #{ocfmCd}  									/* 직종코드 */
+								 , #{lnggCd}  									/* 언어코드 */
+								 , #{idNo}  									/* ID번호 */
+								 , #{occlCd}  									/* 직급코드 */
+								 , #{ocpsCd}  									/* 직위코드 */
+								 , #{ocrsCd}  									/* 직책코드 */
+								 , #{tmprPwdYn}  								/* 임시패스워드여부 */
+								 , #{emno} 	 									/* 사원번호 */
+								 , #{gvUserId}  								/* 최초등록자ID */
+								 , #{gvUserIp}  								/* 최초등록IP */
+								 , sysdate  									/* 최초등록일시 */
+								 , #{gvClntPrgmId}  							/* 최초등록클라이언트프로그램ID */
+								 , #{gvSrvrPrgmId}  							/* 최초등록서버프로그램ID */
+								 , #{gvUserId}  								/* 최종수정자ID */
+								 , #{gvUserIp}  								/* 최종수정IP */
+								 , sysdate  									/* 최종수정일시 */
+								 , #{gvClntPrgmId}  							/* 최종수정클라이언트프로그램ID */
+								 , #{gvSrvrPrgmId}  							/* 최종수정서버프로그램ID */
+								 , #{nursLcnsNo}  								/* 간호사 면허번호 */
+								 , #{dndpLcnsNo}  								/* 치과 면허번호 */
+								 , #{soclScwrLcnsNo} 							/* 사회복지사 면허번호 */
+			                     , #{ocfmDetlCd} 								/* 직종상세코드 */
+			                     , #{hsptCd}									/* 병원코드 */
+			                     , #{hsptOcfmCd} 								/* 병원직종코드 */
+			                     , #{orglHsptCd}								/* 원병원코드 */
+								 )
+				]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUsrdPht () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUsrdPht"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUsrdPht */
+		update  CCUSRDPHT
+			  set
+			     	LAST_UPDR_ID                    = #{gvUserId}
+		         ,  LAST_UPDT_IP                     = #{gvUserIp}
+		         ,  LAST_UPDT_DT                    =  sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		      <if test="userNm != null">
+			     ,  USER_NM                          = #{userNm}
+		      </if>
+			  <if test="userEnsnNm != null">
+		         ,  USER_ENSN_NM                 = #{userEnsnNm}
+			   </if>
+			   <if test="mdcrDprtCd != null">
+		         ,  MDCR_DPRT_CD                 = #{mdcrDprtCd}
+			   </if>
+			   <if test="apfnYmd != null">
+		         ,  APFN_YMD                         = TO_DATE(#{apfnYmd}, 'YYYYMMDD')
+			   </if>
+			   <if test="apstYmd != null">
+		         ,  APST_YMD                          = TO_DATE(#{apstYmd}, 'YYYYMMDD')
+			   </if>
+			   <if test="inftDprtCd != null">
+		         ,  INFT_DPRT_CD                    = #{inftDprtCd}
+			   </if>
+			   <if test="hrafPrapDprtCd != null">
+		         ,  HRAF_PRAP_DPRT_CD          = #{hrafPrapDprtCd}
+			   </if>
+			   <if test="ststDprtCd != null">
+		         ,  STST_DPRT_CD                    = #{ststDprtCd}
+			   </if>
+		 where  USER_ID = #{userId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUseramt */
+		update  CCUSERAMT
+			  set
+		      <if test="userNm != null">
+			        USER_NM = #{userNm}
+		      </if>
+			  <if test="userEnsnNm != null">
+		         ,  USER_ENSN_NM = #{userEnsnNm}
+			   </if>
+			   <if test="btdt != null">
+		         ,  BTDT = TO_DATE(#{btdt}, 'YYYYMMDD')
+			   </if>
+			   <if test="gendCd != null">
+		         ,  GEND_CD = #{gendCd}
+			   </if>
+			   <if test="apfnYmd != null">
+		         ,  APFN_YMD = TO_DATE(#{apfnYmd}, 'YYYYMMDD')
+			   </if>
+			   <if test="apstYmd != null">
+			     ,  APST_YMD = TO_DATE(#{apstYmd}, 'YYYYMMDD')
+			   </if>
+		       <if test="userSttsCd != null">
+				 ,  USER_STTS_CD = #{userSttsCd}
+			   </if>
+			   <if test="clno != null">
+				 ,  CLNO = #{clno}
+			   </if>
+			   <if test="emailId != null">
+		         ,  EMAIL_ID = #{emailId}
+			   </if>
+			   <if test="userLcnsNo != null">
+		         ,  USER_LCNS_NO = #{userLcnsNo}
+			   </if>
+			   <if test="userSpczDrlcNo != null">
+		         ,  USER_SPCZ_DRLC_NO = #{userSpczDrlcNo}
+			   </if>
+			   <if test="userSpczDrlcAcqsYmd != null">
+		         ,  USER_SPCZ_DRLC_ACQS_YMD = TO_DATE(#{userSpczDrlcAcqsYmd}, 'YYYYMMDD')
+			   </if>
+			    <if test="ocdtCd != null">
+		         ,  OCDT_CD = #{ocdtCd}
+			   </if>
+			   <if test="ocfmCd != null">
+		         ,  OCFM_CD = #{ocfmCd}
+			   </if>
+			    <if test="idNo != null">
+		         ,  ID_NO = #{idNo}
+			   </if>
+			   <if test="occlCd != null">
+		         ,  OCCL_CD = #{occlCd}
+			   </if>
+			    <if test="ocpsCd != null">
+		         ,  OCPS_CD = #{ocpsCd}
+			   </if>
+			   <if test="ocrsCd != null">
+		         ,  OCRS_CD = #{ocrsCd}
+			   </if>
+			   <if test="epId != null">
+		         ,  EP_ID = #{epId}
+			   </if>
+			   <if test="extsTlno != null">
+		         ,  EXTS_TLNO = nvl(substrb(#{extsTlno},-4),#{extsTlno})
+			   </if>
+			   <if test="rmrkCtn != null">
+		         ,  RMRK_CTN = #{rmrkCtn}
+			   </if>
+			   <if test="ocfmDetlCd != null">
+		         ,  OCFM_DETL_CD = #{ocfmDetlCd}
+			   </if>
+			   <if test="hsptCd != null">
+		         ,  HSPT_CD = #{hsptCd}
+			   </if>
+			   <if test="hsptOcfmCd != null">
+			   	 ,  HSPT_OCFM_CD = #{hsptOcfmCd}
+			   </if>
+		       <if test="orglHsptCd != null">
+		         ,  ORGL_HSPT_CD = #{orglHsptCd}
+			   </if>
+		       <if test="nursLcnsNo != null">
+		         ,  NURS_LCNS_NO = #{nursLcnsNo}
+			   </if>
+		       <if test="dndpLcnsNo != null">
+		         ,  DNDP_LCNS_NO = #{dndpLcnsNo}
+			   </if>
+		       <if test="soclScwrLcnsNo != null">
+		         ,  SOCL_SCWR_LCNS_NO = #{soclScwrLcnsNo}
+			   </if>	
+			     ,	LAST_UPDR_ID                    = #{gvUserId}
+		         ,  LAST_UPDT_IP                     = #{gvUserIp}
+		         ,  LAST_UPDT_DT                    =  sysdate
+		         ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		         ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 where  LGIN_ID = #{lginId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="userNm" column="USER_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="emplFrrn" column="EMPL_FRRN"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser (임시비밀번호 조회용 사용자 조회) 
+        Description :                                           임시비밀번호 조회용 사용자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneTempPwUser */
+				select  /*+ ccd_useramt_s17$S01_임시비밀번호 본인확인 */
+				            a.USER_NM as USER_NM,
+				            REPLACE(a.CLNO, '-', '') as RTUR_VL,
+				            b.EMPL_FRRN as EMPL_FRRN,
+				            a.USER_STTS_CD as USER_STTS_CD
+				      from
+				            CCUSERAMT a,
+				            HZUSERMMT b
+				     where
+				            a.LGIN_ID = #{lginId}
+				       and  a.LGIN_ID = b.EMNO(+)
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateImsiPwd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateImsiPwd"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateImsiPwd */
+		update  /*+ ccd_useramt_u09$I01_비밀번호변경 */
+		            CCUSERAMT
+		       set  CRNT_PWD = #{crntPwd2},
+		            USER_STTS_CD = '1',
+		            CNCT_ATMP_NTM = '0',
+		            TMPR_PWD_YN = 'Y',
+		            PWD_MDFC_DT = sysdate,
+		            LAST_UPDR_ID           = 'TempPW',
+		            LAST_UPDT_IP           = #{gvUserIp},
+		            LAST_UPDT_DT           =  sysdate,
+		            LAST_UPDT_CLNT_PRGM_ID      = #{gvClntPrgmId},
+		            LAST_UPDT_SRVR_PRGM_ID      = #{gvSrvrPrgmId}
+		     where  LGIN_ID  = #{lginId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUserAmt (CCUSERAMT 데이터 입력/ 수정(Merge)) 
+        Description :                                           CCUSERAMT 데이터 입력/ 수정(Merge)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUserAmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUserAmt */
+		<![CDATA[
+			merge
+			   into CCUSERAMT  /* NEXMED-EHR 사용자 */
+			  using DUAL
+			    on (        LGIN_ID                        = #{lginId}                      /* 로그인ID   */
+			       )
+			  when matched then
+			 update
+			    set
+			           USER_NM                          = #{userNm}                       /* 사용자명   */
+			         , USER_ENSN_NM                     = #{userEnsnNm}                   /* 사용자영문명   */
+			         , BTDT                             = TO_DATE(#{btdt}, 'YYYYMMDDHH24MISS') /* 생년월일   */
+			         , GEND_CD                          = #{gendCd}                       /* 성별코드   */
+			         , APST_YMD                         = DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')
+			                                                                     , TO_DATE(#{apstYmd}, 'YYYYMMDD')) /* 적용시작일자   */
+			         , APFN_YMD                         = DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD')
+			                                                                     , TO_DATE(#{apfnYmd}, 'YYYYMMDD')) /* 적용종료일자   */
+			         , USER_STTS_CD                     = #{userSttsCd}                   /* 사용자상태코드   */
+			         , CNCT_ATMP_NTM                    = #{cnctAtmpNtm}                  /* 접속시도횟수   */
+			         , LAST_CNCT_DT                     = TO_DATE(#{lastCnctDt}, 'YYYYMMDDHH24MISS') /* 최종접속일시   */
+			         , LAST_CNCT_IP                     = #{lastCnctIp}                   /* 최종접속IP   */
+			         , CRNT_CNCT_DT                     = TO_DATE(#{crntCnctDt}, 'YYYYMMDDHH24MISS') /* 현재접속일시   */
+			         , CRNT_CNCT_IP                     = #{crntCnctIp}                   /* 현재접속IP   */
+			         , CRNT_PWD                         = #{crntPwd}                      /* 현재패스워드   */
+			         , PWD_MDFC_DT                      = TO_DATE(#{pwdMdfcDt}, 'YYYYMMDDHH24MISS') /* 패스워드변경일시   */
+			         , CLNO                             = #{clno}                         /* 휴대전화번호   */
+		        --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		        --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+			         , EXTS_TLNO                        = nvl(substrb(#{extsTlno},-4),#{extsTlno})                     /* 내선전화번호   */
+			         , PDA_NO                           = #{pdaNo}                        /* PDA번호   */
+			         , EMAIL_ID                         = #{emailId}                      /* 이메일ID   */
+			         , EP_ID                            = #{epId}                         /* EP_ID   */
+			         , USER_LCNS_NO                     = #{userLcnsNo}                   /* 사용자면허번호   */
+			         , USER_SPCZ_DRLC_NO                = #{userSpczDrlcNo}               /* 사용자전문의사면허번호   */
+			         , USER_SPCZ_DRLC_ACQS_YMD          = TO_DATE(#{userSpczDrlcAcqsYmd}, 'YYYYMMDD') /* 사용자전문의사면허취득일자   */
+			         , TRNN_STRT_YMD                    = TO_DATE(#{trnnStrtYmd}, 'YYYYMMDD') /* 연수시작일자   */
+			         , TRNN_FNSH_YMD                    = TO_DATE(#{trnnFnshYmd}, 'YYYYMMDD') /* 연수종료일자   */
+			         , RMRK_CTN                         = #{rmrkCtn}                      /* 비고내용   */
+			         , OCDT_CD                          = #{ocdtCd}                       /* 직무코드   */
+			         , OCFM_CD                          = #{ocfmCd}                       /* 직종코드   */
+			         , LNGG_CD                          = #{lnggCd}                       /* 언어코드   */
+			         , ID_NO                            = #{idNo}                         /* ID번호   */
+			         , OCCL_CD                          = #{occlCd}                       /* 직급코드   */
+			         , OCPS_CD                          = #{ocpsCd}                       /* 직위코드   */
+			         , OCRS_CD                          = #{ocrsCd}                       /* 직책코드   */
+			         , LAST_UPDR_ID                     = #{gvUserId}
+			         , LAST_UPDT_IP                     = #{gvUserIp}
+			         , LAST_UPDT_DT                     = sysdate
+			         , LAST_UPDT_CLNT_PRGM_ID           = #{gvClntPrgmId}
+			         , LAST_UPDT_SRVR_PRGM_ID           = #{gvSrvrPrgmId}
+			         , CRTF_ATHR_USE_YN                 = #{crtfAthrUseYn}                /* 인증권한사용여부   */
+			         , TMPR_PWD_YN                      = #{tmprPwdYn}                    /* 임시패스워드여부   */
+			         , EMNO                             = #{emno}                         /* 사원번호   */
+			         , NURS_LCNS_NO                     = #{nursLcnsNo}                   /* 간호사 면허번호   */
+			         , DNDP_LCNS_NO                     = #{dndpLcnsNo}                   /* 치과 면허번호   */
+			         , SOCL_SCWR_LCNS_NO                = #{soclScwrLcnsNo}               /* 사회복지사 면허번호    */
+			         , OCFM_DETL_CD                     = #{ocfmDetlCd}                   /* 직종상세코드 */
+			         , HSPT_CD                          = #{hsptCd}                       /* 병원코드 */
+			 where LGIN_ID                        = #{lginId}                      /* 로그인ID   */
+			  when not matched then
+			   insert
+			        (
+			           LGIN_ID                         /* 로그인ID   */
+			         , USER_NM                         /* 사용자명   */
+			         , USER_ENSN_NM                    /* 사용자영문명   */
+			         , BTDT                            /* 생년월일   */
+			         , GEND_CD                         /* 성별코드   */
+			         , APST_YMD                        /* 적용시작일자   */
+			         , APFN_YMD                        /* 적용종료일자   */
+			         , USER_STTS_CD                    /* 사용자상태코드   */
+			         , CNCT_ATMP_NTM                   /* 접속시도횟수   */
+			         , LAST_CNCT_DT                    /* 최종접속일시   */
+			         , LAST_CNCT_IP                    /* 최종접속IP   */
+			         , CRNT_CNCT_DT                    /* 현재접속일시   */
+			         , CRNT_CNCT_IP                    /* 현재접속IP   */
+			         , CRNT_PWD                        /* 현재패스워드   */
+			         , PWD_MDFC_DT                     /* 패스워드변경일시   */
+			         , CLNO                            /* 휴대전화번호   */
+			         , EXTS_TLNO                       /* 내선전화번호   */
+			         , PDA_NO                          /* PDA번호   */
+			         , EMAIL_ID                        /* 이메일ID   */
+			         , EP_ID                           /* EP_ID   */
+			         , USER_LCNS_NO                    /* 사용자면허번호   */
+			         , USER_SPCZ_DRLC_NO               /* 사용자전문의사면허번호   */
+			         , USER_SPCZ_DRLC_ACQS_YMD         /* 사용자전문의사면허취득일자   */
+			         , TRNN_STRT_YMD                   /* 연수시작일자   */
+			         , TRNN_FNSH_YMD                   /* 연수종료일자   */
+			         , RMRK_CTN                        /* 비고내용   */
+			         , OCDT_CD                         /* 직무코드   */
+			         , OCFM_CD                         /* 직종코드   */
+			         , LNGG_CD                         /* 언어코드   */
+			         , ID_NO                           /* ID번호   */
+			         , OCCL_CD                         /* 직급코드   */
+			         , OCPS_CD                         /* 직위코드   */
+			         , OCRS_CD                         /* 직책코드   */
+			         , FRST_RGSR_ID
+			         , FRST_RGST_IP
+			         , FRST_RGST_DT
+			         , FRST_RGST_CLNT_PRGM_ID
+			         , FRST_RGST_SRVR_PRGM_ID
+			         , LAST_UPDR_ID
+			         , LAST_UPDT_IP
+			         , LAST_UPDT_DT
+			         , LAST_UPDT_CLNT_PRGM_ID
+			         , LAST_UPDT_SRVR_PRGM_ID
+			         , CRTF_ATHR_USE_YN                /* 인증권한사용여부   */
+			         , TMPR_PWD_YN                     /* 임시패스워드여부   */
+			         , EMNO                            /* 사원번호   */
+			         , NURS_LCNS_NO                    /* 간호사 면허번호   */
+			         , DNDP_LCNS_NO                    /* 치과 면허번호   */
+			         , SOCL_SCWR_LCNS_NO               /* 사회복지사 면허번호    */
+			         , OCFM_DETL_CD                    /* 직종상세코드 */
+			         , HSPT_CD                         /* 병원코드 */ 
+			        )
+			  values
+			        (
+			           #{lginId}                       /* 로그인ID   */
+			         , #{userNm}                       /* 사용자명   */
+			         , #{userEnsnNm}                   /* 사용자영문명   */
+			         , TO_DATE(#{btdt}, 'YYYYMMDDHH24MISS') /* 생년월일   */
+			         , #{gendCd}                       /* 성별코드   */
+			         , DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')
+			                                  , TO_DATE(#{apstYmd}, 'YYYYMMDD'))     /* 적용시작일자   */
+			         , DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD')
+			                                  , TO_DATE(#{apfnYmd}, 'YYYYMMDD'))      /* 적용종료일자   */
+			         , #{userSttsCd}                   /* 사용자상태코드   */
+			         , #{cnctAtmpNtm}                  /* 접속시도횟수   */
+			         , TO_DATE(#{lastCnctDt}, 'YYYYMMDDHH24MISS') /* 최종접속일시   */
+			         , #{lastCnctIp}                   /* 최종접속IP   */
+			         , TO_DATE(#{crntCnctDt}, 'YYYYMMDDHH24MISS') /* 현재접속일시   */
+			         , #{crntCnctIp}                   /* 현재접속IP   */
+			         , #{crntPwd}                      /* 현재패스워드   */
+			         , TO_DATE(#{pwdMdfcDt}, 'YYYYMMDDHH24MISS') /* 패스워드변경일시   */
+			         , #{clno}                         /* 휴대전화번호   */
+			         , nvl(substrb(#{extsTlno},-4),#{extsTlno})                     /* 내선전화번호   */
+			         , #{pdaNo}                        /* PDA번호   */
+			         , #{emailId}                      /* 이메일ID   */
+			         , #{epId}                         /* EP_ID   */
+			         , #{userLcnsNo}                   /* 사용자면허번호   */
+			         , #{userSpczDrlcNo}               /* 사용자전문의사면허번호   */
+			         , TO_DATE(#{userSpczDrlcAcqsYmd}, 'YYYYMMDD') /* 사용자전문의사면허취득일자   */
+			         , TO_DATE(#{trnnStrtYmd}, 'YYYYMMDD') /* 연수시작일자   */
+			         , TO_DATE(#{trnnFnshYmd}, 'YYYYMMDD') /* 연수종료일자   */
+			         , #{rmrkCtn}                      /* 비고내용   */
+			         , #{ocdtCd}                       /* 직무코드   */
+			         , #{ocfmCd}                       /* 직종코드   */
+			         , #{lnggCd}                       /* 언어코드   */
+			         , #{idNo}                         /* ID번호   */
+			         , #{occlCd}                       /* 직급코드   */
+			         , #{ocpsCd}                       /* 직위코드   */
+			         , #{ocrsCd}                       /* 직책코드   */
+			         , #{gvUserId}
+			         , #{gvUserIp}
+			         , sysdate
+			         , #{gvClntPrgmId}
+			         , #{gvSrvrPrgmId}
+			         , #{gvUserId}
+			         , #{gvUserIp}
+			         , sysdate
+			         , #{gvClntPrgmId}
+			         , #{gvSrvrPrgmId}
+			         , #{crtfAthrUseYn}                /* 인증권한사용여부   */
+			         , #{tmprPwdYn}                    /* 임시패스워드여부   */
+			         , #{emno}                         /* 사원번호   */
+			         , #{nursLcnsNo}                   /* 간호사 면허번호   */
+			         , #{dndpLcnsNo}                   /* 치과 면허번호   */
+			         , #{soclScwrLcnsNo}               /* 사회복지사 면허번호    */
+			         , #{ocfmDetlCd}                   /* 직종상세코드 */
+			         , #{hsptCd}                       /* 병원코드 */
+			        )
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUsrdPht (CCUSRDPHT 데이터 입력/ 수정(Merge)) 
+        Description :                                           CCUSRDPHT 데이터 입력/ 수정(Merge)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUsrdPht"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateMergeUsrdPht */
+		<![CDATA[
+			merge
+			   into CCUSRDPHT  /* NEXMED-EHR 사용자 역할정보 */
+			  using DUAL
+			    on (        USER_ID                       = #{userId}                     /* 사용자ID   */
+			       )
+			  when matched then
+			 update
+			    set
+			           USER_NM                         = #{userNm}                      /* 사용자명   */
+			         , USER_ENSN_NM                    = #{userEnsnNm}                  /* 사용자영문명   */
+			         , LGIN_ID                         = #{lginId}                      /* 로그인ID   */
+			         , MDCR_DPRT_CD                    = #{mdcrDprtCd}                  /* 진료부서코드   */
+			         , APFN_YMD                        = DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD')
+			                                                                    , TO_DATE(#{apfnYmd}, 'YYYYMMDD')) /* 적용종료일자   */
+			         , APST_YMD                        = DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')
+			                                                                    , TO_DATE(#{apstYmd}, 'YYYYMMDD')) /* 적용시작일자   */
+			         , MNSB_YN                         = #{mnsbYn}                      /* 주부여부   */
+			         , EXCF_CD                         = #{excfCd}                      /* 검사분류코드   */
+			         , MDCR_CLAS_CD                    = #{mdcrClasCd}                  /* 진료Class코드   */
+			         , DTLS_EXCF_CD                    = #{dtlsExcfCd}                  /* 세부검사분류코드   */
+			         , RMRK_CTN                        = #{rmrkCtn}                     /* 비고내용   */
+			         , INFT_DPRT_CD                    = #{inftDprtCd}                  /* 안내부서코드   */
+			         , LAST_UPDR_ID                    = #{gvUserId}
+			         , LAST_UPDT_IP                    = #{gvUserIp}
+			         , LAST_UPDT_DT                    = sysdate
+			         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}
+			         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}
+			         , HRAF_PRAP_DPRT_CD               = #{hrafPrapDprtCd}              /* 인사발령부서코드   */
+			         , STST_DPRT_CD                    = #{ststDprtCd}                  /* 통계부서코드   */
+			 where USER_ID                       = #{userId}                     /* 사용자ID   */
+			  when not matched then
+			   insert
+			        (
+			           USER_ID                        /* 사용자ID   */
+			         , USER_NM                        /* 사용자명   */
+			         , USER_ENSN_NM                   /* 사용자영문명   */
+			         , LGIN_ID                        /* 로그인ID   */
+			         , MDCR_DPRT_CD                   /* 진료부서코드   */
+			         , APFN_YMD                       /* 적용종료일자   */
+			         , APST_YMD                       /* 적용시작일자   */
+			         , MNSB_YN                        /* 주부여부   */
+			         , EXCF_CD                        /* 검사분류코드   */
+			         , MDCR_CLAS_CD                   /* 진료Class코드   */
+			         , DTLS_EXCF_CD                   /* 세부검사분류코드   */
+			         , RMRK_CTN                       /* 비고내용   */
+			         , INFT_DPRT_CD                   /* 안내부서코드   */
+			         , FRST_RGSR_ID
+			         , FRST_RGST_IP
+			         , FRST_RGST_DT
+			         , FRST_RGST_CLNT_PRGM_ID
+			         , FRST_RGST_SRVR_PRGM_ID
+			         , LAST_UPDR_ID
+			         , LAST_UPDT_IP
+			         , LAST_UPDT_DT
+			         , LAST_UPDT_CLNT_PRGM_ID
+			         , LAST_UPDT_SRVR_PRGM_ID
+			         , HRAF_PRAP_DPRT_CD              /* 인사발령부서코드   */
+			         , STST_DPRT_CD                   /* 통계부서코드   */
+			        )
+			  values
+			        (
+			           #{userId}                      /* 사용자ID   */
+			         , #{userNm}                      /* 사용자명   */
+			         , #{userEnsnNm}                  /* 사용자영문명   */
+			         , #{lginId}                      /* 로그인ID   */
+			         , #{mdcrDprtCd}                  /* 진료부서코드   */
+			         , DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD')
+			                                  , TO_DATE(#{apfnYmd}, 'YYYYMMDD')) /* 적용종료일자   */
+			         , DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD')
+			                                  , TO_DATE(#{apstYmd}, 'YYYYMMDD')) /* 적용시작일자   */
+			         , #{mnsbYn}                      /* 주부여부   */
+			         , #{excfCd}                      /* 검사분류코드   */
+			         , #{mdcrClasCd}                  /* 진료Class코드   */
+			         , #{dtlsExcfCd}                  /* 세부검사분류코드   */
+			         , #{rmrkCtn}                     /* 비고내용   */
+			         , #{inftDprtCd}                  /* 안내부서코드   */
+			         , #{gvUserId}
+			         , #{gvUserIp}
+			         , sysdate
+			         , #{gvClntPrgmId}
+			         , #{gvSrvrPrgmId}
+			         , #{gvUserId}
+			         , #{gvUserIp}
+			         , sysdate
+			         , #{gvClntPrgmId}
+			         , #{gvSrvrPrgmId}
+			         , #{hrafPrapDprtCd}              /* 인사발령부서코드   */
+			         , #{ststDprtCd}                  /* 통계부서코드   */
+			        )
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId (겸직정보 조회) 
+        Description :                                           겸직정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLginIdByUserId */
+		<![CDATA[
+		SELECT LGIN_ID
+		     , USER_ID
+		  FROM CCUSRDPHT
+		 WHERE USER_ID = #{userId}
+		   AND APST_YMD < sysdate
+		   AND APFN_YMD > sysdate
+		]]>   
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrInqrByLginId-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="cnctAtmpNtm" column="CNCT_ATMP_NTM"/>
+		<result property="lastCnctDt" column="LAST_CNCT_DT"/>
+		<result property="lastCnctIp" column="LAST_CNCT_IP"/>
+		<result property="crntCnctDt" column="CRNT_CNCT_DT"/>
+		<result property="crntCnctIp" column="CRNT_CNCT_IP"/>
+		<result property="pwdMdfcDt" column="PWD_MDFC_DT"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="lnggCd" column="LNGG_CD"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="idNo" column="ID_NO"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="detlCdNm3" column="DETL_CD_NM_3"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="detlCdNm4" column="DETL_CD_NM_4"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="detlCdNm5" column="DETL_CD_NM_5"/>
+		<result property="ocfmDetlCd" column="OCFM_DETL_CD"/>
+		<result property="detlCdNm6" column="DETL_CD_NM_6"/>
+		<result property="crtfAthrUseYn" column="CRTF_ATHR_USE_YN"/>
+		<result property="tmprPwdYn" column="TMPR_PWD_YN"/>
+		<result property="emno" column="EMNO"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrInqrByLginId (사용자 조회) 
+        Description :                                           사용자조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrInqrByLginId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrInqrByLginId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEmrCpoeLginUsrInqrByLginId-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  a.LGIN_ID as LGIN_ID
+				 , a.USER_NM as USER_NM
+				 , a.USER_ENSN_NM as USER_ENSN_NM
+				 , to_char(a.BTDT, 'YYYYMMDD') as BTDT
+				 , a.GEND_CD as GEND_CD
+				 , to_char(a.APST_YMD, 'YYYYMMDD') as APST_YMD
+				 , to_char(a.APFN_YMD, 'YYYYMMDD') as APFN_YMD
+				 , a.USER_STTS_CD as USER_STTS_CD
+				 , a.CNCT_ATMP_NTM as CNCT_ATMP_NTM
+				 , to_char(a.LAST_CNCT_DT, 'yyyymmddhh24miss') as LAST_CNCT_DT
+				 , a.LAST_CNCT_IP as LAST_CNCT_IP
+				 , to_char(a.CRNT_CNCT_DT, 'yyyymmddhh24miss') as CRNT_CNCT_DT
+				 , a.CRNT_CNCT_IP as CRNT_CNCT_IP
+				 , to_char(a.PWD_MDFC_DT, 'yyyymmddhh24miss') as PWD_MDFC_DT
+				 , a.CLNO as CLNO
+		        --  2022.02.17. KHS.    내선번호 exts_tlno가 메타에는 4자리인데 테이블에는 13자리로 되어있어서
+		        --                      내선번호에 4자리 이상 입력되어있는 경우 조회하면 에러가 난다. 뒤 4자리만 잘라서 조회하도록 수정
+		    	,   nvl (   substrb (   a.exts_tlno ,   -4  )   ,   a.exts_tlno )   as  exts_tlno
+				 , a.PDA_NO as PDA_NO
+				 , a.EMAIL_ID as EMAIL_ID
+				 , a.EP_ID as EP_ID
+				 , a.USER_LCNS_NO as USER_LCNS_NO
+				 , a.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO
+				 , to_char(a.USER_SPCZ_DRLC_ACQS_YMD, 'YYYYMMDD') as USER_SPCZ_DRLC_ACQS_YMD
+				 , to_char(a.TRNN_STRT_YMD, 'YYYYMMDD') as TRNN_STRT_YMD
+				 , to_char(a.TRNN_FNSH_YMD, 'YYYYMMDD') as TRNN_FNSH_YMD
+				 , a.RMRK_CTN as RMRK_CTN
+				 , a.OCDT_CD as OCDT_CD
+				 , c.DETL_CD_NM as DETL_CD_NM
+				 , a.OCFM_CD as OCFM_CD
+				 , d.DETL_CD_NM as DETL_CD_NM_1
+				 , a.LNGG_CD as LNGG_CD
+				 , e.DETL_CD_NM as DETL_CD_NM_2
+				 , a.ID_NO as ID_NO
+				 , a.OCCL_CD as OCCL_CD
+				 , f.DETL_CD_NM as DETL_CD_NM_3
+				 , a.OCPS_CD as OCPS_CD
+				 , g.DETL_CD_NM as DETL_CD_NM_4
+				 , a.OCRS_CD as OCRS_CD
+				 , h.DETL_CD_NM as DETL_CD_NM_5
+				 , a.OCFM_DETL_CD AS OCFM_DETL_CD
+		         , i.DETL_CD_NM as DETL_CD_NM_6
+				 , b.CRTF_ATHR_USE_YN as CRTF_ATHR_USE_YN
+				 , b.TMPR_PWD_YN as TMPR_PWD_YN
+				 , b.EMNO as EMNO
+		         , a.HSPT_CD
+		         , b.HSPT_OCFM_CD
+		   from    CCUSERAMV a
+				 , CCUSERAMT b
+				 , CCCMCDDMT c
+				 , CCCMCDDMT d
+				 , CCCMCDDMT e
+				 , CCCMCDDMT f
+				 , CCCMCDDMT g
+				 , CCCMCDDMT h
+				 , CCCMCDDMT i
+		   where   a.LGIN_ID = b.LGIN_ID(+)
+			 and   c.COMN_GRP_CD(+) = 'GP009'
+			 and   a.OCDT_CD        = c.COMN_DTLS_CD(+)
+			 and   d.COMN_GRP_CD(+) = 'GP170'
+			 and   a.OCFM_CD        = d.COMN_DTLS_CD(+)
+			 and   e.COMN_GRP_CD(+) = 'CCC_003'
+			 and   a.LNGG_CD        = e.COMN_DTLS_CD(+)
+			 and   f.COMN_GRP_CD(+) = 'GP005'
+			 and   a.OCCL_CD        = f.COMN_DTLS_CD(+)
+			 and   g.COMN_GRP_CD(+) = 'GP008'
+			 and   a.OCPS_CD        = g.COMN_DTLS_CD(+)
+			 and   h.COMN_GRP_CD(+) = 'GP007'
+			 and   a.OCRS_CD        = h.COMN_DTLS_CD(+)
+			 and   i.COMN_GRP_CD(+) = 'GP174'
+			 and   a.OCFM_DETL_CD        = i.COMN_DTLS_CD(+)
+		--	 and   a.LGIN_ID        = i.EMNO(+)
+			 and   a.LGIN_ID        = #{lginId}
+		   order by a.LGIN_ID
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="afiRturYn" column="AFI_RTUR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck (로그아웃이 되었는지 Check) 
+        Description :                                           로그아웃이 되었는지 Check
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneLogoutCheck */
+		<![CDATA[
+		select
+		      decode(AA.CNCT_IP,null,'N','Y')  as AFI_RTUR_YN    
+		from   
+		    ( 
+			select 
+			      to_char(USER_LOG_DT, 'YYYYMMDDHH24MISS') as USER_LOG_DT
+			    , LOG_DVSN_CD
+			    , CNCT_IP
+			from 
+			CSLOGIOHT A
+			where LGIN_ID = #{gvLginId}
+			  and USER_LOG_DT = 
+			    (select Max(USER_LOG_DT) 
+			       from CSLOGIOHT
+			       where LGIN_ID = #{gvLginId}
+			         and USER_LOG_DT >= sysdate - 5/24
+			         and USER_LOG_DT >= to_date(to_char(sysdate,'YYYYMMDD'),'YYYYMMDD')
+			         and LOG_DVSN_CD not in ('E','P'))  
+			 ) AA
+		where AA.CNCT_IP <> #{gvUserIp}
+		  and AA.LOG_DVSN_CD = 'I'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO">
+	
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt (공통환경설정항목의 사용자메뉴관련 정보를 추출한다.) 
+        Description :                                           공통환경설정항목의 사용자메뉴관리여부(USR_MENU_CHK), 사용자메뉴만료일자설정값(USR_MENU_EXPDT)을
+                                                                추출한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneEnstimt */
+		<![CDATA[
+		SELECT COMN_ENVR_STUP_ITEM_NM,
+			   COMN_ENVR_STUP_ITEM_CHRC_VL
+		  FROM CSENSTIMT /* 공통환경설정항목_T */
+		 WHERE COMN_ENVR_STUP_GRP_CD  = #{comnEnvrStupGrpCd}   /* 공통환경설정그룹코드 */
+		   AND COMN_ENVR_STUP_ITEM_CD = #{comnEnvrStupItemCd}  /* 공통환경설정항목코드 */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO">
+	
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmDetlCd" column="OCFM_DETL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk (Nexmed-EHR 사용자테이블의 사용자ID 존재여부 판별.) 
+        Description :                                           Nexmed-EHR 사용자테이블의 사용자ID가 존재하는지 판펼하는 용도로 사용. ( 존재 : 수정, 아니면 등록처리
+                                                                ) 수행용.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCcUseramtExistsChk */
+		<![CDATA[
+		SELECT DECODE(COUNT(AMT.LGIN_ID), 0, 'N', 'Y')	AS USER_STTS_CD	/* 사용자ID 존재여부 판별용 */
+		     , PHT.MDCR_DPRT_CD							AS MDCR_DPRT_CD	/* 부서코드 */
+		     , NVL(AMT.OCFM_CD, '*')					AS OCFM_CD		/* 직종코드 */
+		     , NVL(AMT.OCFM_DETL_CD, '*') 			    AS OCFM_DETL_CD /* 직종상세코드 */ 
+		  FROM CCUSERAMT AMT /* NEXMED-EHR 사용자_T */
+		     , CCUSRDPHT PHT /* NEXMED-EHR 사용자역할정보_T */ 
+		 WHERE AMT.LGIN_ID = PHT.USER_ID
+		   AND AMT.LGIN_ID = #{lginId}
+		 GROUP
+		    BY PHT.MDCR_DPRT_CD
+			 , AMT.OCFM_CD
+		     , AMT.OCFM_DETL_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO">
+	
+		<result property="excfCd" column="EXCF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk (메뉴그룹사용자관계테이블의 기존 데이터가 존재여부 체크.) 
+        Description :                                           메뉴그룹사용자관계테이블의 기존 데이터가 존재여부 체크를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneCsMnusrmtExistsChk */
+		<![CDATA[
+		SELECT DECODE(COUNT(RMT.LGIN_ID), 0, 'N', 'Y') AS EXCF_CD /* 메뉴그룹사용자관계의 내용 존재유무 판별용 */
+		  FROM CSMNUSRMT RMT /* 메뉴그룹사용자관계_T */
+		 WHERE LGIN_ID = #{lginId}
+		   AND RMT.MENU_GRP_ID IN ( SELECT MT.MENU_GRP_ID
+			                          FROM CSDPMNRMT MT /* 부서메뉴그룹관계_T */
+			                         WHERE DPRT_CD = #{mdcrDprtCd}
+			                       )   	                       
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpId (메뉴사용자관계(CSMNUSRMT)테이블의 기존부서코드 기준 기존데이터 만료처리 UPDATE 수행.) 
+        Description :                                           메뉴사용자관계(CSMNUSRMT)테이블의 기존부서코드 기준 기존데이터 만료처리 UPDATE 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpId */
+		<![CDATA[
+		UPDATE    
+			   CSMNUSRMT SRC  /* 메뉴그룹사용자관계 */
+		   SET SRC.APFN_DT = ( SELECT DECODE(#{afiRturVl}, '0', TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD'),
+		   								DECODE(RMT.APFN_DT, TO_DATE('29991231', 'YYYYMMDD'), TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD') + #{afiRturVl}, RMT.APFN_DT + #{afiRturVl}))
+		   						 FROM CSMNUSRMT RMT
+		   						WHERE SRC.LGIN_ID     = RMT.LGIN_ID
+		   						  AND SRC.MENU_GRP_ID = RMT.MENU_GRP_ID	
+		   						  AND SRC.APST_DT     = RMT.APST_DT
+		   						  AND RMT.LGIN_ID     = #{lginId}
+		      				 )
+		      , SRC.LAST_UPDR_ID = #{gvUserId}
+		      , SRC.LAST_UPDT_IP = #{gvUserIp}
+		      , SRC.LAST_UPDT_DT = SYSDATE
+		      , SRC.LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		      , SRC.LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		WHERE (SRC.LGIN_ID, SRC.MENU_GRP_ID, SRC.APST_DT) IN (   
+																SELECT SRMT.LGIN_ID, SRMT.MENU_GRP_ID, SRMT.APST_DT
+													  			  FROM CSMNUSRMT SRMT
+													 			 WHERE SRMT.LGIN_ID 	= #{lginId}
+													   			   AND SRMT.MENU_GRP_ID IN ( SELECT MTT.MENU_GRP_ID
+			                           				 							  			   FROM CSDPMNRMT MTT
+			                          											 			  WHERE ( 
+																									  ((CASE WHEN MTT.OCFM_TYPE = '1' THEN MTT.DPRT_CD END) = #{mdcrDprtCd})
+																									  OR
+																									  (
+																									  	(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								       	AND
+																								       	(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.OCFM_CD END) = #{ocfmCd}
+																								      )
+																								      OR
+																								      (
+																								      	(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+																								      )
+																								      OR
+																								      (
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_CD END) = #{ocfmCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+																								      ) 
+																								    )																								
+			                       											  			   )		  			      
+															 )	
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertCsMnusrmtMenuGrpId (메뉴사용자관계(CSMNUSRMT)테이블의 신규데이터 INSERT 수행) 
+        Description :                                           메뉴사용자관계(CSMNUSRMT)테이블의 신규데이터 INSERT 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertCsMnusrmtMenuGrpId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-insertCsMnusrmtMenuGrpId */
+		<![CDATA[
+		INSERT 
+		  INTO CSMNUSRMT /* 메뉴그룹사용자관계_T */
+		        (
+		           LGIN_ID                        /* 로그인ID   */
+		         , MENU_GRP_ID                    /* 메뉴그룹ID   */
+		         , APST_DT                        /* 적용시작일시   */
+		         , APFN_DT                        /* 적용종료일시   */
+		         , MENU_GRP_APLY_SQNC             /* 메뉴그룹적용순서   */
+		         , TLBR_USE_YN                    /* 툴바사용여부   */
+		         , HNOP_RGST_YN                   /* 수동등록여부   */
+		         , HNOP_RGST_RESN_CTN             /* 수동등록사유내용   */
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		        SELECT #{lginId}
+		             , MENU_GRP_ID
+		             , SYSDATE
+		             , TO_DATE('29991231', 'YYYYMMDD')
+		             , ROWNUM
+		             , 'N'
+		             , 'N'
+		             , 'SYSTEM_USER_MENU_JOB'
+					 , #{gvUserId}                     
+		         	 , #{gvUserIp}                     
+		         	 , sysdate                         
+		         	 , #{gvClntPrgmId}                 
+		         	 , #{gvSrvrPrgmId}                 
+		         	 , #{gvUserId}                     
+		         	 , #{gvUserIp}                     
+		         	 , sysdate                         
+		         	 , #{gvClntPrgmId}                 
+		         	 , #{gvSrvrPrgmId}                  
+		         FROM CSDPMNRMT	/* 부서메뉴그룹관계_T */
+		        WHERE ( 
+						((CASE WHEN OCFM_TYPE = '1' THEN DPRT_CD END) = #{mdcrDprtCd})
+						OR
+						(
+						  (CASE WHEN OCFM_TYPE = '2' THEN DPRT_CD END) = #{mdcrDprtCd}
+					      AND
+					      (CASE WHEN OCFM_TYPE = '2' THEN OCFM_CD END) = #{ocfmCd}
+					    )
+					    OR
+					    (
+					      (CASE WHEN OCFM_TYPE = '3' THEN DPRT_CD END) = #{mdcrDprtCd}
+					      AND
+					      (CASE WHEN OCFM_TYPE = '3' THEN OCFM_DETL_CD END) = #{ocfmDetlCd}
+					    )
+					    OR
+					    (
+					      (CASE WHEN OCFM_TYPE = '4' THEN DPRT_CD END) = #{mdcrDprtCd}
+					      AND
+					      (CASE WHEN OCFM_TYPE = '4' THEN OCFM_CD END) = #{ocfmCd}
+					      AND
+					      (CASE WHEN OCFM_TYPE = '4' THEN OCFM_DETL_CD END) = #{ocfmDetlCd}
+					    ) 
+					  )
+				  AND  MENU_GRP_ID NOT IN (
+				  							SELECT T1.MENU_GRP_ID
+		                                              FROM CSMNUSRMT T1
+		                                             WHERE T1.LGIN_ID = #{lginId}
+		                                               AND T1.APST_DT <= sysdate
+		                                               AND T1.APFN_DT >= sysdate                                               
+				  						  )				  	  
+		        ORDER
+		           BY MENU_GRP_ID	     
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId (사용자id를 기준으로 겸업테이블의 부서코드 조회처리) 
+        Description :                                           사용자id를 기준으로 겸업테이블의 부서코드를 가져온다. (인사정보와 비인사정보와 비교차이...)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserMdcrDphtCdbyUserId */
+		       USER_ID
+		     , MDCR_DPRT_CD
+		 FROM  CCUSRDPHT
+		WHERE  USER_ID = #{userId}
+		  AND  ROWNUM < 2
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdDeptChg (메뉴사용자관계(CSMNUSRMT)테이블의 부서변경시 기존데이터 만료처리 UPDATE 수행.) 
+        Description :                                           메뉴사용자관계(CSMNUSRMT)테이블의 부서변경시 기존데이터 만료처리 UPDATE 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdDeptChg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdDeptChg */
+		<![CDATA[
+		UPDATE    
+			   CSMNUSRMT SRC  /* 메뉴그룹사용자관계 */
+		   SET SRC.APFN_DT = ( SELECT DECODE(#{afiRturVl}, '0', TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD'),
+		   								DECODE(RMT.APFN_DT, TO_DATE('29991231', 'YYYYMMDD'), TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD') + #{afiRturVl}, RMT.APFN_DT + #{afiRturVl}))
+		   						 FROM CSMNUSRMT RMT
+		   						WHERE SRC.LGIN_ID     = RMT.LGIN_ID
+		   						  AND SRC.MENU_GRP_ID = RMT.MENU_GRP_ID	
+		   						  AND SRC.APST_DT     = RMT.APST_DT
+		   						  AND RMT.LGIN_ID     = #{lginId}
+		      				 ) 
+		     , SRC.HNOP_RGST_RESN_CTN     = 'USER_MENU_AUTOJOB_UPD_DeptCdChg'
+		     , SRC.LAST_UPDR_ID 		  = #{gvUserId}
+		     , SRC.LAST_UPDT_IP 		  = #{gvUserIp}
+		     , SRC.LAST_UPDT_DT 		  = SYSDATE
+		     , SRC.LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , SRC.LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		WHERE (SRC.LGIN_ID, SRC.MENU_GRP_ID, SRC.APST_DT) IN (   
+																SELECT SRMT.LGIN_ID, SRMT.MENU_GRP_ID, SRMT.APST_DT
+													  			  FROM CSMNUSRMT SRMT
+													 			 WHERE SRMT.LGIN_ID 	= #{lginId}
+													   			   AND SRMT.MENU_GRP_ID IN ( SELECT MTT.MENU_GRP_ID
+			                           				 							  			   FROM CSDPMNRMT MTT
+			                          											 			  WHERE ( 
+																									  ((CASE WHEN MTT.OCFM_TYPE = '1' THEN MTT.DPRT_CD END) = #{mdcrDprtCd})
+																									  OR
+																									  (
+																									  	(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								       	AND
+																								       	(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.OCFM_CD END) = #{ocfmCd}
+																								      )
+																								      OR
+																								      (
+																								      	(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+																								      )
+																								      OR
+																								      (
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_CD END) = #{ocfmCd}
+																								      	AND
+																								      	(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+																								      ) 
+																								    )
+			                       											  			   )
+			                       									AND SRMT.APST_DT < SYSDATE
+			                       									AND TO_CHAR(SRMT.APFN_DT, 'YYYYMMDD') = '29991231'		  			      
+															 )	
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdMerge (메뉴사용자관계(CSMNUSRMT)테이블의 메뉴구성을 수행한다.) 
+        Description :                                           메뉴사용자관계(CSMNUSRMT)테이블의 부서변경시 기존데이터 만료처리 및 신규데이터 입력처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdMerge"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEnstimtDVO"  >
+			<![CDATA[
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCsMnusrmtMenuGrpIdMerge */
+			merge 
+			   into CSMNUSRMT SRC  /* 메뉴그룹사용자관계 */
+			  using (
+						SELECT	X.LGIN_ID						AS LGIN_ID
+		                      , X.MENU_GRP_ID					AS MENU_GRP_ID
+							  , X.APST_DT						AS APST_DT
+							  , X.APFN_DT						AS APFN_DT 
+							  , X.MENU_GRP_APLY_SQNC + ROWNUM 	AS MENU_GRP_APLY_SQNC 
+		                  FROM (
+			  			     		SELECT #{lginId} 						AS LGIN_ID 
+		                          		 , MTT.MENU_GRP_ID 					AS MENU_GRP_ID
+		                          		 , SYSDATE 							AS APST_DT
+		                          		 , TO_DATE('29991231', 'YYYYMMDD') 	AS APFN_DT
+								  		 , (
+											select nvl(max(menu_grp_aply_sqnc), -1)
+										  	  from csmnusrmt
+										 	 where lgin_id = #{lginId}
+										  	   and apfn_dt > sysdate 
+										   )                               	AS MENU_GRP_APLY_SQNC
+		                       		 FROM CSDPMNRMT MTT
+		 			  	  			WHERE ( 
+								  			((CASE WHEN MTT.OCFM_TYPE = '1' THEN MTT.DPRT_CD END) = #{mdcrDprtCd})
+								  			OR
+								  			(
+								  				(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+							       				AND
+							       				(CASE WHEN MTT.OCFM_TYPE = '2' THEN MTT.OCFM_CD END) = #{ocfmCd}
+							      			)
+							      			OR
+							      			(
+							      				(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+							      				AND
+							      				(CASE WHEN MTT.OCFM_TYPE = '3' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+							      			)
+							      			OR
+							      			(
+							      				(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.DPRT_CD END) = #{mdcrDprtCd}
+							      				AND
+							      				(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_CD END) = #{ocfmCd}
+							      				AND
+							      				(CASE WHEN MTT.OCFM_TYPE = '4' THEN MTT.OCFM_DETL_CD END) = #{ocfmDetlCd}
+							      			) 
+							    		 )
+										 ORDER BY 1, 2, 3
+									) X	 
+			  		) TMP
+			    on ( 	SRC.LGIN_ID                   = TMP.LGIN_ID                     /* 로그인ID   */
+			        and SRC.MENU_GRP_ID               = TMP.MENU_GRP_ID                 /* 메뉴그룹ID */
+			        and SRC.APST_DT                   = TMP.APST_DT  					/* 적용시작일시   */
+			       )
+			  when not matched then 
+			   insert
+			        (
+			           LGIN_ID                        /* 로그인ID   */
+			         , MENU_GRP_ID                    /* 메뉴그룹ID   */
+			         , APST_DT                        /* 적용시작일시   */
+			         , APFN_DT                        /* 적용종료일시   */
+			         , MENU_GRP_APLY_SQNC             /* 메뉴그룹적용순서   */
+			         , TLBR_USE_YN                    /* 툴바사용여부   */
+			         , HNOP_RGST_YN                   /* 수동등록여부   */
+			         , HNOP_RGST_RESN_CTN             /* 수동등록사유내용   */
+			         , FRST_RGSR_ID                   
+			         , FRST_RGST_IP                   
+			         , FRST_RGST_DT                   
+			         , FRST_RGST_CLNT_PRGM_ID         
+			         , FRST_RGST_SRVR_PRGM_ID         
+			         , LAST_UPDR_ID                   
+			         , LAST_UPDT_IP                   
+			         , LAST_UPDT_DT                   
+			         , LAST_UPDT_CLNT_PRGM_ID         
+			         , LAST_UPDT_SRVR_PRGM_ID         
+			        )
+			   values
+			   		(
+			   		   TMP.LGIN_ID
+			   		 , TMP.MENU_GRP_ID
+			   		 , SYSDATE
+			   		 , TO_DATE('29991231', 'YYYYMMDD')
+			   		 , TMP.MENU_GRP_APLY_SQNC
+			   		 , 'N'
+			   		 , 'N'
+			   		 , 'USER_MENU_AUTOJOB_NEW'
+			   		 , #{gvUserId}                     
+		         	 , #{gvUserIp}                     
+		         	 , sysdate                         
+		         	 , #{gvClntPrgmId}                 
+		         	 , #{gvSrvrPrgmId}                 
+		         	 , #{gvUserId}                     
+		         	 , #{gvUserIp}                     
+		        	 , sysdate                         
+		         	 , #{gvClntPrgmId}                 
+		         	 , #{gvSrvrPrgmId} 
+			   		)
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUserAmtExcelUpload (엑셀업로드용 사용자마스터(CCUSERAMT)테이블 수정처리.) 
+        Description :                                           엑셀업로드용 사용자마스터(CCUSERAMT)테이블 수정처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUserAmtExcelUpload"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+			/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateUserAmtExcelUpload */
+			UPDATE CCUSERAMT
+			   SET 
+			   		  LAST_UPDR_ID                     = #{gvUserId}
+				 	, LAST_UPDT_IP                     = #{gvUserIp}
+				 	, LAST_UPDT_DT                     = sysdate
+				 	, LAST_UPDT_CLNT_PRGM_ID           = #{gvClntPrgmId}
+				 	, LAST_UPDT_SRVR_PRGM_ID           = #{gvSrvrPrgmId}
+			   	   <if test="userNm != null">	
+			       	, USER_NM                          = #{userNm}                       				/* 사용자명   */
+			       </if>
+			       <if test="userEnsnNm != null">
+				 	, USER_ENSN_NM                     = #{userEnsnNm}                   				/* 사용자영문명   */
+				   </if>
+				   <if test="btdt != null">				   	
+				 	, BTDT                             = TO_DATE(#{btdt}, 'YYYYMMDDHH24MISS') 			/* 생년월일   */
+				   </if>
+				   <if test="gendCd != null">	
+				   , GEND_CD                          = #{gendCd}                       				/* 성별코드   */
+				   </if>
+			 	   , APST_YMD                         = DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD'), TO_DATE(#{apstYmd}, 'YYYYMMDD')) 	/* 적용시작일자   */
+				   , APFN_YMD                         = DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD'), TO_DATE(#{apfnYmd}, 'YYYYMMDD')) 					/* 적용종료일자   */
+				   <if test="lastCnctDt != null">
+				 	, LAST_CNCT_DT                     = TO_DATE(#{lastCnctDt}, 'YYYYMMDDHH24MISS') 	/* 최종접속일시   */
+				   </if>
+				   <if test="lastCnctIp != null">	
+				 	, LAST_CNCT_IP                     = #{lastCnctIp}                   				/* 최종접속IP   */
+				   </if>
+				   <if test="crntCnctDt != null">	
+				 	, CRNT_CNCT_DT                     = TO_DATE(#{crntCnctDt}, 'YYYYMMDDHH24MISS') 	/* 현재접속일시   */
+				   </if>
+				   <if test="crntCnctIp != null">	
+				 	, CRNT_CNCT_IP                     = #{crntCnctIp}                   				/* 현재접속IP   */
+				   </if>
+				   <if test="clno != null">
+				 	, CLNO                             = #{clno}                         				/* 휴대전화번호   */
+				   </if>
+				   <if test="extsTlno != null">	
+				 	, EXTS_TLNO                        = nvl(substrb(#{extsTlno},-4),#{extsTlno})                     				/* 내선전화번호   */
+				   </if>
+				   <if test="pdaNo != null">	
+				 	, PDA_NO                           = #{pdaNo}                        				/* PDA번호   */
+				   </if>
+				   <if test="emailId != null">
+				 	, EMAIL_ID                         = #{emailId}                      				/* 이메일ID   */
+				   </if>
+				   <if test="epId != null">	
+				 	, EP_ID                            = #{epId}                         				/* EP_ID   */
+				   </if>
+				   <if test="userLcnsNo != null">	
+				 	, USER_LCNS_NO                     = #{userLcnsNo}                   				/* 사용자면허번호   */
+				   </if>
+				   <if test="userSpczDrlcNo != null">	
+				 	, USER_SPCZ_DRLC_NO                = #{userSpczDrlcNo}               				/* 사용자전문의사면허번호   */
+				   </if>
+				   <if test="userSpczDrlcAcqsYmd != null">	
+				 	, USER_SPCZ_DRLC_ACQS_YMD          = TO_DATE(#{userSpczDrlcAcqsYmd}, 'YYYYMMDD') 	/* 사용자전문의사면허취득일자   */
+				   </if>
+				   <if test="trnnStrtYmd != null">
+				 	, TRNN_STRT_YMD                    = TO_DATE(#{trnnStrtYmd}, 'YYYYMMDD') 			/* 연수시작일자   */
+				   </if>
+				   <if test="trnnFnshYmd != null">	
+				 	, TRNN_FNSH_YMD                    = TO_DATE(#{trnnFnshYmd}, 'YYYYMMDD') 			/* 연수종료일자   */
+				   </if>
+				   <if test="rmrkCtn != null">	
+				 	, RMRK_CTN                         = #{rmrkCtn}                      				/* 비고내용   */
+				   </if>
+				   <if test="ocdtCd != null">	
+				 	, OCDT_CD                          = #{ocdtCd}                       				/* 직무코드   */
+				   </if>
+				   <if test="ocfmCd != null">	
+				 	, OCFM_CD                          = #{ocfmCd}                       				/* 직종코드   */
+				   </if>
+				   <if test="idNo != null">	
+				 	, ID_NO                            = #{idNo}                         				/* ID번호   */
+				   </if>
+				   <if test="occlCd != null">	
+				 	, OCCL_CD                          = #{occlCd}                       				/* 직급코드   */
+				   </if>
+				   <if test="ocpsCd != null">	
+				 	, OCPS_CD                          = #{ocpsCd}                       				/* 직위코드   */
+				   </if>
+				   <if test="ocrsCd != null">	
+				 	, OCRS_CD                          = #{ocrsCd}                       				/* 직책코드   */
+				   </if>
+				   <if test="emno != null">	
+				 	, EMNO                             = #{emno}                         				/* 사원번호   */
+				   </if>
+				   <if test="nursLcnsNo != null">	
+				 	, NURS_LCNS_NO                     = #{nursLcnsNo}                   				/* 간호사 면허번호   */
+				   </if>
+				   <if test="dndpLcnsNo != null">	
+				 	, DNDP_LCNS_NO                     = #{dndpLcnsNo}                   				/* 치과 면허번호   */
+				   </if>
+				   <if test="soclScwrLcnsNo != null">	
+				 	, SOCL_SCWR_LCNS_NO                = #{soclScwrLcnsNo}               				/* 사회복지사 면허번호    */
+				   </if>
+				   <if test="ocfmDetlCd != null">	
+				 	, OCFM_DETL_CD                     = #{ocfmDetlCd}                   				/* 직종상세코드 */
+				   </if>
+				   <if test="hsptCd != null">	
+				 	, HSPT_CD                          = #{hsptCd}                       				/* 병원코드 */
+				   </if>
+				   <if test="hsptOcfmCd != null">	
+			     	, HSPT_OCFM_CD                     = #{hsptOcfmCd}					  				/* 병원직종코드 */
+			       </if>
+		     WHERE 
+		     	   LGIN_ID                          = #{lginId}                      				/* 로그인ID   */		
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCcUsrDphtExcelUpload (사용자겸직정보(CCUSRDPHT) 에 엑셀업로드 수정처리.) 
+        Description :                                           사용자겸직정보(CCUSRDPHT) 에 엑셀업로드 수정처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCcUsrDphtExcelUpload"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-updateCcUsrDphtExcelUpload */
+		UPDATE CCUSRDPHT  /* NEXMED-EHR 사용자 역할정보 */
+		   SET 
+		       	  LAST_UPDR_ID                    = #{gvUserId}
+			 	, LAST_UPDT_IP                    = #{gvUserIp}
+			 	, LAST_UPDT_DT                    = sysdate
+			 	, LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}
+			 	, LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}
+		     <if test="userNm != null">
+		   	 	, USER_NM                         = #{userNm}                      /* 사용자명   */
+		   	 </if>
+		   	 <if test="userEnsnNm != null">
+			 	, USER_ENSN_NM                    = #{userEnsnNm}                  /* 사용자영문명   */
+			 </if>
+			 <if test="lginId != null">
+			 	, LGIN_ID                         = #{lginId}                      /* 로그인ID   */
+			 </if>
+			 <if test="mdcrDprtCd != null">
+			 	, MDCR_DPRT_CD                    = #{mdcrDprtCd}                  /* 진료부서코드   */
+			 </if>
+			 , APFN_YMD                        = DECODE(#{apfnYmd}, NULL, TO_DATE('29991231', 'YYYYMMDD'), TO_DATE(#{apfnYmd}, 'YYYYMMDD')) /* 적용종료일자   */			
+			 , APST_YMD                        = DECODE(#{apstYmd}, NULL, TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD'), 'YYYYMMDD'), TO_DATE(#{apstYmd}, 'YYYYMMDD')) /* 적용시작일자   */
+			 <if test="excfCd != null">	
+			 	, EXCF_CD                         = #{excfCd}                      /* 검사분류코드   */
+			 </if>
+			 <if test="mdcrClasCd != null">
+			 	, MDCR_CLAS_CD                    = #{mdcrClasCd}                  /* 진료Class코드   */
+			 </if>
+			 <if test="dtlsExcfCd != null">
+			 	, DTLS_EXCF_CD                    = #{dtlsExcfCd}                  /* 세부검사분류코드   */
+			 </if>
+			 <if test="rmrkCtn != null">
+			 	, RMRK_CTN                        = #{rmrkCtn}                     /* 비고내용   */
+			 </if>
+			 <if test="inftDprtCd != null">
+			 	, INFT_DPRT_CD                    = #{inftDprtCd}                  /* 안내부서코드   */
+			 </if>
+			 <if test="hrafPrapDprtCd != null">         
+			 	, HRAF_PRAP_DPRT_CD               = #{hrafPrapDprtCd}              /* 인사발령부서코드   */
+			 </if>
+			 <if test="ststDprtCd != null">
+			 	, STST_DPRT_CD                    = #{ststDprtCd}                  /* 통계부서코드   */
+			 </if>
+		WHERE  
+			   USER_ID                            = #{userId}                      /* 사용자ID   */
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt (병원코드조회) 
+        Description :                                           병원코드조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOneUserHspt */
+		SELECT HSPT_CD
+		     , ORGL_HSPT_CD
+		  FROM CCUSERAMT
+		 WHERE LGIN_ID = #{lginId}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes (패스워드 변경내역 최근 XX회 이내 동일 패스워드 존재여부 체크) 
+        Description :                                           패스워드 변경내역 최근 XX회 이내 동일 패스워드 존재여부 체크. 현재는 3회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccUseramtDAO-selectOnePwdMdfcHxLastXXTimes */
+		<![CDATA[
+		select  /*+ 비밀번호 이력 조회 - 이전 3회 이내에 사용된 비밀번호인지 체크 */
+		        to_char (   count   (   *   )   )   as  rtur_vl
+		from
+		        (
+		            select  /*+ index_desc  (   a   cspasshht_pk    )   */
+		                    a.pwd_mdfc_dt
+		                ,   a.pwd
+		            from
+		                    cspasshht   a
+		            where
+		                    a.lgin_id                   =       #{lginId}
+		            and     a.frst_rgst_clnt_prgm_id    like    '%CMA001F4'
+		            and     rownum                      <       4
+		        )   a
+		where
+		        a.pwd   =   #{crntPwd2}
+		]]>
+	</select>
+
+
+
+</mapper>

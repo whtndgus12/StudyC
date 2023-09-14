@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:http="http://www.springframework.org/schema/integration/http"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<util:properties id="contextProperties" location="classpath:properties/shc_ehr_com-#{systemProperties['spring.profiles.active']}.properties" />
+
+	<http:inbound-gateway path="/simple" id="simpleCrudGateway"
+		request-channel="simple_request_channel" reply-channel="simple_reply_channel"
+		supported-methods="GET, POST"
+		message-converters="messageConverterList" />
+		
+	 <util:list id="messageConverterList" value-type="org.springframework.http.converter.HttpMessageConverter">
+           <ref bean="stringMessageConverter" />
+           <ref bean="byteMessageConverter" />
+     </util:list>
+		
+    <bean id="stringMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg index="0" value="UTF-8" />
+    </bean>
+    
+    <bean id="byteMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+
+	<int:channel id="simple_request_channel">
+		<int:interceptors>
+			<ref bean="decInterceptor"/>
+			<ref bean="simpleCertificationChannelInterceptor"/>
+		</int:interceptors>
+	</int:channel>
+
+	<int:channel id="simple_reply_channel">
+		<int:interceptors>
+			<ref bean="encInterceptor"/>
+		</int:interceptors>
+	</int:channel>
+		 
+	<int:chain id="simpleServiceProcessor" input-channel="simple_request_channel" output-channel="simple_reply_channel">
+		<int:service-activator ref="crudServiceActivator" method="executeSqlMethodsByServiceId" />
+		
+		<int:enricher id="messageCodeEnricher">
+		    <int:property name="errorcode" value="0" />
+	        <int:property name="errormsg"  expression="T(com.anyframe.online.runtime.service.context.ServiceExecutionContextUtil).returnMessages"/>
+		</int:enricher>
+		
+		<int:transformer>
+			<bean class="com.anyframe.online.runtime.service.transformer.ObjectToJsonTransformer">
+				<property name="objectMapper" ref="objectMapper"/>
+			</bean>
+		</int:transformer>
+	</int:chain>
+	
+	<bean id="crudServiceActivator" class="com.anyframe.online.runtime.integration.service.support.SimpleCrudServiceActivator">
+		<property name="crudService" >
+			<bean id="crudService" class="com.anyframe.online.runtime.integration.service.support.SimpleCrudService">
+		        <property name="objectMapper" ref="objectMapper"/>
+			</bean>
+		</property>
+		<property name="sqlIdMappingExtractor" >
+			<!-- <bean id="sqlIdMappingExtractor" class="com.anyframe.online.runtime.integration.service.support.DefaultSqlIdMappingExtractor"> -->
+			<bean id="sqlIdMappingExtractor" class="com.sds.healthcare.ehr.com.sy.fwk.EHRSqlIdMappingExtractor">
+				<property name="dataSource" ref="ehrDs" />
+				<property name="comSvcType" value="#{contextProperties['comsvc.type']}" />
+			</bean>
+		</property>
+		<property name="objectMapper" ref="objectMapper"/>
+	</bean>
+</beans>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaMccsRcpcComnDAO_sql.xml 
+    Description :                                      진료비계산/수납 전체공통 DAO
+                  -->
+<mapper namespace="AcaMccsRcpcComnDAO">
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-executeCeckPaclYmd (원무계산일자 체크 프로시져 호출 [AsIs : sdd_apstatu_l01]) 
+        Description : 원무계산일자 체크 프로시져를 호출한다.
+
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMccsRcpcComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-executeCeckPaclYmd"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMccsRcpcComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-executeCeckPaclYmd */
+		{ call SP_AC_CHECK_PACL_YMD( #{flag,mode=IN,jdbcType=VARCHAR,javaType=string}
+				                                    , #{ptadMdrpNo,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}
+				                                    , #{excfCd,mode=IN,jdbcType=VARCHAR,javaType=string}
+				                                    , #{mngmTrgtTablNm,mode=IN,jdbcType=VARCHAR,javaType=string}
+				                                    , #{ptno,mode=IN,jdbcType=VARCHAR,javaType=string}
+		             	   				            , to_date(#{ordrYmd, mode=IN, jdbcType=VARCHAR, javaType=string}, 'yyyymmdd')	
+				                                    , #{ordrSno,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}
+				                                    , #{orprVl,mode=IN,jdbcType=VARCHAR,javaType=string}
+				                                    , #{ptadCodvCd,mode=IN,jdbcType=VARCHAR,javaType=string}
+				                                    , #{paclYmd,mode=INOUT,jdbcType=VARCHAR,javaType=string}
+				                                    , #{errYn,mode=INOUT,jdbcType=VARCHAR,javaType=string}
+				                                    , #{errCtn,mode=INOUT,jdbcType=VARCHAR,javaType=string}
+				                                    ) }
+	</select>	
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMccsRcpcComnDVO">
+	
+		<result property="dadvCd" column="DADV_CD"/>
+		<result property="hldyCd" column="HLDY_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd (주야구분코드 조회) 
+        Description :                                           주야구분코드 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMccsRcpcComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMccsRcpcComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMccsRcpcComnDAO-selectOneDadvCd */
+		select substr(RESULT, 1, 1) as DADV_CD
+		        , substr(RESULT, 2, 1) as HLDY_CD
+		   from (select FN_AC_GET_DADV_CD(to_date(#{mdcrYmd}, 'yyyymmdd'), #{mdcrDt} ) RESULT
+		           from dual
+		         )
+	</select>
+
+
+
+</mapper>

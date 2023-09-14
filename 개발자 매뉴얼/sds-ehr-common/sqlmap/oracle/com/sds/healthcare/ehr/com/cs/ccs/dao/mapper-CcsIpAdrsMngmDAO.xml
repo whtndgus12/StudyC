@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsIpAdrsMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsIpAdrsMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO">
+	
+		<result property="treqId" column="TREQ_ID"/>
+		<result property="treqKindCd" column="TREQ_KIND_CD"/>
+		<result property="treqIp" column="TREQ_IP"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="treqSno" column="TREQ_SNO"/>
+		<result property="treqOprnSystCd" column="TREQ_OPRN_SYST_CD"/>
+		<result property="treqMngmTlno" column="TREQ_MNGM_TLNO"/>
+		<result property="treqInfmUpreCd" column="TREQ_INFM_UPRE_CD"/>
+		<result property="upreCtn" column="UPRE_CTN"/>
+		<result property="pntrDrivNm" column="PNTR_DRIV_NM"/>
+		<result property="dprtName" column="DPRT_NAME"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="treqOprnSystName" column="TREQ_OPRN_SYST_NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-listIpAdrs */
+		 select  /*+ csd_ipadrmt_l01$S01_터미널 조회 */ 
+		          A.TREQ_ID,
+		          A.TREQ_KIND_CD,
+		          A.TREQ_IP,
+		          A.DPRT_CD,
+		          A.USER_ID,
+		          A.TREQ_SNO,
+		          A.TREQ_OPRN_SYST_CD,
+		          A.TREQ_MNGM_TLNO,
+		          A.TREQ_INFM_UPRE_CD,
+		          ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CS008' and COMN_DTLS_CD = A.TREQ_INFM_UPRE_CD ) as UPRE_CTN,
+		          A.PNTR_DRIV_NM,
+		          B.KORN_DPRT_NM as DPRT_NAME,                                                  --afi_rtur_vl 부서
+		          ( select EMPY_NM from HZUSERMMT where EMNO = A.USER_ID ) as USER_NAME, -- afi_rtur_vl_1 사용자명
+		          ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CS007' and COMN_DTLS_CD = A.TREQ_OPRN_SYST_CD ) as TREQ_OPRN_SYST_NAME --afi_rtur_vl_2 O/S
+		  from  CSIPADRMT A,
+		           (select DPRT_CD, KORN_DPRT_NM from HZDEPTMMT where DPRT_CD like nvl(#{dprtCd},'%')) B
+		where  A.TREQ_ID like #{treqId} || '%'
+		   and  ( (A.TREQ_KIND_CD like nvl(#{treqKindCd}, '%'))
+		             or (decode(#{treqKindCd},'X',decode(substr(A.TREQ_KIND_CD,1,1),'B','X','P','X','A'),'A')='X') )
+		   and  A.TREQ_IP  like #{treqIp} || '%'
+		   and  A.DPRT_CD = B.DPRT_CD
+		   and  nvl(A.USER_ID, '%') like '%' || #{userId} || '%'
+		order by  TREQ_ID
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-insertIpAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-insertIpAdrs"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-insertIpAdrs */
+		insert  /*+ csd_ipadrmt_i03$I01_터미널 입력 */ 
+		  into  CSIPADRMT
+		          (
+		       	  TREQ_ID
+		       ,  TREQ_KIND_CD
+		       ,  TREQ_IP
+		       ,  DPRT_CD
+		       ,  USER_ID
+		       ,  TREQ_SNO
+		       ,  TREQ_OPRN_SYST_CD
+		       ,  TREQ_MNGM_TLNO
+		       ,  TREQ_INFM_UPRE_CD
+		       ,  PNTR_DRIV_NM
+		       ,  FRST_RGSR_ID
+		       ,  FRST_RGST_IP
+		       ,  FRST_RGST_DT
+		       ,  FRST_RGST_CLNT_PRGM_ID
+		       ,  FRST_RGST_SRVR_PRGM_ID
+		       ,  LAST_UPDR_ID
+		       ,  LAST_UPDT_IP
+		       ,  LAST_UPDT_DT
+		       ,  LAST_UPDT_CLNT_PRGM_ID
+		       ,  LAST_UPDT_SRVR_PRGM_ID
+				  )
+		values (
+				  #{treqId}
+			   ,  #{treqKindCd}
+			   ,  #{treqIp}
+			   ,  #{dprtCd}
+			   ,  #{userId}
+			   ,  #{treqSno}
+			   ,  #{treqOprnSystCd}
+			   ,  #{treqMngmTlno}
+			   ,  #{treqInfmUpreCd}
+			   ,  #{pntrDrivNm}
+			   ,  #{gvUserId}
+			   ,  #{gvUserIp}
+			   ,  sysdate
+			   ,  #{gvClntPrgmId}
+			   ,  #{gvSrvrPrgmId}
+			   ,  #{gvUserId}
+			   ,  #{gvUserIp}
+			   ,  sysdate
+			   ,  #{gvClntPrgmId}
+			   ,  #{gvSrvrPrgmId}
+		          )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-updateIpAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-updateIpAdrs"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-updateIpAdrs */
+		update  /*+ csd_ipadrmt_u03$I01_터미널 수정 */
+		             CSIPADRMT
+		      set  TREQ_KIND_CD    = #{treqKindCd}
+		          ,  TREQ_IP              = #{treqIp}
+		          ,  DPRT_CD             = #{dprtCd}
+		          ,  USER_ID              = #{userId}
+		          ,  TREQ_SNO          = #{treqSno}
+				  ,  TREQ_OPRN_SYST_CD    = #{treqOprnSystCd}
+				  ,  TREQ_MNGM_TLNO       = decode(instr(#{treqMngmTlno},'**'), 0, #{treqMngmTlno}, TREQ_MNGM_TLNO)
+				  ,  TREQ_INFM_UPRE_CD    = #{treqInfmUpreCd}
+				  ,  PNTR_DRIV_NM    = #{pntrDrivNm}
+				  ,  LAST_UPDR_ID      = #{gvUserId}
+				  ,  LAST_UPDT_IP       = #{gvUserIp}
+				  ,  LAST_UPDT_DT      = sysdate
+				  ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				  ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		  where  TREQ_ID = #{treqId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-deleteIpAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-deleteIpAdrs"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-deleteIpAdrs */
+		delete  /*+ csd_ipadrmt_d03$I01_터미널 삭제 */
+		  from  CSIPADRMT
+		where  TREQ_ID = #{treqId}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO">
+	
+		<result property="treqId" column="TREQ_ID"/>
+		<result property="treqKindCd" column="TREQ_KIND_CD"/>
+		<result property="treqIp" column="TREQ_IP"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="treqSno" column="TREQ_SNO"/>
+		<result property="treqOprnSystCd" column="TREQ_OPRN_SYST_CD"/>
+		<result property="treqMngmTlno" column="TREQ_MNGM_TLNO"/>
+		<result property="treqInfmUpreCd" column="TREQ_INFM_UPRE_CD"/>
+		<result property="pntrDrivNm" column="PNTR_DRIV_NM"/>
+		<result property="dprtName" column="DPRT_NAME"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="treqOprnSystName" column="TREQ_OPRN_SYST_NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIpAdrsMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIpAdrsMngmDAO-selectOneIpAdrs */
+		 select  /*+ csd_ipadrmt_s01$S01_터미널 조회 */ 
+		          A.TREQ_ID,
+		          A.TREQ_KIND_CD,
+		          A.TREQ_IP,
+		          A.DPRT_CD,
+		          A.USER_ID,
+		          A.TREQ_SNO,
+		          A.TREQ_OPRN_SYST_CD,
+		          A.TREQ_MNGM_TLNO,
+		          A.TREQ_INFM_UPRE_CD,
+		          A.PNTR_DRIV_NM,
+		          ( select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = A.DPRT_CD )  as DPRT_NAME,     --afi_rtur_vl 부서
+		          ( select EMPY_NM from HZUSERMMT where EMNO = A.USER_ID ) as USER_NAME,               --afi_rtur_vl_1 사용자명
+		          ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CS007' and COMN_DTLS_CD = A.TREQ_OPRN_SYST_CD ) as TREQ_OPRN_SYST_NAME  -- afi_rtur_vl_2 O/S
+		  from  CSIPADRMT A
+		where  A.TREQ_ID = #{treqId}
+		order by  A.TREQ_ID
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbPtntAdddComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbPtntAdddComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateLtstMdcrYmd (최근진료일자 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateLtstMdcrYmd"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateLtstMdcrYmd */
+		        APPTADIFT
+		   set
+		        LTST_MDCR_YMD = trunc(sysdate)
+		        /* AUDIT */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where 
+		        PTNO = #{ptno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-insertPtntAddd (환자부가정보신규생성) 
+        Description :                                           apd_ptadift_i01$I01_환자부가정보신규생성
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-insertPtntAddd"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO"  >
+		insert into /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-insertPtntAddd */
+		APPTADIFT
+		(
+			   PTNO	
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+		)
+		values
+		(
+			   #{ptno}		
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updatePtntAddd (접수부가 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updatePtntAddd"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updatePtntAddd */
+		        APPTADIFT
+		   set  LAST_UPDR_ID            =   #{gvUserId}
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}
+		     ,  LAST_UPDT_DT            =   sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		 <if test="mdppBdwgVl != null">
+		     ,  MDPP_BDWG_VL            =   #{mdppBdwgVl}
+		 </if>
+		 <if test="adorYn != null">
+		     ,  ADOR_YN                 =   #{adorYn}
+		 </if>
+		 <if test="btypVrinPcbkNoCtn != null">
+		     ,  BTYP_VRIN_PCBK_NO_CTN   =   #{btypVrinPcbkNoCtn}
+		 </if> 
+		 where  PTNO    =   #{ptno}
+	</update>
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-executeDndpNoNorn (치과번호 채번) 
+        Description : apd_mdndpno_u01_치과번호 채번
+
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-executeDndpNoNorn"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-executeDndpNoNorn */
+		{ call
+		   SP_AP_CREATE_DNDP_NO ( 'I'
+		                         , #{ptno, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                         , #{dndpNo, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                         , #{outErryn, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                         , #{outErrmsg, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                        )
+		}
+	</select>	
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateChcnYn (환자소아암여부 수정) 
+        Description :                                           환자소아암여부 수정 apd_rcadblt_u10
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateChcnYn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtntAdddComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtntAdddComnDAO-updateChcnYn */
+		        APRCADBLT
+		   set
+		        CHCN_YN                = #{chcnYn}   /* 소아암 여부         */
+		     /* 서버 프로그램 전환시 자동 추가된 항목 */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  
+		        MDRP_NO = #{mdrpNo}
+	</update>
+
+</mapper>

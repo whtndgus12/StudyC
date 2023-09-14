@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcbKuefInfmDAO_sql.xml 
+    Description : -->
+<mapper namespace="AcbKuefInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm-result" type="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO">
+	
+		<result property="emplId" column="EMPL_ID"/>
+		<result property="emplRsrn" column="EMPL_RSRN"/>
+		<result property="emplNm" column="EMPL_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="emplDvsnCd" column="EMPL_DVSN_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="hlofSttsCd" column="HLOF_STTS_CD"/>
+		<result property="fmlyRltnNm" column="FMLY_RLTN_NM"/>
+		<result property="fmlyRsrn" column="FMLY_RSRN"/>
+		<result property="fmlyNm" column="FMLY_NM"/>
+		<result property="emfmSno" column="EMFM_SNO"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm (본교직원가족정보 조회) 
+        Description :                                           본교직원가족정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm"  parameterType="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefInfm */
+		select  a.EMPL_ID                                   as EMPL_ID          -- 직원ID
+		     ,  a.EMPL_RSRN                                 as EMPL_RSRN        -- 직원주민등록번호
+		     ,  a.EMPL_NM                                   as EMPL_NM          -- 직원명
+		     ,  to_char(a.APST_YMD, 'yyyymmdd')             as APST_YMD         -- 적용시작일자
+		     ,  to_char(a.APFN_YMD, 'yyyymmdd')             as APFN_YMD         -- 적용종료일자
+		     ,  a.EMPL_DVSN_CD                              as EMPL_DVSN_CD     -- 직원구분코드
+		     ,  a.OCFM_NM                                   as OCFM_NM          -- 직종명
+		     ,  a.HLOF_STTS_CD                              as HLOF_STTS_CD     -- 재직상태코드
+		     ,  a.FMLY_RLTN_NM                              as FMLY_RLTN_NM     -- 가족관계명
+		     ,  a.FMLY_RSRN                                 as FMLY_RSRN        -- 가족주민등록번호
+		     ,  a.FMLY_NM                                   as FMLY_NM          -- 가족명
+		     ,  a.EMFM_SNO                                  as EMFM_SNO         -- 직원가족일련번호
+		     ,  to_char(a.DLTN_DT, 'yyyymmddhh24miss')      as DLTN_DT          -- 삭제일시
+		  from  ACETKUEFT a
+		 where  a.EMPL_ID       =   #{empId}
+		   and  a.DLTN_DT is null
+		 <!-- #{onslFmlyDvsnCd} 본인가족구분코드 (01:본인) -->
+		 <if test='onslFmlyDvsnCd != null and onslFmlyDvsnCd == "01"'>
+		   and  a.EMPL_RSRN     =   FMLY_RSRN
+		 </if>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno-result" type="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO">
+	
+		<result property="emplDvsnCd" column="EMPL_DVSN_CD"/>
+		<result property="emplDvsnNm" column="EMPL_DVSN_NM"/>
+		<result property="emplId" column="EMPL_ID"/>
+		<result property="emplNm" column="EMPL_NM"/>
+		<result property="fmlyRltnNm" column="FMLY_RLTN_NM"/>
+		<result property="hlofSttsCd" column="HLOF_STTS_CD"/>
+		<result property="hlofSttsNm" column="HLOF_STTS_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno (본교인사정보조회 (환자번호 기준)) 
+        Description :                                           본교인사정보조회 (환자번호 기준)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno"  parameterType="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbKuefInfmDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-acb-dao-AcbKuefInfmDAO-listKuefByPtno */
+		select  h.EMPL_DVSN_CD                                      as EMPL_DVSN_CD         -- 직원구분코드
+		     ,  (   select  DETL_CD_DSCR_CTN
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD     =   'ACB_033'
+		               and  COMN_DTLS_CD    =   h.EMPL_DVSN_CD
+		        )                                                   as EMPL_DVSN_NM
+		     ,  h.EMPL_ID                                           as EMPL_ID
+		     ,  h.EMPL_NM                                           as EMPL_NM
+		     ,  case
+		            when h.ONSL_FMLY_DVSN_CD = '01' then '본인'
+		            else    (   select  DETL_CD_NM
+		                          from  CCCMCDDMT
+		                         where  COMN_GRP_CD     =   'ACB_034'
+		                           and  COMN_DTLS_CD    =   h.FMLY_RLTN_NM
+		                    )
+		            end                                             as FMLY_RLTN_NM
+		     ,  h.HLOF_STTS_CD                                      as HLOF_STTS_CD         -- 재직상태코드
+		     ,  (   select  DETL_CD_NM
+		              from  CCCMCDDMT
+		             where  COMN_GRP_CD     =   'ACB_035'
+		               and  COMN_DTLS_CD    =   h.HLOF_STTS_CD
+		        )                                                   as HLOF_STTS_NM
+		     ,  to_char(h.APST_YMD, 'yyyymmdd')                     as APST_YMD
+		     ,  to_char(h.APFN_YMD, 'yyyymmdd')                     as APFN_YMD
+		  from  (   select  case
+		                        when b.EMPL_RSRN = b.FMLY_RSRN then '01'
+		                        else '02'
+		                        end                                         as ONSL_FMLY_DVSN_CD
+		                 ,  b.*
+		              from  APPTPTNTT a
+		                 ,  ACETKUEFT b
+		             where  a.PTNO      =   #{ptno}
+		               and  b.FMLY_RSRN =   a.FRRN || a.BRRN
+		        ) h
+		 order
+		    by  h.EMPL_DVSN_CD
+		     ,  h.ONSL_FMLY_DVSN_CD
+	</select>
+
+
+
+</mapper>

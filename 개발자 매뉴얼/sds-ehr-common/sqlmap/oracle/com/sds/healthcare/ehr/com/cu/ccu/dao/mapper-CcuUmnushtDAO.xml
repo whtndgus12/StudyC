@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUmnushtDAO_sql.xml 
+    Description :                                      메뉴
+                  -->
+<mapper namespace="CcuUmnushtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-insertUmnusht0001 () 
+        Description :                                           ASIS : CudUmnushtI01DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnushtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-insertUmnusht0001"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnushtDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-insertUmnusht0001 */
+		insert  /*+ cud_umnusht_i01$I01_메뉴사용이력 */
+				   into CUUMNUSHT(MDFC_HX_INPT_DT
+									   , MDFC_HX_TN
+									   , LGIN_ID
+									   , MENU_GRP_ID
+									   , MENU_ID
+									   , PRGM_ID
+									   , FRST_RGSR_ID
+									   , FRST_RGST_IP
+									   , FRST_RGST_DT
+									   , FRST_RGST_CLNT_PRGM_ID
+									   , FRST_RGST_SRVR_PRGM_ID
+									   , LAST_UPDR_ID
+									   , LAST_UPDT_IP
+									   , LAST_UPDT_DT
+									   , LAST_UPDT_CLNT_PRGM_ID
+									   , LAST_UPDT_SRVR_PRGM_ID
+										)
+				   select   to_date(to_char(sysdate, 'YYYYMMDDHH24MISS'), 'YYYYMMDDHH24MISS') as MDFC_HX_INPT_DT
+						  , CUUMNUSHTQ.nextval
+						  , #{gvLginId}
+						  , nvl(#{menuGrpId}, 'NONE')
+						  /* , nvl(substr(:cus_umnusmt_001[0].menu_id, 4, 6), 'NONE') */
+						  , decode(length(#{menuId}), 6, #{menuId}, 9, substr(#{menuId}, 4, 6), 'NONE')
+						  , #{prgmId}
+						  , #{gvUserId}
+						  , #{gvUserIp}
+						  , sysdate
+						  , #{gvClntPrgmId}
+						  , #{gvSrvrPrgmId}
+						  , #{gvUserId}
+						  , #{gvUserIp}
+						  , sysdate
+						  , #{gvClntPrgmId}
+						  , #{gvSrvrPrgmId}
+				   from     dual
+		]]>			
+			
+			
+			
+			
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnushtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="hdfcHxInptDt" column="HDFC_HX_INPT_DT"/>
+		<result property="prgmId" column="PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht (메뉴사용이력 목록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnushtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUmnushtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUmnushtDAO-listUmnusht */
+		SELECT A.LGIN_ID
+		       , B.USER_NM
+		       , TO_CHAR(A.MDFC_HX_INPT_DT, 'YYYY-MM- DD HH24:MI:SS') AS "HDFC_HX_INPT_DT"
+		       , A.PRGM_ID
+		  FROM CUUMNUSHT A
+		     , CCUSERAMT B
+		 WHERE A.LGIN_ID = B.LGIN_ID
+		   AND PRGM_ID = #{prgmId}
+		 ORDER BY MDFC_HX_INPT_DT DESC
+	</select>
+
+
+
+</mapper>

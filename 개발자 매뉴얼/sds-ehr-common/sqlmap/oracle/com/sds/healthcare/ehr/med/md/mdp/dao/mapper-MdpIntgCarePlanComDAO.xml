@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpIntgCarePlanComDAO_sql.xml 
+    Description :                                      통합CarePlan 조회,입력,수정 한다.
+                  -->
+<mapper namespace="MdpIntgCarePlanComDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-insertMdpPlanI1I01 (통합CarePlan insert) 
+        Description :                                           통합CarePlan 데이터를 insert 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-insertMdpPlanI1I01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-insertMdpPlanI1I01 */
+		<![CDATA[
+		INSERT INTO MDPPLANDT
+		(
+		    MDRP_NO                     /* 진료접수번호 */
+		  , PTNO                        /* 환자번호                      (asis) PATNO          */
+		  , ADMS_YMD                    /* 입원일자                      (asis) ADMDATE        */
+		  , PLAN_TN                     /* 순번                          (asis) SEQNO          */
+		  , PRBL_CTN                    /* PROBLEM                       (asis) PROBLEM        */
+		  , PLAN_GOAL_CTN               /* GOAL                          (asis) GOAL           */
+		  , PLAN_YMD                    /* 계획일자                      (asis) PLANDATE       */
+		  , GOAL_YMD                    /* 목표일자                      (asis) NEXTDATE       */
+		  , FINS_YMD                    /* 완료일자                      (asis) ENDDATE        */
+		  , DLTN_YMD                    /* 삭제일자                      (asis) DELDATE        */
+		  , PLAN_RCRD_TYPE_CD           /* 기록타입                      (asis) RECTYPE        */
+		  , PLAN_DPRT_CD                /* 계획부서                      (asis) RECDEPT        */
+		  , PLAN_WRTR_ID                /* 계획자                        (asis) RECID          */
+		  , END_DPRT_CD                 /* 완결부서                      (asis) ENDDEPT        */
+		  , ACHV_YN                     /* 달성여부                      (asis) REACHYN        */
+		  , ACHV_FALR_RESN_CD           /* 미달성사유                    (asis) FALERSN        */
+		  , ACHV_FALR_REET_CTN          /* 사유기타                      (asis) FALEETC        */
+		  , ENPR_ID                     /* 완결자                        (asis) ENDID          */
+		  , CNDR_ID                     /* 확인의사                      (asis) CONFDR         */
+		  , CNFR_DT                     /* 확인일시                      (asis) CONFDATE       */
+		  , RMRK_CTN                    /* 비고                          (asis) REMARK         */
+		  , MDDR_CNFR_YN                /* 의사확인 (Y:승인,N:미승인)    (asis) CONFDRYN       */
+		  , CMNT_CNFR_YMD               /* COMMENT 확인일자              (asis) COMMENTCHKDATE */
+		  , ACHV_YN_CNFR_YMD            /* 달성여부 확인일자             (asis) REACHYNCHKDATE */
+		  , SYST_PRSG_DT                /* 시스템처리일시                (asis) SYSTEMDT       */
+		  , INPT_PATH_DVSN_VL           /* 입력구분 (A:입원기록지)       (asis) INPUTGB        */
+		  , CARE_DX_EMR_INRF_VL         /* 간호진단 EMR 인터페이스 컬럼  (asis) CAREDXCD       */
+		  , EMR_PLAN_DT                 /* EMR 계획일시                  (asis) EMRPLNDT       */
+		  , FRST_RGSR_ID                /* 최종수정자ID*/
+		  , FRST_RGST_IP                /* 최종수정IP*/
+		  , FRST_RGST_DT                /* 최종수정일시*/
+		  , FRST_RGST_CLNT_PRGM_ID      /* 최종수정SMC클라이언트프로그램ID*/
+		  , FRST_RGST_SRVR_PRGM_ID      /* 최종수정SMC서버프로그램ID*/      
+		  , LAST_UPDR_ID                /* 최종수정자ID*/
+		  , LAST_UPDT_IP                /* 최종수정IP*/
+		  , LAST_UPDT_DT                /* 최종수정일시*/
+		  , LAST_UPDT_CLNT_PRGM_ID      /* 최종수정SMC클라이언트프로그램ID*/
+		  , LAST_UPDT_SRVR_PRGM_ID      /* 최종수정SMC서버프로그램ID*/  
+		)
+		(
+		  SELECT
+		          #{mdrpNo}                                                     /* 진료접수번호 */
+		        , #{ptno}                                                       /* 환자번호                      (asis) PATNO          */
+		        , TO_DATE(#{admsYmd}, 'yyyymmdd')                               /* 입원일자                      (asis) ADMDATE        */
+		        , NVL(MAX(A.PLAN_TN), 0) + 1                                    /* 순번                          (asis) SEQNO          */
+		        , #{prblCtn}                                                    /* PROBLEM                       (asis) PROBLEM        */
+		        , #{planGoalCtn}                                                /* GOAL                          (asis) GOAL           */
+		        , TO_DATE(#{planYmd}, 'yyyymmdd')                               /* 계획일자                      (asis) PLANDATE       */
+		        , TO_DATE(#{goalYmd}, 'yyyymmdd')                               /* 목표일자                      (asis) NEXTDATE       */
+		        , TO_DATE(#{finsYmd}, 'yyyymmdd')                               /* 완료일자                      (asis) ENDDATE        */
+		        , TO_DATE(#{dltnYmd}, 'yyyymmdd')                               /* 삭제일자                      (asis) DELDATE        */
+		        , NVL(#{planRcrdTypeCd}, FN_MD_GET_JIKJONG(1, #{planWrtrId}))   /* 기록타입                      (asis) RECTYPE        */
+		        , #{planDprtCd}                                                 /* 계획부서                      (asis) RECDEPT        */
+		        , #{planWrtrId}                                                 /* 계획자                        (asis) RECID          */
+		        , #{endDprtCd}                                                  /* 완결부서                      (asis) ENDDEPT        */
+		        , #{achvYn}                                                     /* 달성여부                      (asis) REACHYN        */
+		        , #{achvFalrResnCd}                                             /* 미달성사유                    (asis) FALERSN        */
+		        , #{achvFalrReetCtn}                                            /* 사유기타                      (asis) FALEETC        */
+		        , #{enprId}                                                     /* 완결자                        (asis) ENDID          */
+		        , #{cndrId}                                                     /* 확인의사                      (asis) CONFDR         */
+		        , TO_DATE(#{cnfrDt}, 'yyyymmddhh24miss')                        /* 확인일시                      (asis) CONFDATE       */
+		        , #{rmrkCtn}                                                    /* 비고                          (asis) REMARK         */
+		        , #{mddrCnfrYn}                                                 /* 의사확인 (Y:승인,N:미승인)    (asis) CONFDRYN       */
+		        , TO_DATE(#{cmntCnfrYmd}, 'yyyymmdd')                           /* COMMENT 확인일자              (asis) COMMENTCHKDATE */
+		        , TO_DATE(#{achvYnCnfrYmd}, 'yyyymmdd')                         /* 달성여부 확인일자             (asis) REACHYNCHKDATE */
+		        , TO_DATE(#{systPrsgDt}, 'yyyymmddhh24miss')                    /* 시스템처리일시                (asis) SYSTEMDT       */
+		        , #{inptPathDvsnVl}                                             /* 입력구분 (A:입원기록지)       (asis) INPUTGB        */
+		        , #{careDxEmrInrfVl}                                            /* 간호진단 EMR 인터페이스 컬럼  (asis) CAREDXCD       */
+		        , TO_DATE(#{emrPlanDt}, 'yyyymmddhh24miss')                     /* EMR 계획일시                  (asis) EMRPLNDT       */
+		        /* 서버프로그램 필수 입력*/
+		        , #{gvLginId}                 /* 최종수정자ID*/
+		        , #{gvUserIp}                 /* 최종수정IP*/
+		        , sysdate                     /* 최종수정일시*/
+		        , #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID*/
+		        , #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID*/      
+		        , #{gvLginId}                 /* 최종수정자ID*/
+		        , #{gvUserIp}                 /* 최종수정IP*/
+		        , sysdate                     /* 최종수정일시*/
+		        , #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID*/
+		        , #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID*/  
+		    FROM  MDPPLANDT A
+		   WHERE  A.PTNO      = #{ptno}
+		     AND  A.MDRP_NO   = #{mdrpNo}
+		)
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U02 (통합CarePlan update) 
+        Description :                                           통합CarePlan update 처리를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U02"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U02 */
+		<![CDATA[
+		UPDATE  MDPPLANDT   A
+		   SET  A.FINS_YMD                  = TO_DATE(#{afinsYmd}, 'yyyymmdd')    /* 완료일자             (asis) ENDDATE */
+		      , A.END_DPRT_CD               = #{endDprtCd}                        /* 완결부서코드         (asis) ENDDEPT */
+		      , A.ACHV_YN                   = #{achvYn}                           /* 달성여부             (asis) REACHYN */
+		      , A.ACHV_FALR_RESN_CD         = #{achvFalrResnCd}                   /* 달성실패사유코드     (asis) FALERSN */
+		      , A.ACHV_FALR_REET_CTN        = #{achvFalrReetCtn}                  /* 달성실패사유기타내용 (asis) FALEETC */
+		      , A.ENPR_ID                   = #{enprId}                           /* 완결자ID (asis)      (asis) ENDID */
+		      /* 로그정보 */
+		      , A.LAST_UPDR_ID              = #{gvLginId}             /* 최종수정자ID */
+		      , A.LAST_UPDT_IP              = #{gvUserIp}             /* 최종수정IP */
+		      , A.LAST_UPDT_DT              = sysdate                 /* 최종수정일시 */
+		      , A.LAST_UPDT_CLNT_PRGM_ID    = #{gvClntPrgmId}         /* 최종수정SMC클라이언트프로그램ID */
+		      , A.LAST_UPDT_SRVR_PRGM_ID    = #{gvSrvrPrgmId}         /* 최종수정SMC서버프로그램ID */  
+		 WHERE  A.PTNO      = #{ptno}
+		   AND  A.MDRP_NO   = #{mdrpNo}
+		   AND  A.CARE_DX_EMR_INRF_VL = #{careDxEmrInrfVl} /* 간호기록Key */
+		   AND  A.DLTN_YMD  IS NULL /* 삭제일자 */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U03 (통합CarePlan update (3번)) 
+        Description :                                           통합CarePlan update (3번) 처리를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U03"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U03 */
+		<![CDATA[
+		UPDATE  MDPPLANDT   A
+		   SET  A.FINS_YMD                  = NULL   /* 완료일자             (asis) ENDDATE */
+		      , A.END_DPRT_CD               = ''     /* 완결부서코드         (asis) ENDDEPT */
+		      , A.ACHV_YN                   = ''     /* 달성여부             (asis) REACHYN */
+		      , A.ACHV_FALR_RESN_CD         = ''     /* 달성실패사유코드     (asis) FALERSN */
+		      , A.ACHV_FALR_REET_CTN        = ''     /* 달성실패사유기타내용 (asis) FALEETC */
+		      , A.ENPR_ID                   = ''     /* 완결자ID (asis)      (asis) ENDID */
+		      /* 로그정보 */
+		      , A.LAST_UPDR_ID              = #{gvLginId}             /* 최종수정자ID */
+		      , A.LAST_UPDT_IP              = #{gvUserIp}             /* 최종수정IP */
+		      , A.LAST_UPDT_DT              = sysdate                 /* 최종수정일시 */
+		      , A.LAST_UPDT_CLNT_PRGM_ID    = #{gvClntPrgmId}         /* 최종수정SMC클라이언트프로그램ID */
+		      , A.LAST_UPDT_SRVR_PRGM_ID    = #{gvSrvrPrgmId}         /* 최종수정SMC서버프로그램ID */  
+		 WHERE  A.PTNO      = #{ptno}
+		   AND  A.MDRP_NO   = #{mdrpNo}
+		   AND  A.CARE_DX_EMR_INRF_VL = #{careDxEmrInrfVl} /* 간호기록Key */
+		   AND  A.DLTN_YMD  IS NULL /* 삭제일자 */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U04 (통합CarePlan update (4번)) 
+        Description :                                           통합CarePlan update (4번) 처리를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U04"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U04 */
+		<![CDATA[
+		UPDATE  MDPPLANDT   A
+		   SET  A.DLTN_YMD                = sysdate                 /* 삭제일자                      (asis) DELDATE        */
+		      /* 로그정보 */
+		      , A.LAST_UPDR_ID            = #{gvLginId}             /* 최종수정자ID */
+		      , A.LAST_UPDT_IP            = #{gvUserIp}             /* 최종수정IP */
+		      , A.LAST_UPDT_DT            = sysdate                 /* 최종수정일시 */
+		      , A.LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}         /* 최종수정SMC클라이언트프로그램ID */
+		      , A.LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}         /* 최종수정SMC서버프로그램ID */  
+		 WHERE  A.PTNO      = #{ptno}
+		   AND  A.MDRP_NO   = #{mdrpNo}
+		   AND  A.CARE_DX_EMR_INRF_VL = #{careDxEmrInrfVl} /* 간호기록Key */
+		   AND  A.DLTN_YMD  IS NULL /* 삭제일자 */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U05 (통합CarePlan update (5번)) 
+        Description :                                           통합CarePlan update (5번) 처리를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U05"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U05 */
+		<![CDATA[
+		UPDATE  MDPPLANDT   A
+		   SET  A.PRBL_CTN                = #{prblCtn}                            /* PROBLEM                       (asis) PROBLEM        */
+		      , A.PLAN_GOAL_CTN           = #{planGoalCtn}                        /* GOAL                          (asis) GOAL           */
+		      , A.PLAN_YMD                = TO_DATE(#{planYmd}, 'yyyymmdd')       /* 계획일자                      (asis) PLANDATE       */
+		      , A.GOAL_YMD                = TO_DATE(#{goalYmd}, 'yyyymmdd')       /* 목표일자                      (asis) NEXTDATE       */
+		      , A.FINS_YMD                = TO_DATE(#{finsYmd}, 'yyyymmdd')       /* 완료일자                      (asis) ENDDATE        */
+		      , A.ACHV_YN                 = #{achvYn}                             /* 달성여부                      (asis) REACHYN        */
+		      , A.ACHV_FALR_RESN_CD       = #{achvFalrResnCd}                     /* 미달성사유                    (asis) FALERSN        */
+		      , A.ACHV_FALR_REET_CTN      = #{achvFalrReetCtn}                    /* 사유기타                      (asis) FALEETC        */
+		      , A.ENPR_ID                 = #{enprId}                             /* 완결자                        (asis) ENDID          */
+		      , A.END_DPRT_CD             = CASE
+		                                      WHEN #{enprId} IS NOT NULL THEN ( SELECT  S.MDCR_DPRT_CD
+		                                                                          FROM  CCUSRDPHT S
+		                                                                         WHERE  S.USER_ID = #{enprId}
+		                                                                           AND  ROWNUM = 1
+		                                                                      )
+		                                      ELSE A.END_DPRT_CD
+		                                    END
+		      /* 로그정보 */
+		      , A.LAST_UPDR_ID            = #{gvLginId}             /* 최종수정자ID */
+		      , A.LAST_UPDT_IP            = #{gvUserIp}             /* 최종수정IP */
+		      , A.LAST_UPDT_DT            = sysdate                 /* 최종수정일시 */
+		      , A.LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}         /* 최종수정SMC클라이언트프로그램ID */
+		      , A.LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}         /* 최종수정SMC서버프로그램ID */  
+		 WHERE  A.PTNO      = #{ptno}
+		   AND  A.MDRP_NO   = #{mdrpNo}
+		   AND  A.CARE_DX_EMR_INRF_VL = #{careDxEmrInrfVl} /* 간호기록Key */
+		   AND  A.DLTN_YMD  IS NULL /* 삭제일자 */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U06 (통합CarePlan update (6번)) 
+        Description :                                           간호기록에서 호출해서 사용하며, 완료일/완료자/완료부서 등을 update한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U06"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpIntgCarePlanComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpIntgCarePlanComDAO-updateMdpPlanI1U06 */
+		<![CDATA[
+		UPDATE  MDPPLANDT   A
+		   SET  A.FINS_YMD                = TO_DATE(#{finsYmd}, 'yyyymmdd')       /* 완료일자                      (asis) ENDDATE        */
+		      , A.ACHV_YN                 = #{achvYn}                             /* 달성여부                      (asis) REACHYN        */
+		      , A.ACHV_FALR_RESN_CD       = #{achvFalrResnCd}                     /* 미달성사유                    (asis) FALERSN        */
+		      , A.ACHV_FALR_REET_CTN      = #{achvFalrReetCtn}                    /* 사유기타                      (asis) FALEETC        */
+		      , A.ENPR_ID                 = #{enprId}                             /* 완결자                        (asis) ENDID          */
+		      , A.END_DPRT_CD             = CASE
+		                                      WHEN #{enprId} IS NOT NULL THEN ( SELECT  S.MDCR_DPRT_CD
+		                                                                          FROM  CCUSRDPHT S
+		                                                                         WHERE  S.USER_ID = #{enprId}
+		                                                                           AND  ROWNUM = 1
+		                                                                      )
+		                                      ELSE A.END_DPRT_CD
+		                                    END
+		      /* 로그정보 */
+		      , A.LAST_UPDR_ID            = #{gvLginId}             /* 최종수정자ID */
+		      , A.LAST_UPDT_IP            = #{gvUserIp}             /* 최종수정IP */
+		      , A.LAST_UPDT_DT            = sysdate                 /* 최종수정일시 */
+		      , A.LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}         /* 최종수정SMC클라이언트프로그램ID */
+		      , A.LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}         /* 최종수정SMC서버프로그램ID */  
+		 WHERE  A.PTNO      = #{ptno}
+		   AND  A.MDRP_NO   = #{mdrpNo}
+		   AND  A.CARE_DX_EMR_INRF_VL = #{careDxEmrInrfVl} /* 간호기록Key */
+		   AND  A.PLAN_DPRT_CD        = #{planDprtCd}      /* 계획부서코드 */
+		   AND  A.DLTN_YMD  IS NULL   /* 삭제일자 */
+		]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsUserMenuCopyDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsUserMenuCopyDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUserMenuCopyDVO">
+	
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr (복사대상 사용자 조회) 
+        Description :                                           csd_usrdpht_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUserMenuCopyDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUserMenuCopyDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUserMenuCopyDAO-listMenuCopyTgpr_복사 대상 사용자 조회 */
+					'0' as RTUR_VL,
+					a.LGIN_ID as LGIN_ID,
+					a.USER_NM as USER_NM,
+					b.KORN_DPRT_NM as KORN_DPRT_NM
+		from		CCUSRDPHT a,
+					HZDEPTMMT b
+		where	a.MDCR_DPRT_CD   = b.DPRT_CD(+)
+		and		(	(nvl(#{userNm}, '*') = '*') or
+						(a.LGIN_ID like #{userNm} || '%') or
+						(a.USER_NM like '%' || #{userNm} || '%')
+					)
+		and		a.MNSB_YN = 'Y'
+		order by a.USER_NM
+		]]>
+	</select>
+
+
+
+</mapper>

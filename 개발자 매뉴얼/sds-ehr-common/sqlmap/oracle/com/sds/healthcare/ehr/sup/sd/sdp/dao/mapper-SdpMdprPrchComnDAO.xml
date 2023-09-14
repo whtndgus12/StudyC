@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpMdprPrchComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="SdpMdprPrchComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpMdprPrchComnDAO-updateMdprPrchClamRptnNCncl (약품구매청구-접수및접수취소) 
+        Description :                                           [SDMDRCRMT]물품청구마스터 구매접수일시 설정및해제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprPrchComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpMdprPrchComnDAO-updateMdprPrchClamRptnNCncl"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpMdprPrchComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpMdprPrchComnDAO-updateMdprPrchClamRptnNCncl */
+		/* --------------------
+		 * updateMdprPrchClamRptnNCncl/약품구매청구-접수및접수취소
+		 * ====================
+		 * [SDMDRCRMT]물품청구마스터 구매접수일시 설정및해제
+		 * prsgDvsnCd1:처리구분코드
+		     . 1 : 구매과 접수
+		     . 2 : 구매과 접수취소
+		 * --------------------
+		 */
+		<![CDATA[
+		    update
+		            SDMDRCRMT                                                               -- T. 물품청구마스터
+		       set
+		            LAST_UPDR_ID                         = #{gvUserId}                      -- 최종수정자ID
+		         ,  LAST_UPDT_IP                         = #{gvUserIp}                      -- 최종수정IP
+		         ,  LAST_UPDT_DT                         = sysdate                          -- 최종수정일시
+		         ,  LAST_UPDT_CLNT_PRGM_ID               = #{gvClntPrgmId}                  -- 최종수정클라이언트프로그램ID
+		         ,  LAST_UPDT_SRVR_PRGM_ID               = #{gvSrvrPrgmId}                  -- 최종수정서버프로그램ID
+		]]>
+		<choose>
+		    <when test="prsgDvsnCd1=='1'.toString()">
+		    -- 구매과 접수
+		         ,  RPTN_DT                              = to_date(#{rptnDt}
+		                                                          , 'YYYYMMDDHH24MI')       -- 접수일시
+		     where  1=1
+		       and  '1'                                  = #{prsgDvsnCd1}                   -- 구매과 접수
+		    </when>
+		    <when test="prsgDvsnCd1=='2'.toString()">
+		    -- 구매과 접수취소
+		         ,  RPTN_DT                              = null                             -- 접수일시=null
+		     where  1=1
+		       and  '2'                                  = #{prsgDvsnCd1}                   -- 구매과 접수취소
+		    </when>
+		    <otherwise>
+		     where  1=2
+		    </otherwise>
+		</choose>
+		<![CDATA[
+		       and  PRCH_MRCH_CLAM_NO                    = #{prchMrchClamNo}                -- C.구매물품청구번호
+		       and  BSPL_Cd                              = #{bsplCd}                        -- C.사업장코드
+		]]>
+	</update>
+
+</mapper>

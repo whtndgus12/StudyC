@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcMainCheckerDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcMainCheckerDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcMainCheckerDVO">
+	
+		<result property="mainChkrId" column="MAIN_CHKR_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId (주심사자id 조회) 
+        Description :                                           심사배분자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcMainCheckerDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcMainCheckerDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-selectOneMainChkrId */
+		select FN_AI_GET_CHKR_ID(#{mdrpNo} 
+		           , #{ptno}
+		           , to_date(#{mdcrDt},'yyyymmddhh24miss')
+		           , #{admsOtdvCd}
+		           , #{codvCd}
+		           , #{istyCd}
+		           , #{mcdpCd}
+		           , #{wardCd}
+		           , #{mddrId}
+		           , #{hslcDvsnCd}
+		           , #{mccnCd}
+		           , #{admsApntNo}
+		           , #{wodvCd}
+		        )      as MAIN_CHKR_ID
+		  from dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-insertMainChkrLog1 () 
+        Description :                                           심사자 배분 결과 로그
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcMainCheckerDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-insertMainChkrLog1"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcMainCheckerDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcMainCheckerDAO-insertMainChkrLog1 */
+		    insert 
+		      into AIIRWKLGT
+		         (
+		           CHCK_PRGM_ID
+		         , WORK_NM
+		         , WORK_TRGT_YMD
+		         , ADMS_OTDV_CD
+		         , PTNO
+		         , MDCR_YMD
+		         , CLAM_SNO
+		         , SQL_ERR_NO
+		         , SQL_ERR_MESG_CTN
+		         , RMRK_CTN
+		         , CNFR_YN
+		         , WORK_DT
+		         , FRST_RGSR_ID
+		         , FRST_RGST_IP
+		         , FRST_RGST_DT
+		         , FRST_RGST_CLNT_PRGM_ID
+		         , FRST_RGST_SRVR_PRGM_ID
+		         , LAST_UPDR_ID
+		         , LAST_UPDT_IP
+		         , LAST_UPDT_DT
+		         , LAST_UPDT_CLNT_PRGM_ID
+		         , LAST_UPDT_SRVR_PRGM_ID
+		        )
+		    values 
+		        (  'FN_AI_GET_CHKR_ID'
+		         , '심사자배분체크'
+		         , trunc(sysdate)
+		         , 'I'
+		         , #{ptno}
+		         , ''
+		         , ''
+		         , ''
+		         , #{mainChkrId}
+		         , to_char(#{mdrpNo}) ||'|'||
+		           #{mdcrDt} ||'|'||
+		           #{admsOtdvCd} ||'|'||
+		           #{codvCd} ||'|'||
+		           #{istyCd} ||'|'||
+		           #{mcdpCd} ||'|'||
+		           #{wardCd} ||'|'||
+		           #{mddrId} ||'|'||
+		           #{hslcDvsnCd} ||'|'||
+		           #{mccnCd} ||'|'||
+		           to_char(#{admsApntNo} )
+		         , 'N'
+		         , sysdate
+		         , #{gvUserId}
+		         , #{gvUserIp}
+		         , sysdate
+		         , #{gvClntPrgmId}
+		         , #{gvSrvrPrgmId}
+		         , #{gvUserId}
+		         , #{gvUserIp}
+		         , sysdate
+		         , #{gvClntPrgmId}
+		         , #{gvSrvrPrgmId}
+		        )
+		       
+	</insert>
+
+</mapper>

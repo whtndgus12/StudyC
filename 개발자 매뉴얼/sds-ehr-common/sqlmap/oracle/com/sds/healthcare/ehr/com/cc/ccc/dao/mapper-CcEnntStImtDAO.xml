@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcEnntStImtDAO_sql.xml 
+    Description :                                      사용자일괄등록(ExcelUpload시 양식저장용으로 사용된다.)
+                  -->
+<mapper namespace="CcEnntStImtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-updateCcEnntStImtMerge () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-updateCcEnntStImtMerge"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-updateCcEnntStImtMerge */
+			<![CDATA[
+					merge 
+					   into CSENSTIMT  /* 공통환경설정항목 */
+					  using DUAL
+					    on (  COMN_ENVR_STUP_GRP_CD  = #{comnEnvrStupGrpCd}               /* 공통환경설정그룹코드   */
+					          and 
+		                      COMN_ENVR_STUP_ITEM_CD = #{comnEnvrStupItemCd}              /* 공통환경설정항목코드   */
+					         ) 
+					  when matched then 
+					 update
+					    set
+					           COMN_ENVR_STUP_ITEM_NM      = #{comnEnvrStupItemNm}           	/* 공통환경설정항목명   */
+							 , COMN_ENVR_STUP_ITEM_BD      = #{comnEnvrStupItemBdByte}         	/* 공통환경설정항목자료   */
+							 , COMN_ENVR_STUP_ITEM_CHRC_VL = #{comnEnvrStupItemChrcVl}       	/* 공통환경설정항목문자값 : 파일명(확장자포함) */
+							 , COMN_ENVR_STUP_ITEM_MTRL_NM = #{comnEnvrStupItemMtrlNm} 			/* 공통환경설정항목자료명 : 파일Key 정보 */
+					         , LAST_UPDR_ID                = #{gvUserId}                         
+					         , LAST_UPDT_IP                = #{gvUserIp}                         
+					         , LAST_UPDT_DT                = sysdate                             
+					         , LAST_UPDT_CLNT_PRGM_ID      = #{gvClntPrgmId}                     
+					         , LAST_UPDT_SRVR_PRGM_ID      = #{gvSrvrPrgmId}
+					   where   COMN_ENVR_STUP_GRP_CD       = #{comnEnvrStupGrpCd}              /* 공통환경설정그룹코드   */
+					     and   COMN_ENVR_STUP_ITEM_CD      = #{comnEnvrStupItemCd}             /* 공통환경설정항목코드   */
+					  when not matched then 
+					   insert
+					        (
+					           COMN_ENVR_STUP_GRP_CD               	/* 공통환경설정그룹코드   */
+					         , COMN_ENVR_STUP_ITEM_CD              	/* 공통환경설정항목코드   */
+					         , COMN_ENVR_STUP_ITEM_NM              	/* 공통환경설정항목명   */
+					         , COMN_ENVR_STUP_ITEM_TYPE_CD         	/* 공통환경설정항목유형코드   */
+					         , COMN_ENVR_STUP_ITEM_BD              	/* 공통환경설정항목자료   */
+					         , COMN_ENVR_STUP_ITEM_CHRC_VL			/* 공통환경설정항목문자값 : 파일명(확장자포함) */
+					         , COMN_ENVR_STUP_ITEM_MTRL_NM			/* 공통환경설정항목자료명 : 파일Key 정보 */
+					         , FRST_RGSR_ID                        
+					         , FRST_RGST_IP                        
+					         , FRST_RGST_DT                        
+					         , FRST_RGST_CLNT_PRGM_ID              
+					         , FRST_RGST_SRVR_PRGM_ID
+					         , LAST_UPDR_ID                        
+					         , LAST_UPDT_IP                        
+					         , LAST_UPDT_DT                        
+					         , LAST_UPDT_CLNT_PRGM_ID              
+					         , LAST_UPDT_SRVR_PRGM_ID              
+					        )
+					  values
+					        (
+					           #{comnEnvrStupGrpCd}                 /* 공통환경설정그룹코드   */ 
+					         , #{comnEnvrStupItemCd}                /* 공통환경설정항목코드   */ 
+					         , #{comnEnvrStupItemNm}               	/* 공통환경설정항목명   */ 
+					         , 'C'          						/* 공통환경설정항목유형코드   */
+						     , #{comnEnvrStupItemBdByte}           	/* 공통환경설정항목자료   */
+						     , #{comnEnvrStupItemChrcVl}       		/* 공통환경설정항목문자값 : 파일명(확장자포함) */
+						     , #{comnEnvrStupItemMtrlNm} 			/* 공통환경설정항목자료명 : 파일Key 정보 */
+					         , #{gvUserId}                          
+					         , #{gvUserIp}                          
+					         , sysdate                              
+					         , #{gvClntPrgmId}                      
+					         , #{gvSrvrPrgmId}
+					         , #{gvUserId}                          
+					         , #{gvUserIp}                          
+					         , sysdate                              
+					         , #{gvClntPrgmId}                      
+					         , #{gvSrvrPrgmId}                      
+					        )
+		]]>	
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+		<result property="comnEnvrStupItemBdByte" column="COMN_ENVR_STUP_ITEM_BD_BYTE"/>
+		<result property="comnEnvrStupItemBd" column="COMN_ENVR_STUP_ITEM_BD"/>
+		<result property="comnEnvrStupItemChrcVl" column="COMN_ENVR_STUP_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listCcEnntStImtSelect */
+		<![CDATA[
+				select     
+				       a.COMN_ENVR_STUP_GRP_CD      as COMN_ENVR_STUP_GRP_CD            /* 공통환경설정그룹코드   */
+				     , a.COMN_ENVR_STUP_ITEM_CD     as COMN_ENVR_STUP_ITEM_CD           /* 공통환경설정항목코드   */
+				     , a.COMN_ENVR_STUP_ITEM_NM    as COMN_ENVR_STUP_ITEM_NM           /* 공통환경설정항목명   */
+				     , a.COMN_ENVR_STUP_ITEM_BD     as COMN_ENVR_STUP_ITEM_BD_BYTE    /* 공통환경설정항목자료   */
+				     , ''                                             as COMN_ENVR_STUP_ITEM_BD            /* 공통환경설정항목자료   */
+				     , a.COMN_ENVR_STUP_ITEM_CHRC_VL     as COMN_ENVR_STUP_ITEM_CHRC_VL    /* 공통환경설정항목값   */
+				  from CCENSTIMT a  																				 /* 공통환경설정항목T */
+				 where a.COMN_ENVR_STUP_GRP_CD  = #{comnEnvrStupGrpCd}                    /* 공통환경설정그룹코드   */
+				   and a.COMN_ENVR_STUP_ITEM_CD  = #{comnEnvrStupItemCd}                   /* 공통환경설정항목코드   */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+		<result property="comnEnvrStupItemBdByte" column="COMN_ENVR_STUP_ITEM_BD_BYTE"/>
+		<result property="comnEnvrStupItemBd" column="COMN_ENVR_STUP_ITEM_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStImtSelect */
+		<![CDATA[
+				select     
+				       a.COMN_ENVR_STUP_GRP_CD      as COMN_ENVR_STUP_GRP_CD            /* 공통환경설정그룹코드   */
+				     , a.COMN_ENVR_STUP_ITEM_CD     as COMN_ENVR_STUP_ITEM_CD           /* 공통환경설정항목코드   */
+				     , a.COMN_ENVR_STUP_ITEM_NM     as COMN_ENVR_STUP_ITEM_NM           /* 공통환경설정항목명   */
+				     , a.COMN_ENVR_STUP_ITEM_BD     as COMN_ENVR_STUP_ITEM_BD_BYTE    	/* 공통환경설정항목자료   */
+				     , ''                           as COMN_ENVR_STUP_ITEM_BD           /* 공통환경설정항목자료   */
+				     , COMN_ENVR_STUP_ITEM_CHRC_VL  as COMN_ENVR_STUP_ITEM_CHRC_VL		/* 공통환경설정항목문자값 : 파일명(확장자포함) */
+					 , COMN_ENVR_STUP_ITEM_MTRL_NM  as COMN_ENVR_STUP_ITEM_MTRL_NM		/* 공통환경설정항목자료명 : 파일Key 정보 */ 
+				  from CSENSTIMT a  													/* 공통환경설정항목T */
+				 where a.COMN_ENVR_STUP_GRP_CD   = #{comnEnvrStupGrpCd}                 /* 공통환경설정그룹코드   */
+				   and a.COMN_ENVR_STUP_ITEM_CD  = #{comnEnvrStupItemCd}                /* 공통환경설정항목코드   */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO">
+	
+		<result property="comnEnvrStupGrpCd" column="COMN_ENVR_STUP_GRP_CD"/>
+		<result property="comnEnvrStupItemCd" column="COMN_ENVR_STUP_ITEM_CD"/>
+		<result property="comnEnvrStupItemNm" column="COMN_ENVR_STUP_ITEM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn (사용자관리의 사용자겸직정보ID 채번방식 구분자 조회처리) 
+        Description :                                           사용자관리의 사용자겸직정보ID 채번방식 구분자 조회처리를 수행한다. Result : AUTO : 자동채번,
+                                                                MANUAL : 수동입력방식
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-selectOneCcEnntStimtUserGubn */
+		<![CDATA[
+		SELECT
+		       a.COMN_ENVR_STUP_GRP_CD            as COMN_ENVR_STUP_GRP_CD		/* 공통환경설정그룹코드   */
+		     , a.COMN_ENVR_STUP_ITEM_CD           as COMN_ENVR_STUP_ITEM_CD		/* 공통환경설정항목코드   */
+		     , a.COMN_ENVR_STUP_ITEM_CHRC_VL      as COMN_ENVR_STUP_ITEM_NM
+		 FROM  CSENSTIMT a  /* 공통환경설정항목 */
+		WHERE  a.COMN_ENVR_STUP_GRP_CD            = #{comnEnvrStupGrpCd}	/* 공통환경설정그룹코드   */
+		  AND  a.COMN_ENVR_STUP_ITEM_CD           = #{comnEnvrStupItemCd}	/* 공통환경설정항목코드   */
+		]]> 
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="exmnCtrlCd" column="EXMN_CTRL_CD"/>
+		<result property="exmnDtlsCtrlCd" column="EXMN_DTLS_CTRL_CD"/>
+		<result property="exmnCtrlNm" column="EXMN_CTRL_NM"/>
+		<result property="exmnDtlsCtrlNm" column="EXMN_DTLS_CTRL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CcEnntStImtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CcEnntStImtDAO-listExamDtlsCtrlCd */
+		SELECT A.COMN_GRP_CD, A.COMN_DTLS_CD, B.EXMN_CTRL_CD, B.EXMN_DTLS_CTRL_CD, B.EXMN_CTRL_NM, B.EXMN_DTLS_CTRL_NM
+		  FROM CCCMCDDMT A		-- 공통코드값 Table
+		     , SZCTRLMMT B	    -- 검사제어정보 Table
+		 WHERE A.COMN_DTLS_CD = B.APLY_PART_CD
+		   AND B.EXMN_CTRL_CD = 'SZ001'
+		   AND A.COMN_GRP_CD  = 'CC016'   
+		   AND A.COMN_DTLS_CD = #{comnDtlsCd}
+		  ORDER BY COMN_DTLS_CD ASC 
+	</select>
+
+
+
+</mapper>

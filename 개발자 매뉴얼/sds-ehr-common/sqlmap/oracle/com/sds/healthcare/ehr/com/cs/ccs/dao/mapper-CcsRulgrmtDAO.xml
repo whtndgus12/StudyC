@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsRulgrmtDAO_sql.xml 
+    Description :                                      권한
+                  -->
+<mapper namespace="CcsRulgrmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulgrmtDVO">
+	
+		<result property="cpntId" column="CPNT_ID"/>
+		<result property="fnctExrnYn" column="FNCT_EXRN_YN"/>
+		<result property="fnctActvYn" column="FNCT_ACTV_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt () 
+        Description :                                           ASIS : CsdRulgrmtL02DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulgrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsRulgrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsRulgrmtDAO-listRulgrmt */
+		select  /*+ csd_rulgrmt_l02$S01_실행권한 및 기능권한 조건유무조회 */
+						   a.PRGM_ID as CPNT_ID
+						 , 'Y' as FNCT_EXRN_YN
+						 , 'Y' as FNCT_ACTV_YN
+				   from    CSEARCIMT a
+				   where   a.APST_DT < sysdate
+					 and   a.APFN_DT > sysdate
+					 and   a.ATHR_CNDT_ITEM_ID <> 'I000001'
+					 and   a.PRGM_ID = #{prgmId}
+					 and   rownum = 1
+				   union all
+				   select  b.PRGM_ID
+						 , 'Y'
+						 , 'Y'
+				   from    CSFARCIMT b
+				   where   b.PRGM_ID = #{prgmId}
+					 and   b.APST_DT < sysdate
+					 and   b.APFN_DT > sysdate
+					 and   rownum = 1
+					 ]]>
+			
+			
+	</select>
+
+
+
+</mapper>

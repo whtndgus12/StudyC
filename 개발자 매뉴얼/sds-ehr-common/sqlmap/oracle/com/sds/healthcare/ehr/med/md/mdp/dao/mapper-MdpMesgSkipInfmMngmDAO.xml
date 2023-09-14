@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpMesgSkipInfmMngmDAO_sql.xml 
+    Description :                                      메시지 Skip정보 관리
+                  -->
+<mapper namespace="MdpMesgSkipInfmMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO">
+	
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="scinEnsnNm" column="SCIN_ENSN_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1 (52개 차등질환 메세지SKIP 목록) 
+        Description :                                           52개 차등질환 메세지SKIP 목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-listMesgSkip1 */
+		<![CDATA[
+		select  /*+ MdpMesgSkipInfmMngmDAO-listMesgSkip1_52개 차등질환 메세지SKIP목록 */
+		        a.SCIN_CD           as SCIN_CD                   /*  상병코드 */
+		     ,  b.SCIN_ENSN_NM      as SCIN_ENSN_NM              /*  상병영문명 */
+		     ,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDHH24MISS') as LAST_UPDT_DT
+		  from  MDSKIPMGT a         /*  진료메시지SKIP */
+		     ,  MRBSSCINT b         /*  상병코드 */
+		 where  a.MESG_SKIP_DVSN_CD  = 'A'          /*  메시지Skip구분코드 */
+		   and  a.MDCR_WODV_CD       = 'S'          /*  진료작업구분코드 */
+		   and  a.PTNO               = #{ptno}
+		   and  a.MDDR_ID            = #{mddrId}
+		   and  b.SCIN_CD            = a.SCIN_CD
+		   and  b.MDCR_USE_YN        = 'Y'          /*  진료사용여부 */
+		   and  trunc(sysdate) between b.APLY_YMD and nvl(b.FNSH_YMD, sysdate)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO">
+	
+		<result property="mesgSkipDvsnCd" column="MESG_SKIP_DVSN_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="mdcrWodvCd" column="MDCR_WODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm (메세지 Skip정보 조회) 
+        Description :                                           52개 차등질환 메세지 Skip정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm */
+		<![CDATA[
+		select  /*+ MdpMesgSkipInfmMngmDAO-selectOneMesgSkipInfm_메세지SKIP 정보 조회 */
+		        MESG_SKIP_DVSN_CD
+		     ,  PTNO
+		     ,  MDDR_ID
+		     ,  SCIN_CD
+		     ,  MDCR_WODV_CD          
+		  from  MDSKIPMGT           /* 진료메시지SKIP */
+		 where  MESG_SKIP_DVSN_CD   =   #{mesgSkipDvsnCd}
+		   and  PTNO                =   #{ptno}
+		   and  MDDR_ID             =   #{mddrId}
+		   and  SCIN_CD             =   #{scinCd}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-insertMesgSkipInfm (메세지 SKIP정보 입력) 
+        Description :                                           메세지 SKIP정보 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-insertMesgSkipInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-insertMesgSkipInfm */
+		<![CDATA[
+		insert  /*+ MdpMesgSkipInfmMngmDAO-insertMesgSkipInfm_메세지SKIP정보 등록 */
+		  into  MDSKIPMGT
+		        (
+		        MESG_SKIP_DVSN_CD           /* 메시지Skip구분코드 */
+		     ,  PTNO                        /* 환자번호 */
+		     ,  MDDR_ID                     /* 진료의사ID */
+		     ,  SCIN_CD                     /* 상병코드 */
+		     ,  MDCR_WODV_CD                /* 진료작업구분코드 */
+		     ,  FRST_RGSR_ID                /* 최초등록자ID */
+		     ,  FRST_RGST_IP                /* 최초등록IP */
+		     ,  FRST_RGST_DT                /* 최초등록일시 */
+		     ,  FRST_RGST_CLNT_PRGM_ID      /* 최초등록SMC클라이언트프로그램ID */
+		     ,  FRST_RGST_SRVR_PRGM_ID      /* 최초등록SMC서버프로그램ID */
+		     ,  LAST_UPDR_ID                /* 최종수정자ID */
+		     ,  LAST_UPDT_IP                /* 최종수정IP */
+		     ,  LAST_UPDT_DT                /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID      /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID      /* 최종수정SMC서버프로그램ID */
+		        )
+		values  (
+		        #{mesgSkipDvsnCd}
+		     ,  #{ptno}
+		     ,  #{mddrId}
+		     ,  #{scinCd}
+		     ,  #{mdcrWodvCd}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-updateMesgSkipInfm (메세지 SKIP 정보 수정) 
+        Description :                                           메세지 SKIP 정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-updateMesgSkipInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpMesgSkipInfmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpMesgSkipInfmMngmDAO-updateMesgSkipInfm */
+		<![CDATA[
+		update  /*+ MdpMesgSkipInfmMngmDAO-updateMesgSkipInfm_메세지SKIP목록 수정 */
+		        MDSKIPMGT
+		   set  MDCR_WODV_CD            =   #{mdcrWodvCd}       /* 진료작업구분코드 */
+		     ,  LAST_UPDR_ID            =   #{gvUserId}         
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}         
+		     ,  LAST_UPDT_DT            =   sysdate             
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}     
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}     
+		 where  MESG_SKIP_DVSN_CD       =   #{mesgSkipDvsnCd}   /* 메시지Skip구분코드 */
+		   and  PTNO                    =   #{ptno}
+		   and  MDDR_ID                 =   #{mddrId}
+		   and  SCIN_CD                 =   #{scinCd}
+		]]>
+	</update>
+
+</mapper>

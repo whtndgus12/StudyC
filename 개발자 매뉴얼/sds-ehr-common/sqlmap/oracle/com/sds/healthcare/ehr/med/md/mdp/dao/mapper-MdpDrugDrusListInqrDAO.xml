@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDrugDrusListInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpDrugDrusListInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="rsltVl" column="RSLT_VL"/>
+		<result property="afiErrNm" column="AFI_ERR_NM"/>
+		<result property="afiRcmnDrusCdVl" column="AFI_RCMN_DRUS_CD_VL"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drugDlvyDprtCd" column="DRUG_DLVY_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusUsePsblCtn */  /*+ mdd_dmetcdt_s01$S01_약처방 용법 가능 점검 조회 */
+				   RSLT_VL as RSLT_VL
+				,  AFI_ERR_NM as AFI_ERR_NM
+				,  AFI_RCMN_DRUS_CD_VL as AFI_RCMN_DRUS_CD_VL
+				,  DGST_ADMN_NTM as DGST_ADMN_NTM
+		        ,  case when RSLT_VL = 'Y' 
+		                then (select DRUG_DLVY_DPRT_CD from SDDMETCDT where DRUS_CD = #{drusCd})
+		                else ''
+		            end as DRUG_DLVY_DPRT_CD
+			from
+			(
+			   with DRUS
+					as (
+						select
+								/*  1. 용법 마스터 조회 */
+								case when ( select  count ( DRUS_CD )
+											  from  SDDMETCDT
+											 where  DRUS_CD = #{drusCd}
+											   and  DRAP_DVSN_CD = case when #{drapDvsnCd} = '9' then DRAP_DVSN_CD
+																		else #{drapDvsnCd} end
+											   and  nvl(LCKN_YN,'X') <> 'Y' ) = 0
+									 then
+										 /*  2. 용법 마스터에 없으면 추천용법 조회 */
+										 case when ( select  count ( a.DRUS_CD )
+													   from  SDARCDRST a
+														  ,  SDDMETCDT b
+													  where  a.MDPR_CD = #{ordrCd}
+														and  a.DRUS_CD = #{drusCd}
+														and  a.DRUS_CD = b.DRUS_CD
+														and  nvl(b.LCKN_YN,'X') <> 'Y') > 0
+											  then 'Y'
+		                                      when ( select  count(MDPR_CD)
+		                                               from  SDDDGCDMT
+		                                              where  MDPR_CD = #{ordrCd}
+		                                                and  nvl(RCMN_DRUS_USE_YN, 'N') = 'Y') > 0 /* 추천용법만 사용가능 */
+		                                      then  'RCMN_DRUS'
+											  when ( select  count ( DRUS_CD )
+													   from  SDDMETCDT
+													  where  DRUS_CD = #{drusCd}
+													   and  nvl(LCKN_YN,'X') <> 'Y'
+													   and  DRAP_DVSN_CD = '1' ) > 0 /*  경구만 사용가능 */
+											  then 'DRAP1'
+											  when ( select  count ( DRUS_CD )
+													   from  SDDMETCDT
+													  where  DRUS_CD = #{drusCd}
+														and  nvl(LCKN_YN,'X') <> 'Y'
+														and  DRAP_DVSN_CD = '2' ) > 0 /*  주사만 사용가능 */
+											  then 'DRAP2'
+											  when ( select  count ( DRUS_CD )
+													   from  SDDMETCDT
+													  where  DRUS_CD = #{drusCd}
+														and  nvl(LCKN_YN,'X') <> 'Y'
+														and  DRAP_DVSN_CD = '3' ) > 0 /*  외용만 사용가능 */
+											  then 'DRAP3'
+											  when ( select  count ( DRUS_CD )
+													   from  SDDMETCDT
+													  where  DRUS_CD = #{drusCd}
+														and  nvl(LCKN_YN,'X') <> 'Y'
+														and  DRAP_DVSN_CD = '9' ) > 0 /*  기타만 사용가능 */
+											  then 'DRAP9'
+											  else
+												  '1' /*  용법 마스터, 추천용법에 없으면 오류 ( 투여방법이 틀리다 해도 추천용법에 있으면 허용 ) */
+											  end
+									 else
+										  /*  3. 용법 마스터에 존재시 기본용법 조회 */
+										  case when ( select  count ( DRUS_CD )
+														from  MDORDRCMT
+													   where  ORDR_CD = #{ordrCd}
+														 and  DRUS_CD = #{drusCd} ) > 0
+											   then 'Y'
+											   else
+													/*  4. 기본용법에 없으면 추천 용법 조회 */
+													case when ( select  count ( a.DRUS_CD )
+																  from  SDARCDRST a
+																	 ,  SDDMETCDT b
+																 where  a.MDPR_CD = #{ordrCd}
+																   and  a.DRUS_CD = #{drusCd}
+																   and  a.DRUS_CD = b.DRUS_CD
+																   and  nvl(b.LCKN_YN,'X') <> 'Y') > 0
+														 then 'Y'
+														 else
+															 /*  5. 추천용법이 없는 처방코드면 금기용법조회 */
+															 case when ( select  count ( DRUS_CD )
+																		   from  SDATBDRST
+																		  where  MDPR_CD = #{ordrCd}
+																			and  DRUS_CD = #{drusCd} ) > 0
+																  then '2'
+		                                                          /* 추천용법만 가능한 약인지 확인한다. */
+		                                                          when (select  count(MDPR_CD)
+		                                                                  from  SDDDGCDMT
+		                                                                 where  MDPR_CD = #{ordrCd}
+		                                                                   and  nvl(RCMN_DRUS_USE_YN, 'N') = 'Y') > 0 /* 추천용법만 사용가능 */
+		                                                          then  'RCMN_DRUS'
+																  /*  6. 금기용법이 아니면 해당 처방코드 추천용법이 있는지 확인
+																	 ( 추천용법이 있으면 오류로 처리하고 추천용법을 보여준다. 단, 투여경로가 틀린 경우는 추천용법을 보여주지 않는다. )  */
+																  else
+																	   case when ( select  count ( DRUS_CD )
+																					 from  SDARCDRST
+																					where  MDPR_CD = #{ordrCd} ) > 0
+																			then '3'
+																			else 'Y'
+																			end
+																  end
+														 end
+											   end
+									 end CHECK_VALUE
+						  from  dual )
+		   select
+				   DECODE ( CHECK_VALUE, '1', 'B',
+										 '2', 'B',
+										 'DRAP1', 'B',
+										 'DRAP2', 'B',
+										 'DRAP3', 'B',
+										 'DRAP9', 'B',
+		                                 'RCMN_DRUS', 'B',
+										 '3', 'Y', /*  추천용법 보이지 않게 처리*/
+										 'Y' ) RSLT_VL   /*  용법 결과 ( 1, 2 일 경우 blocking 처리 ) */
+				,  case when CHECK_VALUE = '1' then '[' || #{drusCd} || '] 용법은 사용할 수 없는 용법입니다.'
+						when CHECK_VALUE = '2' then '[' || #{drusCd} || '] 용법은 금기 용법입니다.'
+						when CHECK_VALUE = 'DRAP1' then '[' || #{drusCd} || '] 용법은 경구약만 사용 가능한 용법입니다.'
+						when CHECK_VALUE = 'DRAP2' then '[' || #{drusCd} || '] 용법은 주사약만 사용 가능한 용법입니다.'
+						when CHECK_VALUE = 'DRAP3' then '[' || #{drusCd} || '] 용법은 외용약만 사용 가능한 용법입니다.'
+						when CHECK_VALUE = 'DRAP9' then '[' || #{drusCd} || '] 용법은 기타약만 사용 가능한 용법입니다.'
+		                when CHECK_VALUE = 'RCMN_DRUS' then '[' || #{ordrCd} || ']는 추천용법만 사용 가능한 약입니다.'
+						when CHECK_VALUE = '3' then ''
+					end  AFI_ERR_NM /*  에러 메시지 */
+				/*  약국 요청사항에 의해 추천용법 LIST 는 별도로 보여주지 않음
+				 * ,  case when CHECK_VALUE <> 'Y' then ( select  wm_concat ( a.DRUS_CD ) //투여경로가 틀린 경우는 추천용법을 보여주지 않는다.
+														 from  SDARCDRST a,
+															   SDDMETCDT b
+														where  a.MDPR_CD = :mds_dmetcdt_006[0].ordr_cd
+														  and  a.DRUS_CD = b.DRUS_CD
+														  and  b.DRAP_DVSN_CD = :mds_dmetcdt_006[0].drap_dvsn_cd   // 같은 적용코드만 추천용법 가이드
+														  and  nvl(b.LCKN_YN,'X') <> 'Y' ) end AFI_RCMN_DRUS_CD_VL // 추천용법 LIST
+				*/
+				, '' AFI_RCMN_DRUS_CD_VL /*  약국 요청사항에 의해 추천용법 LIST 는 별도로 보여주지 않음 */
+				,  case when CHECK_VALUE <> '1' and CHECK_VALUE <> '2' then ( select  DGST_ADMN_NTM
+																			 from  SDDMETCDT
+																			where  DRUS_CD = #{drusCd}
+																			  and  nvl(LCKN_YN,'X') <> 'Y' ) else 0 end DGST_ADMN_NTM /*  횟수 */
+			from   DRUS
+			)
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="adltUseQty" column="ADLT_USE_QTY"/>
+		<result property="bsisNtm" column="BSIS_NTM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusEncrVlmCtn */   /*+ mdd_ordrcmt_s01$S01_권장용량_용법_조회_DAM */
+				   a.DRUS_CD as DRUS_CD
+				,  round(nvl(a.ADLT_USE_QTY,0)/nvl(a.PCUN_INLS_QTY,1),3) as ADLT_USE_QTY
+				,  nvl(a.BSIS_NTM, 0) as BSIS_NTM
+			 from  MDORDRCMT a
+			where  a.ORDR_CD = #{ordrCd}
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusCdBaseInqrList */   /*+ mdd_dmetcdt_l03$S01_약주사 용법조회 코드 LIKE */
+		   a.DRUS_CD as DRUS_CD
+		   ,  a.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+		   ,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+		   ,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+		   ,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+		   ,  a.LCKN_YN as LCKN_YN
+		   from  SDDMETCDT a
+		   where  a.DRUS_CD like #{drusCd} ||'%'
+		   and  a.DRAP_DVSN_CD = #{drapDvsnCd}
+		   and  nvl(a.LCKN_YN,'X') <> 'Y'
+		   order
+			  by  decode(a.DGST_ADMN_NTM, 0 , 9, a.DGST_ADMN_NTM), a.DRUS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusNtmBaseInqrList */   /*+ mdd_dmetcdt_l04$S01_약주사 용법조회 횟수 */
+				  a.DRUS_CD as DRUS_CD
+			   ,  a.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+			   ,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+			   ,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+			   ,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+			   ,  a.LCKN_YN as LCKN_YN
+			from  SDDMETCDT a
+		   where  ( a.DGST_ADMN_NTM = #{dgstAdmnNtm}
+					or
+					a.DGST_ADMN_NTM = 0
+				  )
+			 and  a.DRAP_DVSN_CD = #{drapDvsnCd}
+			 and  nvl(a.LCKN_YN,'X') <> 'Y'
+		   order
+			  by  a.DGST_ADMN_NTM desc, a.DRUS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusOrdgList */   /*+ mdd_dmetcdt_l05$S01_약주사 용법조회 세부검색 내복약 */
+				   a.DRUS_CD as DRUS_CD
+				,  a.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+				,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+				,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+				,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+				,  a.LCKN_YN as LCKN_YN
+			 from  SDDMETCDT a
+			where  a.DGST_ADMN_NTM = #{dgstAdmnNtm}
+			  and  a.DRAP_DVSN_CD = '1'                                            /*  내복약 */
+			  and  ( nvl(a.MRNN_TKNG_YN, 'N')      like #{mrnnTkngYn}||'%'     /*  아침복용여부 */
+			         or  nvl(a.LNCH_TKNG_YN, 'N')      like #{lnchTkngYn}||'%'     /*  점심복용여부 */
+			         or  nvl(a.EVNN_TKNG_YN, 'N')      like #{evnnTkngYn}||'%'     /*  저녁복용여부 */
+			         or  nvl(a.SLEP_BEFR_TKNG_YN, 'N') like #{slepBefrTkngYn}||'%'     /*  취침전복용여부 */
+			       )
+			  and  nvl(a.DIET_INVL_CD, '*')           = nvl(#{dietInvlCd}, nvl(a.DIET_INVL_CD, '*'))      /*  식사간격코드 */
+			  and  nvl(a.DTLS_SBJC_CD, '*')           = nvl(#{dtlsSbjcCd}, nvl(a.DTLS_SBJC_CD, '*'))     /*  세부사항코드 */
+			  and  nvl(a.LCKN_YN,'X') <> 'Y'
+			order
+			   by  a.DGST_ADMN_NTM desc
+				,  a.DRUS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusInjcList */   /*+ mdd_dmetcdt_l06$S01_약주사 용법조회 세부검색 주사약 */
+				   a.DRUS_CD as DRUS_CD
+				,  a.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+				,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+				,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+				,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+				,  a.LCKN_YN as LCKN_YN
+			 from  SDDMETCDT a
+			where  a.DGST_ADMN_NTM = #{dgstAdmnNtm}
+			  and  a.DRAP_DVSN_CD = '2'                                 /*  주사약 */
+			  and  nvl(a.INJC_PATH_CD, '*') = nvl(#{injcPathCd}, nvl(a.INJC_PATH_CD, '*'))    /*  주사경로 */
+			  and  nvl(a.DTLS_SBJC_CD, '*') = nvl(#{dtlsSbjcCd}, nvl(a.DTLS_SBJC_CD, '*'))    /*  세부사항코드 */
+			  and  nvl(a.LCKN_YN,'X') <> 'Y'
+			order
+			   by  a.DGST_ADMN_NTM desc, a.DRUS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusExueDrugList */   /*+ mdd_dmetcdt_l07$S01_약주사 용법조회 세부검색 외용약 */
+				   a.DRUS_CD as DRUS_CD
+				,  a.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+				,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+				,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+				,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+				,  a.LCKN_YN as LCKN_YN
+			 from  SDDMETCDT a
+			where  a.DGST_ADMN_NTM = #{dgstAdmnNtm}
+			  and  a.DRAP_DVSN_CD = '3'                                  /*  외용약 */
+			  and  nvl(a.APLY_SITE_CD, '*') = nvl(#{aplySiteCd}, nvl(a.APLY_SITE_CD, '*'))     /*  적용부위 */
+			  and  nvl(a.DTLS_SBJC_CD, '*') = nvl(#{dtlsSbjcCd}, nvl(a.DTLS_SBJC_CD, '*'))     /*  세부사항코드 */
+			  and  nvl(a.LCKN_YN,'X') <> 'Y'
+			order
+			   by  a.DGST_ADMN_NTM desc, a.DRUS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList-result" useCache="true" flushCache="false">
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-listDrusRcmnList */   /*+ mdd_dmetcdt_l09$S01_약주사 용법조회 횟수 */
+				   b.DRUS_CD as DRUS_CD
+				,  b.ENVL_MEMO_CTN1||ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_1
+				,  b.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+				,  b.DGST_ADMN_NTM as DGST_ADMN_NTM
+				,  b.DRAP_DVSN_CD as DRAP_DVSN_CD
+				,  b.LCKN_YN as LCKN_YN
+			 from  SDARCDRST a
+				,  SDDMETCDT b
+		        ,  SDDDGCDMT c
+			where  a.MDPR_CD = #{mdfeCd}
+		      and  a.MDPR_CD = c.MDPR_CD
+		  <choose>
+		    <when test='drusCd != null and drusCd != ""'>
+			  and  (a.DRUS_CD like #{drusCd}||'%')
+		    </when>
+		    <otherwise>
+		      and (
+		           (b.DGST_ADMN_NTM = #{dgstAdmnNtm} or b.DGST_ADMN_NTM = 0) or
+		           (nvl(c.RCMN_DRUS_USE_YN, 'N') = 'Y')
+		          )
+		    </otherwise>
+		  </choose>
+			  and  b.DRUS_CD = a.DRUS_CD
+			  and  nvl(b.LCKN_YN,'X') <![CDATA[ <> ]]> 'Y'
+			order
+			   by  decode(b.DGST_ADMN_NTM, 0 , 9, b.DGST_ADMN_NTM), a.INQR_SQNC, b.DRUS_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO">
+	
+		<result property="drusCd" column="DRUS_CD"/>
+		<result property="envlMemoCtn1" column="ENVL_MEMO_CTN_1"/>
+		<result property="envlMemoCtn2" column="ENVL_MEMO_CTN_2"/>
+		<result property="dgstAdmnNtm" column="DGST_ADMN_NTM"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="lcknYn" column="LCKN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrugDrusListInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrugDrusListInqrDAO-selectOneDrugDrus */   /*+ mdd_dmetcdt_l02$S01_약주사 용법조회 코드조건 */
+				   a.DRUS_CD as DRUS_CD
+				,  a.ENVL_MEMO_CTN1  as ENVL_MEMO_CTN_1
+				,  a.ENVL_MEMO_CTN2  as ENVL_MEMO_CTN_2
+				,  a.DGST_ADMN_NTM as DGST_ADMN_NTM
+				,  a.DRAP_DVSN_CD as DRAP_DVSN_CD
+				,  a.LCKN_YN as LCKN_YN
+			 from  SDDMETCDT a
+			where  a.DRUS_CD = #{drusCd}
+			  and  nvl(a.LCKN_YN,'X') <> 'Y'
+			order
+			   by  a.DRUS_CD
+			]]>
+	</select>
+
+
+
+</mapper>

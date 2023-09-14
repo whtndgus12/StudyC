@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpBlsgVcvlLnkgComDAO_sql.xml 
+    Description :                                      혈당측정결과를 수기 or 기계(인터페이스)로 입력/수정 시 저혈당체크 데이터 새로 생성 및 SMS, 노티 발송.
+                  -->
+<mapper namespace="MdpBlsgVcvlLnkgComDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO">
+	
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="admsYmd" column="ADMS_YMD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="clno" column="CLNO"/>
+		<result property="prclTypeCd" column="PRCL_TYPE_CD"/>
+		<result property="spsbCtn" column="SPSB_CTN"/>
+		<result property="caerTlno" column="CAER_TLNO"/>
+		<result property="wardNm" column="WARD_NM"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm (환자의 재원정보 조회) 
+        Description :                                           환자의 재원정보를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneAdmsSthsInfm */
+		<![CDATA[ 
+		SELECT  NVL(A.CARE_WARD_CD, A.WARD_CD)    AS WARD_CD          /* 병동코드 */
+		      , A.PTNO                            AS PTNO             /* 환자번호 */
+		      , TO_CHAR(A.MDCR_YMD, 'yyyymmdd')   AS ADMS_YMD         /* 입원일자 */
+		      , A.MDRP_NO                         AS MDRP_NO          /* 진료접수번호 */
+		      , A.GNDR_ID                         AS GNDR_ID          /* 주치의ID */
+		      , B.CLNO                            AS CLNO             /* 휴대폰번호 */
+		      , CASE
+		          WHEN #{bsMsrmVl} IS NULL THEN ''
+		          WHEN TO_NUMBER(#{bsMsrmVl}) <=  70 THEN '1'
+		          WHEN TO_NUMBER(#{bsMsrmVl}) >=  71 AND TO_NUMBER(#{bsMsrmVl}) <=  80 AND (TO_CHAR(SYSDATE, 'HH24MI') >= '2000' OR TO_CHAR(SYSDATE, 'HH24MI') <= '0500') THEN '3'
+		          WHEN TO_NUMBER(#{bsMsrmVl}) >=  71 AND TO_NUMBER(#{bsMsrmVl}) <=  80 THEN '2'
+		          WHEN TO_NUMBER(#{bsMsrmVl}) >=  81 AND TO_NUMBER(#{bsMsrmVl}) <= 100 AND (TO_CHAR(SYSDATE, 'HH24MI') >= '2000' OR TO_CHAR(SYSDATE, 'HH24MI') <= '0500') THEN '4'
+		          WHEN TO_NUMBER(#{bsMsrmVl}) >= 450 THEN '5'   /* SMS/노티만 발송 */
+		        END                               AS PRCL_TYPE_CD     /* 프로토콜유형코드 */
+		      , ( SELECT  S.MDCR_DTLS_CTRL_NM
+		            FROM  MZCTRLMMT S   /* 진료제어정보 */
+		           WHERE  S.MDCR_CTRL_CD      = 'MDP7601'
+		             AND  S.MDCR_DTLS_CTRL_CD = NVL(#{exmnCd}, 'HAND')
+		             AND  ROWNUM = 1
+		        )                                 AS SPSB_CTN         /* 특기사항내용 - BS/POCT/Serum */
+		      , ( SELECT  NVL(MAX(S.MDCR_DTLS_CTRL_ALL_NM), ( SELECT  MAX(T.MDCR_DTLS_CTRL_ALL_NM)
+		                                                        FROM  MZCTRLMMT T   /* 진료제어정보 - 대표번호 */
+		                                                       WHERE  T.MDCR_CTRL_CD      = 'MDP7602'
+		                                                         AND  T.MDCR_DTLS_CTRL_CD = '000000'
+		                                                         AND  ROWNUM = 1
+		                                                    )
+		                  )
+		            FROM  MZCTRLMMT S   /* 진료제어정보 */
+		           WHERE  S.MDCR_CTRL_CD      = 'MDP7602'
+		             AND  S.MDCR_DTLS_CTRL_CD = NVL(A.CARE_WARD_CD, A.WARD_CD)
+		        )                                 AS CAER_TLNO        /* 병동전화번호(발신자) */
+		      , ( SELECT  S.KORN_DPRT_NM
+		            FROM  HZDEPTMMT S   /* 부서코드 */
+		           WHERE  S.DPRT_CD   = NVL(A.CARE_WARD_CD, A.WARD_CD)
+		        )                                 AS WARD_NM
+		      , ( SELECT  S.PTNT_NM
+		            FROM  APPTPTNTT S   /* 환자 */
+		           WHERE  S.PTNO   = A.PTNO
+		        )                                 AS PTNT_NM
+		  FROM  APRCRPTNT A   /* 진료접수 */
+		      , CCUSERAMT B   /* 사용자 */
+		 WHERE  A.PTNO              = #{ptno}                              /* 환자번호 */
+		   AND  A.CODV_CD           IN ('I')                               /* 내원구분코드 */
+		/* Active 조건 */
+		   AND  A.CNCL_DT           IS NULL                               /* 취소일시 */
+		   AND  A.DSCH_DT           = TO_DATE('29991231', 'yyyymmdd')     /* 퇴원일시 */
+		   AND  A.GNDR_ID           = B.LGIN_ID(+)                        /* 주치의ID */
+		   AND  ROWNUM = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO">
+	
+		<result property="cct" column="CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct (저혈당 체크 건수확인) 
+        Description :                                           저혈당 체크 자료의 건수를 확인한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-selectOneMdbscaudtCct */
+		<![CDATA[
+		SELECT  COUNT(A.PTNO) AS CCT    
+		  FROM  MDBSCAUDT   A   /* 저혈당 체크 */
+		 WHERE  A.WARD_CD     = #{wardCd}                         /* 병동코드 */
+		   AND  A.PTNO        = #{ptno}                           /* 환자번호 */
+		   AND  A.ADMS_YMD    = TO_DATE(#{admsYmd}, 'yyyymmdd')   /* 입원일자 */
+		   AND  A.IMPL_YMD    = TO_DATE(#{implYmd}, 'yyyymmdd')   /* 실시일자 */
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-deleteMdbscaudt (저혈당 체크 데이터 삭제) 
+        Description :                                           저혈당 체크 데이터를 삭제한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-deleteMdbscaudt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-deleteMdbscaudt */
+		<![CDATA[
+		DELETE  
+		  FROM  MDBSCAUDT   A   /* 저혈당 체크 */
+		 WHERE  A.WARD_CD     = #{wardCd}                         /* 병동코드 */
+		   AND  A.PTNO        = #{ptno}                           /* 환자번호 */
+		   AND  A.ADMS_YMD    = TO_DATE(#{admsYmd}, 'yyyymmdd')   /* 입원일자 */
+		   AND  A.IMPL_YMD    = TO_DATE(#{implYmd}, 'yyyymmdd')   /* 실시일자 */
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-insertMdbscaudt (저혈당 체크 데이터 생성) 
+        Description :                                           저혈당 체크 데이터를 생성한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-insertMdbscaudt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBlsgVcvlLnkgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBlsgVcvlLnkgComDAO-insertMdbscaudt */
+		<![CDATA[
+		INSERT INTO MDBSCAUDT   /* 저혈당 체크 */
+		(
+		    WARD_CD                     /* 병동코드 */
+		  , PTNO                        /* 환자번호 */
+		  , ADMS_YMD                    /* 입원일자 */
+		  , IMPL_YMD                    /* 실시일자 */
+		  , MDRP_NO                     /* 진료접수번호 */
+		  , IMPL_DT                     /* 실시일시 */
+		  , PRCL_TYPE_CD                /* 프로토콜유형코드 */
+		  , BS_MSRM_VL                  /* BS측정값 */
+		  , NOTC_NTM                    /* 노티횟수 */
+		  , SPSB_CTN                    /* 특기사항내용 */
+		  /* 서버프로그램 필수 입력*/
+		  , FRST_RGSR_ID                    /* 최종수정자ID*/
+		  , FRST_RGST_IP                    /* 최종수정IP*/
+		  , FRST_RGST_DT                    /* 최종수정일시*/
+		  , FRST_RGST_CLNT_PRGM_ID          /* 최종수정SMC클라이언트프로그램ID*/
+		  , FRST_RGST_SRVR_PRGM_ID          /* 최종수정SMC서버프로그램ID*/      
+		  , LAST_UPDR_ID                    /* 최종수정자ID*/
+		  , LAST_UPDT_IP                    /* 최종수정IP*/
+		  , LAST_UPDT_DT                    /* 최종수정일시*/
+		  , LAST_UPDT_CLNT_PRGM_ID          /* 최종수정SMC클라이언트프로그램ID*/
+		  , LAST_UPDT_SRVR_PRGM_ID          /* 최종수정SMC서버프로그램ID*/ 
+		)
+		VALUES
+		(
+		    #{wardCd}                                 /* 병동코드 */
+		  , #{ptno}                                   /* 환자번호 */
+		  , TO_DATE(#{admsYmd}, 'yyyymmdd')           /* 입원일자 */
+		  , TO_DATE(#{implYmd}, 'yyyymmdd')           /* 실시일자 */
+		  , #{mdrpNo}                                 /* 진료접수번호 */
+		  , TO_DATE(#{implDt}, 'yyyymmddhh24miss')    /* 실시일시 */
+		  , #{prclTypeCd}                             /* 프로토콜유형코드 */
+		  , #{bsMsrmVl}                               /* BS측정값 */
+		  , 0                                         /* 노티횟수 */
+		  , #{spsbCtn}                                /* 특기사항내용 - BS/POCT/Serum */
+		  /* 서버프로그램 필수 입력*/
+		  , #{gvLginId}                 /* 최종수정자ID*/
+		  , #{gvUserIp}                 /* 최종수정IP*/
+		  , sysdate                     /* 최종수정일시*/
+		  , #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID*/
+		  , #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID*/      
+		  , #{gvLginId}                 /* 최종수정자ID*/
+		  , #{gvUserIp}                 /* 최종수정IP*/
+		  , sysdate                     /* 최종수정일시*/
+		  , #{gvClntPrgmId}             /* 최종수정SMC클라이언트프로그램ID*/
+		  , #{gvSrvrPrgmId}             /* 최종수정SMC서버프로그램ID*/
+		)
+		]]>
+	</insert>
+
+</mapper>

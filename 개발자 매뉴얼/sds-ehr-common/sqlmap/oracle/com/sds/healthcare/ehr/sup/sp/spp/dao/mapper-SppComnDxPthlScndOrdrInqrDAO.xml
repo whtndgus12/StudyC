@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SppComnDxPthlScndOrdrInqrDAO_sql.xml 
+    Description :                                      진단병리2차선처방정보 조회
+                  -->
+<mapper namespace="SppComnDxPthlScndOrdrInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr-result" type="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO">
+	
+		<result property="pthlNo" column="PTHL_NO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="revsMcdpCd" column="REVS_MCDP_CD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="adtnExorCd" column="ADTN_EXOR_CD"/>
+		<result property="indrNm" column="INDR_NM"/>
+		<result property="bsisOrdrNm" column="BSIS_ORDR_NM"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ptexAdorSno" column="PTEX_ADOR_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr (진단병리2차처방조회) 
+        Description :                                           병리진단검사 중 처리 전 상태(처방완료 및 취소 제외)의 선처방정보를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO
+		resultMap : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO"  resultMap="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrInqr */
+		    select  /*+ mdd_ordrcmt_l15$S01_진단병리 2차처방 조회 */
+		            d.PTHL_NO                             /* 병리번호             */
+		         ,  max(e.MCDP_CD) as MCDP_CD            /* 원오더진료과         */
+		         ,  '' as REVS_MCDP_CD                   /* 진료과               */
+		         ,  max(e.EXMN_CD) as EXMN_CD            /* 1차처방              */
+		         ,  '' as ADTN_EXOR_CD                   /* 2차처방              */
+		         ,  max((select USER_NM from CCUSRDPHT where USER_ID = d.PTEX_INDR_ID1)) as INDR_NM  /* 판독의명             */
+		         ,  max(f.ORDR_NM) as BSIS_ORDR_NM             /* 처방명               */
+		         ,  '' as ORDR_NM                        /* 처방명               */
+		         ,  null PTEX_ADOR_SNO
+		      from
+		            MDORDRCMT f
+		         ,  SPWXWRKMT d
+		         ,  SPWXWRKDT e
+		     where  d.PTHL_NO in
+		           (
+		            select
+		                    PTHL_NO                         /* 병리번호             */
+		              from
+		                    SPAADDODT                /* 추가 오더 관리(선검사처방) */
+		             where  PTNO   = #{ptno}                  /* 환자번호             */
+		               and  ORDR_YMD is null                /* 처방일자             */
+		               and  ODDR_ID   is null               /* 처방의사             */
+		               and  CCDR_ID  is null                /* 취소한의사           */
+		               and  nvl(DX_PTHL_PRSG_DVSN_CD, 'N') = 'N'  /* 선검사처리여부 Y=처리,N=미처리,C=취소 */
+		               and  REVS_MCDP_CD = #{revsMcdpCd}          /* 진료과               */
+		            )
+		       and  e.PTHL_NO    = d.PTHL_NO
+		       and  f.ORDR_CD(+) = e.EXMN_CD
+		    group by d.PTHL_NO
+		    union  all
+		    select  /*+ mdd_ordrcmt_l15$S01_진단병리 2차처방 조회 */
+		            a.PTHL_NO                                 /* 병리번호             */
+		         ,  a.FRST_ORDR_MCDP_CD                       /* 원오더진료과         */
+		         ,  a.REVS_MCDP_CD                            /* 진료과               */
+		         ,  '' as EXMN_CD                             /* 1차처방              */
+		         ,  a.ADTN_EXOR_CD                            /* 2차처방              */
+		         ,  (select USER_NM from CCUSRDPHT where USER_ID = a.PTHL_CNDR_ID) as INDR_NM  /* 판독의명             */
+		         ,  '' as BSIS_ORDR_NM                              /* 처방명               */
+		         ,  b.ORDR_NM                                  /* 처방명               */
+		         ,  a.PTEX_ADOR_SNO
+		      from
+		            SPAADDODT a                        /* 추가 오더 관리(선검사처방) */
+		         ,  MDORDRCMT b
+		         ,  AIMFMDFET c
+		     where  a.PTNO         = #{ptno}                          /* 환자번호             */
+		       and  a.ORDR_YMD is null                        /* 처방일자             */
+		       and  a.ODDR_ID   is null                       /* 처방의사             */
+		       and  a.CCDR_ID  is null                        /* 취소한의사           */
+		       and  nvl(a.DX_PTHL_PRSG_DVSN_CD, 'N') = 'N'      /* 선검사처리여부 Y=처리,N=미처리,C=취소 */
+		       and  a.REVS_MCDP_CD = #{revsMcdpCd}            /* 진료과               */
+		       and  b.ORDR_CD(+) = a.ADTN_EXOR_CD
+		       and  nvl(a.EXMN_DVSN_NM, 'PRE') = 'PRE'
+		       and  b.ORDR_PSBL_DVSN_CD = 'Y'
+		       and  c.MDFE_CD = b.ORDR_CD
+		       and  trunc(sysdate) between c.APST_YMD and c.APFN_YMD
+		     order
+		        by  1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr-result" type="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO">
+	
+		<result property="pthlNo" column="PTHL_NO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="revsMcdpCd" column="REVS_MCDP_CD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="adtnExorCd" column="ADTN_EXOR_CD"/>
+		<result property="indrNm" column="INDR_NM"/>
+		<result property="bsisOrdrNm" column="BSIS_ORDR_NM"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ptexAdorSno" column="PTEX_ADOR_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr (진단병리 2차처방 조회) 
+        Description :                                           mdd_ordrcmt_l15
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO
+		resultMap : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO"  resultMap="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-listDxPthlScndOrdrNewInqr */
+		select  /*+ mdd_ordrcmt_l15$S01_진단병리 2차처방 조회 */
+		          a.SPCM_NO1 PTHL_NO			/* 병리번호 */
+		     ,  a.MCDP_CD					/* 진료과코드 */
+		     ,  a.MCDP_CD REVS_MCDP_CD		/* 예약진료과코드 */
+			 ,  '' EXMN_CD					/* 검사코드 */
+			 ,  a.ORDR_CD ADTN_EXOR_CD		/* 2차처방 처방코드 */
+			 ,  (select USER_NM from CCUSRDPHT where USER_ID = a.INDR_ID1) as INDR_NM  /* 판독의명 */
+			 ,  '' as BSIS_ORDR_NM			/* 상담의명 */
+			 ,  b.ORDR_NM					/* 처방명 */
+			 ,  a.ORDR_SNO PTEX_ADOR_SNO	/* 2차선처방일련번호 */
+		  from  MDEXMORDT a
+		     ,  MDORDRCMT b
+			 ,  AIMFMDFET c
+		 where  a.ORDR_CD = b.ORDR_CD
+		   and  a.ORDR_CD = c.MDFE_CD
+		   and  a.PTNO = #{ptno}				/* 환자번호 */
+		   and  a.MCDP_CD = #{revsMcdpCd}
+		   and  a.TMPR_ORDR_YN = 'Y'			/* 임시처방여부 = 'Y' */
+		   and  nvl(a.DC_DVSN_CD, 'N') = 'N'	/* DC 여부 */
+		   and  b.ORDR_PSBL_DVSN_CD = 'Y'
+		   and  nvl(DX_PTHL_ADOR_YN, 'N') = 'Y'	/* 진단병리추가처방여부 */
+		   and  trunc(sysdate) between c.APST_YMD and c.APFN_YMD
+		   and  a.SPCM_NO1 is not null
+		 order
+		    by  1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm-result" type="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="pthlNo" column="PTHL_NO"/>
+		<result property="asctPthlNo" column="ASCT_PTHL_NO"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm (병리검사처방정보단건조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO
+		resultMap : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO"  resultMap="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOnePtexOrdrInfm */
+		select  a.PTNO
+		     ,  a.PTHL_NO
+		     ,  a.ASCT_PTHL_NO
+		     ,  a.MDRP_NO
+		     ,  to_char(b.ORDR_YMD, 'yyyymmdd') ORDR_YMD
+		     ,  b.ORDR_SNO
+		     ,  b.EXMN_CD
+		     ,  c.ORDR_CD
+		  from  SPWXWRKMT a
+		     ,  SPWXWRKDT b
+		     ,  MDEXMORDT c
+		 where  a.PTNO  = b.PTNO
+		   and  a.PTHL_NO = b.PTHL_NO
+		   and  b.PTNO = c.PTNO
+		   and  b.ORDR_YMD = c.ORDR_YMD
+		   and  b.ORDR_SNO = c.ORDR_SNO
+		   and  nvl(c.DC_DVSN_CD, 'N') = 'N'
+		   and  nvl(c.TMPR_ORDR_YN, 'N') = #{tmprOrdrYn}
+		   and  a.PTNO = #{ptno}
+		   and  a.PTHL_NO = #{pthlNo}
+		   and  b.ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr-result" type="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr (신규처방정보조회) 
+        Description :                                           신규처방정보조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO
+		resultMap : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnDxPthlScndOrdrInqrDVO"  resultMap="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnDxPthlScndOrdrInqrDAO-selectOneNewOrdrInfmInqr */
+		select  m.PTNO
+		     ,  to_char(m.ORDR_YMD, 'yyyymmdd') ORDR_YMD
+		     ,  m.ORDR_SNO
+		     ,  m.ORDR_CD
+		     ,  m.MDRP_NO
+		  from  (
+		      select  '0' DVSN_CD
+		              ,  m.PTNO
+		              ,  m.ORDR_YMD
+		              ,  m.ORDR_SNO
+		              ,  m.ORDR_CD
+		              ,  m.MDRP_NO
+		           from  MDEXMORDT m
+		          where  m.EXCF_CD = 'SP'
+		            and  m.PTNO = #{ptno}
+		            and  m.ORDR_YMD = to_date(#{ordrYmd}, 'yyyy-mm-dd')
+		            and  m.ORDR_CD = #{ordrCd}
+		            and  m.SPCM_CD1 = #{spcmCd}
+		            and  nvl(m.DC_DVSN_CD, 'N') = 'N'
+		            and  nvl(m.TMPR_ORDR_YN, 'N') = 'N'
+		            and  m.SPCM_NO1 is null
+		            and  m.ODDR_ID = (select  max(x.ODDR_ID) 
+		                                from  MDEXMORDT x
+		                               where  x.PTNO = #{ptno}
+		                                 and  x.ORDR_YMD = to_date(#{ordrYmd1}, 'yyyy-mm-dd')
+										 and  x.ORDR_SNO = #{ordrSno1} /* 1이 붙은 건은 원처방 정보 */
+										 and  x.SPCM_NO1 = #{pthlNo})
+		      union all
+		      select  '1' DVSN_CD
+		              ,  m.PTNO
+		              ,  m.ORDR_YMD
+		              ,  m.ORDR_SNO
+		              ,  m.ORDR_CD
+		              ,  m.MDRP_NO
+		           from  MDEXMORDT m
+		          where  m.EXCF_CD = 'SP'
+		            and  m.PTNO = #{ptno}
+		            and  m.ORDR_YMD between to_date(#{ordrYmd}, 'yyyy-mm-dd')
+		                                               and sysdate
+		            and  m.ORDR_CD = #{ordrCd}
+		            and  m.SPCM_CD1 = #{spcmCd}
+		            and  nvl(m.DC_DVSN_CD, 'N') = 'N'
+		            and  nvl(m.TMPR_ORDR_YN, 'N') = 'N'
+		            and  m.SPCM_NO1 is null
+		            and  m.SPCM_CD1 = (select  max(x.SPCM_CD1) 
+		                                from  MDEXMORDT x
+		                               where  x.PTNO = #{ptno}
+		                                 and  x.ORDR_YMD = to_date(#{ordrYmd1}, 'yyyy-mm-dd')
+										 and  x.ORDR_SNO = #{ordrSno1} /* 1이 붙은 건은 원처방 정보 */
+										 and  x.SPCM_NO1 = #{pthlNo})
+		          order
+		             by  DVSN_CD, ORDR_SNO
+		        ) m
+		 where  rownum = 1
+	</select>
+
+
+
+</mapper>

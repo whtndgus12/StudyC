@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMnusrmtDAO_sql.xml 
+    Description :                                      홈화면
+                  -->
+<mapper namespace="CcsMnusrmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnusrmtDVO">
+	
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="menuGrpNm" column="MENU_GRP_NM"/>
+		<result property="tlbrUseYn" column="TLBR_USE_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnusrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnusrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnusrmtDAO-listMnusrmt */
+				/*SQL_ID: com-sds-healthcare-ehr-com-cs-dao-CsdMnusrmtL05DAO-listCsdMnusrmtL05Main */
+				    select  /*+ csd_mnusrmt_l05$S01_툴바그룹 정보 조회 */ 
+				            a.MENU_GRP_ID
+				          , b.MENU_GRP_NM
+				          , nvl(a.TLBR_USE_YN, 'N') as TLBR_USE_YN
+				    from    CSMNUSRMT a
+				          , CSMGLMGMT b
+				    where   a.LGIN_ID = #{gvLginId}
+				      and   a.APST_DT <![CDATA[<]]> sysdate
+				      and   a.APFN_DT <![CDATA[>]]> sysdate
+				      and   a.MENU_GRP_ID = b.MENU_GRP_ID
+				      and   b.APST_DT <![CDATA[<]]> sysdate
+				      and   b.APFN_DT <![CDATA[>]]> sysdate
+				      and   exists ( select  c.TLBR_DVSN_CD
+				                     from    CSMNGTLMT c
+				                     where   c.MENU_GRP_ID = a.MENU_GRP_ID
+				                    )
+				    order by a.MENU_GRP_APLY_SQNC
+			
+			
+	</select>
+
+
+
+</mapper>

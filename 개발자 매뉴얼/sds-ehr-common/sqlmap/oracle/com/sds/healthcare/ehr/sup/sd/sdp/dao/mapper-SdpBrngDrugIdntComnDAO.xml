@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpBrngDrugIdntComnDAO_sql.xml 
+    Description :                                      SdpBrngDrugIdntComnDAO 클래스
+                  -->
+<mapper namespace="SdpBrngDrugIdntComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugOrdr (지참약 처방내림) 
+        Description :                                           지참약 처방내림
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugOrdr"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugOrdr*/
+				<![CDATA[
+				   insert  /*+ sdd_oconlgt_i01$I01_지참약 처방내림 입력 */
+		 into  SDOCONLGT
+			(
+				   PTNO
+				,  ORDR_YMD
+				,  ORDR_SNO
+				,  MDPR_IDNT_REFR_YMD
+				,  MDPR_IDNT_ORDR_SNO
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+			)
+				   values
+			(
+				   #{ptno}
+				,  to_date(#{ordrYmd}, 'yyyymmdd')
+				,  #{ordrSno}
+				,  to_date(#{mdprIdntRefrYmd}, 'yyyymmdd')
+				,  #{mdprIdntOrdrSno}
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+			)
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-deleteMpidDetlInfm (약품식별상세정보) 
+        Description :                                           약품식별상세정보
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-deleteMpidDetlInfm"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-deleteMpidDetlInfm*/
+				<![CDATA[
+				   delete   /*+ sdd_oconsdt_d01$I01_약품식별상세정보삭제 */
+			   SDOCONSDT a
+		where  a.PTNO = #{ptno}
+		  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  a.ORDR_SNO = #{ordrSno}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMdprMstrInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMdprMstrInfm"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMdprMstrInfm */
+		<![CDATA[
+		 insert  /*+ 지참약약제마스터정보 등록 */
+		   into  SDDDGCDMT( MDPR_CD                                                   /* 약품코드 NOT NULL */
+		                  , DGMT_RGST_TYPE_CD                                         /* 약제등록유형코드 */
+		                  , MDPR_NM                                                   /* 약품명 */
+		                  , ORDR_CLTY_CD                                              /* 처방분류유형코드 */
+		                  , ORCL_CD                                                   /* 처방분류코드 */
+		                  , PCUN_INLS_QTY                                             /* 포장단위포함량 */
+		                  , ICUN_CD                                                   /* 함량단위코드 */
+		                  , INVN_PCUN_CD                                              /* 재고포장단위코드 */
+		                  , MEGR_CD                                                   /* 약효군코드 */
+		                  , SMRY_MDPR_NM                                              /* 요약약품명 */
+		                  , KORN_PDCT_NM                                              /* 한글상품명 */
+		                  , ENSN_PDCT_NM                                              /* 영문상품명 */
+		                  , INGR_NM                                                   /* 성분명 */
+		                  , RSTC_CMPN_NM                                              /* 제약회사명 */
+		                  , SLCM_NM                                                   /* 판매사명 */
+		                  , DRAP_DVSN_CD                                              /* 약적용구분코드 */
+		                  , DGFR_CD                                                   /* 제형코드 */
+		                  , PRCH_DGPR_DVSN_CD                                         /* 구매제제구분코드 */
+		                  , SPCZ_MDSP_YN                                              /* 전문의약품여부 */
+		                  , TOTL_QTY_CLCL_CD                                          /* 총량계산코드 */
+		                  , DVDN_DVSN_CD                                              /* 분할구분코드 */
+		                  , SDPF_EXRE_CD                                              /* 의약분업예외사유코드 */
+		                  , KPNG_PLAC_CD                                              /* 보관장소코드 */
+		                  , IHOH_DVSN_CD                                              /* 원내원외구분코드 */
+		                  , ORDR_PSBL_DVSN_CD                                         /* 처방가능구분코드 */
+		                  , TIMS1_TOTL_QTY_YN                                         /* 1회총량여부 */
+		                  , WSCN_SNGN_YN                                              /* 수제단독여부 */
+		                  , PTP_MDPR_YN                                               /* PTP약품여부 */
+		                  , OTPT_PHRM_RQST_YN                                         /* 외래약국요청여부 */
+		                  , PWDR_DSLW_YN                                              /* 산제불가여부 */
+		                  , PWDR_CLSF_CD                                              /* 산제분류코드 */
+		                  , PWDR_DSLW_RESN_CD                                         /* 산제불가사유코드 */
+		                  , PWDR_RESN_CTN                                             /* 산제사유내용 */
+		                  , BSIS_CMMD_PLAC_CD                                         /* 기본조제장소코드 */
+		                  , STST_MDPR_YN                                              /* 통계약품여부 */
+		                  , RELS_YN                                                   /* 출고여부 */
+		                  , PRTN_DLFL_YN                                              /* 복막투석액여부 */
+		                  , CLAM_PLAC_CD                                              /* 청구장소코드 */
+		                  , STST_DVSN_CD                                              /* 통계구분코드 */
+		                  , HIRA_MAIN_INGR_CD                                         /* 심평원주성분코드 */
+		                  , KIT_MDPR_DDCN                                             /* 키트약품일수 */
+		                  , INGR_MNMM_CD                                              /* 성분최소코드 */
+		                  , INGR_MNMM_QTY                                             /* 성분최소량 */
+		                  , INGR_MXMM_QTY                                             /* 성분최대량 */
+		                  , ANTB_YN                                                   /* 항생제여부 */
+		                  , ACGR_CD                                                   /* 항암제그룹코드 */
+		                  , FLUD_GRP_CD                                               /* 수액그룹코드 */
+		                  , DDD_MDPR_VL                                               /* DDD약품값 */
+		                  , INSL_DVSN_CD                                              /* 인슐린구분코드 */
+		                  , ANTB_RPRS_INGR_CD                                         /* 항생제대표성분코드 */
+		                  , TOTL_QTY_BASE_INPT_YN                                     /* 총량기준입력여부 */
+		                  , INJT_MIX_CMMD_DVSN_CD                                     /* 주사제혼합조제구분코드 */
+		                  , NFD_YN                                                    /* NFD여부 */
+		                  , FLUD_CD                                                   /* 수액코드 */
+		                  , FLUD_VLM                                                  /* 수액용량 */
+		                  , ASTS_YN                                                   /* AST여부 */
+		                  , CLCL_MTHD_CD                                              /* 계산방법코드 */
+		                  , CNPL_CD                                                   /* 계약처코드 */
+		                  , DRUS_CD                                                   /* 용법코드 */
+		                  , MDPR_CLSF_CD                                              /* 약품분류코드 */
+		                  , ORLM_VLM                                                  /* 처방제한용량 */
+		                  , HGRS_HGCC_MDPR_YN                                         /* 고위험고농도약품여부 */
+		                  , OTPT_PHRM_INJT_YN                                         /* 외래약국주사제여부 */
+		                  , MDM_TRAS_STTS_CD                                          /* MDM전송상태코드 */
+		                  , SPSB_CTN                                                  /* 특기사항내용 */
+		                  , WRHG_UNIT_CD                                              /* 입고단위코드 */
+		                  , WRHG_UNPR_AMT                                             /* 입고단가금액 */
+		                  , CNVS_CQY                                                  /* 환산수량 */
+		                  , ADLT_USE_QTY                                              /* 성인사용량 */
+		                  , MDPR_ORLM_AGE_DDCN                                        /* 약품처방제한연령일수 */
+		                  , BSIS_NTM                                                  /* 기본횟수 */
+		                  , DYS1_CECK_QTY                                             /* 1일체크량 */
+		                    /* 서버 프로그램 전환시 자동 추가된 항목 */
+		                  , FRST_RGSR_ID                                              /* 최초등록자ID NOT NULL  */
+		                  , FRST_RGST_IP                                              /* 최초등록IP NOT NULL  */
+		                  , FRST_RGST_DT                                              /* 최초등록일시 NOT NULL  */
+		                  , FRST_RGST_CLNT_PRGM_ID                                    /* 최초등록클라이언트프로그램ID NOT NULL  */
+		                  , FRST_RGST_SRVR_PRGM_ID                                    /* 최초등록서버프로그램ID NOT NULL  */
+		                  , LAST_UPDR_ID                                              /* 최종수정자ID NOT NULL  */
+		                  , LAST_UPDT_IP                                              /* 최종수정IP NOT NULL  */
+		                  , LAST_UPDT_DT                                              /* 최종수정일시 NOT NULL  */
+		                  , LAST_UPDT_CLNT_PRGM_ID                                    /* 최종수정클라이언트프로그램ID NOT NULL  */
+		                  , LAST_UPDT_SRVR_PRGM_ID                                    /* 최종수정서버프로그램ID NOT NULL  */
+		                  , GNRL_DRUG_GRP_CD                                          /* 일반약그룹코드 */
+		                  , MDM_MTRI_LAST_UPDR_ID                                     /* MDM자재최종수정자ID */
+		                  , MDM_MTRI_LAST_UPDT_DT                                     /* MDM자재최종수정일시 */
+		                  , RWID_OBJE_ID                                              /* ROWID_Object_ID */
+		                  , INJT_STER_CMMD_YN                                         /* 주사제무균조제여부 */
+		                  , DURV_PWDR_DSLW_YN                                         /* DUR산제불가여부 */
+		                  , CIV_VLM                                                   /* CIV용량 */
+		                  , CIV_TRGT_YN                                               /* CIV대상여부 */
+		                  , SBSN_MDPR_CTN                                             /* 대체약품내용 */
+		                  , MDPR_LCTN_CD                                              /* 약품위치코드 */
+		                  , RPMD_ID                                                   /* 대표약품ID */
+		                  , INGR_ID                                                   /* 성분ID */
+		                  , Hgrs_Mdpr_Yn
+		                  )
+		           values
+		                  (
+		                    #{mdprCd}                                                 /* 약품코드 NOT NULL */
+		                  , #{dgmtRgstTypeCd}                                         /* 약제등록유형코드 */
+		                  , #{mdprNm}                                                 /* 약품명 */
+		                  , #{ordrCltyCd}                                             /* 처방분류유형코드 */
+		                  , #{orclCd}                                                 /* 처방분류코드 */
+		                  , #{pcunInlsQty}                                            /* 포장단위포함량 */
+		                  , #{icunCd}                                                 /* 함량단위코드 */
+		                  , #{invnPcunCd}                                             /* 재고포장단위코드 */
+		                  , #{megrCd}                                                 /* 약효군코드 */
+		                  , #{smryMdprNm}                                             /* 요약약품명 */
+		                  , #{kornPdctNm}                                             /* 한글상품명 */
+		                  , #{ensnPdctNm}                                             /* 영문상품명 */
+		                  , #{ingrNm}                                                 /* 성분명 */
+		                  , #{rstcCmpnNm}                                             /* 제약회사명 */
+		                  , #{slcmNm}                                                 /* 판매사명 */
+		                  , #{drapDvsnCd}                                             /* 약적용구분코드 */
+		                  , #{dgfrCd}                                                 /* 제형코드 */
+		                  , #{prchDgprDvsnCd}                                         /* 구매제제구분코드 */
+		                  , #{spczMdspYn}                                             /* 전문의약품여부 */
+		                  , #{totlQtyClclCd}                                          /* 총량계산코드 */
+		                  , #{dvdnDvsnCd}                                             /* 분할구분코드 */
+		                  , #{sdpfExreCd}                                             /* 의약분업예외사유코드 */
+		                  , #{kpngPlacCd}                                             /* 보관장소코드 */
+		                  , #{ihohDvsnCd}                                             /* 원내원외구분코드 */
+		                  , #{ordrPsblDvsnCd}                                         /* 처방가능구분코드 */
+		                  , #{tims1TotlQtyYn}                                         /* 1회총량여부 */
+		                  , #{wscnSngnYn}                                             /* 수제단독여부 */
+		                  , #{ptpMdprYn}                                              /* PTP약품여부 */
+		                  , #{otptPhrmRqstYn}                                         /* 외래약국요청여부 */
+		                  , #{pwdrDslwYn}                                             /* 산제불가여부 */
+		                  , #{pwdrClsfCd}                                             /* 산제분류코드 */
+		                  , #{pwdrDslwResnCd}                                         /* 산제불가사유코드 */
+		                  , #{pwdrResnCtn}                                            /* 산제사유내용 */
+		                  , #{bsisCmmdPlacCd}                                         /* 기본조제장소코드 */
+		                  , #{ststMdprYn}                                             /* 통계약품여부 */
+		                  , #{relsYn}                                                 /* 출고여부 */
+		                  , #{prtnDlflYn}                                             /* 복막투석액여부 */
+		                  , #{clamPlacCd}                                             /* 청구장소코드 */
+		                  , #{ststDvsnCd}                                             /* 통계구분코드 */
+		                  , #{hiraMainIngrCd}                                         /* 심평원주성분코드 */
+		                  , #{kitMdprDdcn}                                            /* 키트약품일수 */
+		                  , #{ingrMnmmCd}                                             /* 성분최소코드 */
+		                  , #{ingrMnmmQty}                                            /* 성분최소량 */
+		                  , #{ingrMxmmQty}                                            /* 성분최대량 */
+		                  , #{antbYn}                                                 /* 항생제여부 */
+		                  , #{acgrCd}                                                 /* 항암제그룹코드 */
+		                  , #{fludGrpCd}                                              /* 수액그룹코드 */
+		                  , #{dddMdprVl}                                              /* DDD약품값 */
+		                  , #{inslDvsnCd}                                             /* 인슐린구분코드 */
+		                  , #{antbRprsIngrCd}                                         /* 항생제대표성분코드 */
+		                  , #{totlQtyBaseInptYn}                                      /* 총량기준입력여부 */
+		                  , #{injtMixCmmdDvsnCd}                                      /* 주사제혼합조제구분코드 */
+		                  , #{nfdYn}                                                  /* NFD여부 */
+		                  , #{fludCd}                                                 /* 수액코드 */
+		                  , #{fludVlm}                                                /* 수액용량 */
+		                  , #{astsYn}                                                 /* AST여부 */
+		                  , #{clclMthdCd}                                             /* 계산방법코드 */
+		                  , #{cnplCd}                                                 /* 계약처코드 */
+		                  , #{drusCd}                                                 /* 용법코드 */
+		                  , #{mdprClsfCd}                                             /* 약품분류코드 */
+		                  , #{orlmVlm}                                                /* 처방제한용량 */
+		                  , #{hgrsHgccMdprYn}                                         /* 고위험고농도약품여부 */
+		                  , #{otptPhrmInjtYn}                                         /* 외래약국주사제여부 */
+		                  , #{mdmTrasSttsCd}                                          /* MDM전송상태코드 */
+		                  , #{spsbCtn}                                                /* 특기사항내용 */
+		                  , #{wrhgUnitCd}                                             /* 입고단위코드 */
+		                  , #{wrhgUnprAmt}                                            /* 입고단가금액 */
+		                  , #{cnvsCqy}                                                /* 환산수량 */
+		                  , #{adltUseQty}                                             /* 성인사용량 */
+		                  , #{mdprOrlmAgeDdcn}                                        /* 약품처방제한연령일수 */
+		                  , #{bsisNtm}                                                /* 기본횟수 */
+		                  , #{dys1CeckQty}                                            /* 1일체크량 */
+		                    /* 서버 프로그램 전환시 자동 추가된 항목 */
+		                  , #{gvUserId}                                               /* 최초등록자ID NOT NULL */
+		                  , #{gvUserIp}                                               /* 최초등록IP NOT NULL */
+		                  , sysdate                                                   /* 최초등록일시 NOT NULL */
+		                  , #{gvClntPrgmId}                                           /* 최초등록클라이언트프로그램ID NOT NULL */
+		                  , #{gvSrvrPrgmId}                                           /* 최초등록서버프로그램ID NOT NULL */
+		                  , #{gvUserId}                                               /* 최종수정자ID NOT NULL */
+		                  , #{gvUserIp}                                               /* 최종수정IP NOT NULL */
+		                  , sysdate                                                   /* 최종수정일시 NOT NULL */
+		                  , #{gvClntPrgmId}                                           /* 최종수정클라이언트프로그램ID NOT NULL */
+		                  , #{gvSrvrPrgmId}                                           /* 최종수정서버프로그램ID NOT NULL */
+		                  , #{gnrlDrugGrpCd}                                          /* 일반약그룹코드 */
+		                  , #{mdmMtriLastUpdrId}                                      /* MDM자재최종수정자ID */
+		                  , to_date(#{mdmMtriLastUpdtDt}, 'yyyymmddhh24miss')         /* MDM자재최종수정일시 */
+		                  , #{rwidObjeId}                                             /* ROWID_Object_ID */
+		                  , #{injtSterCmmdYn}                                         /* 주사제무균조제여부 */
+		                  , #{durvPwdrDslwYn}                                         /* DUR산제불가여부 */
+		                  , #{civVlm}                                                 /* CIV용량 */
+		                  , #{civTrgtYn}                                              /* CIV대상여부 */
+		                  , #{sbsnMdprCtn}                                            /* 대체약품내용 */
+		                  , #{mdprLctnCd}                                             /* 약품위치코드 */
+		                  , #{rpmdId}                                                 /* 대표약품ID */
+		                  , #{ingrId}                                                 /* 성분ID */
+		                  , #{hgrsMdprYn}
+		                  )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugMdprMstrInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugMdprMstrInfm"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugMdprMstrInfm */
+		<![CDATA[
+		update /*+ 지참약약제마스터정보 수정 */
+		       SDDDGCDMT /* 약품코드 */
+		   set MDPR_NM                                      = #{mdprNm}                                           /* 약품명 */
+		     , ICUN_CD                                      = #{icunCd}                                           /* 함량단위코드 */
+		     , INVN_PCUN_CD                                 = #{invnPcunCd}                                       /* 재고포장단위코드 */
+		     , KORN_PDCT_NM                                 = #{kornPdctNm}                                       /* 한글상품명 */
+		     , ENSN_PDCT_NM                                 = #{ensnPdctNm}                                       /* 영문상품명 */
+		     , INGR_NM                                      = #{ingrNm}                                           /* 성분명 */
+		     , DRAP_DVSN_CD                                 = #{drapDvsnCd}                                       /* 약적용구분코드 */
+		     , MDPR_CLSF_CD                                 = #{mdprClsfCd}                                       /* 약품분류코드 */
+		     , LAST_UPDR_ID                                 = #{gvUserId}                                         /* 최종수정자ID NOT NULL */
+		     , LAST_UPDT_IP                                 = #{gvUserIp}                                         /* 최종수정IP NOT NULL */
+		     , LAST_UPDT_DT                                 = sysdate                                             /* 최종수정일시 NOT NULL */
+		     , LAST_UPDT_CLNT_PRGM_ID                       = #{gvClntPrgmId}                                     /* 최종수정클라이언트프로그램ID NOT NULL */
+		     , LAST_UPDT_SRVR_PRGM_ID                       = #{gvSrvrPrgmId}                                     /* 최종수정서버프로그램ID NOT NULL */
+		 where MDPR_CD                                      = #{mdprCd}                                           /* 약품코드 NOT NULL */
+		   and DGMT_RGST_TYPE_CD                            = '3'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugOrdrMstrInfm (지참약처방마스터정보수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugOrdrMstrInfm"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateBrngDrugOrdrMstrInfm */
+		       MDORDRCMT
+		   set ORDR_NM                                      = #{mdprNm}                                           /* 처방명 */
+		     , UPRC_ORDR_NM                                 = #{mdprNm}                                           /* 대문자처방명 */
+		     , ICUN_CD                                      = #{icunCd}                                           /* 함량단위코드 */
+		     , INVN_PCUN_CD                                 = #{invnPcunCd}                                       /* 재고포장단위코드 */
+		     , KORN_PDCT_NM                                 = #{kornPdctNm}                                       /* 한글상품명 */
+		     , ENSN_PDCT_NM                                 = #{ensnPdctNm}                                       /* 영문상품명 */
+		     , INGR_NM                                      = #{ingrNm}                                           /* 성분명 */
+		     , DRAP_DVSN_CD                                 = #{drapDvsnCd}                                       /* 약적용구분코드 */
+		     , MDPR_CLSF_CD                                 = #{mdprClsfCd}                                       /* 약품분류코드 */
+		     , LAST_UPDR_ID                                 = #{gvUserId}                                         /* 최종수정자ID NOT NULL */
+		     , LAST_UPDT_IP                                 = #{gvUserIp}                                         /* 최종수정IP NOT NULL */
+		     , LAST_UPDT_DT                                 = sysdate                                             /* 최종수정일시 NOT NULL */
+		     , LAST_UPDT_CLNT_PRGM_ID                       = #{gvClntPrgmId}                                     /* 최종수정클라이언트프로그램ID NOT NULL */
+		     , LAST_UPDT_SRVR_PRGM_ID                       = #{gvSrvrPrgmId}                                     /* 최종수정서버프로그램ID NOT NULL */
+		 where ORDR_CD                                      = #{mdprCd}                                           /* 처방코드 */
+		   and DGMT_RGST_TYPE_CD                            = '3'
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO">
+	
+		<result property="mdprCd" column="MDPR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl () 
+        Description :                                           지참약마스터최대값 + 1
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneBrngDrugMstrMxmmVl */
+		<![CDATA[
+		select 'SELF' || lpad(to_char((nvl(max(to_number(substr(MDPR_CD, 5, length(MDPR_CD)))), 0) + 1)), 6, '0') as MDPR_CD
+		  from SDDDGCDMT
+		 where MDPR_CD like'SELF%'
+		ORDER BY 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO">
+	
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="dgmtRgstTypeCd" column="DGMT_RGST_TYPE_CD"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-selectOneTablPkMdprCd */
+		<![CDATA[
+		select MDPR_CD as MDPR_CD
+		     , DGMT_RGST_TYPE_CD
+		     , INVN_PCUN_CD
+		  from SDDDGCDMT
+		 where MDPR_CD = #{mdprCd}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMpidInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMpidInfm"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-insertBrngDrugMpidInfm */
+		<![CDATA[
+		 insert /*+ 약품식별테이블 등록 */
+		   into SDMDISCRT(  /* 약품식별 */
+		                   MDPR_CD                /* 약품코드 NOT NULL */
+		                 , HIRA_PRDC_CD           /* 심평원제품코드 */
+		                 , RPMD_ID                /* 대표약품명ID */
+		                 , INGR_ID                /* 성분ID */
+		                 , DRUS_CD                /* 용법코드 */
+		                 , ENSN_MDPR_NM           /* 영문상품명 */
+		                 , KORN_MDPR_NM           /* 한글상품명 */
+		                 , RSTC_CMPN_NM           /* 제조사 */
+		                 , SLCM_NM                /* 판매사 */
+		                 , IMRT_MDSP_YN           /* 수입의약품 여부 */
+		                 , RARE_MDSP_YN           /* 희귀의약품 여부 */
+		                 , MDPR_COLO_NM           /* 식별(약품색) */
+		                 , DGFR_CD                /* 식별(제형) */
+		                 , SHAP_CD                /* 식별(모양) */
+		                 , MJAX_VL                /* 식별(장축길이) */
+		                 , MNAX_VL                /* 식별(단축길이) */
+		                 , THCK_VL                /* 식별(두께) */
+		                 , DVLN_CD                /* 식별(할선) */
+		                 , IDNT_CHRC_NM1          /* 식별(식별문자1) */
+		                 , IDNT_CHRC_NM2          /* 식별(식별문자2) */
+		                 , IDNT_MRKR_NM           /* 별(MARK) */
+		                   /* MDPR_IMAG_BD */     /* 약품이미지 */
+		                 , MDPR_DGFR_CD           /* 제형2 */
+		                 , EFCC_CD1
+		                 , EFCC_CD2
+		                 , INGR_CD1
+		                 , INGR_CD2
+		                 , INGR_CD3
+		                 , MDPR_PRCC_MEMO_CTN
+		                 , INGR_ICQY_CTN
+		                 , KPIC_UPDT_DT
+		                 , KFDA_BASE_CD
+		                 , TKMD_INFT_KORN_PDCT_NM /* 복약안내한글상품명 */
+		                 , BRNG_DRUG_YN
+		                 , HIRA_MAIN_INGR_CD
+		                 , SAVE_MTHD_MEMO_CTN
+		                 , KPIC_DRUS_VLM_CTN
+		                 , EFCC_EFCT_CTN
+		                 , INUS_CASB_CTN
+		                /* , MFDY_INGR_CD */
+		                 , FRST_RGSR_ID
+		                 , FRST_RGST_IP
+		                 , FRST_RGST_DT
+		                 , FRST_RGST_CLNT_PRGM_ID
+		                 , FRST_RGST_SRVR_PRGM_ID
+		                 , LAST_UPDR_ID
+		                 , LAST_UPDT_IP
+		                 , LAST_UPDT_DT
+		                 , LAST_UPDT_CLNT_PRGM_ID
+		                 , LAST_UPDT_SRVR_PRGM_ID
+		                 , ADLT_USE_QTY           /* 성인사용량 */
+		                 , BSIS_NTM               /* 기본횟수 */
+		                 , DYS1_CECK_QTY          /* 1일체크량 */
+		        ) values ( #{mdprCd}              /* 약품코드 NOT NULL */
+		                 , #{hiraPrdcCd}          /* 심평원제품코드 */
+		                 , #{rpmdId}              /* 대표약품명ID */
+		                 , #{ingrId}              /* 성분ID */
+		                 , #{drusCd}              /* 용법코드 */
+		                 , #{ensnMdprNm}          /* 영문상품명 */
+		                 , #{kornMdprNm}          /* 한글상품명 */
+		                 , #{rstcCmpnNm}          /* 제조사 */
+		                 , #{slcmNm}              /* 판매사 */
+		                 , #{imrtMdspYn}
+		                 , #{rareMdspYn}
+		                 , #{mdprColoNm}
+		                 , #{dgfrCd}
+		                 , #{shapCd}
+		                 , #{mjaxVl}
+		                 , #{mnaxVl}
+		                 , #{thckVl}
+		                 , #{dvlnCd}
+		                 , #{idntChrcNm1}
+		                 , #{idntChrcNm2}
+		                 , #{idntMrkrNm}
+		                  /* mdprImagBdByte */
+		                 , #{mdprDgfrCd}          /* 제형2 */
+		                 , #{efccCd1}
+		                 , #{efccCd2}
+		                 , #{ingrCd1}
+		                 , #{ingrCd2}
+		                 , #{ingrCd3}
+		                 , #{mdprPrccMemoCtn}
+		                 , #{ingrIcqyCtn}
+		                 , to_date(#{kpicUpdtDt}, 'yyyymmddhh24miss')
+		                 , #{kfdaBaseCd}
+		                 , #{tkmdInftKornPdctNm}  /* 복약안내한글상품명 */
+		                 , #{brngDrugYn}
+		                 , #{hiraMainIngrCd}
+		                 , #{saveMthdMemoCtn}
+		                 , #{kpicDrusVlmCtn}
+		                 , #{efccEfctCtn}
+		                 , #{inusCasbCtn}
+		               /*   , {mfdyIngrCd  */
+		                 , #{gvUserId}
+		                 , #{gvUserIp}
+		                 , sysdate
+		                 , #{gvClntPrgmId}
+		                 , #{gvSrvrPrgmId}
+		                 , #{gvUserId}
+		                 , #{gvUserIp}
+		                 , sysdate
+		                 , #{gvClntPrgmId}
+		                 , #{gvSrvrPrgmId}
+		                 , #{adltUseQty}          /* 성인사용량 */
+		                 , #{bsisNtm}             /* 기본횟수 */
+		                 , #{dys1CeckQty}         /* 1일체크량 */
+		                 )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateMfdyIngrCd (안전처 성분코드 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateMfdyIngrCd"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-updateMfdyIngrCd */
+		<![CDATA[
+		update SDMDISCRT   /* 약품식별 */
+		     set  KFDA_BASE_CD = #{mfdyIngrCd}
+		 where MDPR_CD = #{mdprCd}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO">
+	
+		<result property="mdprCd" column="MDPR_CD"/>
+		<result property="kornPdctNm" column="KORN_PDCT_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="slcmNm" column="SLCM_NM"/>
+		<result property="rpmdId" column="RPMD_ID"/>
+		<result property="rpmdNm" column="RPMD_NM"/>
+		<result property="ingrId" column="INGR_ID"/>
+		<result property="ensnPdctNm" column="ENSN_PDCT_NM"/>
+		<result property="ordrPsblDvsnCd" column="ORDR_PSBL_DVSN_CD"/>
+		<result property="dgmtRgstTypeCd" column="DGMT_RGST_TYPE_CD"/>
+		<result property="prchDgprDvsnCd" column="PRCH_DGPR_DVSN_CD"/>
+		<result property="drapDvsnCd" column="DRAP_DVSN_CD"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="insulinfgname" column="INSULINFGNAME"/>
+		<result property="insulinfgseq" column="INSULINFGSEQ"/>
+		<result property="insulincolor" column="INSULINCOLOR"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpBrngDrugIdntComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpBrngDrugIdntComnDAO-listBrngMdprCdDetl */
+		<![CDATA[
+					   select
+							   b.MDPR_CD                                                   MDPR_CD,
+							   b.KORN_PDCT_NM                                              KORN_PDCT_NM,   /*  한글상품명 */
+							   b.RSTC_CMPN_NM                                              RSTC_CMPN_NM,   /*  제조사 */
+							   b.SLCM_NM                                                   SLCM_NM,        /*  판매사 */
+							   b.RPMD_ID                                                   RPMD_ID,        /*  대표약품ID */
+							   c.RPMD_NM                                                   RPMD_NM,
+							   b.INGR_ID                                                   INGR_ID,
+							   b.ENSN_PDCT_NM                                              ENSN_PDCT_NM,
+							   b.ORDR_PSBL_DVSN_CD                                         ORDR_PSBL_DVSN_CD,
+							   decode(b.DGMT_RGST_TYPE_CD,'2','Y','N')                     DGMT_RGST_TYPE_CD,
+							   b.PRCH_DGPR_DVSN_CD                                         PRCH_DGPR_DVSN_CD,
+							   b.DRAP_DVSN_CD                                              DRAP_DVSN_CD,
+							   b.INVN_PCUN_CD                                              INVN_PCUN_CD,
+							   b.ICUN_CD                                                   ICUN_CD, /* 함량단위코드 추가 */
+							   e.DETL_CD_NM                                                INSULINFGNAME,
+							   e.SCRN_DSPL_SQNC                                            INSULINFGSEQ,
+							   e.OPTN_CTN1                                                 INSULINCOLOR
+						from
+							   SDDDGCDMT b,
+							   SDRPMDIDT c,
+							   SDCMCDDMV d,
+							   SDCMCDDMV e
+						where
+							   (
+									   b.MDPR_CD like '%'||upper(#{kornPdctNm})||'%'
+									or b.KORN_PDCT_NM like '%'||upper(#{kornPdctNm})||'%'
+									or (
+											   b.MDPR_CD like #{kornPdctNm}||'%'
+										   and b.ORCL_CD in ('DG1','IJ1')
+									   )
+									or (
+		    										upper(nvl(b.ENSN_PDCT_NM,'*')) like '%'||upper(nvl(#{kornPdctNm}, nvl(b.ENSN_PDCT_NM,'*')))||'%'
+												 or upper(nvl(b.KORN_PDCT_NM,'*')) like '%'||upper(nvl(#{kornPdctNm}, nvl(b.KORN_PDCT_NM,'*')))||'%'
+												 or upper(nvl(b.RSTC_CMPN_NM,'*')) like '%'||upper(nvl(#{kornPdctNm}, nvl(b.RSTC_CMPN_NM,'*')))||'%'
+												 or upper(nvl(b.SLCM_NM,'*')) like '%'||upper(nvl(#{kornPdctNm}, nvl(b.SLCM_NM,'*')))||'%'
+										)
+									or upper(nvl(c.RPMD_NM, '*')) like '%'||upper(nvl(#{kornPdctNm}, nvl(c.RPMD_NM, '*')))||'%'
+									or (
+											upper(#{kornPdctNm}) = 'INSULIN'
+										and exists  (
+													        select
+			   															 'X'
+			   														from
+			   														   SDMCTRLMT x
+			   													 where
+			   															   x.PHRM_CTRL_CD = 'SD802'
+			   														 and x.PHRM_DTLS_CTRL_CD = b.MDPR_CD
+													)
+										)
+							   )
+						  and  c.RPMD_ID(+) = b.RPMD_ID
+						  and  d.COMN_GRP_CD(+) = 'SD802'
+						  and  d.COMN_DTLS_CD(+) = b.MDPR_CD
+						  and  e.COMN_GRP_CD(+) = 'SD801'
+						  and  e.COMN_DTLS_CD(+) = d.OPTN_CTN1
+						  and  b.DGMT_RGST_TYPE_CD <> '2'
+					 order by
+							  decode(upper(#{kornPdctNm}), 'INSULIN', e.SCRN_DSPL_SQNC, 0),
+							  convert(b.MDPR_CD, 'US8ICL'),
+							  b.KORN_PDCT_NM,
+							  b.RSTC_CMPN_NM,
+							  b.SLCM_NM,
+							  b.RPMD_ID,
+							  c.RPMD_NM
+			]]>					  
+	</select>
+
+
+
+</mapper>

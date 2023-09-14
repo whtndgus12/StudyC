@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrComnInfmSaveDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpOrdrComnInfmSaveDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO">
+	
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="mddrRplyCtn" column="MDDR_RPLY_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual (변수를 유지하기 위한 DUAL SELECT) 
+        Description :                                           변수를 유지하기 위한 DUAL SELECT
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneOrdrComnInfmSaveDual */
+		           '' as ORDR_CLTY_CD
+		        ,  '' as MDDR_RPLY_CTN
+		  from dual        
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO">
+	
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn (심장검사 PACS NO 채번) 
+        Description :                                           심장검사처방에 연계할 PACS NO를 채번한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-selectOneHertExmnPacsNoNorn */   /*+ mdd_exmordt_s11$S01_심장검사_PACS_NO_채번_DAM */
+				   'A'||substr(to_char(sysdate,'yyyy-mm-dd'),3,2) ||decode(substr(to_char(sysdate,'yyyy-mm-dd'),6,2),
+				   '10','A','11','B','12','C',substr(to_char(sysdate,'yyyy-mm-dd'),7,1)) ||
+				   substr(to_char(sysdate,'yyyy-mm-dd'),9,2) ||lpad(MDACCNOSQ.nextval,4,'0') as PACS_ACCS_NO
+			 from dual
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePtntErrmChotBefAdmsDcdcCncl (응급실 환자 퇴원지시전 입원결정서 취소) 
+        Description :                                           응급실 환자의 퇴원지시 이전에 기등록된 입원결정서를 취소처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePtntErrmChotBefAdmsDcdcCncl"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+		update  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePtntErrmChotBefAdmsDcdcCncl */ 		
+		        APRCAMAPT
+		           set  CNCL_DT = sysdate
+		             ,  ADMS_APNT_CNRE_CD = '8' -- AP073 - 8 : 응급실퇴실처리
+		     ,  LAST_UPDR_ID = #{gvUserId}
+		     ,  LAST_UPDT_IP = #{gvUserIp}
+		     ,  LAST_UPDT_DT = current_timestamp
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		         where  ADMS_APNT_NO = #{admsApntNo}             		    
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePostAnggBsisOrdrCnfr (응급실 환자 퇴원지시전 입원결정서 취소) 
+        Description :                                           응급실 환자의 퇴원지시 이전에 기등록된 입원결정서를 취소처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePostAnggBsisOrdrCnfr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+			   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updatePostAnggBsisOrdrCnfr */   /*+ mdd_basordt_u05$I01_POST_ANGIO_기본처방_확인_수정_DAM */
+					   MDBASORDT
+				  set  IMGN_BSIS_ORDR_CNDR_ID = #{oddrId}
+					,  IMGN_BSIS_ORCN_DT = sysdate
+					,  LAST_UPDR_ID      = #{gvUserId}
+					,  LAST_UPDT_IP      = #{gvUserIp}
+					,  LAST_UPDT_DT      = sysdate
+					,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+					,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+				where  PTNO     = #{ptno}
+				  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+				  and  ORDR_SNO = #{ordrSno}
+				  and  IMGN_BSIS_ORCN_DT is null
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateTxOrdrPacsNo (심장검사 PACS NO 처치처방 수정) 
+        Description :                                           처치처방(심장검사)에 PACS NO 정보를 입력(수정)한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateTxOrdrPacsNo"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateTxOrdrPacsNo */   /*+ mdd_trtordt_u06$I01_심장검사 PACS NO 처치처방 수정 DAM */
+				   MDTRTORDT
+			  set  PACS_ACCS_NO = #{pacsAccsNo}
+				,  PACS_TRDV_CD = 'Y'
+				,  LAST_UPDR_ID = #{gvUserId}
+				,  LAST_UPDT_IP = #{gvUserIp}
+				,  LAST_UPDT_DT = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyy-mm-dd')
+			  and  ORDR_SNO = #{ordrSno}
+			  and  PACS_ACCS_NO is null
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateExmnOrdrPacsNo (심장검사 PACS NO 검사처방 수정) 
+        Description :                                           심장검사처방에 PACS NO 를 저장한다.(기존 검사처방정보 수정)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateExmnOrdrPacsNo"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-updateExmnOrdrPacsNo */   /*+ mdd_exmordt_u44$I01_심장검사 PACS NO 검사처방 수정 DAM */
+				   MDEXMORDT
+			  set  PACS_ACCS_NO = #{pacsAccsNo}
+				,  LAST_UPDR_ID = #{gvUserId}
+				,  LAST_UPDT_IP = #{gvUserIp}
+				,  LAST_UPDT_DT = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO    = #{ptno}
+			  and  ORDR_YMD  = to_date(#{ordrYmd},'yyyymmdd')
+			  and  ORDR_CD  in ('BS2701','BS2801','BS2704','BS2901') /*  20120717 KST */
+			  and  nvl(DC_DVSN_CD,'N') = 'N'
+			  and  PACS_ACCS_NO is null
+			  and  rownum < 2
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertPrnOrdrRgstRqst (PRN 처방등록요청) 
+        Description :                                           특정 처방에 대해 PRN처방등록을 요청한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertPrnOrdrRgstRqst"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+		   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertPrnOrdrRgstRqst */   /*+ mdd_prndgqt_i01$I01_PRN처방등록요청_DAM */
+			 into  MDPRNDGQT
+				(
+				   PRN_DGST_RQST_YMD
+				,  PRN_DGST_RQST_SNO
+				,  RFDR_ID
+				,  ORDR_CD
+				,  PRN_RQST_DVSN_CD
+				,  RQST_CTN
+				,  PRN_APRV_DVSN_CD
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				)
+		   values
+				(
+				   trunc(sysdate)
+				,  (
+				   select nvl(max(PRN_DGST_RQST_SNO), 0) + 1
+					 from MDPRNDGQT
+					where PRN_DGST_RQST_YMD = trunc(sysdate)
+				   )
+				,  #{rfdrId}
+				,  #{ordrCd}
+				,  #{prnRqstDvsnCd}
+				,  #{rqstCtn}
+				,  '0'    /*  MDP_057 PRN승인구분코드 0 : 요청 */
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				)
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertDslwDrusUseOpin (PRN 불가용법사용의견관리 저장) 
+        Description :                                           약주사 처방 용법입력시 불가용법인 경우 용법에 대한 사용의견을 저장한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertDslwDrusUseOpin"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrComnInfmSaveDVO"  >
+		<![CDATA[
+		insert  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrComnInfmSaveDAO-insertDslwDrusUseOpin */  
+		  into  SDDMETRQT
+					( 
+		               RPLY_YMD
+		            ,  RPLY_SNO
+		            ,  MDPR_CD
+		            ,  DRUS_CD
+		            ,  ODDR_ID
+		            ,  PTNO
+		            ,  DSLW_DRUS_RPLY_DVSN_CD
+		            ,  RPLY_CTN		
+					, FRST_RGSR_ID
+					, FRST_RGST_IP
+					, FRST_RGST_DT
+					, FRST_RGST_CLNT_PRGM_ID
+					, FRST_RGST_SRVR_PRGM_ID
+					, LAST_UPDR_ID
+					, LAST_UPDT_IP
+					, LAST_UPDT_DT
+					, LAST_UPDT_CLNT_PRGM_ID
+					, LAST_UPDT_SRVR_PRGM_ID
+					)
+			  values (
+		            to_date ( to_char (sysdate,'YYYYMMDD'), 'YYYYMMDD' )
+		            , (
+		                select  case when COUNT ( RPLY_SNO ) = 0
+		                        then 1
+		                        else MAX ( RPLY_SNO ) + 1
+		                        end RPLY_SNO
+		                  from  SDDMETRQT
+		                 where  RPLY_YMD = to_date ( to_char (sysdate,'YYYYMMDD'), 'YYYYMMDD' )
+		              )
+		            , #{mdprCd}
+		            , #{drusCd}
+		            , #{oddrId}
+		            , #{ptno}
+		            , #{dslwDrusRplyDvsnCd}
+		            , #{rplyCtn}			  
+					, #{gvUserId}
+					, #{gvUserIp}
+					, current_timestamp
+					, #{gvClntPrgmId}
+					, #{gvSrvrPrgmId}
+					, #{gvUserId}
+					, #{gvUserIp}
+					, current_timestamp
+					, #{gvClntPrgmId}
+					, #{gvSrvrPrgmId}
+					)
+			]]>
+	</insert>
+
+</mapper>

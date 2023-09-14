@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrResnMngmDAO_sql.xml 
+    Description :                                      처방사유관리DAO
+                  -->
+<mapper namespace="MdpOrdrResnMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO">
+	
+		<result property="orreAdifCtn" column="ORRE_ADIF_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-selectOneDual */
+		select  '' as ORRE_ADIF_CTN 
+		  from  dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-insertOrdrResnData (insert MDORRESMT) 
+        Description :                                           Table[MDORRESMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-insertOrdrResnData"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-insertOrdrResnData */
+		INSERT INTO MDORRESMT 
+		(
+		  PTNO		/* 환자번호 */
+		 ,ORDR_YMD		/* 처방일자 */
+		 ,ORDR_SNO		/* 처방일련번호 */
+		 ,ORTA_DVSN_CD		/* 처방테이블구분코드 */
+		 ,ORRE_BSDV_CD		/* 처방사유업무구분코드 */
+		 ,ORRE_SNO		/* 처방사유일련번호 */
+		 ,MDRP_NO
+		 ,CODV_CD
+		 ,ORRE_CD		/* 처방사유코드 */
+		 ,ORRE_DETL_CTN		/* 처방사유내용 */
+		 ,ORRE_ADIF_CTN     /* 처방사유부가정보내용 */
+		 ,FRST_RGSR_ID		/* 최초등록자ID */
+		 ,FRST_RGST_IP		/* 최초등록IP */
+		 ,FRST_RGST_DT		/* 최초등록일시 */
+		 ,FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+		 ,FRST_RGST_SRVR_PRGM_ID		/* 최초등록서버프로그램ID */
+		 ,LAST_UPDR_ID		/* 최종수정자ID */
+		 ,LAST_UPDT_IP		/* 최종수정IP */
+		 ,LAST_UPDT_DT		/* 최종수정일시 */
+		 ,LAST_UPDT_CLNT_PRGM_ID		/* 최종수정클라이언트프로그램ID */
+		 ,LAST_UPDT_SRVR_PRGM_ID		/* 최종수정서버프로그램ID */
+		)
+		VALUES
+		(
+		  #{ptno}
+		 ,to_date(#{ordrYmd}, 'yyyymmdd')
+		 ,#{ordrSno}
+		 ,#{ortaDvsnCd}
+		 ,#{orreBsdvCd}
+		 ,nvl((select max(ORRE_SNO)
+		         from MDORRESMT
+		       where PTNO = #{ptno}
+		          and ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		          and ORDR_SNO = #{ordrSno}
+		          and ORTA_DVSN_CD = #{ortaDvsnCd}
+		          and ORRE_BSDV_CD = #{orreBsdvCd}), 0) + 1
+		 ,#{mdrpNo}
+		 ,#{codvCd}
+		 ,#{orreCd}
+		 ,#{orreDetlCtn}
+		 ,#{orreAdifCtn}
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,sysdate
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,sysdate
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-deleteOrdrResnData (delete MDORRESMT) 
+        Description :                                           Table[MDORRESMT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-deleteOrdrResnData"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-deleteOrdrResnData */
+		delete 
+		  from  MDORRESMT
+		 where  PTNO = #{ptno}
+		   and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		   and  ORDR_SNO = #{ordrSno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="ortaDvsnCd" column="ORTA_DVSN_CD"/>
+		<result property="orreBsdvCd" column="ORRE_BSDV_CD"/>
+		<result property="orreSno" column="ORRE_SNO"/>
+		<result property="orreCd" column="ORRE_CD"/>
+		<result property="orreDetlCtn" column="ORRE_DETL_CTN"/>
+		<result property="orreAdifCtn" column="ORRE_ADIF_CTN"/>
+		<result property="saveDvsnCd" column="SAVE_DVSN_CD"/>
+		<result property="mdcrDtlsCtrlCd" column="MDCR_DTLS_CTRL_CD"/>
+		<result property="mdcrCtrlChrcVl2" column="MDCR_CTRL_CHRC_VL2"/>
+		<result property="dsplDetlCtn" column="DSPL_DETL_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr (list MDORRESMT) 
+        Description :                                           Table[MDORRESMT]'s list method
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrResnMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrResnMngmDAO-listPtntOrdrResnInqr */
+		select  a.PTNO		                    as PTNO           /* 환자번호 */
+		     ,  to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD	    /* 처방일자 */
+		     ,  a.ORDR_SNO		                as ORDR_SNO       /* 처방일련번호 */
+		     ,  a.ORTA_DVSN_CD		            as ORTA_DVSN_CD   /* 처방테이블구분코드 */
+		     ,  a.ORRE_BSDV_CD		            as ORRE_BSDV_CD   /* 처방사유업무구분코드 */
+		     ,  a.ORRE_SNO		                as ORRE_SNO       /* 처방사유일련번호 */
+		     ,  a.ORRE_CD		                as ORRE_CD        /* 처방사유코드 */
+		     ,  a.ORRE_DETL_CTN		            as ORRE_DETL_CTN  /* 처방사유내용 */
+		     ,  a.ORRE_ADIF_CTN                 as ORRE_ADIF_CTN  /* 처방사유부가정보내용 */
+		     ,  'S'                             as SAVE_DVSN_CD
+		     ,  b.MDCR_DTLS_CTRL_CD
+		     ,  b.MDCR_CTRL_CHRC_VL2
+		     ,  case when b.MDCR_DTLS_CTRL_CD is not null
+		             then ' ' || (case when substr(b.MDCR_CTRL_CHRC_VL1, 1, 1) = 'Y' 
+		                               then b.MDCR_CTRL_CHRC_VL2 || decode(substr(b.MDCR_CTRL_CHRC_VL1, 2, 1), 'Y', ': ', '')
+		                               else ''
+		                           end)
+		                      || (case when substr(b.MDCR_CTRL_CHRC_VL1, 2, 1) = 'Y' and ORRE_DETL_CTN is not null
+		                               then ORRE_DETL_CTN
+		                               when substr(b.MDCR_CTRL_CHRC_VL1, 2, 1) = 'Y' and ORRE_CD is not null
+		                               then (select  MDCR_DTLS_CTRL_NM
+		                                       from  MZCTRLMMT
+		                                      where  MDCR_CTRL_CD = a.ORRE_BSDV_CD 
+		                                        and  MDCR_DTLS_CTRL_CD = a.ORRE_CD)
+		                           end)
+		             else ''
+		         end as DSPL_DETL_CTN
+		  from  MDORRESMT a
+		     ,  (select  *
+		           from  MZCTRLMMT
+		          where  MDCR_CTRL_CD = 'MDP_250' /* 처방사유그룹관리 */
+		            and  instr(nvl(MDCR_CTRL_CHRC_VL1, 'NN'), 'Y') <![CDATA[ > ]]> 0 -- 사유표시여부
+		        ) b
+		 where  a.PTNO = #{ptno}
+		   and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		 <if test="ordrSno != null and ordrSno != 0">
+		   and  a.ORDR_SNO = #{ordrSno}
+		</if>
+		   and  a.MDRP_NO = #{mdrpNo}
+		   and  a.CODV_CD = #{codvCd}
+		   and  a.ORRE_BSDV_CD = b.MDCR_DTLS_CTRL_CD(+)
+	</select>
+
+
+
+</mapper>

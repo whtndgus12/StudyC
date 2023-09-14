@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccMesgLnggMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CccMesgLnggMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO">
+	
+		<result property="mesgCd" column="MESG_CD"/>
+		<result property="lnggCd" column="LNGG_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mesgEtcCtn" column="MESG_ETC_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg (사용자명_메시지 다국어 조회) 
+        Description :                                           사용자명_메시지 다국어 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listUserMesgLngg */
+						   cast(A.MESG_CD as VARCHAR2(15)) as MESG_CD
+						 , A.LNGG_CD as LNGG_CD
+						 , B.DETL_CD_NM as DETL_CD_NM
+						 , decode(C.MESG_PRVC_CD, 'C', A.MESG_ETC_CTN, A.MESG_CTN) as MESG_ETC_CTN
+				   from    CCLNMESGT A
+						 , CCCMCDDMT B
+						 , CCMESSGMT C
+				   where   A.LNGG_CD      = B.COMN_DTLS_CD
+					 and   A.MESG_CD      = C.MESG_CD
+					 and   B.COMN_GRP_CD  = 'CCC_003'
+					 and   A.MESG_CD      = #{mesgCd}
+					 and   ((#{srchCndtCtn} = '1') or
+							((#{srchCndtCtn} = '2') and (A.LNGG_CD = #{lnggCd}))
+						   )
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesg (사용자명_메시지관리 수정) 
+        Description :                                           사용자명_메시지관리 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesg */
+			   			CCMESSGMT                 /*  메시지 관리     */
+			   	   set
+			   			   MESG_DVSN_CD      = #{mesgDvsnCd}    /*  메시지구분코드  */
+						 , MESG_PRVC_CD      = #{mesgPrvcCd}    /*  메시지출처코드  */
+						 , MESG_CTN          = #{mesgCtn}        /*  메시지내용      */
+						 , MESG_ETC_CTN      = #{mesgEtcCtn}    /*  메시지내용      */
+						 , DLTN_YN           = #{dltnYn}         /*  삭제여부        */
+						 , LAST_UPDR_ID      = #{gvLginId}   /*  최종수정자ID       */
+						 , LAST_UPDT_IP      = #{gvUserIp}        /*  최종수정IP         */
+						 , LAST_UPDT_DT      = sysdate            /*  최종수정일시       */
+						 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+						 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+				   where   MESG_CD       = #{mesgCd}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO">
+	
+		<result property="mesgCd" column="MESG_CD"/>
+		<result property="mesgDvsnCd" column="MESG_DVSN_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mesgPrvcCd" column="MESG_PRVC_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="mesgCtn" column="MESG_CTN"/>
+		<result property="mesgEtcCtn" column="MESG_ETC_CTN"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg (메시지 다건조회) 
+        Description :                                           메시지 다건조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-listMesg */
+						 cast(A.MESG_CD as VARCHAR2(15)) as MESG_CD                         /*  메시지코드      */
+			   		  , A.MESG_DVSN_CD as MESG_DVSN_CD                    /*  메시지구분코드  */
+			   		  , B.DETL_CD_NM as DETL_CD_NM                      /*  메시지 구분명   */
+			   		  , A.MESG_PRVC_CD as MESG_PRVC_CD                    /*  메시지출처코드  */
+			   		  , C.DETL_CD_NM as DETL_CD_NM_1                      /*  메시지 출처명   */
+			   		  , A.MESG_CTN as MESG_CTN                        /*  메시지내용      */
+			   		  , decode(A.MESG_PRVC_CD, 'C', A.MESG_ETC_CTN, MESG_CTN) as MESG_ETC_CTN
+			   		  , A.DLTN_YN as DLTN_YN                         /*  삭제여부        */
+				   from    CCMESSGMT A                /*  메시지 관리     */
+			   		  , CCCMCDDMT B                /*  코드 상세       */
+			   		  , CCCMCDDMT C
+			   	where   A.MESG_DVSN_CD = B.COMN_DTLS_CD
+			   	  and   B.COMN_GRP_CD  = 'CCC_001'
+			   	  and   A.MESG_PRVC_CD = C.COMN_DTLS_CD
+			   	  and   C.COMN_GRP_CD  = 'CCC_002'
+			   	  and   A.MESG_DVSN_CD like '%' || #{mesgDvsnCd} || '%'
+			   	  and   A.MESG_PRVC_CD like '%' || #{mesgPrvcCd} || '%'
+			   	  and   (((A.MESG_PRVC_CD <> 'C') and ((A.MESG_CTN   like '%' || #{mesgCtn}     || '%') or
+			   										   (A.MESG_CD like #{mesgCtn}     || '%'))
+			   			 ) or
+			   			 ((A.MESG_PRVC_CD = 'C') and ((A.MESG_ETC_CTN   like '%' || #{mesgCtn}     || '%') or
+			   										  (A.MESG_CD like #{mesgCtn}     || '%'))
+			   			 ) or
+			   			 (A.MESG_CD = #{mesgCtn}))
+			   	order by A.MESG_CD
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-deleteUserMesgLngg (사용자명_언어별 메시지 삭제) 
+        Description :                                           사용자명_언어별 메시지 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-deleteUserMesgLngg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-deleteUserMesgLngg */
+				   from   CCLNMESGT /* 언어별메시지 */
+				   where  MESG_CD = #{mesgCd}
+					 and  LNGG_CD = #{lnggCd}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertUserMesgLngg (사용자명_언어별메시지 등록) 
+        Description :                                           사용자명_언어별메시지 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertUserMesgLngg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertUserMesgLngg */
+				   into   CCLNMESGT( MESG_CD     /*  메시지코드  */
+			   						   , LNGG_CD     /*  언어코드    */
+			   						   , MESG_CTN    /*  메시지내용  */
+			   						   , MESG_ETC_CTN
+			   						   , FRST_RGSR_ID
+			   						   , FRST_RGST_IP
+			   						   , FRST_RGST_DT
+			   						   , FRST_RGST_CLNT_PRGM_ID
+			   						   , FRST_RGST_SRVR_PRGM_ID
+			   						   , LAST_UPDR_ID
+			   						   , LAST_UPDT_IP
+			   						   , LAST_UPDT_DT
+			   						   , LAST_UPDT_CLNT_PRGM_ID
+			   						   , LAST_UPDT_SRVR_PRGM_ID
+			   						   )
+			   					 values( #{mesgCd}     /*  메시지코드  */
+			   						   , #{lnggCd}     /*  언어코드    */
+			   						   , #{mesgCtn}    /*  메시지내용  */
+			   						   , #{mesgEtcCtn}
+			   						   , #{gvLginId}
+			   						   , #{gvUserIp}
+			   						   , sysdate
+			   						   , #{gvClntPrgmId}
+			   						   , #{gvSrvrPrgmId}
+			   						   , #{gvLginId}
+			   						   , #{gvUserIp}
+			   						   , sysdate
+			   						   , #{gvClntPrgmId}
+			   						   , #{gvSrvrPrgmId}
+			   						   )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesgLngg () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesgLngg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-updateUserMesgLngg */
+						  CCLNMESGT
+			   	set
+			   		   MESG_CTN          = #{mesgCtn}
+			   		 , MESG_ETC_CTN      = #{mesgEtcCtn}
+			   		 , LAST_UPDR_ID      = #{gvLginId}
+			   		 , LAST_UPDT_IP      = #{gvUserIp}
+			   		 , LAST_UPDT_DT      = sysdate
+			   		 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			   		 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			   	where  MESG_CD        = #{mesgCd}
+			   	  and  LNGG_CD        = #{lnggCd}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO">
+	
+		<result property="mesgCd" column="MESG_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq (메시지 채번 조회) 
+        Description :                                           메시지 채번 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgSeq */
+						   cast(nvl(min(xa.MESG_CD), 'NONE') as varchar2(15)) as MESG_CD
+				   from    ( select  #{mesgDvsnCd} || #{mesgPrvcCd} || lpad(a.num, 5, '0') as MESG_CD
+							 from    (select  st_date + level as num
+									  from    ( select   0 as st_date
+													   , 99999 as ed_date
+												from     dual
+											  )
+									  connect by level <= ed_date - st_date
+									 ) a
+							 minus
+							 select  MESG_CD
+							 from    CCMESSGMT
+							 where   MESG_CD like #{mesgDvsnCd} || #{mesgPrvcCd} || '%'
+						   ) xa
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertMesg (메시지 등록) 
+        Description :                                           메시지 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertMesg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-insertMesg */
+				   into    CCMESSGMT(MESG_CD
+										  , MESG_DVSN_CD
+										  , MESG_PRVC_CD
+										  , MESG_CTN
+										  , MESG_ETC_CTN
+										  , DLTN_YN
+										  , FRST_RGSR_ID
+										  , FRST_RGST_IP
+										  , FRST_RGST_DT
+										  , FRST_RGST_CLNT_PRGM_ID
+										  , FRST_RGST_SRVR_PRGM_ID
+										  , LAST_UPDR_ID
+										  , LAST_UPDT_IP
+										  , LAST_UPDT_DT
+										  , LAST_UPDT_CLNT_PRGM_ID
+										  , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values(#{mesgCd}
+										  , #{mesgDvsnCd}
+										  , #{mesgPrvcCd}
+										  , #{mesgCtn}
+										  , #{mesgEtcCtn}
+										  , #{dltnYn}
+										  , #{gvLginId}
+										  , #{gvUserIp}
+										  , sysdate
+										  , #{gvClntPrgmId}
+										  , #{gvSrvrPrgmId}
+										  , #{gvLginId}
+										  , #{gvUserIp}
+										  , sysdate
+										  , #{gvClntPrgmId}
+										  , #{gvSrvrPrgmId}
+										   )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="mesgCd" column="MESG_CD"/>
+		<result property="mesgDvsnCd" column="MESG_DVSN_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mesgPrvcCd" column="MESG_PRVC_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="mesgCtn" column="MESG_CTN"/>
+		<result property="mesgEtcCtn" column="MESG_ETC_CTN"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg () 
+        Description :                                           페이징
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select *
+		 from (
+		    select ROWNUM as RNUM
+		            , P.*
+		      from  (
+		             select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-pagingMesg */
+		                    cast(A.MESG_CD as VARCHAR2(15)) as MESG_CD                         /*  메시지코드      */
+		                  , A.MESG_DVSN_CD as MESG_DVSN_CD                    /*  메시지구분코드  */
+		                  , B.DETL_CD_NM as DETL_CD_NM                      /*  메시지 구분명   */
+		                  , A.MESG_PRVC_CD as MESG_PRVC_CD                    /*  메시지출처코드  */
+		                  , C.DETL_CD_NM as DETL_CD_NM_1                      /*  메시지 출처명   */
+		                  , A.MESG_CTN as MESG_CTN                        /*  메시지내용      */
+		                  , decode(A.MESG_PRVC_CD, 'C', A.MESG_ETC_CTN, MESG_CTN) as MESG_ETC_CTN
+		                  , A.DLTN_YN as DLTN_YN                         /*  삭제여부        */
+		              from CCMESSGMT A                /*  메시지 관리     */
+		                 , CCCMCDDMT B                /*  코드 상세       */
+		                 , CCCMCDDMT C
+		             where A.MESG_DVSN_CD = B.COMN_DTLS_CD
+		               and B.COMN_GRP_CD  = 'CCC_001'
+		               and A.MESG_PRVC_CD = C.COMN_DTLS_CD
+		               and C.COMN_GRP_CD  = 'CCC_002'
+		]]>
+			<if test="dltnYn != null and dltnYn != ''">
+				and   A.DLTN_YN =  #{dltnYn}      /* 삭제여부 조건 추가 */
+			</if>
+		<![CDATA[
+		               and A.MESG_DVSN_CD like '%' || #{mesgDvsnCd} || '%'
+		               and A.MESG_PRVC_CD like '%' || #{mesgPrvcCd} || '%'
+		               and (((A.MESG_PRVC_CD <> 'C') and ((A.MESG_CTN   like '%' || #{mesgCtn}     || '%') or
+		                                                  (A.MESG_CD like #{mesgCtn}     || '%'))
+		                    ) or
+		                    ((A.MESG_PRVC_CD = 'C') and ((A.MESG_ETC_CTN   like '%' || #{mesgCtn}     || '%') or
+		                                                 (A.MESG_CD like #{mesgCtn}     || '%'))
+		                    ) or
+		                    (A.MESG_CD = #{mesgCtn}))
+		           order by A.MESG_CD
+		       ) P
+		   ) 
+		where RNUM >  cast(coalesce(#{nextKeyValue}, '0') as number)
+		   and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccMesgLnggMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal-result" useCache="true" flushCache="false">
+		<![CDATA[
+		     select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccMesgLnggMngmDAO-selectOneMesgTotal */
+					  COUNT(*) as TOTAL_DATA_COUNT
+			from    CCMESSGMT A                /*  메시지 관리     */
+			  		  , CCCMCDDMT B                /*  코드 상세       */
+			   		  , CCCMCDDMT C
+			   	where   A.MESG_DVSN_CD = B.COMN_DTLS_CD
+			   	  and   B.COMN_GRP_CD  = 'CCC_001'
+			   	  and   A.MESG_PRVC_CD = C.COMN_DTLS_CD
+			   	  and   C.COMN_GRP_CD  = 'CCC_002'
+		]]>
+			<if test="dltnYn != null and dltnYn != ''">
+				and   A.DLTN_YN =  #{dltnYn}      /* 삭제여부 조건 추가 */
+			</if>
+		<![CDATA[
+			   	  and   A.MESG_DVSN_CD like '%' || #{mesgDvsnCd} || '%'
+			   	  and   A.MESG_PRVC_CD like '%' || #{mesgPrvcCd} || '%'
+			   	  and   (((A.MESG_PRVC_CD <> 'C') and ((A.MESG_CTN   like '%' || #{mesgCtn}     || '%') or
+			   										   (A.MESG_CD like #{mesgCtn}     || '%'))
+			   			 ) or
+			   			 ((A.MESG_PRVC_CD = 'C') and ((A.MESG_ETC_CTN   like '%' || #{mesgCtn}     || '%') or
+			   										  (A.MESG_CD like #{mesgCtn}     || '%'))
+			   			 ) or
+			   			 (A.MESG_CD = #{mesgCtn}))
+		]]>
+	</select>
+
+
+
+</mapper>

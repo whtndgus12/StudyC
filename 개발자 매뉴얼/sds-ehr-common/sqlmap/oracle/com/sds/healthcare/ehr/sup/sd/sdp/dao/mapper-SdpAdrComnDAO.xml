@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpAdrComnDAO_sql.xml 
+    Description :                                      SdpAdrComnDAO 클래스
+                  -->
+<mapper namespace="SdpAdrComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrComnDVO">
+	
+		<result property="afiTrgtCot" column="AFI_TRGT_COT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct (Side-Reaction에서 데이타조회) 
+        Description :                                           Side-Reaction에서 데이타조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrComnDAO-selectOneSdefCct */
+				<![CDATA[
+				   select  /*+ sdd_sidremt_s01$S01_Side-Reaction에서 데이타조회 */
+			count(1) as AFI_TRGT_COT
+				   from  SRSIDREMT a  /*환자별부작용관리*/
+		  ,  SWWORKMMT b  /*환자검사작업관리 */
+		  ,  MDORDRCMT c  /*처방코드기본*/
+				  where  a.PTNO = #{ptno}
+		and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		and  a.ORDR_SNO = to_number(#{ordrSno})
+		and  a.CNMD_CD  = #{cnmdCd}
+		and  a.SDEF_SNO = to_number(#{sdefSno})
+		and  b.PTNO = a.PTNO
+		and  b.ORDR_YMD = a.ORDR_YMD
+		and  b.ORDR_SNO = a.ORDR_SNO
+		and  b.EXCF_CD = 'SR'
+		and  c.ORDR_CD = a.CNMD_CD
+		and  c.ORDR_CLTY_CD in ('B1', 'B2', 'B3', 'B4')
+		and  c.MDPR_CLSF_CD = '7'
+		]]>
+	</select>
+
+
+
+</mapper>

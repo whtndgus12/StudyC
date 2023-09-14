@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuMulLgnDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcuMulLgnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO">
+	
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn (멀티 로그인 조건항목 조회) 
+        Description :                                           멀티 로그인 조건항목 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-listMulLgn */
+		SELECT A.CNDT_TRGT_ITEM_CD
+				     , B.DETL_CD_NM || '(' || 
+				       CASE A.CNDT_TRGT_ITEM_CD
+				         WHEN 'R001' THEN  C.KORN_DPRT_NM
+				         WHEN 'R003' THEN D.USER_NM
+				       END  || ')' AS DETL_CD_NM
+				     , A.CNDT_TRGT_ITEM_VL
+				  FROM CCUMLLGNT A
+				     , CCCMCDDMT B
+				     , HZDEPTMMT C
+				     , CCUSERAMT D
+				 WHERE A.CNDT_TRGT_ITEM_CD = B.COMN_DTLS_CD
+				   AND A.CNDT_TRGT_ITEM_VL = C.DPRT_CD(+)
+				   AND A.CNDT_TRGT_ITEM_VL = D.LGIN_ID(+)
+				   AND B.COMN_GRP_CD = 'CSM_003'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO">
+	
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn (멀티 로그인 조건항목 조회) 
+        Description :                                           멀티 로그인 조건항목 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneMulLgn */
+		SELECT *
+		  FROM (SELECT A.CNDT_TRGT_ITEM_CD
+				          , A.CNDT_TRGT_ITEM_VL
+				  FROM CCUMLLGNT A
+				 WHERE A.CNDT_TRGT_ITEM_CD = 'R001'
+				   AND A.CNDT_TRGT_ITEM_VL = #{dprtCd}
+				 UNION ALL
+				SELECT A.CNDT_TRGT_ITEM_CD
+				          , A.CNDT_TRGT_ITEM_VL
+				  FROM CCUMLLGNT A
+				 WHERE A.CNDT_TRGT_ITEM_CD = 'R003'
+				   AND A.CNDT_TRGT_ITEM_VL = #{lginId}
+				 UNION ALL
+				SELECT A.CNDT_TRGT_ITEM_CD
+				          , A.CNDT_TRGT_ITEM_VL
+				  FROM CCUMLLGNT A
+				 WHERE A.CNDT_TRGT_ITEM_CD = 'R009'
+				   AND A.CNDT_TRGT_ITEM_VL = #{gvUserIp})
+		 WHERE ROWNUM = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-insertMullgn (멀티 로그인 조건항목 등록) 
+        Description :                                           멀티 로그인 조건항목 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-insertMullgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-insertMullgn */
+		INSERT INTO CCUMLLGNT 
+		(
+		  CNDT_TRGT_ITEM_CD		/* 조건대상항목코드 */
+		 ,CNDT_TRGT_ITEM_VL		/* 조건대상항목값 */
+		 ,FRST_RGSR_ID		/* 최초등록자ID */
+		 ,FRST_RGST_IP		/* 최초등록IP */
+		 ,FRST_RGST_DT		/* 최초등록일시 */
+		 ,FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+		 ,FRST_RGST_SRVR_PRGM_ID		/* 최초등록서버프로그램ID */
+		 ,LAST_UPDR_ID		/* 최종수정자ID */
+		 ,LAST_UPDT_IP		/* 최종수정IP */
+		 ,LAST_UPDT_DT		/* 최종수정일시 */
+		 ,LAST_UPDT_CLNT_PRGM_ID		/* 최종수정클라이언트프로그램ID */
+		 ,LAST_UPDT_SRVR_PRGM_ID		/* 최종수정서버프로그램ID */
+		)
+		VALUES
+		(
+		  #{cndtTrgtItemCd}
+		 ,#{cndtTrgtItemVl}
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,CURRENT_TIMESTAMP
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,CURRENT_TIMESTAMP
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-deleteMulLgn (멀티 로그인 조건항목 삭제) 
+        Description :                                           멀티 로그인 조건항목 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-deleteMulLgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-deleteMulLgn */
+		DELETE  
+		  FROM CCUMLLGNT
+		 WHERE CNDT_TRGT_ITEM_CD = #{cndtTrgtItemCd}
+		     AND CNDT_TRGT_ITEM_VL = #{cndtTrgtItemVl}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-updateUserAmtMulLgn (사용자 마스터 멀티로그인 처리) 
+        Description :                                           사용자 마스터 멀티로그인 처리
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-updateUserAmtMulLgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-updateUserAmtMulLgn */
+		UPDATE CCUSERAMT
+		   SET USER_STTS_CD = #{userSttsCd}
+		     , HSPT_CD = #{hsptCd}
+		     ,LAST_UPDR_ID = #{gvUserId}		/* 최종수정자ID */
+		     ,LAST_UPDT_IP = #{gvUserIp}		/* 최종수정IP */
+		     ,LAST_UPDT_DT = CURRENT_TIMESTAMP	/* 최종수정일시 */
+		     ,LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId} /* 최종수정클라이언트프로그램ID */
+		     ,LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} /* 최종수정서버프로그램ID */
+		 WHERE LGIN_ID = #{lginId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="orglHsptCd" column="ORGL_HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn (멀티로그인 사용자 조회) 
+        Description :                                           멀티로그인 사용자 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuMulLgnDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuMulLgnDAO-selectOneUserAmtMulLgn */
+		SELECT LGIN_ID
+		     , USER_STTS_CD
+		     , HSPT_CD
+		     , ORGL_HSPT_CD
+		     , HSPT_OCFM_CD
+		  FROM CCUSERAMT
+		 WHERE LGIN_ID = #{lginId}
+	</select>
+
+
+
+</mapper>

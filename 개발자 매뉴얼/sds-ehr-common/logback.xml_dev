@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+	<contextName>EHR</contextName>
+
+	<appender name="FLUENT_SYNC"
+		class="com.sds.healthcare.common.logback.appenders.EHRDataFluentAppender">
+
+		<!-- Tag for Fluentd. Farther information: http://docs.fluentd.org/articles/config-file -->
+		<tag>ehr.log</tag>
+		<!-- [Optional] Label for Fluentd. Farther information: http://docs.fluentd.org/articles/config-file -->
+		<label></label>
+		<!-- Host name/address and port number which Flentd placed -->
+		<remoteHost>localhost</remoteHost>
+		<port>24201</port>
+		<!-- [Optional] Additional fields(Pairs of key: value) -->
+		<!-- 
+		<additionalField>
+			<key>foo2</key>
+			<value>bar2</value>
+		</additionalField> -->
+		<!-- [Optional] If true, Map Marker is expanded instead of nesting in the marker name -->
+		<flattenMapMarker>false</flattenMapMarker>
+
+		<encoder>
+			<pattern><![CDATA[%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-5level %logger{15}#%line %msg]]></pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FLUENT"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<!-- Max queue size of logs which is waiting to be sent (When it reach 
+			to the max size, the log will be disappeared). -->
+		<queueSize>9999</queueSize>
+		<!-- Never block when the queue becomes full. -->
+		<neverBlock>true</neverBlock>
+		<!-- The default maximum queue flush time allowed during appender stop. 
+			If the worker takes longer than this time it will exit, discarding any remaining 
+			items in the queue. 10000 millis -->
+		<maxFlushTime>10000</maxFlushTime>
+		<appender-ref ref="FLUENT_SYNC" />
+	</appender>
+	
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<encoder>
+			<pattern>>%d{yyyyMMdd HH:mm:ss} %X{mdcUuid} %X{mdcUsrIp} [%-5p] %C{0}.%M:%L : %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.anyframe" level="ERROR" additivity="false">
+		<appender-ref ref="console" />
+		<appender-ref ref="FLUENT" />
+	</logger>
+
+	<logger name="com.anyframe" level="INFO" additivity="false">
+		<appender-ref ref="console" />
+		<appender-ref ref="FLUENT" />
+	</logger>
+
+
+	<logger name="org.springframework" level="INFO" additivity="false" >
+	    <appender-ref ref="console"/>
+	    <appender-ref ref="FLUENT" />
+    </logger>
+
+	<logger name="org.springframework.integration.handler" level="INFO" additivity="false" >
+	    <appender-ref ref="console"/>
+	    <appender-ref ref="FLUENT" />
+    </logger>
+
+	<!-- DEBUG인 경우 주기적으로 로깅되는 부분으로 인해 로그 사이즈가 커짐.(redis) --> 
+	<logger name="com.lambdaworks.redis" level="INFO" additivity="false" >
+	    <appender-ref ref="console"/>
+	    <appender-ref ref="FLUENT" />
+    </logger>
+    
+	<logger name="com.sds.healthcare" level="DEBUG" additivity="false" >
+	    <appender-ref ref="console"/>
+	    <appender-ref ref="FLUENT" />
+    </logger>	
+    
+	<root level="DEBUG">
+		<appender-ref ref="console" />
+		<appender-ref ref="FLUENT" />
+	</root>
+
+</configuration>

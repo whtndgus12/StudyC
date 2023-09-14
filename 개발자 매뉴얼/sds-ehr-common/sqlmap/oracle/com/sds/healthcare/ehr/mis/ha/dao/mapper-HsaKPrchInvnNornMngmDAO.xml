@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HsaKPrchInvnNornMngmDAO_sql.xml 
+    Description :                                      구매재고채번관리
+                  -->
+<mapper namespace="HsaKPrchInvnNornMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt-result" type="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="tnNornDvsnCd" column="TN_NORN_DVSN_CD"/>
+		<result property="tnNornYmd" column="TN_NORN_YMD"/>
+		<result property="tnNornSno" column="TN_NORN_SNO"/>
+		<result property="tnNornDvsnCdNm" column="TN_NORN_DVSN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt (구매재고순번채번 조회) 
+        Description :                                           구매재고순번채번 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneHsmrchtnt */
+		select 
+		       a.BSPL_CD                     as BSPL_CD                     /* 사업장코드   */
+		     , a.TN_NORN_DVSN_CD             as TN_NORN_DVSN_CD             /* 순번채번구분코드   */
+		     , a.TN_NORN_YMD                 as TN_NORN_YMD                 /* 순번채번일자   */
+		     , a.TN_NORN_SNO                 as TN_NORN_SNO                 /* 순번채번일련번호   */
+		     , a.TN_NORN_DVSN_CD_NM          as TN_NORN_DVSN_CD_NM          /* 순번채번구분코드명   */
+		  from HSMRCHTNT a  /* 구매재고순번채번 */
+		 where a.BSPL_CD                     = #{bsplCd}                   /* 사업장코드   */
+		   and a.TN_NORN_DVSN_CD             = #{tnNornDvsnCd}             /* 순번채번구분코드   */
+		   and a.TN_NORN_YMD                 = #{tnNornYmd}                /* 순번채번일자   */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno-result" type="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO">
+	
+		<result property="tnNornDvsnCdNm" column="TN_NORN_DVSN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno (순번채번) 
+        Description :                                           순번채번
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno */
+		select 
+		      trim(to_char(nvl(max(a.TN_NORN_SNO), 0), '0')) as TN_NORN_DVSN_CD_NM
+		  from HSMRCHTNT a
+		 where a.BSPL_CD   = #{bsplCd}
+		   and a.TN_NORN_DVSN_CD = #{tnNornDvsnCd}
+		   and a.TN_NORN_YMD  = #{tnNornYmd}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3-result" type="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO">
+	
+		<result property="tnNornDvsnCdNm" column="TN_NORN_DVSN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3 (selectOneNextSno) 
+        Description :                                           순번채번 3자리
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno3 */
+		select 
+		      #{tnNornDvsnCd}||#{tnNornYmd} || trim(to_char(nvl(max(a.TN_NORN_SNO), 0), '000')) as TN_NORN_DVSN_CD_NM
+		  from HSMRCHTNT a
+		 where a.BSPL_CD   = #{bsplCd}
+		   and a.TN_NORN_DVSN_CD = #{tnNornDvsnCd}
+		   and a.TN_NORN_YMD  = #{tnNornYmd}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4-result" type="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO">
+	
+		<result property="tnNornDvsnCdNm" column="TN_NORN_DVSN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4 (selectOneNextSno) 
+        Description :                                           순번채번 4자리
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-selectOneNextSno4 */
+		select 
+		      #{tnNornDvsnCd}||#{tnNornYmd} || trim(to_char(nvl(max(a.TN_NORN_SNO), 0), '0000')) as TN_NORN_DVSN_CD_NM
+		  from HSMRCHTNT a
+		 where a.BSPL_CD   = #{bsplCd}
+		   and a.TN_NORN_DVSN_CD = #{tnNornDvsnCd}
+		   and a.TN_NORN_YMD  = #{tnNornYmd}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-insertHsmrchtnt (구매재고순번채번 등록) 
+        Description :                                           구매재고순번채번 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-insertHsmrchtnt"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-insertHsmrchtnt */
+		insert 
+		  into HSMRCHTNT
+		        (
+		           BSPL_CD                        /* 사업장코드   */
+		         , TN_NORN_DVSN_CD                /* 순번채번구분코드   */
+		         , TN_NORN_YMD                    /* 순번채번일자   */
+		         , TN_NORN_SNO                    /* 순번채번일련번호   */
+		         , TN_NORN_DVSN_CD_NM             /* 순번채번구분코드명   */
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		  values
+		        (
+		           #{bsplCd}                      /* 사업장코드   */ 
+		         , #{tnNornDvsnCd}                /* 순번채번구분코드   */ 
+		         , #{tnNornYmd}                   /* 순번채번일자   */ 
+		         , #{tnNornSno}                   /* 순번채번일련번호   */ 
+		         , #{tnNornDvsnCdNm}              /* 순번채번구분코드명   */ 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-updateHsmrchtnt (구매재고순번채번 수정) 
+        Description :                                           구매재고순번채번 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-updateHsmrchtnt"  parameterType="com.sds.healthcare.ehr.mis.ha.vo.HsaKPrchInvnNornMngmDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-ha-dao-HsaKPrchInvnNornMngmDAO-updateHsmrchtnt */
+		update 
+		      HSMRCHTNT  /* 구매재고순번채번 */
+		   set
+		          TN_NORN_SNO                     = TN_NORN_SNO + 1                   /* 순번채번일련번호   */
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where BSPL_CD                       = #{bsplCd}                     /* 사업장코드   */
+		   and TN_NORN_DVSN_CD               = #{tnNornDvsnCd}               /* 순번채번구분코드   */
+		   and TN_NORN_YMD                   = #{tnNornYmd}                  /* 순번채번일자   */
+		]]>
+	</update>
+
+</mapper>

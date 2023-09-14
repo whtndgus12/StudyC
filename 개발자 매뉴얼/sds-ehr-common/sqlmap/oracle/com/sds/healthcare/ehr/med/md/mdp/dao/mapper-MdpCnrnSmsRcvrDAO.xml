@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpCnrnSmsRcvrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpCnrnSmsRcvrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrSno" column="RCVR_SNO"/>
+		<result property="rcvrNm" column="RCVR_NM"/>
+		<result property="rcvrTlno" column="RCVR_TLNO"/>
+		<result property="unsbCtn" column="UNSB_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr (임상실습관심환자 문자수신자 목록조회) 
+        Description :                                           임상실습관심환자 문자수신자 목록조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listCnrnSmsRcvr */
+		       a.PTNO                        as PTNO                        /* 환자번호   */
+		     , a.RCVR_SNO                    as RCVR_SNO                    /* 수신자일련번호   */
+		     , a.RCVR_NM                     as RCVR_NM                     /* 수신자명   */
+		     , a.RCVR_TLNO                   as RCVR_TLNO                   /* 수신자전화번호   */
+		     , a.UNSB_CTN                    as UNSB_CTN                    /* 특이사항내용   */     
+		  from MDCNRNSMT a  /* 임상실습환자문자수신관리 */
+		 where a.PTNO                        = #{ptno}                     /* 환자번호   */
+		 order by a.RCVR_SNO
+		]]>  
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-insertCnrnSmsRcvr (임상실습관심환자 문자수신자 등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-insertCnrnSmsRcvr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  >
+		<![CDATA[
+		insert /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-insertCnrnSmsRcvr */
+		  into MDCNRNSMT
+		        (
+		           PTNO                           /* 환자번호   */
+		         , RCVR_SNO                       /* 수신자일련번호   */
+		         , RCVR_NM                        /* 수신자명   */
+		         , RCVR_TLNO                      /* 수신자전화번호   */
+		         , UNSB_CTN                       /* 특이사항내용   */
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		  values
+		        (
+		           #{ptno}                        /* 환자번호   */ 
+		         , nvl((select max(s1.RCVR_SNO) + 1 from MDCNRNSMT s1 where s1.PTNO = #{ptno}), 1)          /* 수신자일련번호   */ 
+		         , #{rcvrNm}                      /* 수신자명   */ 
+		         , #{rcvrTlno}                    /* 수신자전화번호   */ 
+		         , #{unsbCtn}                     /* 특이사항내용   */ 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-updateCnrnSmsRcvr (임상실습관심환자 문자수신자 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-updateCnrnSmsRcvr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  >
+		<![CDATA[
+		update /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-updateCnrnSmsRcvr */
+		      MDCNRNSMT  /* 임상실습관심환자수신자관리 */
+		   set
+		           RCVR_NM                         = #{rcvrNm}                      /* 수신자명   */
+		         , RCVR_TLNO                       = #{rcvrTlno}                    /* 수신자전화번호   */
+		         , UNSB_CTN                        = #{unsbCtn}                     /* 특이사항내용   */
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where PTNO                          = #{ptno}                       /* 환자번호   */
+		   and RCVR_SNO                      = #{rcvrSno}                    /* 수신자일련번호   */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-deleteCnrnSmsRcvr (임상실습관심환자 문자수신자 삭제) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-deleteCnrnSmsRcvr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  >
+		<![CDATA[
+		delete /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-deleteCnrnSmsRcvr */
+		  from MDCNRNSMT  /* 임상실습관심환자수신자관리 */
+		 where PTNO    = #{ptno} /* 환자번호   */
+		   and RCVR_SNO = #{rcvrSno} /* 수신자일련번호   */
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno (관심환자 등록정보 조회) 
+        Description :                                           관심환자 등록정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-selectOneCnrnPtno */
+		       a.PTNO                        as PTNO                        /* 환자번호   */ 
+		  from MDCNRNPAT a
+		 where a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		     and a.CNPT_OWNR_CD        = #{cnptOwnrCd}
+		     and a.CNPT_CLSF_SNO        = #{cnptClsfSno}
+		     and a.PTNO                       = #{ptno}                     /* 환자번호   */
+		]]>  
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrSno" column="RCVR_SNO"/>
+		<result property="rcvrNm" column="RCVR_NM"/>
+		<result property="rcvrTlno" column="RCVR_TLNO"/>
+		<result property="smsrRplyTlno" column="SMSR_RPLY_TLNO"/>
+		<result property="mesgCtn" column="MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg (임상실습환자 SMS발송대상목록 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpCnrnSmsRcvrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpCnrnSmsRcvrDAO-listSmsSndgMsg */
+			   aa.PTNO                        as PTNO                        /* 환자번호   */
+		     , aa.RCVR_SNO                    as RCVR_SNO                    /* 수신자일련번호   */
+		     , aa.RCVR_NM                     as RCVR_NM                     /* 수신자명   */
+		     , aa.RCVR_TLNO                   as RCVR_TLNO                   /* 수신자전화번호   */
+		     , '0519906900'                   as SMSR_RPLY_TLNO           /* SMS회신전화번호 */
+		      , 'KLIC대상환자('||aa.PTNO||','
+		       ||(select s1.PTNT_NM from APPTPTNTT s1 where s1.PTNO = aa.PTNO)||') '
+		       ||(select s2.ABRV_DPRT_CD from HZDEPTMMT s2 where s2.DPRT_CD = #{dprtCd})
+		       ||decode(#{codvCd}, 'O','외래','E','응급','I','병동','D','병동','')
+		       ||case when #{rptnDvsnCd} = 'A' then '접수  '||substr(#{mdcrDt},1,8)||' '||substr(#{mdcrDt}, 9,2)||':'||substr(#{mdcrDt},11,2)||' 입니다.'
+		              when #{rptnDvsnCd} = 'B' then '접수변경  '||substr(#{mdcrDt},1,8)||' '||substr(#{mdcrDt}, 9,2)||':'||substr(#{mdcrDt},11,2)||' 입니다.'
+		              when #{rptnDvsnCd} = 'C' then substr(#{mdcrDt},1,8)||' 접수취소 되었습니다.'
+		              when #{rptnDvsnCd} = 'I' then '입원 '||substr(#{mdcrDt},1,8)||' 입니다.'
+		              else '접수 '||substr(#{mdcrDt},1,8)||' '||substr(#{mdcrDt}, 9,2)||':'||substr(#{mdcrDt},11,2)||' 입니다.'
+		         end                          as MESG_CTN                  /* 메시지내용 */
+		from
+			(select 
+			       a.PTNO                        as PTNO                        /* 환자번호   */
+			     , a.RCVR_SNO                    as RCVR_SNO                    /* 수신자일련번호   */
+			     , a.RCVR_NM                     as RCVR_NM                     /* 수신자명   */
+			     , replace(a.RCVR_TLNO, '-', '') as RCVR_TLNO                   /* 수신자전화번호   */
+			  from MDCNRNSMT a  				/* 임상실습환자문자수신관리 */
+			 where a.PTNO    = #{ptno}          /* 환자번호   */
+			   and exists(select s1.PTNO from MDCNRNPAT S1  /* 관심환자 테이블 */				
+								          where s1.USER_DPRT_DVSN_CD = 'E'  /* 구분코드 : E.임상실습관심환자 */
+								            and s1.PTNO    = #{ptno})
+			union all
+			select
+			       #{ptno}                                as PTNO
+			     , 0                                      as RCVR_SNO
+			     , z.MDCR_DTLS_CTRL_NM                    as RCVR_NM                     /* 수신자명   */
+			     , replace(z.MDCR_DTLS_CTRL_CD, '-', '')  as RCVR_TLNO                   /* 수신자전화번호   */
+			  from MZCTRLMMT z
+			 where z.MDCR_CTRL_CD = 'MDP_068'
+			   and trunc(sysdate) between z.APST_YMD and z.APFN_YMD
+			   and exists(select s1.PTNO from MDCNRNPAT S1  /* 관심환자 테이블 */				
+								          where s1.USER_DPRT_DVSN_CD = 'E'  /* 구분코드 : E.임상실습관심환자 */
+								            and s1.PTNO    = #{ptno})
+			) aa  
+		order by RCVR_SNO 
+		]]>  
+	</select>
+
+
+
+</mapper>

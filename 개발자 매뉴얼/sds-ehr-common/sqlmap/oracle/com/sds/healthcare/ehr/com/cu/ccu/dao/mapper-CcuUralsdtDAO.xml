@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUralsdtDAO_sql.xml 
+    Description :                                      사용자 알람
+                  -->
+<mapper namespace="CcuUralsdtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUralsdtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="rgstNo" column="RGST_NO"/>
+		<result property="alrmDvsnCd" column="ALRM_DVSN_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstHms" column="RGST_HMS"/>
+		<result property="monYn" column="MON_YN"/>
+		<result property="tueYn" column="TUE_YN"/>
+		<result property="wedYn" column="WED_YN"/>
+		<result property="thuYn" column="THU_YN"/>
+		<result property="friYn" column="FRI_YN"/>
+		<result property="satYn" column="SAT_YN"/>
+		<result property="sunYn" column="SUN_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUralsdtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUralsdtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUralsdtDAO-listUserAlrmInq */
+				<![CDATA[
+				   select  /*+ cud_uralsdt_l01$S01_사용자 알람 조회 */
+						   a.LGIN_ID as LGIN_ID
+						 , a.RGST_NO as RGST_NO
+						 , a.ALRM_DVSN_CD as ALRM_DVSN_CD
+						 , b.DETL_CD_NM as DETL_CD_NM
+						 , to_char(a.RGST_YMD,'yyyymmdd') as RGST_YMD
+						 , a.RGST_HMS as RGST_HMS
+						 , nvl(a.MON_YN, 'N') as MON_YN
+						 , nvl(a.TUE_YN, 'N') as TUE_YN
+						 , nvl(a.WED_YN, 'N') as WED_YN
+						 , nvl(a.THU_YN, 'N') as THU_YN
+						 , nvl(a.FRI_YN, 'N') as FRI_YN
+						 , nvl(a.SAT_YN, 'N') as SAT_YN
+						 , nvl(a.SUN_YN, 'N') as SUN_YN
+						 , a.RMRK_CTN as RMRK_CTN
+				   from    CUURALSDT a
+						 , CCCMCDDMT b
+				   where   b.COMN_GRP_CD(+) = 'CUM_001'
+					 and   a.ALRM_DVSN_CD   = b.COMN_DTLS_CD(+)
+					 and   ((nvl(#{gvLginId}, '*') = '*') or (a.LGIN_ID = #{gvLginId}))
+					 and   ((nvl(#{alrmDvsnCd}, '*') = '*') or (a.ALRM_DVSN_CD = #{alrmDvsnCd}))
+					 and   ((nvl(#{rgstYmd}, '*') = '*') or (trunc(a.RGST_YMD) = to_date(#{rgstYmd} ,'yyyymmdd')))
+					 and   ((nvl(#{rgstHms}, '*') = '*') or (a.RGST_HMS = #{rgstHms}))
+					 and   ((nvl(#{monYn}, '*') = '*') or (a.MON_YN = #{monYn}))
+					 and   ((nvl(#{tueYn}, '*') = '*') or (a.TUE_YN = #{tueYn}))
+					 and   ((nvl(#{wedYn}, '*') = '*') or (a.WED_YN = #{wedYn}))
+					 and   ((nvl(#{thuYn}, '*') = '*') or (a.THU_YN = #{thuYn}))
+					 and   ((nvl(#{friYn}, '*') = '*') or (a.FRI_YN = #{friYn}))
+					 and   ((nvl(#{satYn}, '*') = '*') or (a.SAT_YN = #{satYn}))
+					 and   ((nvl(#{sunYn}, '*') = '*') or (a.SUN_YN = #{sunYn}))
+					]]>
+			
+			
+	</select>
+
+
+
+</mapper>

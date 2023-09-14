@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpElbdCrudDAO_sql.xml 
+    Description : -->
+<mapper namespace="SdpElbdCrudDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-insertSddispddt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-insertSddispddt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO"  >
+		 insert /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-insertSddispddt */
+		   into SDDISPDDT 
+		      ( DRUG_ELBD_DSPL_DVSN_CD
+		      , ORDR_YMD
+		      , MDTN_NO_DVSN_CD
+		      , MDTN_NO
+		      , PTNO
+		      , DRUG_ELBD_DSPL_CTN
+		      , DRUG_ELBD_BULT_YMD
+		      , CHRC_BLINK_YN
+		      , DRUG_ELBD_DSPL_STTS_CD
+		      , ABRV_MCDP_CD
+		      )
+		values( 'A'
+		      , to_date(#{ordrYmd}, 'YYYYMMDD')
+		      , #{mdtnNoDvsnCd}
+		      , #{mdtnNo}
+		      , nvl(#{ptno}, (select PTNO 
+		                        from SDPORDBAT  
+		                       where ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD') 
+		                         and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                         and MDTN_LCDV_CD = nvl(#{mdtnLcdvCd}, 'M')
+		                         and MDTN_NO = #{mdtnNo}
+		                      )
+		           )
+		     -- , ''  // 20230721 이병우 주석처리 하단으로 내용변경 test.
+		      , #{gvUserId} || '/' || #{gvUserIp} || '/' || #{gvClntPrgmId} || '/' || #{gvSrvrPrgmId}
+		      , trunc(sysdate)
+		      , ''
+		      , ''
+		      , 'AUTO'
+		      )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updateSddispddt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updateSddispddt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updateSddispddt */
+		       SDDISPDDT
+		   set DRUG_ELBD_DSPL_STTS_CD = #{drugElbdDsplSttsCd}
+		     , CHRC_BLINK_YN = decode(#{drugElbdDsplSttsCd}, 'Y', 'Y', '')
+		     , DRUG_ELBD_DSPL_CTN = DRUG_ELBD_DSPL_CTN || '-' || #{gvUserId} || '/' || #{gvUserIp} || '/' || #{gvClntPrgmId} || '/' || #{gvSrvrPrgmId}    -- 20230721 이병우 추가함. 테스트 이후 삭제 필요
+		 where PTNO            = nvl(#{ptno},PTNO)
+		   and ORDR_YMD        = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		   and MDTN_NO         = #{mdtnNo}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-deleteSddispddt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-deleteSddispddt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO"  >
+		delete /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-deleteSddispddt */
+		  from SDDISPDDT
+		 where ORDR_YMD        = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		   and MDTN_NO         = #{mdtnNo}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO">
+	
+		<result property="drugElbdDsplDvsnCd" column="DRUG_ELBD_DSPL_DVSN_CD"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="mdtnNoDvsnCd" column="MDTN_NO_DVSN_CD"/>
+		<result property="mdtnNo" column="MDTN_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="drugElbdDsplCtn" column="DRUG_ELBD_DSPL_CTN"/>
+		<result property="drugElbdBultYmd" column="DRUG_ELBD_BULT_YMD"/>
+		<result property="chrcBlinkYn" column="CHRC_BLINK_YN"/>
+		<result property="drugElbdDsplSttsCd" column="DRUG_ELBD_DSPL_STTS_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-selectOneSddispddt */
+		        DRUG_ELBD_DSPL_DVSN_CD
+		      , ORDR_YMD
+		      , MDTN_NO_DVSN_CD
+		      , MDTN_NO
+		      , PTNO
+		      , DRUG_ELBD_DSPL_CTN
+		      , DRUG_ELBD_BULT_YMD
+		      , CHRC_BLINK_YN
+		      , DRUG_ELBD_DSPL_STTS_CD
+		      , ABRV_MCDP_CD
+		  from SDDISPDDT
+		 where PTNO            = #{ptno}
+		   and ORDR_YMD        = to_date(#{ordrYmd}, 'YYYYMMDD')
+		   and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		   and MDTN_NO         = #{mdtnNo}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updatemergeSddispddt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updatemergeSddispddt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpElbdCrudDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpElbdCrudDAO-updatemergeSddispddt */
+				<![CDATA[
+				    merge 
+				     into SDDISPDDT
+				    using DUAL 
+				       on (      PTNO            = nvl(#{ptno},PTNO)
+		                 and ORDR_YMD        = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                 and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                 and MDTN_NO         = #{mdtnNo}
+				          ) 
+				     when matched then 
+				          update set
+				                 DRUG_ELBD_DSPL_STTS_CD = #{drugElbdDsplSttsCd}
+		                       , CHRC_BLINK_YN = decode(#{drugElbdDsplSttsCd}, 'Y', 'Y', '')
+		               where PTNO            = nvl(#{ptno},PTNO)
+		                 and ORDR_YMD        = to_date(#{ordrYmd}, 'YYYYMMDD')
+		                 and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		                 and MDTN_NO         = #{mdtnNo}
+				     when not matched then 
+				          insert 
+				              (  DRUG_ELBD_DSPL_DVSN_CD
+		                       , ORDR_YMD
+		                       , MDTN_NO_DVSN_CD
+		                       , MDTN_NO
+		                       , PTNO
+		                       , DRUG_ELBD_DSPL_CTN
+		                       , DRUG_ELBD_BULT_YMD
+		                       , CHRC_BLINK_YN
+		                       , DRUG_ELBD_DSPL_STTS_CD
+		                       , ABRV_MCDP_CD
+		                      )
+				          values
+				              ( 'A'
+		                       , to_date(#{ordrYmd}, 'YYYYMMDD')
+		                       , #{mdtnNoDvsnCd}
+		                       , #{mdtnNo}
+		                       , #{ptno}
+		                      -- , ''  //  20230721 이병우 주석처리 하단으로 내용변경함.
+		                       , #{gvUserId} || '/' || #{gvUserIp} || '/' || #{gvClntPrgmId} || '/' || #{gvSrvrPrgmId}  
+		                       , trunc(sysdate)
+		                       , ''
+		                       , 'P'
+		                       , 'AUTO'
+		                      )
+				]]> 
+	</update>
+
+</mapper>

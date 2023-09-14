@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_EtwMjdrLoginInfmDAO_sql.xml 
+    Description :                                      전공의 로그인 근무시간 체크
+                  -->
+<mapper namespace="EtwMjdrLoginInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk-result" type="com.sds.healthcare.ehr.edu.et.etw.vo.EtwMjdrLoginInfmDVO">
+	
+		<result property="rsltCd" column="RSLT_CD"/>
+		<result property="rsltCtn" column="RSLT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk (전공의 로그인 근무시간 체크 - 함수 호출) 
+        Description :                                           전공의 로그인 근무시간 체크 - 함수 호출
+                                            
+		parameterType : com.sds.healthcare.ehr.edu.et.etw.vo.EtwMjdrLoginInfmDVO
+		resultMap : com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk-result
+    -->
+	<select id="com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk"  parameterType="com.sds.healthcare.ehr.edu.et.etw.vo.EtwMjdrLoginInfmDVO"  resultMap="com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select	/*SQL_ID: com-sds-healthcare-ehr-edu-et-etw-dao-EtwMjdrLoginInfmDAO-selectOneMjdrSessionChk */
+		       SEHRFUN.FN_SD_GETTOKEN (   a.chkrslt   ,   '|' ,   1   ) as rslt_cd
+		   ,   SEHRFUN.FN_SD_GETTOKEN (   a.chkrslt   ,   '|' ,   2   ) as rslt_ctn
+		from
+		   (  
+			 select SEHRFUN.FN_ET_GET_SESSIONYN 
+					( 	  #{lginId} 
+						, #{ceckDvsnCd}   /*구분값: "L"-로그인 체크, "T"-Timer 체크*/
+					 )  as chkrslt
+		      from  dual
+		   )   a
+		]]>
+	</select>
+
+
+
+</mapper>

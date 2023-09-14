@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMnhommtDAO_sql.xml 
+    Description :                                      관리자 홈
+                  -->
+<mapper namespace="CcsMnhommtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnhommtDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="bsisLnggMenuNm" column="BSIS_LNGG_MENU_NM"/>
+		<result property="atmtExctYn" column="ATMT_EXCT_YN"/>
+		<result property="menuExrnYn" column="MENU_EXRN_YN"/>
+		<result property="dplcExctPsblYn" column="DPLC_EXCT_PSBL_YN"/>
+		<result property="swmdYn" column="SWMD_YN"/>
+		<result property="exctScopCd" column="EXCT_SCOP_CD"/>
+		<result property="mltxLnggAplyYn" column="MLTX_LNGG_APLY_YN"/>
+		<result property="exctVrabVl" column="EXCT_VRAB_VL"/>
+		<result property="stupFileNm" column="STUP_FILE_NM"/>
+		<result property="scryPrinUseYn" column="SCRY_PRIN_USE_YN"/>
+		<result property="mtsgYn" column="MTSG_YN"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnhommtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMnhommtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMnhommtDAO-listMnhommt */
+		select  /*+ csd_mnhommt_l02$S01_관리자 홈화면 조회 */ 
+				             c.PRGM_ID
+				           , c.BSIS_LNGG_MENU_NM
+				           , c.ATMT_EXCT_YN
+				           , c.MENU_EXRN_YN
+				           , c.DPLC_EXCT_PSBL_YN
+				           , c.SWMD_YN
+				           , c.EXCT_SCOP_CD
+				           , c.MLTX_LNGG_APLY_YN
+				           , c.EXCT_VRAB_VL
+				           , c.STUP_FILE_NM
+				           , c.SCRY_PRIN_USE_YN
+				           , c.MTSG_YN
+				           , rownum as INQR_SQNC
+				     from    CSMNUSRMT a
+				           , ( select   xa.MENU_GRP_ID
+				                      , xa.MENU_ID
+				                      , xa.INQR_SQNC
+				               from     ( select   a.MENU_GRP_ID
+				                                 , a.MENU_ID
+				                                 , a.INQR_SQNC
+				                                 , nvl(b.MENU_EXRN_YN, 0) as MENU_EXRN_YN
+				                                 , nvl(b.MENU_ACTV_YN, 0) as MENU_ACTV_YN
+				                          from     CSMNHOMMT a
+				                                 , ( select   tta.LGIN_ID
+				                                            , tta.MENU_GRP_ID
+				                                            , tta.MENU_ID
+				                                            , tta.MENU_EXRN_YN
+				                                            , tta.MENU_ACTV_YN
+				                                     from     ( select   ta.LGIN_ID
+				                                                       , ta.MENU_GRP_ID
+				                                                       , ta.MENU_ID
+				                                                       , ta.MENU_EXRN_YN
+				                                                       , ta.MENU_ACTV_YN
+				                                                       , (select   count(*)
+				                                                          from     CSUOMPRMT d
+				                                                          where    d.APST_DT <![CDATA[<]]> sysdate
+				                                                            and    d.APFN_DT <![CDATA[>]]> sysdate
+				                                                            and    d.MENU_GRP_ID = ta.MENU_GRP_ID
+				                                                            and    d.LGIN_ID     = ta.LGIN_ID
+				                                                         ) as CON_CHECK
+				                                                from     ( select  a.LGIN_ID
+				                                                                 , c.MENU_GRP_ID
+				                                                                 , c.MENU_ID
+				                                                                 , sum(decode(c.MENU_EXRN_YN, 'N', 0, 1)) as MENU_EXRN_YN
+				                                                                 , sum(decode(c.MENU_ACTV_YN, 'N', 0, 1)) as MENU_ACTV_YN
+				                                                           from    CSUOMPRMT a
+				                                                                 , CSMNUATMT b
+				                                                                 , CSMNATIMT c
+				                                                           where   a.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   a.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   b.MENU_ATHR_ID = a.MENU_ATHR_ID
+				                                                             and   b.MENU_GRP_ID  = a.MENU_GRP_ID
+				                                                             and   b.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   b.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   c.MENU_ATHR_ID = b.MENU_ATHR_ID
+				                                                             and   c.MENU_GRP_ID  = b.MENU_GRP_ID
+				                                                             and   c.APST_DT      <![CDATA[<]]> sysdate
+				                                                             and   c.APFN_DT      <![CDATA[>]]> sysdate
+				                                                             and   a.LGIN_ID      = #{gvLginId}
+				                                                           group by  a.LGIN_ID
+				                                                                   , c.MENU_GRP_ID
+				                                                                   , c.MENU_ID
+				                                                         ) ta
+				                                              ) tta
+				                                     where    tta.CON_CHECK = (tta.MENU_EXRN_YN + tta.MENU_ACTV_YN)
+				                                   ) b
+				                          where    a.MENU_GRP_ID = b.MENU_GRP_ID(+)
+				                            and    a.MENU_ID     = b.MENU_ID(+)
+				                            and    nvl(a.PRIN_YN, 'N') <![CDATA[<>]]> 'N'
+				                        ) xa
+				               where    xa.MENU_EXRN_YN = 0
+				                 and    xa.MENU_ACTV_YN = 0
+				             ) b
+				           , CSMNGRPMT c
+				     where   a.APST_DT      <![CDATA[<]]> sysdate
+				       and   a.APFN_DT      <![CDATA[>]]> sysdate
+				       and   a.MENU_GRP_ID  = b.MENU_GRP_ID
+				       and   c.APST_DT      <![CDATA[<]]> sysdate
+				       and   c.APFN_DT      <![CDATA[>]]> sysdate
+				       and   b.MENU_GRP_ID  = c.MENU_GRP_ID
+				       and   b.MENU_ID      = c.MENU_ID
+				       and   a.LGIN_ID      = #{gvLginId}
+				      order by a.MENU_GRP_APLY_SQNC, b.INQR_SQNC
+			
+			
+	</select>
+
+
+
+</mapper>

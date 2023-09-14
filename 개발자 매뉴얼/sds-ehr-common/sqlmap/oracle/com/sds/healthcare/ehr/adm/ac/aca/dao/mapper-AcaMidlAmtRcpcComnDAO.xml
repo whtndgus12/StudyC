@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaMidlAmtRcpcComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AcaMidlAmtRcpcComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMidlAmtRcpcComnDVO">
+	
+		<result property="grmn" column="GRMN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn (입원보증금조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMidlAmtRcpcComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMidlAmtRcpcComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-selectOneAdmsGrmn */
+		        nvl(sum(CASH_MIDL_AMT + CRCR_MIDL_AMT + DDC_MIDL_AMT),0) as GRMN
+		  from  ACRCMARCT
+		 where  MDRP_NO            =  #{mdrpNo}
+		   and  (CASH_MIDL_AMT + CRCR_MIDL_AMT + DDC_MIDL_AMT) != 0
+	</select>
+
+
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-executeMccsMidlAmtRefn (수납된 외래 진료비 재계산 후 중간금으로 환불) 
+        Description : acm_rcrcptt_m08
+
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMidlAmtRcpcComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-executeMccsMidlAmtRefn"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMidlAmtRcpcComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMidlAmtRcpcComnDAO-executeMccsMidlAmtRefn */
+		 { call  sp_ac_otpt_mccs_midl_amt_refn (  #{ptno, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{mdcrYmd, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{mcdpCd, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{wodvCd, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{excpPrsgVl, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{gvUserId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{gvUserIp, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{gvClntPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{gvSrvrPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{mcclWorkPrkyVl, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{rcpcAmt, mode=INOUT, jdbcType=NUMERIC, javaType=java.math.BigDecimal}
+		                        ,  #{refnFinsYn, mode=INOUT, jdbcType=VARCHAR, javaType=string}                        
+		                        ,  #{errYn, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                        ,  #{errCtn, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		          ) }
+	</select>	
+</mapper>

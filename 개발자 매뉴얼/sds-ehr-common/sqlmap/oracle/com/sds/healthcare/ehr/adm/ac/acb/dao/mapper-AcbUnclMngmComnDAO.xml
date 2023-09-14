@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcbUnclMngmComnDAO_sql.xml 
+    Description :                                      미수관리공통
+                  -->
+<mapper namespace="AcbUnclMngmComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl-result" type="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbUnclMngmComnDVO">
+	
+		<result property="cct" column="CCT"/>
+		<result property="ucocAmt" column="UCOC_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl (개인미수 금액 조회(투석실용)) 
+        Description :                                           투석실 실시 체크용도로 개인미수금액과 이후 투석 실시 횟수를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.acb.vo.AcbUnclMngmComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl"  parameterType="com.sds.healthcare.ehr.adm.ac.acb.vo.AcbUnclMngmComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-acb-dao-AcbUnclMngmComnDAO-selectOneDlysIndvUncl */
+		<![CDATA[
+		select  count(1)      as CCT
+		     ,  sum(UCOC_AMT) as UCOC_AMT
+		  from  (
+		select  b.MDRP_NO
+		     ,  sum(b.UCOC_AMT - b.UNCL_RCPC_AMT - b.UNCL_AMRT_AMT)     as UCOC_AMT
+		  from  MNHTRTORT a
+		     ,  ACURUCOCT b
+		 where  a.PTNO          =   #{ptno}
+		   and  a.DLYS_ACTN_DT is not null
+		   and  b.MDRP_NO       =   a.PTAD_MDRP_NO
+		   and  b.UNCL_DVSN_CD  =   '3'             -- 3:개인미수
+		 group  by b.MDRP_NO
+		having  sum(b.UCOC_AMT - b.UNCL_RCPC_AMT - b.UNCL_AMRT_AMT) >   0
+		     )
+		]]>
+	</select>
+
+
+
+</mapper>

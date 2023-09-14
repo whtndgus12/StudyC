@@ -1,0 +1,2216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuNotcTrasMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcuNotcTrasMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="chk" column="CHK"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listGarbage */
+						select
+		                        '   ' as CHK
+						from  CCUSRDPHT
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq (노티 등록일련번호 채번) 
+        Description :                                           노티 등록일련번호 채번
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq-result" useCache="true" flushCache="false">
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcRgstSeq */
+						   to_char(sysdate,'yyyy-mm-dd') as RGST_YMD,
+						   CUNOTIMMTQ.nextval as RGST_SNO
+					 from  DUAL
+		          where 1= 1
+		          <if test="rturVl1 != null and rturVl1 == null">
+		              and RGST_SNO = #{rturVl}
+		              and RGST_SNO = #{rturVl1}
+					  and RGST_SNO= #{rturVl2}
+		              and RGST_SNO = #{rturVl3}
+		              and RGST_SNO = #{rcvrId}
+		              and RGST_SNO = #{fldrDvsnCd}
+		              and RGST_SNO = #{inqrYn}
+		              and RGST_SNO = #{inqrDt}
+		              and RGST_SNO = #{dltnDt}
+		              and RGST_SNO = #{dlvyYn}
+		              and RGST_SNO = #{rfrcRecvPhspYn}
+		          </if>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcRgst (노티 입력) 
+        Description :                                           노티 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcRgst"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcRgst */
+				   into    CUNOTIMMT
+						   (RGST_YMD,
+						   RGST_SNO,
+						   WRTR_ID,
+						   WRTG_DT,
+						   TITL_NM,
+						   COMN_NOTC_CTN,
+						   GRAD_DVSN_CD,
+						   TRSM_TYPE_CD,
+						   DLVY_FALR_ADTN_WORK_YN,
+						   PTNO,
+						   NOTC_DVSN_CD,
+						   NOTC_APNT_SNDG_EN,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID)
+				   values  (trunc(sysdate), /* to_date(:cus_notihrd_002[0].rgst_ymd,'yyyy-mm-dd'), */
+						   #{rgstSno},
+						   #{wrtrId},
+						   decode(#{notcApntSndgEn}, 'N',
+									  to_date(#{wrtgDt},'yyyymmdd hh24:mi'), sysdate), /* :cus_notihrd_002[0].wrtg_dt, */
+						   #{titlNm},
+							#{comnNotcCtn},
+						   nvl(#{gradDvsnCd},'0'),
+						   #{trsmTypeCd},
+						   #{dlvyFalrAdtnWorkYn},
+						   #{ptno},
+						   #{notcDvsnCd},
+						   #{notcApntSndgEn},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcTgpr (노티대상자 입력) 
+        Description :                                           노티대상자 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcTgpr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcTgpr */
+				   into    CUNOTIDMT (RGST_YMD,
+						   RGST_SNO,
+						   RCVR_ID,
+						   FLDR_DVSN_CD,
+						   INQR_YN,
+						   INQR_DT,
+						   DLTN_DT,
+						   DLVY_YN,
+						   RFRC_RECV_PHSP_YN,
+						   ADRS_GRP_DVSN_CD,
+						   ADRS_GRP_NO,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID)
+				   values
+						   (trunc(sysdate),
+						   #{rgstSno},
+						   #{rcvrId},
+						   #{fldrDvsnCd},
+						   #{inqrYn},
+						   decode(#{inqrYn}, 'Y', sysdate, null), /* :cus_notihrd_003[0].inqr_dt, */
+						   decode(#{yn},      'Y', sysdate, null), /* :cus_notihrd_003[0].dltn_dt, */
+						   #{dlvyYn},
+						   #{rfrcRecvPhspYn},
+						   #{adrsGrpDvsnCd},
+						   #{adrsGrpNo},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcPrmt (노티파라미터 입력) 
+        Description :                                           노티파라미터 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcPrmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcPrmt */
+				   into    CUNOTIPMT
+						   (RGST_YMD,
+						   RGST_SNO,
+						   PRGM_ID,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID)
+				   values  (trunc(sysdate),
+						   #{rgstSno},
+						   #{prgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId},
+						   #{gvLginId},
+						   #{gvUserIp},
+						   sysdate,
+						   #{gvClntPrgmId},
+						   #{gvSrvrPrgmId})
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcScrnPrmt (노티화면파라미터정보 입력) 
+        Description :                                           노티화면파라미터정보 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcScrnPrmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+					   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcScrnPrmt */
+					   into  CUNOTIPAT
+							 (
+							 RGST_YMD
+						  ,  RGST_SNO
+						  ,  PRGM_ID
+						  ,  NOTC_SCRN_PRMT_SNO
+						  ,  NOTC_SCRN_PRMT_DVSN_VL
+						  ,  NOTC_SCRN_PRMT_DVSN_CTN
+						  /*  AUDIT */
+						  ,  FRST_RGSR_ID
+						  ,  FRST_RGST_IP
+						  ,  FRST_RGST_DT
+						  ,  FRST_RGST_CLNT_PRGM_ID
+						  ,  FRST_RGST_SRVR_PRGM_ID
+						  ,  LAST_UPDR_ID
+						  ,  LAST_UPDT_IP
+						  ,  LAST_UPDT_DT
+						  ,  LAST_UPDT_CLNT_PRGM_ID
+						  ,  LAST_UPDT_SRVR_PRGM_ID
+							 )
+					 values  (
+							 trunc(sysdate)
+						  ,  #{rgstSno}
+						  ,  #{prgmId}
+						  ,  #{notcScrnPrmtSno}
+						  ,  #{notcScrnPrmtDvsnVl}
+						  ,  #{notcScrnPrmtDvsnCtn}
+						  /*  AUDIT */
+						  ,  #{gvLginId}
+						  ,  #{gvUserIp}
+						  ,  sysdate
+						  ,  #{gvClntPrgmId}
+						  ,  #{gvSrvrPrgmId}
+						  ,  #{gvLginId}
+						  ,  #{gvUserIp}
+						  ,  sysdate
+						  ,  #{gvClntPrgmId}
+						  ,  #{gvSrvrPrgmId}
+							 )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcAtflInpt (노티첨부파일 입력) 
+        Description :                                           노티첨부파일 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcAtflInpt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+					   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertNotcAtflInpt */
+					   into  CUNOTIAFT
+							 (
+							 RGST_YMD
+						  ,  RGST_SNO
+						  ,  ATFL_SNO
+						  ,  FILE_ATCH_DVSN_CD
+						  ,  FILE_GRP_ID
+						  ,  FILE_ID
+						  /*  AUDIT */
+						  ,  FRST_RGSR_ID
+						  ,  FRST_RGST_IP
+						  ,  FRST_RGST_DT
+						  ,  FRST_RGST_CLNT_PRGM_ID
+						  ,  FRST_RGST_SRVR_PRGM_ID
+						  ,  LAST_UPDR_ID
+						  ,  LAST_UPDT_IP
+						  ,  LAST_UPDT_DT
+						  ,  LAST_UPDT_CLNT_PRGM_ID
+						  ,  LAST_UPDT_SRVR_PRGM_ID
+							 )
+					 values  (
+							 trunc(sysdate)
+						  ,  #{rgstSno}
+						  ,  #{atflSno}
+						  ,  #{fileAtchDvsnCd}
+						  ,  #{fileGrpId}
+						  ,  #{fileId}
+						  /*  AUDIT */
+						  ,  #{gvLginId}
+						  ,  #{gvUserIp}
+						  ,  sysdate
+						  ,  #{gvClntPrgmId}
+						  ,  #{gvSrvrPrgmId}
+						  ,  #{gvLginId}
+						  ,  #{gvUserIp}
+						  ,  sysdate
+						  ,  #{gvClntPrgmId}
+						  ,  #{gvSrvrPrgmId}
+							 )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="inqrDt" column="INQR_DT"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="rfrcRecvPhspYn" column="RFRC_RECV_PHSP_YN"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="adrsGrpNo" column="ADRS_GRP_NO"/>
+		<result property="adrsGrpDvsnCd" column="ADRS_GRP_DVSN_CD"/>
+		<result property="notcSndgCnclYn" column="NOTC_SNDG_CNCL_YN"/>
+		<result property="adrsGrpNm" column="ADRS_GRP_NM"/>
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="rgsrNm" column="RGSR_NM"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr (노티대상자 수신인 조회) 
+        Description :                                           노티대상자 수신인 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr-result" useCache="true" flushCache="false">
+		<![CDATA[
+				 select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr */
+								   CASE 
+								     WHEN A.MULTI_RGST_YMD IS NULL THEN to_char(A.RGST_YMD,'YYYY-MM-DD')
+									 ELSE to_char(A.MULTI_RGST_YMD,'YYYY-MM-DD') 
+								   END as RGST_YMD,
+								   CASE
+									 WHEN A.MULTI_RGST_SNO IS NULL THEN A.RGST_SNO 
+									 ELSE A.MULTI_RGST_SNO
+								   END as RGST_SNO,
+		                           A.RCVR_ID as RCVR_ID,
+								   A.FLDR_DVSN_CD as FLDR_DVSN_CD,
+								   A.INQR_YN as INQR_YN,
+								   to_char(A.INQR_DT,'YYYY/MM/DD HH24:MI:SS')   as INQR_DT,
+								   A.DLTN_DT as DLTN_DT,
+								   A.DLVY_YN as DLVY_YN,
+								   A.RFRC_RECV_PHSP_YN as RFRC_RECV_PHSP_YN,
+								   B.USER_NM as RTUR_VL,      /* 사용자명 */
+								   (select KORN_DPRT_NM  from  HZDEPTMMT  where B.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD   ) as RTUR_VL_1,          /*  부서명 */
+								   (select DETL_CD_NM from CCCMCDDMT  where  COMN_GRP_CD = 'GP009' and C.OCDT_CD = COMN_DTLS_CD ) as RTUR_VL_2, /*  직무명 */
+								   /* '' AFI_RTUR_VL3, */
+								   (select  decode(COMN_DTLS_CD, '0', '일반', DETL_CD_NM)
+												  from  CCCMCDDMT
+												 where  COMN_GRP_CD = 'CUC_020'
+												   and  F.TRSM_TYPE_CD = COMN_DTLS_CD ) as RTUR_VL_3, /* 발신유형(0:일반(미지정), 1:SMS) */
+								   A.ADRS_GRP_NO as ADRS_GRP_NO,
+								   A.ADRS_GRP_DVSN_CD as ADRS_GRP_DVSN_CD,
+								   A.NOTC_SNDG_CNCL_YN as NOTC_SNDG_CNCL_YN,
+								   D.ADRS_GRP_NM as ADRS_GRP_NM,
+								   D.RGSR_ID as RGSR_ID,
+								   E.USER_NM as RGSR_NM,
+		                           A.HSPT_CD,
+								   (SELECT DETL_CD_NM
+									  FROM CCCMCDDMT 
+									 WHERE A.HSPT_CD = COMN_DTLS_CD
+									   AND COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							 from  CUNOTIDMT A, CCUSRDPHT B, CCUSERAMV C, CUNOTIGMT D, CCUSRDPHT E, CUNOTIMMT F
+							where  A.RGST_YMD = to_date(#{rgstYmd}, 'YYYY-MM-DD')
+							  and  A.RGST_SNO = #{rgstSno}
+							  and ( ( #{inqrDvsnCd} = '1' and    /*  발송취소 제외     */
+											A.NOTC_SNDG_CNCL_YN is null )
+									 or
+									( #{inqrDvsnCd} = '2' and   /*  발송취소  포함   */
+										 ( A.NOTC_SNDG_CNCL_YN is null or  A.NOTC_SNDG_CNCL_YN = 'Y')) )
+							  and   ( (#{rcvrId} is null) or (A.RCVR_ID = #{rcvrId}) )  /*  수신자ID */
+							  and  A.RCVR_ID  = B.USER_ID                   /*  부서 */
+							  and  C.LGIN_ID  = B.LGIN_ID               /*  직무 */
+							  and  A.RGST_YMD = F.RGST_YMD
+							  and  A.RGST_SNO = F.RGST_SNO
+							  and  A.ADRS_GRP_NO      = D.ADRS_GRP_NO(+)
+							  and  A.ADRS_GRP_DVSN_CD = D.ADRS_GRP_DVSN_CD(+)
+							  and  E.USER_ID(+) = D.RGSR_ID
+		union all
+				 select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvr */
+								   CASE 
+								     WHEN A.MULTI_RGST_YMD IS NULL THEN to_char(A.RGST_YMD,'YYYY-MM-DD')
+									 ELSE to_char(A.MULTI_RGST_YMD,'YYYY-MM-DD') 
+								   END as RGST_YMD,
+								   CASE
+									 WHEN A.MULTI_RGST_SNO IS NULL THEN A.RGST_SNO 
+									 ELSE A.MULTI_RGST_SNO
+								   END as RGST_SNO,
+		                           A.RCVR_ID as RCVR_ID,
+								   A.FLDR_DVSN_CD as FLDR_DVSN_CD,
+								   A.INQR_YN as INQR_YN,
+								   to_char(A.INQR_DT,'YYYY/MM/DD HH24:MI:SS')   as INQR_DT,
+								   A.DLTN_DT as DLTN_DT,
+								   A.DLVY_YN as DLVY_YN,
+								   A.RFRC_RECV_PHSP_YN as RFRC_RECV_PHSP_YN,
+								   B.USER_NM as RTUR_VL,      /* 사용자명 */
+								   (select KORN_DPRT_NM  from  HZDEPTMMT  where B.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD   ) as RTUR_VL_1,          /*  부서명 */
+								   (select DETL_CD_NM from CCCMCDDMT  where  COMN_GRP_CD = 'GP009' and C.OCDT_CD = COMN_DTLS_CD ) as RTUR_VL_2, /*  직무명 */
+								   /* '' AFI_RTUR_VL3, */
+								   (select  decode(COMN_DTLS_CD, '0', '일반', DETL_CD_NM)
+												  from  CCCMCDDMT
+												 where  COMN_GRP_CD = 'CUC_020'
+												   and  F.TRSM_TYPE_CD = COMN_DTLS_CD ) as RTUR_VL_3, /* 발신유형(0:일반(미지정), 1:SMS) */
+								   A.ADRS_GRP_NO as ADRS_GRP_NO,
+								   A.ADRS_GRP_DVSN_CD as ADRS_GRP_DVSN_CD,
+								   A.NOTC_SNDG_CNCL_YN as NOTC_SNDG_CNCL_YN,
+								   D.ADRS_GRP_NM as ADRS_GRP_NM,
+								   D.RGSR_ID as RGSR_ID,
+								   E.USER_NM as RGSR_NM,
+		                           A.HSPT_CD,
+								   (SELECT DETL_CD_NM
+									  FROM CCCMCDDMT 
+									 WHERE A.HSPT_CD = COMN_DTLS_CD
+									   AND COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							 from  CUNOTMDMT A, CCUSRDPHT B, CCUSERAMV C, CUNOTIGMT D, CCUSRDPHT E, CUNOTIMMT F
+							where  A.RGST_YMD = to_date(#{rgstYmd}, 'YYYY-MM-DD')
+							  and  A.RGST_SNO = #{rgstSno}
+							  and ( ( #{inqrDvsnCd} = '1' and    /*  발송취소 제외     */
+											A.NOTC_SNDG_CNCL_YN is null )
+									 or
+									( #{inqrDvsnCd} = '2' and   /*  발송취소  포함   */
+										 ( A.NOTC_SNDG_CNCL_YN is null or  A.NOTC_SNDG_CNCL_YN = 'Y')) )
+							  and   ( (#{rcvrId} is null) or (A.RCVR_ID = #{rcvrId}) )  /*  수신자ID */
+							  and  A.RCVR_ID  = B.USER_ID                   /*  부서 */
+							  and  C.LGIN_ID  = B.LGIN_ID               /*  직무 */
+							  and  A.RGST_YMD = F.RGST_YMD
+							  and  A.RGST_SNO = F.RGST_SNO
+		]]>
+		                      <if test='rturVl == null or rturVl  != "Y"'>
+							      and  A.HSPT_CD  = C.ORGL_HSPT_CD
+		 		              </if>
+		<![CDATA[
+							  and  A.ADRS_GRP_NO      = D.ADRS_GRP_NO(+)
+							  and  A.ADRS_GRP_DVSN_CD = D.ADRS_GRP_DVSN_CD(+)
+							  and  E.USER_ID(+) = D.RGSR_ID
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmCncl (노티 발신 취소) 
+        Description :                                           노티 발신 취소
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmCncl"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmCncl */
+							  CUNOTIDMT
+						 set
+							  NOTC_SNDG_CNCL_YN= 'Y',
+							  LAST_UPDR_ID      = #{gvLginId},
+							  LAST_UPDT_IP      = #{gvUserIp},
+							  LAST_UPDT_DT      = sysdate,
+							  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+							  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					   where  RGST_YMD = to_date(#{rgstYmd},'YYYY-MM-DD HH24:MI:SS')
+						 and  RGST_SNO = #{rgstSno}
+						 and  ( (#{rcvrId} is null) or (RCVR_ID = #{rcvrId}) )
+						 and  NOTC_SNDG_CNCL_YN is null
+		                 and  INQR_YN != 'Y'
+						 /* and  RCVR_ID  = :cus_notidmt_006 [0].rcvr_id */
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="adrsGrpDvsnCd" column="ADRS_GRP_DVSN_CD"/>
+		<result property="adrsGrpNo" column="ADRS_GRP_NO"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="inqrDtDisp" column="INQR_DT_DISP"/>
+		<result property="chk" column="CHK"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr (노티 수신인/발신인 조회) 
+        Description :                                           노티 수신인/발신인 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRcvrTnpr */
+									  B.WRTR_ID as WRTR_ID,
+									  A.USER_NM as USER_NM,
+									  B.ADRS_GRP_DVSN_CD as ADRS_GRP_DVSN_CD,
+									  B.ADRS_GRP_NO as ADRS_GRP_NO,
+									  (select KORN_DPRT_NM  from  HZDEPTMMT  where A.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD   ) as KORN_DPRT_NM,
+									  C.USER_STTS_CD as RTUR_VL,
+									  ''  as RTUR_VL_1,
+				                      '' as INQR_DT_DISP,
+				                      '' as CHK,
+				                      B.HSPT_CD,
+				                      B.HSPT_NM,
+		                              C.HSPT_OCFM_CD
+								from  CCUSRDPHT A, CCUSERAMV C,
+									  (
+									  select  WRTR_ID, '' as ADRS_GRP_DVSN_CD, '' as ADRS_GRP_NO, 
+				                			 (SELECT ORGL_HSPT_CD 
+											    FROM CCUSERAMT
+											   WHERE LGIN_ID = (SELECT WRTR_ID 
+													              FROM CUNOTIMMT
+													  			 WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+													  			   AND RGST_SNO = #{rgstSno})) AS HSPT_CD,
+											 (SELECT B.DETL_CD_NM
+												 FROM CCCMCDDMT B
+												WHERE B.COMN_DTLS_CD = ( SELECT ORGL_HSPT_CD
+														                   FROM CCUSERAMT
+														                  WHERE LGIN_ID = ( SELECT WRTR_ID
+		  										                                              FROM CUNOTIMMT
+													  			 							 WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+													                                           AND RGST_SNO = #{rgstSno})) 		                                               		 
+									    													   AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+										from  CUNOTIMMT
+									   where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  RGST_SNO = #{rgstSno}
+										 and  1 = #{reptNtm}  /*  수신인 발신인 모두 */
+									   union
+							          select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									    from  CUNOTIDMT A
+										    , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  A.RGST_SNO = #{rgstSno}
+										 and  A.NOTC_SNDG_CNCL_YN is null
+										 and  1 = #{reptNtm}   /*  수신인 발신인 모두 */
+									   union
+								      select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														     AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+								        from  CUNOTMDMT A
+								            , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  A.RGST_SNO = #{rgstSno}
+										 and  A.NOTC_SNDG_CNCL_YN is null
+										 and  1 = #{reptNtm}   /*  수신인 발신인 모두 */
+									   union
+									  select  WRTR_ID, '' as ADRS_GRP_DVSN_CD, '' as ADRS_GRP_NO,
+				                			 (SELECT ORGL_HSPT_CD 
+											    FROM CCUSERAMT
+											   WHERE LGIN_ID = (SELECT WRTR_ID 
+													              FROM CUNOTIMMT
+													  			 WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+																   AND RGST_SNO = #{rgstSno})) AS HSPT_CD,
+											 (SELECT B.DETL_CD_NM
+												 FROM CCCMCDDMT B
+												WHERE B.COMN_DTLS_CD = ( SELECT ORGL_HSPT_CD
+														                   FROM CCUSERAMT
+														                  WHERE LGIN_ID = ( SELECT WRTR_ID
+		  										                                              FROM CUNOTIMMT
+													                                         WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+																					           AND RGST_SNO = #{rgstSno})) 		                                               		 
+									    													   AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+										from  CUNOTIMMT
+									   where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  RGST_SNO = #{rgstSno}
+										 and  2 = #{reptNtm}  /*  발신인 */
+					   				   union
+							          select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									    from  CUNOTIDMT A
+										    , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					   					 and  A.RGST_SNO = #{rgstSno}
+					   					 and  A.NOTC_SNDG_CNCL_YN is null
+					   				     and  3 = #{reptNtm} /*  수신인 */
+					   				   union
+								      select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														     AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+								       from  CUNOTMDMT A
+								           , CCUSERAMT C
+									  where  A.HSPT_CD = C.ORGL_HSPT_CD
+									    and  A.RCVR_ID = C.LGIN_ID
+					   				    and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					   					and  A.RGST_SNO = #{rgstSno}
+					   					and  A.NOTC_SNDG_CNCL_YN is null
+					   				    and  3 = #{reptNtm} /*  수신인 */
+					   				  union
+					   			     select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									  from  CUNOTIDMT A
+									      , CCUSERAMT C
+									 where  A.HSPT_CD = C.ORGL_HSPT_CD
+									   and  A.RCVR_ID = C.LGIN_ID
+									   and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					   				   and  A.RGST_SNO = #{rgstSno}
+					   				   and  A.RCVR_ID  <> trim(#{rcvrId})
+					   				   and  A.NOTC_SNDG_CNCL_YN is null
+					   				   and  4 = #{reptNtm} /*  수신인(본인제외) */
+					   				 union
+		 						   select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+													  (SELECT B.DETL_CD_NM
+														 FROM CCCMCDDMT B
+													    WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							         from  CUNOTMDMT A
+								         , CCUSERAMT C
+								    where  A.HSPT_CD = C.ORGL_HSPT_CD
+							          and  A.RCVR_ID = C.LGIN_ID
+									  and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+									  and  A.RGST_SNO = #{rgstSno}
+					   				  and  A.RCVR_ID  <> trim(#{rcvrId})
+					   				  and  A.NOTC_SNDG_CNCL_YN is null
+					   				  and  4 = #{reptNtm} /*  수신인(본인제외) */
+					   			    union
+					   			   select  WRTR_ID, '' as ADRS_GRP_DVSN_CD, '' as ADRS_GRP_NO, 
+				                			 (SELECT ORGL_HSPT_CD 
+											    FROM CCUSERAMT
+											   WHERE LGIN_ID = (SELECT WRTR_ID 
+													              FROM CUNOTIMMT
+													  			 WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+																   AND RGST_SNO = #{rgstSno})) AS HSPT_CD,
+											 (SELECT B.DETL_CD_NM
+												 FROM CCCMCDDMT B
+												WHERE B.COMN_DTLS_CD = ( SELECT ORGL_HSPT_CD
+														                   FROM CCUSERAMT
+														                  WHERE LGIN_ID = ( SELECT WRTR_ID
+		  										                                              FROM CUNOTIMMT
+													                                         WHERE RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+																					           AND RGST_SNO = #{rgstSno})) 		                                               		 
+									    													   AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+					   				    from  CUNOTIMMT
+					   				   where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					   				     and  RGST_SNO = #{rgstSno}
+					   				     and  5 = #{reptNtm}  /*  발신인 */
+									   union
+									  select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									    from  CUNOTIDMT A
+									        , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  A.RGST_SNO = #{rgstSno}
+										 and  A.RCVR_ID  <> trim(#{rcvrId})
+										 and  A.NOTC_SNDG_CNCL_YN is null
+										 and  5 = #{reptNtm} /*  수신인(본인제외) */
+									   union
+		 						      select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+													    (SELECT B.DETL_CD_NM
+													  	   FROM CCCMCDDMT B
+													      WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														    AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							            from  CUNOTMDMT A
+								            , CCUSERAMT C
+								       where  A.HSPT_CD = C.ORGL_HSPT_CD
+							             and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+									     and  A.RGST_SNO = #{rgstSno}
+					   				     and  A.RCVR_ID  <> trim(#{rcvrId})
+									  	 and  5 = #{reptNtm} /*  수신인(본인제외) */
+									   union
+									  select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									    from  CUNOTIDMT A
+									        , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  A.RGST_SNO = #{rgstSno}
+										 and  6 = #{reptNtm} /*  수신인(발송취소포함) */
+									   union
+		 						      select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+													    (SELECT B.DETL_CD_NM
+													  	   FROM CCCMCDDMT B
+													      WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														    AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							            from  CUNOTMDMT A
+								            , CCUSERAMT C
+								       where  A.HSPT_CD = C.ORGL_HSPT_CD
+							             and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+									     and  A.RGST_SNO = #{rgstSno}
+										 and  6 = #{reptNtm} /*  수신인(발송취소포함) */
+									   union
+									  select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+														 (SELECT B.DETL_CD_NM
+														    FROM CCCMCDDMT B
+														   WHERE A.HSPT_CD = B.COMN_DTLS_CD
+															 AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+									    from  CUNOTIDMT A
+									        , CCUSERAMT C
+									   where  A.HSPT_CD = C.ORGL_HSPT_CD
+									     and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+										 and  A.RGST_SNO = #{rgstSno}
+										 and  A.RCVR_ID  <> trim(#{rcvrId})
+										 and  7 = #{reptNtm} /*  수신인(발송취소포함 본인제외) */
+									   union
+		 						      select  A.RCVR_ID, A.ADRS_GRP_DVSN_CD, A.ADRS_GRP_NO, A.HSPT_CD,
+													    (SELECT B.DETL_CD_NM
+													  	   FROM CCCMCDDMT B
+													      WHERE C.ORGL_HSPT_CD = B.COMN_DTLS_CD
+														    AND B.COMN_GRP_CD = 'CCC_009') AS HSPT_NM
+							            from  CUNOTMDMT A
+								            , CCUSERAMT C
+								       where  A.HSPT_CD = C.ORGL_HSPT_CD
+							             and  A.RCVR_ID = C.LGIN_ID
+									     and  A.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+									     and  A.RGST_SNO = #{rgstSno}
+					   				     and  A.RCVR_ID  <> trim(#{rcvrId})
+										 and  7 = #{reptNtm} /*  수신인(발송취소포함 본인제외) */
+									  ) B
+							   where  A.USER_ID = B.WRTR_ID
+								 and  C.LGIN_ID = A.LGIN_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="comnNotcCtn" column="COMN_NOTC_CTN"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="trsmTypeCd" column="TRSM_TYPE_CD"/>
+		<result property="dlvyFalrAdtnWorkYn" column="DLVY_FALR_ADTN_WORK_YN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="inqrDt" column="INQR_DT"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw (노티알림창 조회) 
+        Description :                                           노티알림창 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcAnctWndw */
+							   to_char(A.RGST_YMD,'yyyy-mm-dd')  as RGST_YMD,
+							   A.RGST_SNO as RGST_SNO,
+							   A.WRTR_ID as WRTR_ID,
+							   (select  USER_NM
+								  from  CCUSRDPHT
+								 where  USER_ID = A.WRTR_ID)  as RTUR_VL_1,
+							   /* A.WRTG_DT, */
+								 to_char(A.WRTG_DT,'YYYYMMDDHH24MISS') as WRTG_DT,
+							   /* a.TITL_NM, */
+							   decode(A.PTNO, null, A.TITL_NM,
+												 decode(instr(A.TITL_NM,A.PTNO,1),0,'['||A.PTNO||'] '||A.TITL_NM, A.TITL_NM )) as TITL_NM,
+							   A.COMN_NOTC_CTN as COMN_NOTC_CTN,
+							   A.GRAD_DVSN_CD as GRAD_DVSN_CD,
+							   (select  DETL_CD_NM
+								  from  CCCMCDDMT
+								 where  COMN_GRP_CD = 'CUC_019'
+								   and  COMN_DTLS_CD = A.GRAD_DVSN_CD)  as RTUR_VL_2,
+							   /* a.TRSM_TYPE_CD, */
+							   (select  DETL_CD_NM
+								  from  CCCMCDDMT
+								 where  COMN_GRP_CD = 'CUC_020'
+								   and  COMN_DTLS_CD = A.TRSM_TYPE_CD) as TRSM_TYPE_CD,
+							   A.DLVY_FALR_ADTN_WORK_YN as DLVY_FALR_ADTN_WORK_YN,
+							   A.PTNO as PTNO,
+							   (select PTNO||' / '||PTNT_NM||' / '||decode(GEND_CD,'M','남','여')||' / '||
+												   (to_number(to_char(sysdate,'YYYY')) - to_number(to_char(BTDT,'YYYY')) + 1)||'세'
+											  from APPTPTNTV
+											 where PTNO = A.PTNO ) as RTUR_VL_3,
+							   B.RCVR_ID as RCVR_ID,
+							   B.FLDR_DVSN_CD as FLDR_DVSN_CD,
+							   B.INQR_YN as INQR_YN,
+							   B.INQR_DT as INQR_DT,
+							   B.DLTN_DT as DLTN_DT,
+							   B.DLVY_YN as DLVY_YN,
+							   (select  HZDEPTMMT.KORN_DPRT_NM
+								  from  HZUSERMMT , HZDEPTMMT
+								 where  A.WRTR_ID =  HZUSERMMT.EMNO
+								   and  HZUSERMMT.DPRT_CD = HZDEPTMMT.DPRT_CD )  as RTUR_VL_4
+						 from  CUNOTIMMT A, CUNOTIDMT B
+						where  A.RGST_YMD = B.RGST_YMD
+						  and  A.RGST_SNO = B.RGST_SNO
+						  and  B.RGST_YMD  = to_date(#{rgstYmd},'yyyy-mm-dd')
+						  and  B.RGST_SNO  = #{rgstSno}
+						  and  (B.RCVR_ID   = #{rcvrId} or A.WRTR_ID   = #{rcvrId})
+						  and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="fileAtchDvsnCd" column="FILE_ATCH_DVSN_CD"/>
+		<result property="fileGrpId" column="FILE_GRP_ID"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl (노티 첨부파일 다건 조회 CcuGetNotcAtflListCSID) 
+        Description :                                           노티 첨부파일 다건 조회 CcuGetNotcAtflListCSID
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcAtfl */
+								   to_char(A.RGST_YMD,'YYYY-MM-DD HH24:MI:SS')  as RGST_YMD
+								 , A.RGST_SNO as RGST_SNO
+								 , A.ATFL_SNO as ATFL_SNO
+								 , A.FILE_ATCH_DVSN_CD as FILE_ATCH_DVSN_CD
+								 , A.FILE_GRP_ID as FILE_GRP_ID
+								 , A.FILE_ID as FILE_ID
+								 , A.FILE_NM
+								 , 'SM' as FLDV_NM
+								 , A.FILE_SIZE_VL
+		                         , NVL(A.DLTN_YN,'N') as DLTN_YN
+							   from  CUNOTIAFT A
+							   where A.RGST_YMD = to_date(#{rgstYmd}, 'YYYY-MM-DD')
+							   and A.RGST_SNO = #{rgstSno}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="comnNotcCtn" column="COMN_NOTC_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn (노티 내용 조회) 
+        Description :                                           노티 내용 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcCtn */
+						   a.COMN_NOTC_CTN as COMN_NOTC_CTN
+					 from  CUNOTIMMT a, CUNOTIDMT b
+					where  a.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					  and  a.RGST_SNO = #{rgstSno}
+					  and  a.RGST_YMD = b.RGST_YMD
+					  and  a.RGST_SNO = b.RGST_SNO
+					  and  ( a.WRTR_ID  = #{gvLginId} or  b.RCVR_ID = #{gvLginId} )
+					  and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="notcKpngCtinSno" column="NOTC_KPNG_CTIN_SNO"/>
+		<result property="notcKpngCtinNm" column="NOTC_KPNG_CTIN_NM"/>
+		<result property="notcKpngCtinUseYn" column="NOTC_KPNG_CTIN_USE_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox (사용자별 개인보관함 리스트 조회) 
+        Description :                                           사용자별 개인보관함 리스트 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listUserIndvKpngBox */
+					  RCVR_ID as RCVR_ID,
+					  NOTC_KPNG_CTIN_SNO as NOTC_KPNG_CTIN_SNO,
+					  NOTC_KPNG_CTIN_NM as NOTC_KPNG_CTIN_NM,
+					  NOTC_KPNG_CTIN_USE_YN as NOTC_KPNG_CTIN_USE_YN
+				from
+					  CUNOTIPBT
+			   where RCVR_ID = #{rcvrId}
+		         and ((#{inqrDvsnCd} = '0') or (NOTC_KPNG_CTIN_USE_YN = 'Y') )
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvNotcKpngBox (개인 노티보관함 이동) 
+        Description :                                           개인 노티보관함 이동
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvNotcKpngBox"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvNotcKpngBox */
+						  CUNOTIDMT
+					  set
+						  FLDR_DVSN_CD = #{fldrDvsnCd},
+						  NOTC_KPNG_CTIN_SNO = #{notcKpngCtinSno},
+						  DLTN_DT            = decode(#{fldrDvsnCd},'2',sysdate,null),
+						  LAST_UPDR_ID      = #{gvLginId},
+						  LAST_UPDT_IP      = #{gvUserIp},
+						  LAST_UPDT_DT      = sysdate,
+						  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+				   where
+						  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					 and  RGST_SNO = #{rgstSno}
+					 and  RCVR_ID  = #{rcvrId}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDiscYn (노티 발신함 폐기 및 복원) 
+        Description :                                           노티 발신함 폐기 및 복원
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDiscYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDiscYn */
+						   CUNOTIMMT
+					  set  DISC_YN = #{discYn},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					  and  RGST_SNO = #{rgstSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcInqrYn (노티 수신인 확인) 
+        Description :                                           노티 수신인 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcInqrYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcInqrYn */
+						   CUNOTIDMT
+					  set  INQR_YN           = #{inqrYn},
+						   INQR_DT           = sysdate,
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGST_YMD = to_date( #{rgstYmd},'yyyy-mm-dd' )
+					  and  RGST_SNO = #{rgstSno}
+					  and  RCVR_ID  = #{rcvrId}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDltn (노티 발신함 삭제) 
+        Description :                                           노티 발신함 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDltn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateNotcTrsmDltn */
+						   CUNOTIMMT
+					  set  DLTN_YN = 'Y',
+			   			LAST_UPDR_ID      = #{gvLginId},
+			   			LAST_UPDT_IP      = #{gvUserIp},
+			   			LAST_UPDT_DT      = sysdate,
+			   			LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+			   			LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					  and  RGST_SNO = #{rgstSno}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="afiReptNtm1" column="AFI_REPT_NTM_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt (노티파라미터 조회) 
+        Description :                                           노티파라미터 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmt */
+						   to_char(a.RGST_YMD,'yyyymmdd')  as RGST_YMD,
+						   a.RGST_SNO as RGST_SNO,
+						   a.PRGM_ID as PRGM_ID,
+						   decode(b.PRGM_NM, null,
+								 (select NOTC_SCRN_PRMT_DVSN_CTN
+									from CUNOTIPAT
+								   where RGST_YMD = a.RGST_YMD
+									 and RGST_SNO = a.RGST_SNO
+									 and PRGM_ID  = a.PRGM_ID
+									 and NOTC_SCRN_PRMT_DVSN_VL in ('EXE_NM','HTTP_NM')), b.PRGM_NM) as AFI_RTUR_VL_1,
+						   0  as AFI_REPT_NTM_1
+					 from  CUNOTIPMT a, CSPRMLTMT b
+					where  a.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					  and  a.RGST_SNO = #{rgstSno}
+					  and  a.PRGM_ID =  b.PRGM_ID(+)
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertUserIndvKpngBox (사용자별 개인보관함 저장) 
+        Description :                                           사용자별 개인보관함 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertUserIndvKpngBox"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   insert /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-insertUserIndvKpngBox */
+					 into
+						   CUNOTIPBT
+						   (
+			   					 RCVR_ID
+			   				   ,  NOTC_KPNG_CTIN_SNO
+			   				   ,  NOTC_KPNG_CTIN_NM
+			   				   ,  NOTC_KPNG_CTIN_USE_YN
+							   /*  서버 프로그램 전환시 자동 추가된 항목 */
+							   ,  FRST_RGSR_ID
+							   ,  FRST_RGST_IP
+							   ,  FRST_RGST_DT
+							   ,  FRST_RGST_CLNT_PRGM_ID
+							   ,  FRST_RGST_SRVR_PRGM_ID
+							   ,  LAST_UPDR_ID
+							   ,  LAST_UPDT_IP
+							   ,  LAST_UPDT_DT
+							   ,  LAST_UPDT_CLNT_PRGM_ID
+							   ,  LAST_UPDT_SRVR_PRGM_ID
+						   )
+				  values  (
+			   			   #{rcvrId}
+			   		   /*   :cus_notipbt_005[0].notc_kpng_ctin_sno, */
+			   			,  (  select nvl(max(a.NOTC_KPNG_CTIN_SNO),0)+1
+			   					from CUNOTIPBT a
+			   				   where a.RCVR_ID       = #{rcvrId} )
+			   			,  #{notcKpngCtinNm}
+			   			,  #{notcKpngCtinUseYn}
+						   /*  서버 프로그램 전환시 자동 추가된 항목 */
+						   ,  #{gvLginId}                            /*  최초등록자ID */
+						   ,  #{gvUserIp}                                 /*  최초등록IP */
+						   ,  sysdate                                     /*  최초등록일시 */
+						   ,  #{gvClntPrgmId}                                /*  최초등록SMC클라이언트프로그램ID */
+						   ,  #{gvSrvrPrgmId}                                /*  최초등록SMC서버프로그램ID */
+						   ,  #{gvLginId}                            /*  최종수정자ID */
+						   ,  #{gvUserIp}                                 /*  최종수정IP */
+						   ,  sysdate                                     /*  최종수정일시 */
+						   ,  #{gvClntPrgmId}                                /*  최종수정SMC클라이언트프로그램ID */
+						   ,  #{gvSrvrPrgmId}                                /*  최종수정SMC서버프로그램ID */
+						  )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-deleteUserIndvKpngBox (사용자별 개인보관함 삭제) 
+        Description :                                           사용자별 개인보관함 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-deleteUserIndvKpngBox"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   delete /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-deleteUserIndvKpngBox */
+						   CUNOTIPBT
+				   where
+						   RCVR_ID            = #{rcvrId}
+					 and   NOTC_KPNG_CTIN_SNO = #{notcKpngCtinSno}
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvKpngNotcDltn (개인보관함 수신 노티 삭제) 
+        Description :                                           개인보관함 수신 노티 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvKpngNotcDltn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateIndvKpngNotcDltn */
+						   CUNOTIDMT
+					   set
+						   NOTC_DLTN_YN       = 'Y',
+						   LAST_UPDR_ID       = #{gvLginId},
+						   LAST_UPDT_IP       = #{gvUserIp},
+						   LAST_UPDT_DT       = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+					where  RCVR_ID            = #{rcvrId}
+					  and  NOTC_KPNG_CTIN_SNO = #{notcKpngCtinSno}
+					  and  FLDR_DVSN_CD = '3'
+					  and  (NOTC_DLTN_YN is null or NOTC_DLTN_YN = 'N')
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateUserIndvKpngBox (사용자별 개인보관함 수정) 
+        Description :                                           사용자별 개인보관함 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateUserIndvKpngBox"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+				   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateUserIndvKpngBox */
+						   CUNOTIPBT
+					  set
+						   NOTC_KPNG_CTIN_USE_YN = #{notcKpngCtinUseYn},
+						   LAST_UPDR_ID      = #{gvLginId},
+						   LAST_UPDT_IP      = #{gvUserIp},
+						   LAST_UPDT_DT      = sysdate,
+						   LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+						   LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+					where
+						   RCVR_ID            = #{rcvrId}
+					  and  NOTC_KPNG_CTIN_SNO = #{notcKpngCtinSno}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="notcCtn" column="NOTC_CTN"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL_3"/>
+		<result property="trsmTypeCd" column="TRSM_TYPE_CD"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL_4"/>
+		<result property="dlvyFalrAdtnWorkYn" column="DLVY_FALR_ADTN_WORK_YN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="afiRturVl5" column="AFI_RTUR_VL_5"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="afiReptNtm1" column="AFI_REPT_NTM_1"/>
+		<result property="afiRturVl6" column="AFI_RTUR_VL_6"/>
+		<result property="afiRturVl7" column="AFI_RTUR_VL_7"/>
+		<result property="afiRturVl8" column="AFI_RTUR_VL_8"/>
+		<result property="chkint" column="CHKINT"/>
+		<result property="respRqstYn" column="RESP_RQST_YN"/>
+		<result property="afiRturVl9" column="AFI_RTUR_VL_9"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002 (Notification 관리) 
+        Description :                                           Notification 관리
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm002 */
+						   A.RGST_YMD as RGST_YMD,
+			   			A.RGST_SNO as RGST_SNO,
+			   			A.AFI_RTUR_VL1 as AFI_RTUR_VL_1,
+			   			A.WRTR_ID as WRTR_ID,
+			   			A.AFI_RTUR_VL2 as AFI_RTUR_VL_2,
+			   			A.WRTG_DT as WRTG_DT ,
+			   			A.RTUR_VL as RTUR_VL,
+			   			A.TITL_NM as TITL_NM,
+			   			A.NOTC_CTN as NOTC_CTN,
+			   			A.GRAD_DVSN_CD as GRAD_DVSN_CD,
+			   			A.AFI_RTUR_VL3 as AFI_RTUR_VL_3,
+			   			A.TRSM_TYPE_CD as TRSM_TYPE_CD,
+			   			A.AFI_RTUR_VL4 as AFI_RTUR_VL_4,
+			   			A.DLVY_FALR_ADTN_WORK_YN as DLVY_FALR_ADTN_WORK_YN,
+			   			A.PTNO as PTNO,
+			   			A.RCVR_ID as RCVR_ID,
+						   decode(A.RCVR_ID,1,  ( select  USER_NM
+													from  CCUSRDPHT
+												   where  USER_ID = A.AFI_RTUR_VL5 and rownum = 1 ),
+												( select  USER_NM
+													from  CCUSRDPHT
+												   where  USER_ID = A.AFI_RTUR_VL5 and rownum = 1 ) || '...' ) as AFI_RTUR_VL_5,
+			   			/* decode(A.RCVR_ID,1,  ( select USER_NM */
+			   			/* 		                 from CCUSERAMV */
+			   			/* 		                where LGIN_ID = A.AFI_RTUR_VL5 and rownum = 1 ), */
+			   			/* 		             ( select USER_NM */
+			   			/* 					     from CCUSERAMV */
+			   			/* 					    where LGIN_ID = A.AFI_RTUR_VL5 and rownum = 1 ) || '...' ) as AFI_RTUR_VL5, */
+			   			A.FLDR_DVSN_CD as FLDR_DVSN_CD,
+			   			A.INQR_YN as INQR_YN,
+			   			A.AFI_RTUR_VL as AFI_RTUR_VL,
+			   			A.DLTN_DT as DLTN_DT,
+			   			A.DLVY_YN as DLVY_YN,
+			   			A.AFI_REPT_NTM1 as AFI_REPT_NTM_1,
+			   			A.AFI_RTUR_VL6 as AFI_RTUR_VL_6,
+			   			A.AFI_RTUR_VL7 as AFI_RTUR_VL_7,
+			   			A.AFI_RTUR_VL8 as AFI_RTUR_VL_8,
+		                #{chkint} as CHKINT,
+		                A.RESP_RQST_YN,
+			   			A.AFI_RTUR_VL9 as AFI_RTUR_VL_9
+			   	  from
+								 (
+								 select  to_char(A.RGST_YMD,'yyyy-mm-dd') RGST_YMD,
+										 A.RGST_SNO,
+										 '0' AFI_RTUR_VL1,
+										 A.WRTR_ID,
+										 NVL((select  USER_NM
+											from  CCUSRDPHT
+										   where  USER_ID = A.WRTR_ID),'DARWIN') AFI_RTUR_VL2,
+										 to_char(A.WRTG_DT,'yyyy-mm-dd') WRTG_DT ,
+										 to_char(A.WRTG_DT,'YYYY-MM-DD HH24:MI:SS') RTUR_VL, /* 기존작성일자(A.WRTG_DT) */
+										 decode(A.PTNO, null, A.TITL_NM,
+														   decode(instr(A.TITL_NM,A.PTNO,1),0,'['||A.PTNO||' '||
+																   (select PTNT_NM from APPTPTNTV  where PTNO = A.PTNO )
+																   ||'] '||A.TITL_NM, A.TITL_NM )) as TITL_NM,
+										 /*  A.TITL_NM, */
+										 ''  NOTC_CTN,
+										 (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUC_019' and COMN_DTLS_CD = A.GRAD_DVSN_CD ) as GRAD_DVSN_CD,
+										 /* (select  DETL_CD_NM */
+										 /*    from  CCCMCDDMT */
+										 /*   where  COMN_GRP_CD = 'CUC_006' */
+										 /*     and  COMN_DTLS_CD = A.GRAD_DVSN_CD) AFI_RTUR_VL3,   /* 환자정보로 수정예정 2015-11-25 */
+										 (select PTNO||' / '||PTNT_NM||' / '||decode(GEND_CD,'M','남','여')||' / '||
+												 /* (to_number(to_char(sysdate,'YYYY')) - to_number(to_char(BTDT,'YYYY')) + 1)||'세' */
+												 case when floor(months_between(trunc(sysdate), BTDT)) > 36  then
+														   floor(months_between(trunc(sysdate), BTDT)/12)||'세'
+													/* when floor(months_between(trunc(sysdate), BTDT)) < 36 and floor(months_between(trunc(sysdate), BTDT)) >= 13 then */
+													/*      floor(months_between(sysdate, BTDT)/12)||'세'|| */
+													/*      floor(months_between(trunc(sysdate), BTDT)-(floor(months_between(trunc(sysdate), BTDT)/12)*12))||'개월' */
+													  when floor(months_between(trunc(sysdate), BTDT)) <= 36 and floor(months_between(trunc(sysdate), BTDT))>= 1 then
+														   floor(months_between(trunc(sysdate), BTDT))||'개월'
+													  when floor(months_between(trunc(sysdate), BTDT)) = 0 then
+														   floor(trunc(sysdate)- BTDT)||'일'
+												  end
+											from APPTPTNTV
+										   where PTNO = A.PTNO ) as AFI_RTUR_VL3,                         /*  환자명                          */
+										 A.TRSM_TYPE_CD,
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_020'
+											 and  COMN_DTLS_CD = A.TRSM_TYPE_CD) AFI_RTUR_VL4,
+										 A.DLVY_FALR_ADTN_WORK_YN,
+										 A.PTNO,
+										 ( select count(RCVR_ID)
+											 from CUNOTIDMT NOTIDMT
+											where NOTIDMT.RGST_YMD = A.RGST_YMD
+											  and NOTIDMT.RGST_SNO = A.RGST_SNO )  as RCVR_ID,
+										 ( select max(RCVR_ID)
+											 from CUNOTIDMT NOTIDMT
+											where NOTIDMT.RGST_YMD = A.RGST_YMD
+											  and NOTIDMT.RGST_SNO = A.RGST_SNO )  as AFI_RTUR_VL5,
+										 '' FLDR_DVSN_CD,
+										 '' INQR_YN,
+										 (select  decode(sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)),0,'Y','N')
+											from  CUNOTIDMT C
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO
+										 /*     and  NOTC_SNDG_CNCL_YN is NULL or NOTC_SNDG_CNCL_YN ='N' */
+																									  ) as AFI_RTUR_VL, /* 전체발송취소여부 */
+										 /* '' AFI_RTUR_VL, */
+										 '' DLTN_DT,
+										 '' DLVY_YN,
+										 (select  count(*)
+											from  CUNOTIPMT
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO) AFI_REPT_NTM1,
+										 /* (select  count(*) */
+										 /*    from  CUNOTIDMT C */
+										 /*   where  RGST_YMD = A.RGST_YMD */
+										 /*     and  RGST_SNO = A.RGST_SNO */
+										/*      and  C.INQR_YN = 'Y' ) || '/' || */
+										 (decode( A.NOTC_APNT_SNDG_EN, 'N',
+													(select  (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) = 0
+																   then '취소 '|| count(*) end)||
+															 (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) > 0
+																   then '예약 '|| sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) end)||
+															 (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0 and sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) > 0
+																   then ', 예약취소 '|| sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) end)
+													   from  (SELECT NOTC_APNT_SNDG_EN
+															       , NOTC_SNDG_CNCL_YN
+															    FROM CUNOTIDMT
+															   where  RGST_YMD = A.RGST_YMD
+		          												 and  RGST_SNO = A.RGST_SNO
+															   UNION ALL
+															  SELECT NOTC_APNT_SNDG_EN
+															       , NOTC_SNDG_CNCL_YN
+															    FROM CUNOTMDMT
+															   where  RGST_YMD = A.RGST_YMD
+		          												 and  RGST_SNO = A.RGST_SNO) C
+													  where  RGST_YMD = A.RGST_YMD
+														and  RGST_SNO = A.RGST_SNO),
+												  (select  (case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then '개봉 '|| sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) end)||
+														   (case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	  sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then '미개봉 '|| sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0))
+																	when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0 and
+																		 sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then ', 미개봉 '|| sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) end)||
+															(case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	   sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	   sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0
+																							 then '취소 '||sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0))
+																  when (sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0 or
+																		sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0) and
+																		sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0
+																							 then ', 취소 '||sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) end)
+													   from  CUNOTIDMT C
+													  where  RGST_YMD = A.RGST_YMD
+														and  RGST_SNO = A.RGST_SNO )))  as  AFI_RTUR_VL6,  /* 개봉현황(예약 명수,개봉 명수, 미개봉 명수, 취소 명수, 미개봉 명수) */
+										 (select  HZDEPTMMT.KORN_DPRT_NM
+											from  CCUSRDPHT , HZDEPTMMT
+										   where  A.WRTR_ID =  CCUSRDPHT.USER_ID
+											 and  CCUSRDPHT.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD ) AFI_RTUR_VL7,
+										 decode( (select 1
+													from  CUNOTIAFT
+												   where  RGST_YMD = A.RGST_YMD
+													 and  RGST_SNO = A.RGST_SNO
+													 and  rownum = 1),1, '§ ','  ') ||
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_018'
+											 and  COMN_DTLS_CD = A.NOTC_DVSN_CD) AFI_RTUR_VL8,
+		                                     A.RESP_RQST_YN,
+										 (select  sum(decode(INQR_YN,'Y',1,0))
+										    from  CUNOTIDMT C
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO) as AFI_RTUR_VL9 /* 개봉노티 건수 */
+								   from  CUNOTIMMT A
+								  where  A.RGST_YMD >= to_date(#{afiRturVl1},'yyyy-mm-dd')
+									and  A.RGST_YMD <= to_date(#{afiRturVl2},'yyyy-mm-dd')
+									and  A.WRTR_ID = #{rcvrId}
+									and  A.NOTC_DVSN_CD like #{notcDvsnCd}||'%'
+									and  ((A.DLTN_YN = 'N') or A.DLTN_YN is null)
+									and  ((A.DISC_YN = 'N') or A.DISC_YN is null)
+		                            and  A.TRSM_TYPE_CD <> '4'
+									and  ((A.TITL_NM like #{titlNm}||'%') and
+											(  ( nvl( replace(#{userNm},'%',''),'*') = '*' ) or
+													( exists ( select 'Y'
+																 from  CUNOTIDMT B
+																where  B.RGST_YMD = A.RGST_YMD
+																  and  B.RGST_SNO = A.RGST_SNO
+																  and  B.RCVR_ID in (
+																					select  USER_ID
+																					  from  CCUSRDPHT
+																					 where  APST_YMD <= sysdate
+																					   and  APFN_YMD >= sysdate
+																					   /*  and  USER_STTS_CD <> :cus_cunotit_001[0].user_stts_cd */
+																					   and  USER_NM like #{userNm}||'%')) ))
+											 )
+								order by  A.WRTG_DT desc
+								 ) A
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="notcCtn" column="NOTC_CTN"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL_3"/>
+		<result property="trsmTypeCd" column="TRSM_TYPE_CD"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL_4"/>
+		<result property="dlvyFalrAdtnWorkYn" column="DLVY_FALR_ADTN_WORK_YN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="afiRturVl5" column="AFI_RTUR_VL_5"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="afiReptNtm1" column="AFI_REPT_NTM_1"/>
+		<result property="afiRturVl6" column="AFI_RTUR_VL_6"/>
+		<result property="afiRturVl7" column="AFI_RTUR_VL_7"/>
+		<result property="afiRturVl8" column="AFI_RTUR_VL_8"/>
+		<result property="respRqstYn" column="RESP_RQST_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001 (Notification 관리) 
+        Description :                                           Notification 관리
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcMngm001 */
+						   to_char(A.RGST_YMD,'yyyy-mm-dd')  as RGST_YMD,
+						   A.RGST_SNO as RGST_SNO,
+						   '0'  as AFI_RTUR_VL_1,
+						   A.WRTR_ID as WRTR_ID,
+						   NVL((select  USER_NM
+							  from  CCUSRDPHT
+							 where  USER_ID = A.WRTR_ID),'DARWIN')  as AFI_RTUR_VL_2,
+						   to_char(A.WRTG_DT,'yyyy-mm-dd')  as WRTG_DT ,
+						   to_char(A.WRTG_DT,'YYYY-MM-DD HH24:MI:SS')  as RTUR_VL,
+						   decode(A.PTNO, null, A.TITL_NM,
+								 decode(instr(A.TITL_NM,A.PTNO,1),0,'['||A.PTNO||' '||
+										 (select PTNT_NM from APPTPTNTV  where PTNO = A.PTNO )
+										 ||'] '||A.TITL_NM, A.TITL_NM )) as TITL_NM,
+						   /* A.TITL_NM, */
+						   ''   as NOTC_CTN,
+						   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUC_019' and COMN_DTLS_CD = A.GRAD_DVSN_CD ) as GRAD_DVSN_CD,
+						   /* (select  DETL_CD_NM */
+						   /*    from  CCCMCDDMT */
+						   /*   where  COMN_GRP_CD = 'CUC_006' */
+						   /*     and  COMN_DTLS_CD = A.GRAD_DVSN_CD) AFI_RTUR_VL3,   /* 환자정보로 수정예정 2015-11-25 */
+						   (select PTNO||' / '||PTNT_NM||' / '||decode(GEND_CD,'M','남','여')||' / '||
+								   /* floor(months_between(trunc(sysdate), BTDT)/12)||'세' */
+								   case when floor(months_between(trunc(sysdate), BTDT)) > 36  then
+											 floor(months_between(trunc(sysdate), BTDT)/12)||'세'
+										/* when floor(months_between(trunc(sysdate), BTDT)) < 36 and floor(months_between(trunc(sysdate), BTDT)) >= 13 then */
+										/*      floor(months_between(sysdate, BTDT)/12)||'세'|| */
+										/*      floor(months_between(trunc(sysdate), BTDT)-(floor(months_between(trunc(sysdate), BTDT)/12)*12))||'개월' */
+										when floor(months_between(trunc(sysdate), BTDT)) <= 36 and floor(months_between(trunc(sysdate), BTDT))>= 1 then
+											 floor(months_between(trunc(sysdate), BTDT))||'개월'
+										when floor(months_between(trunc(sysdate), BTDT)) = 0 then
+											 floor(trunc(sysdate)- BTDT)||'일'
+								   end
+								   /* (to_number(to_char(sysdate,'YYYY')) - to_number(to_char(BTDT,'YYYY')) + 1)||'세' */
+							  from APPTPTNTV
+							 where PTNO = A.PTNO ) as AFI_RTUR_VL_3,                         /*  환자명                          */
+						   A.TRSM_TYPE_CD as TRSM_TYPE_CD,
+						   (select  DETL_CD_NM
+							  from  CCCMCDDMT
+							 where  COMN_GRP_CD = 'CUC_020'
+							   and  COMN_DTLS_CD = A.TRSM_TYPE_CD)  as AFI_RTUR_VL_4,
+						   A.DLVY_FALR_ADTN_WORK_YN as DLVY_FALR_ADTN_WORK_YN,
+						   A.PTNO as PTNO,
+						   B.RCVR_ID as RCVR_ID,
+						   (select  USER_NM
+							  from  CCUSRDPHT
+							 where  USER_ID = B.RCVR_ID)  as AFI_RTUR_VL_5,
+						   B.FLDR_DVSN_CD as FLDR_DVSN_CD,
+						   B.INQR_YN as INQR_YN,
+						   to_char(B.INQR_DT,'YYYY-MM-DD HH24:MI:SS')  as AFI_RTUR_VL,
+						   to_char(B.DLTN_DT,'yyyy-mm-dd')  as DLTN_DT,
+						   B.DLVY_YN as DLVY_YN,
+						   (select  count(*)
+									 from  CUNOTIPMT
+									where  RGST_YMD = A.RGST_YMD
+									  and  RGST_SNO = A.RGST_SNO) as AFI_REPT_NTM_1,
+			   			/* (select  count(*) */
+			   			/*    from  CUNOTIDMT C */
+			   			/*   where  RGST_YMD = A.RGST_YMD */
+			   			/* 	and  RGST_SNO = A.RGST_SNO */
+			   			/* 	and  C.INQR_YN = 'Y' ) || '/' || */
+			   			(select  sum(decode(nvl(INQR_YN,'N'),'Y',1,0))||'/'||count(*)
+			   			   from  CUNOTIDMT C
+			   			  where  RGST_YMD = A.RGST_YMD
+			   				and  RGST_SNO = A.RGST_SNO) as AFI_RTUR_VL_6,
+			   			(select  HZDEPTMMT.KORN_DPRT_NM
+			   			   from  CCUSRDPHT , HZDEPTMMT
+			   			  where  A.WRTR_ID =  CCUSRDPHT.USER_ID
+			   				and  CCUSRDPHT.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD )  as AFI_RTUR_VL_7,
+			   			decode( (select 1
+			   					   from  CUNOTIAFT
+			   					  where  RGST_YMD = A.RGST_YMD
+			   						and  RGST_SNO = A.RGST_SNO
+			   						and  rownum = 1),1, '§ ','  ') ||
+			   			(select  DETL_CD_NM
+			   			   from  CCCMCDDMT
+			   			  where  COMN_GRP_CD = 'CUC_018'
+			   				and  COMN_DTLS_CD = A.NOTC_DVSN_CD) as AFI_RTUR_VL_8,
+		                      A.RESP_RQST_YN
+					 from  CUNOTIMMT A, CUNOTIDMT B
+					where  A.RGST_YMD = B.RGST_YMD
+					  and  A.RGST_SNO = B.RGST_SNO
+					  and  A.RGST_YMD >= to_date(#{afiRturVl1},'yyyy-mm-dd')
+					  and  A.RGST_YMD <= to_date(#{afiRturVl2},'yyyy-mm-dd')
+					  and  A.NOTC_DVSN_CD like #{notcDvsnCd}||'%'
+		              and  A.TRSM_TYPE_CD <> '4'
+					  and  ((A.NOTC_APNT_SNDG_EN = 'Y') or A.NOTC_APNT_SNDG_EN is null)    /* 노티 예약발송 발송전 노티건 제외 */
+					  /* and  ((A.DLTN_YN = 'N') or A.DLTN_YN is null)                      /* 노티발신함 삭제건은 포함(로직 제외) */
+					  and  B.RCVR_ID = #{rcvrId}
+					  and  B.FLDR_DVSN_CD = #{fldrDvsnCd}
+					  and  ((#{fldrDvsnCd} <> '3') or
+								(nvl(B.NOTC_KPNG_CTIN_SNO,0) = #{notcKpngCtinSno}))  /* 보관함 조회시 개인보관함별 조회 추가 */
+					  and  ( B.NOTC_SNDG_CNCL_YN is null or B.NOTC_SNDG_CNCL_YN = 'N' )    /* 노티수신자 발송취소건  제외 */
+					  and  ((B.NOTC_DLTN_YN = 'N') or B.NOTC_DLTN_YN is null)              /* 노티수신자함 삭제건 제외 */
+					  and  ((A.TITL_NM like #{titlNm}||'%') and
+						   ( A.WRTR_ID in (select  USER_ID
+											from  CCUSRDPHT
+										   where USER_NM like #{userNm}||'%'))
+							)
+					 order by A.WRTG_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="notcCtn" column="NOTC_CTN"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL_3"/>
+		<result property="trsmTypeCd" column="TRSM_TYPE_CD"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL_4"/>
+		<result property="dlvyFalrAdtnWorkYn" column="DLVY_FALR_ADTN_WORK_YN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="afiRturVl5" column="AFI_RTUR_VL_5"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="afiReptNtm1" column="AFI_REPT_NTM_1"/>
+		<result property="afiRturVl6" column="AFI_RTUR_VL_6"/>
+		<result property="afiRturVl7" column="AFI_RTUR_VL_7"/>
+		<result property="afiRturVl8" column="AFI_RTUR_VL_8"/>
+		<result property="respRqstYn" column="RESP_RQST_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin (폐기함조회) 
+        Description :                                           폐기함조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcDiscCtin */
+					  A.RGST_YMD as RGST_YMD,
+					  A.RGST_SNO as RGST_SNO,
+					  A.AFI_RTUR_VL1 as AFI_RTUR_VL_1,
+					  A.WRTR_ID as WRTR_ID,
+					  A.AFI_RTUR_VL2 as AFI_RTUR_VL_2,
+					  A.WRTG_DT as WRTG_DT ,
+					  A.RTUR_VL as RTUR_VL,
+					  A.TITL_NM as TITL_NM,
+					  A.NOTC_CTN as NOTC_CTN,
+					  A.GRAD_DVSN_CD as GRAD_DVSN_CD,
+					  A.AFI_RTUR_VL3 as AFI_RTUR_VL_3,
+					  A.TRSM_TYPE_CD as TRSM_TYPE_CD,
+					  A.AFI_RTUR_VL4 as AFI_RTUR_VL_4,
+					  A.DLVY_FALR_ADTN_WORK_YN as DLVY_FALR_ADTN_WORK_YN,
+					  A.PTNO as PTNO,
+					  A.RCVR_ID as RCVR_ID,
+					  A.AFI_RTUR_VL5 as AFI_RTUR_VL_5,
+					  A.FLDR_DVSN_CD as FLDR_DVSN_CD,
+					  A.INQR_YN as INQR_YN,
+					  A.AFI_RTUR_VL as AFI_RTUR_VL,
+					  A.DLTN_DT as DLTN_DT,
+					  A.DLVY_YN as DLVY_YN,
+					  A.AFI_REPT_NTM1 as AFI_REPT_NTM_1,
+					  A.AFI_RTUR_VL6 as AFI_RTUR_VL_6,
+					  A.AFI_RTUR_VL7 as AFI_RTUR_VL_7,
+					  A.AFI_RTUR_VL8 as AFI_RTUR_VL_8,               
+		              A.RESP_RQST_YN
+				   from
+				   (
+				   select  /*+ cud_cunotit_l04$S01_Notification 폐기함조회 */
+						   A.RGST_YMD,
+						   A.RGST_SNO,
+						   A.AFI_RTUR_VL1,
+						   A.WRTR_ID,
+						   A.AFI_RTUR_VL2,
+						   A.WRTG_DT ,
+						   A.RTUR_VL,
+						   A.TITL_NM,
+						   A.NOTC_CTN,
+						   A.GRAD_DVSN_CD,
+						   A.AFI_RTUR_VL3,
+						   A.TRSM_TYPE_CD,
+						   A.AFI_RTUR_VL4,
+						   A.DLVY_FALR_ADTN_WORK_YN,
+						   A.PTNO,
+						   A.RCVR_ID,
+						   A.AFI_RTUR_VL5,
+						   A.FLDR_DVSN_CD,
+						   A.INQR_YN,
+						   A.AFI_RTUR_VL,
+						   A.DLTN_DT,
+						   A.DLVY_YN,
+						   A.AFI_REPT_NTM1,
+						   '수신' AFI_RTUR_VL6,
+						   A.AFI_RTUR_VL7,
+						   A.AFI_RTUR_VL8,
+		                   A.RESP_RQST_YN
+					 from
+							  (
+								 select
+										 to_char(A.RGST_YMD,'yyyy-mm-dd') RGST_YMD,
+										 A.RGST_SNO,
+										 '0' AFI_RTUR_VL1,
+										 A.WRTR_ID,
+										 NVL((select  USER_NM
+											from  CCUSRDPHT
+										   where  USER_ID = A.WRTR_ID),'DARWIN') AFI_RTUR_VL2,
+										 to_char(A.WRTG_DT,'yyyy-mm-dd') WRTG_DT ,
+										 to_char(A.WRTG_DT,'YYYY-MM-DD HH24:MI:SS') RTUR_VL,
+										 decode(A.PTNO, null, A.TITL_NM,
+														   decode(instr(A.TITL_NM,A.PTNO,1),0,'['||A.PTNO||' '||
+																   (select PTNT_NM from APPTPTNTV  where PTNO = A.PTNO )
+																   ||'] '||A.TITL_NM, A.TITL_NM )) as TITL_NM,
+										 ''  NOTC_CTN,
+										 (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUC_019' and COMN_DTLS_CD = A.GRAD_DVSN_CD ) as GRAD_DVSN_CD,
+										 (select PTNO||' / '||PTNT_NM||' / '||decode(GEND_CD,'M','남','여')||' / '||
+												 /* (to_number(to_char(sysdate,'YYYY')) - to_number(to_char(BTDT,'YYYY')) + 1)||'세' */
+												case when floor(months_between(trunc(sysdate), BTDT)) > 36  then
+														  floor(months_between(trunc(sysdate), BTDT)/12)||'세'
+												   /* when floor(months_between(trunc(sysdate), BTDT)) < 36 and floor(months_between(trunc(sysdate), BTDT)) >= 13 then */
+												   /*      floor(months_between(sysdate, BTDT)/12)||'세'|| */
+												   /*      floor(months_between(trunc(sysdate), BTDT)-(floor(months_between(trunc(sysdate), BTDT)/12)*12))||'개월' */
+													 when floor(months_between(trunc(sysdate), BTDT)) <= 36 and floor(months_between(trunc(sysdate), BTDT))>= 1 then
+														  floor(months_between(trunc(sysdate), BTDT))||'개월'
+													 when floor(months_between(trunc(sysdate), BTDT)) = 0 then
+														  floor(trunc(sysdate)- BTDT)||'일'
+												end
+											from APPTPTNTV
+										   where PTNO = A.PTNO ) as AFI_RTUR_VL3,                         /*  환자명                          */
+										 A.TRSM_TYPE_CD,
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_020'
+											 and  COMN_DTLS_CD = A.TRSM_TYPE_CD) AFI_RTUR_VL4,
+										 A.DLVY_FALR_ADTN_WORK_YN,
+										 A.PTNO,
+										 B.RCVR_ID,
+										 (select  USER_NM
+											from  CCUSRDPHT
+										   where  USER_ID = B.RCVR_ID) AFI_RTUR_VL5,
+										 B.FLDR_DVSN_CD,
+										 B.INQR_YN,
+										 to_char(B.INQR_DT,'YYYY-MM-DD HH24:MI:SS') AFI_RTUR_VL,
+										 to_char(B.DLTN_DT,'yyyy-mm-dd') DLTN_DT,
+										 B.DLVY_YN,
+										 (select  count(*)
+											from  CUNOTIPMT
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO) AFI_REPT_NTM1,
+										 /* (select  count(*) */
+										 /*    from  CUNOTIDMT C */
+										 /*   where  RGST_YMD = A.RGST_YMD */
+										 /*     and  RGST_SNO = A.RGST_SNO */
+										 /*     and  C.INQR_YN = 'Y' ) || '/' || */
+										 (select  sum(decode(nvl(INQR_YN,'N'),'Y',1,0))||'/'||count(*)
+											from  CUNOTIDMT C
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO)     as  AFI_RTUR_VL6,
+										 (select  HZDEPTMMT.KORN_DPRT_NM
+											from  CCUSRDPHT , HZDEPTMMT
+										   where  A.WRTR_ID =  CCUSRDPHT.USER_ID
+											 and  CCUSRDPHT.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD ) AFI_RTUR_VL7,
+										 decode( (select 1
+													from  CUNOTIAFT
+												   where  RGST_YMD = A.RGST_YMD
+													 and  RGST_SNO = A.RGST_SNO
+													 and  rownum = 1),1, '§ ','  ') ||
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_018'
+											 and  COMN_DTLS_CD = A.NOTC_DVSN_CD) AFI_RTUR_VL8,
+		                                    A.RESP_RQST_YN
+								   from  CUNOTIMMT A, CUNOTIDMT B
+								  where  A.RGST_YMD = B.RGST_YMD
+									and  A.RGST_SNO = B.RGST_SNO
+									and  A.RGST_YMD >= to_date(#{afiRturVl1},'yyyy-mm-dd')
+									and  A.RGST_YMD <= to_date(#{afiRturVl2},'yyyy-mm-dd')
+									and  A.NOTC_DVSN_CD like #{notcDvsnCd}||'%'
+									and  ((A.NOTC_APNT_SNDG_EN = 'Y') or A.NOTC_APNT_SNDG_EN is null)    /* 노티 예약발송 발송전 노티건 제외 */
+		                            and  A.TRSM_TYPE_CD <> '4'
+									/* and  ((A.DLTN_YN = 'N') or A.DLTN_YN is null)                      /* 노티발신함 삭제건은 포함(로직 제외) */
+									and  B.RCVR_ID = #{rcvrId}
+									and  B.FLDR_DVSN_CD = #{fldrDvsnCd}
+									and  ((#{fldrDvsnCd} <> '3') or
+											  (nvl(B.NOTC_KPNG_CTIN_SNO,0) = #{notcKpngCtinSno}))  /* 보관함 조회시 개인보관함별 조회 추가 */
+									and  ( B.NOTC_SNDG_CNCL_YN is null or B.NOTC_SNDG_CNCL_YN = 'N' )    /* 노티수신자 발송취소건  제외 */
+									and  ((B.NOTC_DLTN_YN = 'N') or B.NOTC_DLTN_YN is null)              /* 노티수신자함 삭제건 제외 */
+									and  ((A.TITL_NM like #{titlNm}||'%') and
+											(  ( nvl( replace(#{userNm},'%',''),'*') = '*' ) or
+											   ( A.WRTR_ID in (select  USER_ID
+															from  CCUSRDPHT
+														   where  APST_YMD <= sysdate
+															 and  APFN_YMD >= sysdate
+															/*  and  USER_STTS_CD <> :cus_cunotit_001[0].user_stts_cd */
+															 and  USER_NM like #{userNm}||'%')))
+											 )
+								/*  order by B.INQR_YN, A.WRTG_DT desc */
+																		) A
+				   union all
+				   select
+						   B.RGST_YMD,
+						   B.RGST_SNO,
+						   B.AFI_RTUR_VL1,
+						   B.WRTR_ID,
+						   B.AFI_RTUR_VL2,
+						   B.WRTG_DT ,
+						   B.RTUR_VL,
+						   B.TITL_NM,
+						   B.NOTC_CTN,
+						   B.GRAD_DVSN_CD,
+						   B.AFI_RTUR_VL3,
+						   B.TRSM_TYPE_CD,
+						   B.AFI_RTUR_VL4,
+						   B.DLVY_FALR_ADTN_WORK_YN,
+						   B.PTNO,
+						   to_char(B.RCVR_ID) as RCVR_ID,
+						   decode(B.RCVR_ID,1,  ( select  USER_NM
+													from  CCUSRDPHT
+												   where  USER_ID = B.AFI_RTUR_VL5 and rownum = 1 ),
+												( select  USER_NM
+													from  CCUSRDPHT
+												   where  USER_ID = B.AFI_RTUR_VL5 and rownum = 1 ) || '...' ) as AFI_RTUR_VL5,
+						   /* decode(B.RCVR_ID,1,  ( select USER_NM */
+						   /*                          from CCUSERAMV */
+						   /*                         where LGIN_ID = B.AFI_RTUR_VL5 and rownum = 1 ), */
+						   /*                      ( select USER_NM */
+						   /*                          from CCUSERAMV */
+						   /*                         where LGIN_ID = B.AFI_RTUR_VL5 and rownum = 1 ) || '...' ) as AFI_RTUR_VL5, */
+						   B.FLDR_DVSN_CD,
+						   B.INQR_YN,
+						   B.AFI_RTUR_VL6 as AFI_RTUR_VL,
+						   B.DLTN_DT,
+						   B.DLVY_YN,
+						   B.AFI_REPT_NTM1,
+						   '발신' AFI_RTUR_VL6,
+						   B.AFI_RTUR_VL7,
+						   B.AFI_RTUR_VL8,
+		                   B.RESP_RQST_YN
+					 from
+							  (
+								 select  to_char(A.RGST_YMD,'yyyy-mm-dd') RGST_YMD,
+										 A.RGST_SNO,
+										 '0' AFI_RTUR_VL1,
+										 A.WRTR_ID,
+										 NVL((select  USER_NM
+											from  CCUSRDPHT
+										   where  USER_ID = A.WRTR_ID),'DARWIN') AFI_RTUR_VL2,
+										 to_char(A.WRTG_DT,'yyyy-mm-dd') WRTG_DT ,
+										 to_char(A.WRTG_DT,'YYYY-MM-DD HH24:MI:SS') RTUR_VL, /* 기존작성일자(A.WRTG_DT) */
+										 decode(A.PTNO, null, A.TITL_NM,
+														   decode(instr(A.TITL_NM,A.PTNO,1),0,'['||A.PTNO||' '||
+																   (select PTNT_NM from APPTPTNTV  where PTNO = A.PTNO )
+																   ||'] '||A.TITL_NM, A.TITL_NM )) as TITL_NM,
+										 ''  NOTC_CTN,
+										 (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUC_019' and COMN_DTLS_CD = A.GRAD_DVSN_CD ) as GRAD_DVSN_CD,
+										 (select PTNO||' / '||PTNT_NM||' / '||decode(GEND_CD,'M','남','여')||' / '||
+												 /* (to_number(to_char(sysdate,'YYYY')) - to_number(to_char(BTDT,'YYYY')) + 1)||'세' */
+												 case when floor(months_between(trunc(sysdate), BTDT)) > 36  then
+														   floor(months_between(trunc(sysdate), BTDT)/12)||'세'
+													/* when floor(months_between(trunc(sysdate), BTDT)) < 36 and floor(months_between(trunc(sysdate), BTDT)) >= 13 then */
+													/*      floor(months_between(sysdate, BTDT)/12)||'세'|| */
+													/*      floor(months_between(trunc(sysdate), BTDT)-(floor(months_between(trunc(sysdate), BTDT)/12)*12))||'개월' */
+													   when floor(months_between(trunc(sysdate), BTDT)) <= 36 and floor(months_between(trunc(sysdate), BTDT))>= 1 then
+															floor(months_between(trunc(sysdate), BTDT))||'개월'
+													   when floor(months_between(trunc(sysdate), BTDT)) = 0 then
+															floor(trunc(sysdate)- BTDT)||'일'
+												 end
+											from APPTPTNTV
+										   where PTNO = A.PTNO ) as AFI_RTUR_VL3,                         /*  환자명                          */
+										 A.TRSM_TYPE_CD,
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_020'
+											 and  COMN_DTLS_CD = A.TRSM_TYPE_CD) AFI_RTUR_VL4,
+										 A.DLVY_FALR_ADTN_WORK_YN,
+										 A.PTNO,
+										 ( select count(RCVR_ID)
+											 from CUNOTIDMT NOTIDMT
+											where NOTIDMT.RGST_YMD = A.RGST_YMD
+											  and NOTIDMT.RGST_SNO = A.RGST_SNO )  as RCVR_ID,
+										 ( select max(RCVR_ID)
+											 from CUNOTIDMT NOTIDMT
+											where NOTIDMT.RGST_YMD = A.RGST_YMD
+											  and NOTIDMT.RGST_SNO = A.RGST_SNO )  as AFI_RTUR_VL5,
+										 '' FLDR_DVSN_CD,
+										 '' INQR_YN,
+										 (select  decode(sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)),0,'Y','N')
+											from  CUNOTIDMT C
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO
+										 /*     and  NOTC_SNDG_CNCL_YN is NULL or NOTC_SNDG_CNCL_YN ='N' */
+																									  ) as AFI_RTUR_VL, /* 전체발송취소여부 */
+										 '' DLTN_DT,
+										 '' DLVY_YN,
+										 (select  count(*)
+											from  CUNOTIPMT
+										   where  RGST_YMD = A.RGST_YMD
+											 and  RGST_SNO = A.RGST_SNO) AFI_REPT_NTM1,
+										 (decode( A.NOTC_APNT_SNDG_EN, 'N',
+													(select  (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) = 0
+																   then '취소 '|| count(*) end)||
+															 (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) > 0
+																   then '예약 '|| sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) end)||
+															 (case when sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0 and sum(decode(NOTC_SNDG_CNCL_YN,'Y',0,1)) > 0
+																   then ', 예약취소 '|| sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) end)
+													   from  CUNOTIDMT C
+													  where  RGST_YMD = A.RGST_YMD
+														and  RGST_SNO = A.RGST_SNO),
+												  (select  (case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then '개봉 '|| sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) end)||
+														   (case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	  sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then '미개봉 '|| sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0))
+																	when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0 and
+																		 sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0
+																							then ', 미개봉 '|| sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) end)||
+															(case when sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	   sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) = 0 and
+																	   sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0
+																							 then '취소 '||sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0))
+																  when (sum(decode(INQR_YN,'Y',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0 or
+																		sum(decode(INQR_YN,'N',decode(NOTC_SNDG_CNCL_YN,'Y',0,1),0)) > 0) and
+																		sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) > 0
+																							 then ', 취소 '||sum(decode(NOTC_SNDG_CNCL_YN,'Y',1,0)) end)
+													   from  CUNOTIDMT C
+													  where  RGST_YMD = A.RGST_YMD
+														and  RGST_SNO = A.RGST_SNO )))  as  AFI_RTUR_VL6,  /* 개봉현황(예약 명수,개봉 명수, 미개봉 명수, 취소 명수, 미개봉 명수) */
+										 (select  HZDEPTMMT.KORN_DPRT_NM
+											from  CCUSRDPHT , HZDEPTMMT
+										   where  A.WRTR_ID =  CCUSRDPHT.USER_ID
+											 and  CCUSRDPHT.MDCR_DPRT_CD = HZDEPTMMT.DPRT_CD ) AFI_RTUR_VL7,
+										 decode( (select 1
+													from  CUNOTIAFT
+												   where  RGST_YMD = A.RGST_YMD
+													and  RGST_SNO = A.RGST_SNO
+													and  rownum = 1),1, '§ ','  ') ||
+										 (select  DETL_CD_NM
+											from  CCCMCDDMT
+										   where  COMN_GRP_CD = 'CUC_018'
+											 and  COMN_DTLS_CD = A.NOTC_DVSN_CD) AFI_RTUR_VL8,
+		                                    A.RESP_RQST_YN 
+								   from  CUNOTIMMT A
+								  where  A.RGST_YMD >= to_date(#{afiRturVl1},'yyyy-mm-dd')
+									and  A.RGST_YMD <= to_date(#{afiRturVl2},'yyyy-mm-dd')
+									and  A.WRTR_ID = #{rcvrId}
+									and  A.NOTC_DVSN_CD like #{notcDvsnCd}||'%'
+									and  ((A.DLTN_YN = 'N') or A.DLTN_YN is null)
+									and  (A.DISC_YN = 'Y')
+		                            and  A.TRSM_TYPE_CD <> '4'
+									and  ((A.TITL_NM like #{titlNm}||'%') and
+											(  ( nvl( replace(#{userNm},'%',''),'*') = '*' ) or
+											   ( A.WRTR_ID in (select  USER_ID
+															from  CCUSRDPHT
+														   where  APST_YMD <= sysdate
+															 and  APFN_YMD >= sysdate
+															/*  and  USER_STTS_CD <> :cus_cunotit_001[0].user_stts_cd */
+															 and  USER_NM like #{userNm}||'%')))
+											 )
+							   /*  order by  A.WRTG_DT desc */
+								 ) B
+				   ) A
+				   order by  A.WRTG_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="notcScrnPrmtSno" column="NOTC_SCRN_PRMT_SNO"/>
+		<result property="notcScrnPrmtDvsnVl" column="NOTC_SCRN_PRMT_DVSN_VL"/>
+		<result property="notcScrnPrmtDvsnCtn" column="NOTC_SCRN_PRMT_DVSN_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn (노티 화면별 파라미터 조회) 
+        Description :                                           노티 화면별 파라미터 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-cu-dao-CcuNotcTrasMngmDAO-listNotcPrmtByScrn */
+							to_char(RGST_YMD,'yyyy-mm-dd')  as RGST_YMD
+						  , RGST_SNO as RGST_SNO
+						  , PRGM_ID as PRGM_ID
+						  , NOTC_SCRN_PRMT_SNO as NOTC_SCRN_PRMT_SNO
+						  , NOTC_SCRN_PRMT_DVSN_VL as NOTC_SCRN_PRMT_DVSN_VL
+						  , NOTC_SCRN_PRMT_DVSN_CTN as NOTC_SCRN_PRMT_DVSN_CTN
+				   from CUNOTIPAT
+				   where  RGST_YMD      =    to_date(#{rgstYmd},'yyyy-mm-dd')
+					 and  RGST_SNO      =    #{rgstSno}
+					 and  PRGM_ID      like  #{prgmId}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd (노티파라미터 BLOB 조회) 
+        Description :                                           노티파라미터 BLOB 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-selectOneNotcPrmtBd */
+						   a.PRGM_ID as PRGM_ID,
+						   b.PCKG_ID  as AFI_RTUR_VL,
+						   ''  as AFI_RTUR_VL_1,
+						   ''  as AFI_RTUR_VL_2
+					 from  CUNOTIPMT a, CSPRMLTMT b
+					where  a.RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+					  and  a.RGST_SNO = #{rgstSno}
+					  and  a.PRGM_ID  = #{prgmId}
+					  and  a.PRGM_ID  = b.PRGM_ID(+)
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateRecvNotc (수신 노티 삭제) 
+        Description :                                           수신 노티 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateRecvNotc"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  >
+		<![CDATA[
+					   update /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-updateRecvNotc */
+							   CUNOTIDMT
+						   set
+							   NOTC_DLTN_YN       = 'Y',
+							   LAST_UPDR_ID       = #{gvLginId},
+							   LAST_UPDT_IP       = #{gvUserIp},
+							   LAST_UPDT_DT       = sysdate,
+							   LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId},
+							   LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+						where
+							   RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+						  and  RGST_SNO = #{rgstSno}
+						  and  RCVR_ID  = #{rcvrId}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL1"/>
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL2"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="notcCtn" column="NOTC_CTN"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="afiRturVl3" column="AFI_RTUR_VL3"/>
+		<result property="trsmTypeCd" column="TRSM_TYPE_CD"/>
+		<result property="afiRturVl4" column="AFI_RTUR_VL4"/>
+		<result property="dlvyFalrAdtnWorkYn" column="DLVY_FALR_ADTN_WORK_YN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rcvrId" column="RCVR_ID"/>
+		<result property="afiRturVl5" column="AFI_RTUR_VL5"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+		<result property="afiRturVl" column="AFI_RTUR_VL"/>
+		<result property="dltnDt" column="DLTN_DT"/>
+		<result property="dlvyYn" column="DLVY_YN"/>
+		<result property="afiReptNtm1" column="AFI_REPT_NTM1"/>
+		<result property="afiRturVl6" column="AFI_RTUR_VL6"/>
+		<result property="afiRturVl7" column="AFI_RTUR_VL7"/>
+		<result property="afiRturVl8" column="AFI_RTUR_VL8"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList (수신함조회) 
+        Description :                                           수신함조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotcTrasMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotcTrasMngmDAO-listNotcRecvBoxList */
+		<![CDATA[
+		select  /*+ cud_notimmt_l02$S01_노티 수신함 조회 */ 
+		            to_char(A.RGST_YMD,'yyyy-mm-dd') RGST_YMD,
+		            A.RGST_SNO,
+					'0' AFI_RTUR_VL1,
+					A.WRTR_ID,
+					(select  USER_NM
+					   from  CCUSRDPHT
+					  where  USER_ID = A.WRTR_ID) AFI_RTUR_VL2,
+					to_char(A.WRTG_DT,'yyyy-mm-dd') WRTG_DT ,
+					to_char(A.WRTG_DT,'YYYY-MM-DD HH24:MI:SS') RTUR_VL,
+					A.TITL_NM,
+					''  NOTC_CTN,
+					(select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CUC_019' and COMN_DTLS_CD = A.GRAD_DVSN_CD ) as GRAD_DVSN_CD,
+					(select  DETL_CD_NM
+					   from  CCCMCDDMT
+					  where  COMN_GRP_CD = 'CUC_019'
+						and  COMN_DTLS_CD = A.GRAD_DVSN_CD) AFI_RTUR_VL3,
+					A.TRSM_TYPE_CD,
+					(select  DETL_CD_NM
+					   from  CCCMCDDMT
+					  where  COMN_GRP_CD = 'CUC_020'
+						and  COMN_DTLS_CD = A.TRSM_TYPE_CD) AFI_RTUR_VL4,
+					A.DLVY_FALR_ADTN_WORK_YN,
+					A.PTNO,
+					B.RCVR_ID,
+					(select  USER_NM
+					   from  CCUSRDPHT
+					  where  USER_ID = B.RCVR_ID) AFI_RTUR_VL5,
+					B.FLDR_DVSN_CD,
+					B.INQR_YN,
+					to_char(B.INQR_DT,'YYYY-MM-DD HH24:MI:SS') AFI_RTUR_VL,
+					to_char(B.DLTN_DT,'yyyy-mm-dd') DLTN_DT,
+					B.DLVY_YN,
+					(select  count(*)
+					   from  CUNOTIPMT
+					  where  RGST_YMD = A.RGST_YMD
+						and  RGST_SNO = A.RGST_SNO) AFI_REPT_NTM1,
+					(select  count(*)
+					   from  CUNOTIDMT C
+					  where  RGST_YMD = A.RGST_YMD
+						and  RGST_SNO = A.RGST_SNO
+						and  C.INQR_YN = 'Y' ) || '/' ||
+					(select  count(*)
+					   from  CUNOTIDMT C
+					  where  RGST_YMD = A.RGST_YMD
+						and  RGST_SNO = A.RGST_SNO) AFI_RTUR_VL6,
+					(select  HZDEPTMMT.KORN_DPRT_NM
+					   from  HZUSERMMT , HZDEPTMMT
+					  where  A.WRTR_ID =  HZUSERMMT.EMNO
+						and  HZUSERMMT.DPRT_CD = HZDEPTMMT.DPRT_CD ) AFI_RTUR_VL7,
+						'' AFI_RTUR_VL8
+			  from  CUNOTIMMT A, CUNOTIDMT B
+			 where  A.RGST_YMD = B.RGST_YMD
+			   and  A.RGST_SNO = B.RGST_SNO
+			   and  A.RGST_YMD >= to_date(#{afiRturVl1},'yyyy-mm-dd')
+			   and  A.RGST_YMD <= to_date(#{afiRturVl2},'yyyy-mm-dd')
+			   and  A.NOTC_DVSN_CD like #{notcDvsnCd}
+			   and  B.RCVR_ID = #{rcvrId}
+			   and  B.FLDR_DVSN_CD = #{fldrDvsnCd}
+			   and  B.INQR_YN like #{inqrYn}
+			   and  nvl(B.NOTC_SNDG_CNCL_YN, 'N') = 'N'    
+			   and  ((A.TITL_NM like #{titlNm}) or
+					 (A.WRTR_ID in (select  USER_ID
+									  from  CCUSRDPHT
+									 where  APST_YMD <= sysdate
+									   and  APFN_YMD >= sysdate
+									   and  USER_NM like #{userNm})))
+			order by A.RGST_YMD desc
+		]]>
+	</select>
+
+
+
+</mapper>

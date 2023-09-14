@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhRsrhPpupDAO_sql.xml 
+    Description :                                      연구자_팝업 DAO
+                  -->
+<mapper namespace="HzhRsrhPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="rsrcRnprEmno" column="RSRC_RNPR_EMNO"/>
+		<result property="rsrcRnprNm" column="RSRC_RNPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup (HZH010F4_Popup_연구책임자조회_DAM) 
+        Description :                                           hzd_rsrprjt_l02$S01_HZH010F4_연구책임자조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpup */
+		   	 	rownum  as SQNC           /* 순서 */
+			  , m.RSRC_RNPR_EMNO /* 연구책임자사원번호 */
+			  , m.RSRC_RNPR_NM        /* 사용자명 */
+		from (  select distinct 
+		  			  s.RSRC_RNPR_EMNO  as RSRC_RNPR_EMNO /* 연구책임자사원번호 */
+			  		, v.USER_NM      as RSRC_RNPR_NM        /* 사용자명 */
+				from  RPRSRPRJT s /* (HZ)연구과제 */
+					, CCUSRDPHT v
+				where (s.DLTN_YN is null or s.DLTN_YN != 'Y')
+				and v.USER_ID  (+) = s.RSRC_RNPR_EMNO   /* 연구책임자사원번호 */
+				and s.BSPL_CD = #{bsplCd}           /* 사업장코드 */
+		 		<if test='srchCd != null and srchCd == "C" and srchCdNm != null and srchCdNm != ""'>
+		   			and (#{srchCd} = 'C' and v.USER_ID like '%' || #{srchCdNm} || '%') /* 사원번호 */
+		  		</if>
+		  		<if test='srchCd != null and srchCd == "N" and srchCdNm != null and srchCdNm != ""'>
+		   			and (#{srchCd} = 'N' and v.USER_NM like '%' || #{srchCdNm} || '%') /* 사용자명 */
+		  		</if>
+			  ) m
+		order by case when #{srchCd} = 'C' then m.RSRC_RNPR_EMNO end asc,
+		         case when #{srchCd} = 'N' then m.RSRC_RNPR_NM  end asc,
+		         case when #{srchCd} = 'N' then m.RSRC_RNPR_EMNO end asc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="rsrcRnprEmno" column="RSRC_RNPR_EMNO"/>
+		<result property="rsrcRnprNm" column="RSRC_RNPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup (HZH010F4_Popup_연구자조회_DAM) 
+        Description :                                           KUMC에 맞게 쿼리 추가하기 전 최종 백업쿼리
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhRsrhPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhRsrhPpupDAO-listRsrhPpupKumcBackup */
+		   rownum           as SQNC           /* 순서 */
+		  ,z.RSRC_RNPR_EMNO as RSRC_RNPR_EMNO /* 연구자ID */
+		  ,z.EMPY_NM        as RSRC_RNPR_NM        /* 사용자명 */
+		from
+		(select
+			s1.RSRC_RNPR_EMNO RSRC_RNPR_EMNO
+		   ,s1.EMPY_NM        EMPY_NM
+		from
+			(select
+				 distinct
+					 m.RSRC_RNPR_EMNO RSRC_RNPR_EMNO   /* 연구책임자사원번호 */
+					,m.EMPY_NM        EMPY_NM     /* 연구책임자명 */
+			 from
+				 (select
+					   /*s.RSRC_RNPR_EMNO RSRC_RNPR_EMNO    /* 연구책임자사원번호 */
+					   v.user_id        RSRC_RNPR_EMNO
+					  ,u.EMPY_NM        EMPY_NM           /* 사원명 */
+				  from
+					  RPRSRPRJT s /* (HZ)연구과제 */
+					 ,HZUSERMMT u /* 사원마스터 */
+					 ,ccusrdpht v
+				  where (s.DEL_YN is null or s.DEL_YN != 'Y')
+				  and u.EMNO                      (+) = s.RSRC_RNPR_EMNO
+				  and v.lgin_id                   (+) = u.emno
+				  and s.BSPL_CD                       = #{bsplCd}           /* 사업장코드 */
+				  <if test='srchCd != null and srchCd == "C"'>
+				  and (#{srchCd} = 'C' and v.user_id like '%' || #{srchCdNm} || '%') /* 과제코드 */
+				  </if>
+				  <if test='srchCd != null and srchCd == "N"'>
+				  and (#{srchCd} = 'N' and u.EMPY_NM like '%' || #{srchCdNm} || '%') /* 과제코드 */
+				  </if>
+				  and v.lgin_id = u.emno
+				  and u.HLOF_STTS_CD not like 'D%'
+				 ) m
+			) s1
+		    order by case when #{srchCd} = 'C' then s1.RSRC_RNPR_EMNO end asc,
+		             case when #{srchCd} = 'N' then s1.EMPY_NM end asc,
+		             case when #{srchCd} = 'N' then s1.RSRC_RNPR_EMNO end asc
+		   ) z
+	</select>
+
+
+
+</mapper>

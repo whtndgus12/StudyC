@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhCstrPpupDAO_sql.xml 
+    Description :                                      거래처 팝업용 DAO
+                  -->
+<mapper namespace="HzhCstrPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="cstrBsrn" column="CSTR_BSRN"/>
+		<result property="cstrNm" column="CSTR_NM"/>
+		<result property="rpprRsrn" column="RPPR_RSRN"/>
+		<result property="cstrCd" column="CSTR_CD"/>
+		<result property="bsnmDvsnCd" column="BSNM_DVSN_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cstrSttsCd" column="CSTR_STTS_CD"/>
+		<result property="comnCdNm1" column="COMN_CD_NM_1"/>
+		<result property="dvsnVl1" column="DVSN_VL_1"/>
+		<result property="dvsnVl2" column="DVSN_VL_2"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup (HZH010FF_1_Popup_거래처_목록 조회) 
+        Description :                                           hzd_csinfmt_l01$S01_거래처_Popup_조회_DAM(현재 이 메소드대신
+                                                                pagingCstrPpup를 사용하여 그리드 Appending모드를 사용함, 이 메소드는 쿼리의
+                                                                기본틀이기때문에 삭제하지 않고 남겨놓음)
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-listCstrPpup */
+					   rownum         as SQNC         /* 순서 */
+					,  x.CSTR_BSRN    as CSTR_BSRN    /* 거래처사업자등록번호 */
+					,  x.CSTR_NM      as CSTR_NM      /* 거래처명 */
+					,  x.RPPR_RSRN    as RPPR_RSRN    /* 대표자주민등록번호 */
+					,  x.CSTR_CD      as CSTR_CD      /* 거래처코드 */
+					,  x.BSNM_DVSN_CD as BSNM_DVSN_CD /* 사업자구분코드 */
+					,  x.COMN_CD_NM   as COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+					,  x.CSTR_STTS_CD as CSTR_STTS_CD /* 거래처상태코드 */
+					,  x.COMN_CD_NM_1 as COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+					,  x.DVSN_VL_1    as DVSN_VL_1    /* 예금계좌여부 */
+					,  x.DVSN_VL_2    as DVSN_VL_2    /* 어음계좌여부 */
+					,  x.RPPR_NM      as RPPR_NM      /* 대표자명 */
+				 from
+					  (select
+							   s.CSTR_BSRN                             CSTR_BSRN    /* 거래처사업자등록번호 */
+							,  s.CSTR_NM                               CSTR_NM      /* 거래처명 */
+							,  s.RPPR_RSRN                             RPPR_RSRN    /* 대표자주민등록번호 */
+							,  s.CSTR_CD                               CSTR_CD      /* 거래처코드 */
+							,  s.BSNM_DVSN_CD                          BSNM_DVSN_CD /* 사업자구분코드 */
+							,  s.COMN_CD_NM                            COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+							,  s.CSTR_STTS_CD                          CSTR_STTS_CD /* 거래처상태코드 */
+							,  s.COMN_CD_NM_1                          COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+							,  decode(t.DEPST_ACNT_NO, null, 'N', 'Y') DVSN_VL_1    /* 예금계좌여부 */
+							,  decode(t.PMNT_ACNT_NO , null, 'N', 'Y') DVSN_VL_2    /* 어음계좌번호여부 */
+							,  s.RPPR_NM                               RPPR_NM      /* 대표자명 */
+						 from
+							  (select  /*+ index(a HSCSINFMT_PK) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_CD                            like #{srchCdNm} || '%' /* 거래처코드 */
+								  and  a.LAST_USE_YN                           = 'Y'                                   /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                   /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'C' /* 검색코드[C:거래처코드] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I02) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_BSRN                   like #{srchCdNm} || '%' /* 거래처사업자등록번호 */
+								  and  a.LAST_USE_YN                           = 'Y'                            /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                            /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'I' /* 검색코드[I:사업자등록번호] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I01) */
+										 a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									  ,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									  ,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                           ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                   then a.RPPR_RSRN */
+		   /*                                   else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                        substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   upper(a.CSTR_NM)                     like '%' || upper(#{srchCdNm}) || '%' /* 거래처명 */
+								  and  a.LAST_USE_YN                           = 'Y'                                                 /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                                 /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'N' /* 검색코드[N:거래처명] */
+									  )
+							  ) s
+							,  HMGITRACT t /* 지급대상계좌번호 */
+						where  t.GIVE_TRGT_MNGM_DVSN_CD (+) = '2'         /* 지급대상관리구분코드[2:사업자번호] */
+						  and  t.GIVE_TRGT_MNGM_NO      (+) = s.CSTR_BSRN /* 지급대상관리번호(거래처사업자등록번호) */
+						order
+						   by  case #{srchCd} when 'C' then s.CSTR_CD
+																when 'I' then s.CSTR_BSRN
+																else          s.CSTR_NM
+							   end  asc
+							,  case #{srchCd} when 'C' then s.CSTR_NM
+																when 'I' then s.CSTR_NM
+																else          s.CSTR_CD
+							   end  asc
+					  ) x
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="cstrBsrn" column="CSTR_BSRN"/>
+		<result property="cstrNm" column="CSTR_NM"/>
+		<result property="rpprRsrn" column="RPPR_RSRN"/>
+		<result property="cstrCd" column="CSTR_CD"/>
+		<result property="bsnmDvsnCd" column="BSNM_DVSN_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cstrSttsCd" column="CSTR_STTS_CD"/>
+		<result property="comnCdNm1" column="COMN_CD_NM_1"/>
+		<result property="dvsnVl1" column="DVSN_VL_1"/>
+		<result property="dvsnVl2" column="DVSN_VL_2"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup (HZH010FF_1_Popup_거래처_목록 조회) 
+        Description :                                           hzd_csinfmt_l01$S01_거래처_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup-result" useCache="true" flushCache="false">
+			<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-pagingCstrPpup */
+			   RNUM
+			,  RNUM         as SQNC         /* 순서 */
+			,  CSTR_BSRN    /* 거래처사업자등록번호 */
+			,  CSTR_NM      /* 거래처명 */
+			,  RPPR_RSRN    /* 대표자주민등록번호 */
+			,  CSTR_CD      /* 거래처코드 */
+			,  BSNM_DVSN_CD /* 사업자구분코드 */
+			,  COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+			,  CSTR_STTS_CD /* 거래처상태코드 */
+			,  COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+			,  DVSN_VL_1    /* 예금계좌여부 */
+			,  DVSN_VL_2    /* 어음계좌여부 */
+			,  RPPR_NM      /* 대표자명 */
+		from(			
+			   select 
+					   rownum         as RNUM         /* 순서 */
+					,  x.CSTR_BSRN    as CSTR_BSRN    /* 거래처사업자등록번호 */
+					,  x.CSTR_NM      as CSTR_NM      /* 거래처명 */
+					,  x.RPPR_RSRN    as RPPR_RSRN    /* 대표자주민등록번호 */
+					,  x.CSTR_CD      as CSTR_CD      /* 거래처코드 */
+					,  x.BSNM_DVSN_CD as BSNM_DVSN_CD /* 사업자구분코드 */
+					,  x.COMN_CD_NM   as COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+					,  x.CSTR_STTS_CD as CSTR_STTS_CD /* 거래처상태코드 */
+					,  x.COMN_CD_NM_1 as COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+					,  x.DVSN_VL_1    as DVSN_VL_1    /* 예금계좌여부 */
+					,  x.DVSN_VL_2    as DVSN_VL_2    /* 어음계좌여부 */
+					,  x.RPPR_NM      as RPPR_NM      /* 대표자명 */
+				 from
+					  (select
+							   s.CSTR_BSRN                             CSTR_BSRN    /* 거래처사업자등록번호 */
+							,  s.CSTR_NM                               CSTR_NM      /* 거래처명 */
+							,  s.RPPR_RSRN                             RPPR_RSRN    /* 대표자주민등록번호 */
+							,  s.CSTR_CD                               CSTR_CD      /* 거래처코드 */
+							,  s.BSNM_DVSN_CD                          BSNM_DVSN_CD /* 사업자구분코드 */
+							,  s.COMN_CD_NM                            COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+							,  s.CSTR_STTS_CD                          CSTR_STTS_CD /* 거래처상태코드 */
+							,  s.COMN_CD_NM_1                          COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+							,  decode(t.DEPST_ACNT_NO, null, 'N', 'Y') DVSN_VL_1    /* 예금계좌여부 */
+							,  decode(t.PMNT_ACNT_NO , null, 'N', 'Y') DVSN_VL_2    /* 어음계좌번호여부 */
+							,  s.RPPR_NM                               RPPR_NM      /* 대표자명 */
+						 from
+							  (select  /*+ index(a HSCSINFMT_PK) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI011' and MIS_COMN_CD = a.BSNM_DVSN_CD)     COMN_CD_NM   /* 사업자구분코드명*/
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI010' and MIS_COMN_CD = a.CSTR_STTS_CD)     COMN_CD_NM_1   /* 거래처상태코드명*/
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_CD                            like #{srchCdNm} || '%' /* 거래처코드 */
+								  and  a.LAST_USE_YN                           = 'Y'                                   /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                   /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'C' /* 검색코드[C:거래처코드] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I02) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI011' and MIS_COMN_CD = a.BSNM_DVSN_CD)     COMN_CD_NM   /* 사업자구분코드명*/
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI010' and MIS_COMN_CD = a.CSTR_STTS_CD)     COMN_CD_NM_1   /* 거래처상태코드명*/
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_BSRN                   like #{srchCdNm} || '%' /* 거래처사업자등록번호 */
+								  and  a.LAST_USE_YN                           = 'Y'                            /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                            /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'I' /* 검색코드[I:사업자등록번호] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I01) */
+										 a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									  ,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									  ,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                           ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                   then a.RPPR_RSRN */
+		   /*                                   else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                        substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI011' and MIS_COMN_CD = a.BSNM_DVSN_CD)     COMN_CD_NM   /* 사업자구분코드명*/
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  (select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GI010' and MIS_COMN_CD = a.CSTR_STTS_CD)     COMN_CD_NM_1   /* 거래처상태코드명*/
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   upper(a.CSTR_NM)                     like '%' || upper(#{srchCdNm}) || '%' /* 거래처명 */
+								  and  a.LAST_USE_YN                           = 'Y'                                                 /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                                 /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'N' /* 검색코드[N:거래처명] */
+									  )
+							  ) s
+							,  HMGITRACT t /* 지급대상계좌번호 */
+						where  t.GIVE_TRGT_MNGM_DVSN_CD (+) = '2'         /* 지급대상관리구분코드[2:사업자번호] */
+						  and  t.GIVE_TRGT_MNGM_NO      (+) = s.CSTR_BSRN /* 지급대상관리번호(거래처사업자등록번호) */
+						  and  t.BSPL_CD                (+) = #{bsplCd}
+						order
+						   by  case #{srchCd} when 'C' then s.CSTR_CD
+																when 'I' then s.CSTR_BSRN
+																else          s.CSTR_NM
+							   end  asc
+							,  case #{srchCd} when 'C' then s.CSTR_NM
+																when 'I' then s.CSTR_NM
+																else          s.CSTR_CD
+							   end  asc
+					  ) x
+		)
+		 where RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)
+		    and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup (HZH010FF_1_Popup_거래처_목록 개수 조회) 
+        Description :                                           hzd_csinfmt_l01$S01_거래처_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhCstrPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup-result" useCache="true" flushCache="false">
+			<![CDATA[
+		select 	/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhCstrPpupDAO-selectOneCstrPpup */
+			count(*) AS TOTAL_DATA_COUNT
+		   from(
+			   select  
+					   rownum         as SQNC         /* 순서 */
+					,  x.CSTR_BSRN    as CSTR_BSRN    /* 거래처사업자등록번호 */
+					,  x.CSTR_NM      as CSTR_NM      /* 거래처명 */
+					,  x.RPPR_RSRN    as RPPR_RSRN    /* 대표자주민등록번호 */
+					,  x.CSTR_CD      as CSTR_CD      /* 거래처코드 */
+					,  x.BSNM_DVSN_CD as BSNM_DVSN_CD /* 사업자구분코드 */
+					,  x.COMN_CD_NM   as COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+					,  x.CSTR_STTS_CD as CSTR_STTS_CD /* 거래처상태코드 */
+					,  x.COMN_CD_NM_1 as COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+					,  x.DVSN_VL_1    as DVSN_VL_1    /* 예금계좌여부 */
+					,  x.DVSN_VL_2    as DVSN_VL_2    /* 어음계좌여부 */
+					,  x.RPPR_NM      as RPPR_NM      /* 대표자명 */
+				 from
+					  (select
+							   s.CSTR_BSRN                             CSTR_BSRN    /* 거래처사업자등록번호 */
+							,  s.CSTR_NM                               CSTR_NM      /* 거래처명 */
+							,  s.RPPR_RSRN                             RPPR_RSRN    /* 대표자주민등록번호 */
+							,  s.CSTR_CD                               CSTR_CD      /* 거래처코드 */
+							,  s.BSNM_DVSN_CD                          BSNM_DVSN_CD /* 사업자구분코드 */
+							,  s.COMN_CD_NM                            COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+							,  s.CSTR_STTS_CD                          CSTR_STTS_CD /* 거래처상태코드 */
+							,  s.COMN_CD_NM_1                          COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+							,  decode(t.DEPST_ACNT_NO, null, 'N', 'Y') DVSN_VL_1    /* 예금계좌여부 */
+							,  decode(t.PMNT_ACNT_NO , null, 'N', 'Y') DVSN_VL_2    /* 어음계좌번호여부 */
+							,  s.RPPR_NM                               RPPR_NM      /* 대표자명 */
+						 from
+							  (select  /*+ index(a HSCSINFMT_PK) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_CD                            like #{srchCdNm} || '%' /* 거래처코드 */
+								  and  a.LAST_USE_YN                           = 'Y'                                   /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                   /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'C' /* 검색코드[C:거래처코드] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I02) */
+									   a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                         ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                 then a.RPPR_RSRN */
+		   /*                                 else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                      substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   a.CSTR_BSRN                   like #{srchCdNm} || '%' /* 거래처사업자등록번호 */
+								  and  a.LAST_USE_YN                           = 'Y'                            /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                            /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'I' /* 검색코드[I:사업자등록번호] */
+									  )
+								union  all
+							   select  /*+ index(a HSCSINFMT_I01) */
+										 a.CSTR_CD                                                    CSTR_CD      /* 거래처코드 */
+									  ,  a.CSTR_NM                                                    CSTR_NM      /* 거래처명 */
+									  ,  a.CSTR_BSRN                                                  CSTR_BSRN    /* 거래처사업자등록번호 */
+		   /*                           ,  case when a.RPPR_RSRN is null or length(a.RPPR_RSRN) <> 13 */
+		   /*                                   then a.RPPR_RSRN */
+		   /*                                   else substr(a.RPPR_RSRN, 1, 6) || '-' || */
+		   /*                                        substr(a.RPPR_RSRN, 7, 1) || '******' */
+		   /*                            end                                                          RPPR_RSRN    -- 대표자주민등록번호 -- 복호화처리 추가필요 */
+									,  a.RPPR_RSRN                                                  RPPR_RSRN    /* 대표자주민등록번호 /* 복호화처리 추가필요 */
+									,  a.BSNM_DVSN_CD                                               BSNM_DVSN_CD /* 사업자구분코드 */
+									,  ''                                                           COMN_CD_NM   /* 사업자구분코드명 추가필요 */
+									,  a.CSTR_STTS_CD                                               CSTR_STTS_CD /* 거래처상태코드 */
+									,  ''                                                           COMN_CD_NM_1 /* 거래처상태코드명 추가필요 */
+									,  a.RPPR_NM                                                    RPPR_NM      /* 대표자명 */
+								 from
+									   HSCSINFMT a /* 거래처정보 */
+								where
+									   upper(a.CSTR_NM)                     like '%' || upper(#{srchCdNm}) || '%' /* 거래처명 */
+								  and  a.LAST_USE_YN                           = 'Y'                                                 /* 최종사용여부 */
+								  and  a.ACNN_DPRT_USE_YN                      = 'Y'                                                 /* 경리부서사용여부 */
+								  and (   #{srchCd} = 'A' /* 검색코드[A:전체] */
+									   or #{srchCd} = 'N' /* 검색코드[N:거래처명] */
+									  )
+							  ) s
+							,  HMGITRACT t /* 지급대상계좌번호 */
+						where  t.GIVE_TRGT_MNGM_DVSN_CD (+) = '2'         /* 지급대상관리구분코드[2:사업자번호] */
+						  and  t.GIVE_TRGT_MNGM_NO      (+) = s.CSTR_BSRN /* 지급대상관리번호(거래처사업자등록번호) */
+						  and  t.BSPL_CD                (+) = #{bsplCd}
+						order
+						   by  case #{srchCd} when 'C' then s.CSTR_CD
+																when 'I' then s.CSTR_BSRN
+																else          s.CSTR_NM
+							   end  asc
+							,  case #{srchCd} when 'C' then s.CSTR_NM
+																when 'I' then s.CSTR_NM
+																else          s.CSTR_CD
+							   end  asc
+					  ) x
+		)
+				]]>
+	</select>
+
+
+
+</mapper>

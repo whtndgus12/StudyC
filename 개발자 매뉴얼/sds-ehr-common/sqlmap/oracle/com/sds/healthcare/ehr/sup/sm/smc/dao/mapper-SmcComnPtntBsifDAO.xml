@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmcComnPtntBsifDAO_sql.xml 
+    Description :                                      SmcComnPtntBsifDAO 클래스
+                  -->
+<mapper namespace="SmcComnPtntBsifDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="frrn" column="FRRN"/>
+		<result property="afiSrchCndtCtn" column="AFI_SRCH_CNDT_CTN"/>
+		<result property="afiSrchCndtCtn1" column="AFI_SRCH_CNDT_CTN_1"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="afiSrchCndtCtn2" column="AFI_SRCH_CNDT_CTN_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc () 
+        Description :                                           환자명 단건 조회 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc-result" useCache="true" flushCache="false">
+		     
+				<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntNmSmpc*/
+		            /*+ smd_ptptntt_s02$S01_환자명 단건 조회 DAM */
+			   a.PTNO as PTNO
+			 , a.PTNT_NM as PTNT_NM
+			 , x.FRRN as FRRN                                                                       /*  주민번호 앞자리 */
+			 , x.BRRN as AFI_SRCH_CNDT_CTN                        /*  주민번호 뒷자리 */
+			 , to_char(a.BTDT) as AFI_SRCH_CNDT_CTN_1                      /*  생년월일        */
+			 , a.GEND_CD as GEND_CD                                                                    /*  성별            */
+			 , to_char(trunc(months_between(sysdate, a.BTDT) / 12)) as AFI_SRCH_CNDT_CTN_2   /*  나이 */
+		 from
+			   APPTPTNTT a
+			 , XPCSMSTRT x
+			 , XPCSROLET y
+		 where
+			   a.PTNO              = #{ptno}
+		   and y.CSTM_ROLE_NO      = a.PTNO
+		   and y.CSTM_ROLE_DVSN_CD = '01'
+		   and sysdate between y.STRT_YMD AND y.FNSH_YMD + .99999
+		   and x.CSTM_ID           = y.CSTM_ID
+		]]>
+		  
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="frrn" column="FRRN"/>
+		<result property="brrn" column="BRRN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm () 
+        Description :                                           생년월일 성별 나이 조회 dam
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnPtntBsifDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm-result" useCache="true" flushCache="false">
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnPtntBsifDAO-selectOnePtntBasiInfm*/
+				<![CDATA[
+				   select  /*+ smd_ptptntt_s09$S01_생년월일 성별 나이 조회 dam */
+			   PTNO as PTNO
+			,  PTNT_NM as PTNT_NM
+			,  to_char(a.BTDT, 'YYYYMMDD') as BTDT            /*  생년월일 */
+			,  a.GEND_CD as GEND_CD                                   /*  성별 */
+			,  fn_ap_age_s(a.PTNO, sysdate) as AGE_VL  /*  나이 */
+			,  FRRN as FRRN
+			,  BRRN as BRRN
+		 from  APPTPTNTV a
+		where  a.PTNO = #{ptno}
+		  and  rownum = 1
+		]]>
+		  
+	</select>
+
+
+
+</mapper>

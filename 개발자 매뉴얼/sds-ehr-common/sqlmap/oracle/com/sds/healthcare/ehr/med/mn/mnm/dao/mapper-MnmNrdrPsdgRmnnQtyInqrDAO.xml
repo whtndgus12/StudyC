@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmNrdrPsdgRmnnQtyInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnmNrdrPsdgRmnnQtyInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO">
+	
+		<result property="rtrnRqstDt" column="RTRN_RQST_DT"/>
+		<result property="afiMdtnNoStr" column="AFI_MDTN_NO_STR"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ntm" column="NTM"/>
+		<result property="afiAdmnVlmStr" column="AFI_ADMN_VLM_STR"/>
+		<result property="afiRtrnCqyStr1" column="AFI_RTRN_CQY_STR_1"/>
+		<result property="afiExreRtrnQtyStr" column="AFI_EXRE_RTRN_QTY_STR"/>
+		<result property="mdtnNo" column="MDTN_NO"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="carePrinDt" column="CARE_PRIN_DT"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="rmnnRtrnCnfmId" column="RMNN_RTRN_CNFM_ID"/>
+		<result property="rmnnRtrnCnfrIp" column="RMNN_RTRN_CNFR_IP"/>
+		<result property="rmnnRtrnCnfrDt" column="RMNN_RTRN_CNFR_DT"/>
+		<result property="userNm2" column="USER_NM2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyInqr */
+					  to_char(RTRN_RQST_DT, 'yyyymmddhh24miss') as RTRN_RQST_DT
+					 , WARD_DRUG_IJAC_RNO as AFI_MDTN_NO_STR
+					 , to_char(ordr_ymd, 'yyyymmdd') as ordr_ymd
+					 , PTRM_NO as PTRM_NO
+					 , ptno as ptno
+					 , ptnt_nm as ptnt_nm
+					 , ordr_cd as ordr_cd
+					 , ordr_nm as ordr_nm
+					 , ntm as ntm
+					 , AFI_ADMN_VLM_STR as AFI_ADMN_VLM_STR
+					 , AFI_RTRN_CQY_STR_1 as AFI_RTRN_CQY_STR_1
+					 , AFI_EXRE_RTRN_QTY_STR as AFI_EXRE_RTRN_QTY_STR
+					 , MDTN_NO as MDTN_NO
+					 , ORDR_SNO as ORDR_SNO
+					 , CARE_PRIN_DT as CARE_PRIN_DT
+					 , USER_NM as USER_NM
+					 , CODV_CD as CODV_CD
+					 , RMNN_RTRN_CNFM_ID as RMNN_RTRN_CNFM_ID
+					 , RMNN_RTRN_CNFR_IP as RMNN_RTRN_CNFR_IP
+					 , RMNN_RTRN_CNFR_DT as RMNN_RTRN_CNFR_DT
+					 , FN_MR_GET_USER_NM(RMNN_RTRN_CNFM_ID) as USER_NM2
+				  from ( 
+						select /*+ LEADING (B) USE_NL ( A C D E ) INDEX (B MNWADACNT_I02) NO_EXPAND */ b.ACIM_DT as RTRN_RQST_DT
+							 , b.WARD_DRUG_IJAC_RNO as WARD_DRUG_IJAC_RNO
+							 , a.ordr_ymd as ordr_ymd
+							 , d.CARE_PTRM_NO as PTRM_NO
+							 , a.ptno as ptno
+							 , e.ptnt_nm as ptnt_nm
+							 , a.ordr_cd as ordr_cd
+							 , c.ordr_nm as ordr_nm
+							 , a.ntm as ntm	 
+							 ,  case when a.SLCT_UNIT_DVSN_CD = '1' then to_char(a.PCKN_UNAD_QTY * c.PCUN_INLS_QTY, 'FM9990.099')
+									 when a.SLCT_UNIT_DVSN_CD = '2' then to_char(a.ICUN_ADMN_VLM, 'FM9990.099')
+							    end || a.ICUN_CD as AFI_ADMN_VLM_STR
+							 , (
+								select (nvl(y.INVN_TOTL_QTY, 
+											FN_SD_TOTIVQTY_S(x.PCKN_UNAD_QTY, x.NTM, x.DDCN, z.TOTL_QTY_CLCL_CD, x.drap_dvsn_cd, x.drug_ordr_prss_cd)
+											) * c1.PCUN_INLS_QTY / x.ntm) - x.ICUN_ADMN_VLM
+								  from MDMEDORDT x          /*  약처방 */
+								  	 , SDPORDDET y          /*  약국접수기본 */
+								  	 , MDORDRCMT z
+								  	 , MDORDRCMT c1
+								 where x.PTNO            = a.ptno
+								   and x.ORDR_YMD        = a.ordr_ymd
+								   and x.ORDR_SNO        = a.ordr_sno
+								   AND z.ORDR_CD         = x.ORDR_CD
+								   and x.PTNO     = y.PTNO(+)
+								   and x.ORDR_YMD = y.ORDR_YMD(+)
+								   and x.ordr_sno = y.ORDR_SNO(+)
+								   and x.MDTN_NO  = y.MDTN_NO(+)
+								   and x.MDTN_NO_DVSN_CD = y.MDTN_NO_DVSN_CD(+)
+								   and x.MDTN_LCDV_CD    = y.MDTN_LCDV_CD(+)
+								   and c1.ordr_cd = x.ordr_cd)  || a.ICUN_CD as AFI_RTRN_CQY_STR_1
+							 , null as AFI_EXRE_RTRN_QTY_STR
+							 , a.MDTN_NO as MDTN_NO
+							 , a.ORDR_SNO as ORDR_SNO
+							 , to_char(b.CARE_PRIN_DT, 'yyyymmddhh24miss') as CARE_PRIN_DT
+							 , FN_MR_GET_USER_NM(b.CARE_PNPR_ID) as USER_NM
+							 , a.codv_cd as CODV_CD
+							 , b.RMNN_RTRN_CNFM_ID as RMNN_RTRN_CNFM_ID
+							 , b.RMNN_RTRN_CNFR_IP as RMNN_RTRN_CNFR_IP
+							 , to_char(b.RMNN_RTRN_CNFR_DT, 'yyyymmddhh24miss') as RMNN_RTRN_CNFR_DT
+						  from mdmedordt a
+						     , mnwadacnt b
+						     , mdordrcmt c
+						     , aprcrptnt d
+						     , apptptntt e
+						 where b.ACIM_DT between to_date(#{inqrStrtYmd} || nvl(#{inqrStrtDt}, '00') || '0000', 'yyyymmddhh24miss') and 
+						 		 				   to_date(#{inqrStrtYmd} || nvl(#{inqrFnshDt}, '23') || '5959', 'yyyymmddhh24miss') 
+						   and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+						   and a.orfr_cd <> 'P'
+						   and a.mdpr_clsf_cd in ('2', '3')
+						   and a.codv_cd in ('I', 'E')
+						   and a.ptno = nvl(#{ptno}, a.ptno)
+						   and a.ordr_ymd = to_date(nvl(#{ordrYmd}, to_char(a.ordr_ymd, 'yyyymmdd')), 'yyyymmdd')
+						   and a.ordr_sno = nvl(#{ordrSno}, a.ordr_sno)
+						   and nvl(a.OROC_DPRT_CD, 'ZZ')   = nvl(decode( #{dprtCd}, 'ETC', '', #{wardCd}), nvl(a.OROC_DPRT_CD, 'ZZ'))
+						   and b.ACTN_KIND_CD in (select z.MDCR_DTLS_CTRL_CD
+											  	  from mzctrlmmt z
+											 	 where z.mdcr_ctrl_cd = 'MNW915')
+						   and nvl(b.MDTN_CUP_QTY, 0) <> 0
+						   and b.ptno = a.ptno
+						   and b.ordr_ymd = a.ordr_ymd
+						   and b.ordr_sno = a.ordr_sno
+						   and c.ordr_cd = a.ordr_cd
+						   and d.mdrp_no = a.mdrp_no
+						   and e.ptno = a.ptno
+						   and (
+							   		(
+							   			((#{dprtCd} = 'W') and ( #{wardCd} = fn_cc_get_dprt_cd('WARD_DLR') ) and fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'W|MDP_408|MDP_410') = 'Y') /* 분만장 */
+									 	or
+									 	((#{dprtCd} = 'W') and ( #{wardCd} <> fn_cc_get_dprt_cd('WARD_DLR') ))   
+									) or
+									(
+										#{dprtCd} = 'O'
+									) or        /*  기타장소(ORDACPPL) */
+									(
+										(#{dprtCd} = '01H' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_419|MDP_436') = 'Y') or        /*  투석실(혈액)       */
+										(#{dprtCd} = 'ETC' and  (a.OROC_DPRT_CD = #{dprtCd1} or a.FRNS_DPRT_CD = #{dprtCd1})                        ) or        /*  기타장소(ORDACPPL) */
+										(#{dprtCd} = 'OP' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_AN') ) or /* 마취통증의학과 */
+										(#{dprtCd} = 'OP3' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_OPRM')) or /* 수술실 */
+										(#{dprtCd} = 'OP2' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_PACU')) or /* 회복실 */
+										(#{dprtCd} = 'BR' and  (fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_427') = 'Y' or nvl(a.FRNS_DPRT_CD, 'Z') =  'BR')) or   /*  영상의학과 */
+										(#{dprtCd} = 'WARD2' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_417|MDP_418|MDP_424|MDP_425') = 'Y' )
+									 )
+								)                      /*  병동-분만  */
+				union all
+						select  /*+ LEADING(B) USE_NL ( A C D E )  INDEX (B MNIOUTCNT_I02 ) NO_EXPAND */ b.IJAC_DT
+							 , b.IJAC_RNO
+							 , a.ordr_ymd
+							 , d.CARE_PTRM_NO
+							 , a.ptno
+							 , e.ptnt_nm
+							 , a.ordr_cd
+							 , c.ordr_nm
+							 , a.ntm
+							 ,  case when a.SLCT_UNIT_DVSN_CD = '1' then to_char(a.PCKN_UNAD_QTY * c.PCUN_INLS_QTY, 'FM9990.099')
+									 when a.SLCT_UNIT_DVSN_CD = '2' then to_char(a.ICUN_ADMN_VLM, 'FM9990.099')
+							    end || a.ICUN_CD as AFI_ADMN_VLM_STR
+							 , (
+								select (nvl(y.INVN_TOTL_QTY, 
+											FN_SD_TOTIVQTY_S(x.PCKN_UNAD_QTY, x.NTM, x.DDCN, z.TOTL_QTY_CLCL_CD, x.drap_dvsn_cd, x.drug_ordr_prss_cd)
+											) * c1.PCUN_INLS_QTY / x.ntm) - x.ICUN_ADMN_VLM
+								  from MDMEDORDT x          /*  약처방 */
+								  	 , SDPORDDET y          /*  약국접수기본 */
+								  	 , MDORDRCMT z
+								  	 , MDORDRCMT c1
+								 where x.PTNO            = a.ptno
+								   and x.ORDR_YMD        = a.ordr_ymd
+								   and x.ORDR_SNO        = a.ordr_sno
+								   AND z.ORDR_CD         = x.ORDR_CD
+								   and x.PTNO     = y.PTNO(+)
+								   and x.ORDR_YMD = y.ORDR_YMD(+)
+								   and x.ordr_sno = y.ORDR_SNO(+)
+								   and x.MDTN_NO  = y.MDTN_NO(+)
+								   and x.MDTN_NO_DVSN_CD = y.MDTN_NO_DVSN_CD(+)
+								   and x.MDTN_LCDV_CD    = y.MDTN_LCDV_CD(+)
+								   and c1.ordr_cd = x.ordr_cd)  || a.ICUN_CD as AFI_RTRN_CQY_STR_1
+							 , null
+							 , a.MDTN_NO as MDTN_NO
+							 , a.ORDR_SNO as ORDR_SNO
+							 , to_char(b.CARE_PRIN_DT, 'yyyymmddhh24miss') as CARE_PRIN_DT
+							 , FN_MR_GET_USER_NM(b.CARE_PNPR_ID) as USER_NM
+							 , a.codv_cd as CODV_CD
+							 , b.RMNN_RTRN_CNFM_ID as RMNN_RTRN_CNFM_ID
+							 , b.RMNN_RTRN_CNFR_IP as RMNN_RTRN_CNFR_IP
+							 , to_char(b.RMNN_RTRN_CNFR_DT, 'yyyymmddhh24miss') as RMNN_RTRN_CNFR_DT
+						  from mdmedordt a
+						     , mnioutcnt b
+						     , mdordrcmt c
+						     , aprcrptnt d
+						     , apptptntt e
+						 where b.IJAC_DT between to_date(#{inqrStrtYmd} || nvl(#{inqrStrtDt}, '00') || '0000', 'yyyymmddhh24miss') and 
+						 		 				   to_date(#{inqrStrtYmd} || nvl(#{inqrFnshDt}, '23') || '5959', 'yyyymmddhh24miss')
+						   and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+						   and a.orfr_cd <> 'P'
+						   and a.mdpr_clsf_cd in ('2', '3')
+						   and a.ptno = nvl(#{ptno}, a.ptno)
+						   and a.ordr_ymd = to_date(nvl(#{ordrYmd}, to_char(a.ordr_ymd, 'yyyymmdd')), 'yyyymmdd')
+						   and a.ordr_sno = nvl(#{ordrSno}, a.ordr_sno)
+						   and nvl(a.OROC_DPRT_CD, 'ZZ')   = nvl(decode( #{dprtCd}, 'ETC', '', #{wardCd}), nvl(a.OROC_DPRT_CD, 'ZZ'))
+						   and b.ACTN_KIND_CD in (select z.MDCR_DTLS_CTRL_CD
+											  	  from mzctrlmmt z
+											 	 where z.mdcr_ctrl_cd = 'MNW915')
+						   and nvl(b.MDTN_CUP_QTY, 0) <> 0
+						   and b.ptno = a.ptno
+						   and b.ordr_ymd = a.ordr_ymd
+						   and b.ordr_sno = a.ordr_sno
+						   and c.ordr_cd = a.ordr_cd
+						   and d.mdrp_no = a.mdrp_no
+						   and e.ptno = a.ptno
+						   and (
+								(((#{dprtCd} = 'W') and ( #{wardCd} = fn_cc_get_dprt_cd('WARD_DLR') ) and fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'W|MDP_408|MDP_410') = 'Y') /* 분만장 */
+								 or
+								 ((#{dprtCd} = 'W') and ( #{wardCd} <> fn_cc_get_dprt_cd('WARD_DLR') ))   ) or
+								(#{dprtCd} = 'O') or        /*  기타장소(ORDACPPL) */
+							    ((#{dprtCd} = '01H' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_419|MDP_436') = 'Y') or        /*  투석실(혈액)       */
+								(#{dprtCd} = 'ETC' and  (a.OROC_DPRT_CD = #{dprtCd1} or a.FRNS_DPRT_CD = #{dprtCd1})                        ) or        /*  기타장소(ORDACPPL) */
+								(#{dprtCd} = 'OP' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_AN') ) or /* 마취통증의학과 */
+								(#{dprtCd} = 'OP3' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_OPRM')) or /* 수술실 */
+								(#{dprtCd} = 'OP2' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_PACU')) or /* 회복실 */
+								(#{dprtCd} = 'BR' and  (fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_427') = 'Y' or nvl(a.FRNS_DPRT_CD, 'Z') =  'BR')) or   /*  영상의학과 */
+								(#{dprtCd} = 'WARD2' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_417|MDP_418|MDP_424|MDP_425') = 'Y' )
+								)
+							   )                      /*  병동-분만  */
+				)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO">
+	
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-listNrdrPsdgRmnnQtyExcepInqr */
+					  to_char(RTRN_RQST_DT, 'yyyymmddhh24miss') as RTRN_RQST_DT
+					 , WARD_DRUG_IJAC_RNO as AFI_MDTN_NO_STR
+					 , to_char(ordr_ymd, 'yyyymmdd') as ordr_ymd
+					 , PTRM_NO as PTRM_NO
+					 , ptno as ptno
+					 , ptnt_nm as ptnt_nm
+					 , ordr_cd as ordr_cd
+					 , ordr_nm as ordr_nm
+					 , ntm as ntm
+					 , AFI_ADMN_VLM_STR as AFI_ADMN_VLM_STR
+					 , AFI_RTRN_CQY_STR_1 as AFI_RTRN_CQY_STR_1
+					 , AFI_EXRE_RTRN_QTY_STR as AFI_EXRE_RTRN_QTY_STR
+					 , MDTN_NO as MDTN_NO
+					 , ORDR_SNO as ORDR_SNO
+					 , CARE_PRIN_DT as CARE_PRIN_DT
+					 , USER_NM as USER_NM
+					 , CODV_CD as CODV_CD
+					 , RMNN_RTRN_CNFM_ID as RMNN_RTRN_CNFM_ID
+					 , RMNN_RTRN_CNFR_IP as RMNN_RTRN_CNFR_IP
+					 , RMNN_RTRN_CNFR_DT as RMNN_RTRN_CNFR_DT
+				  from ( 
+						select /*+ LEADING (A ) USE_NL ( C D E ) INDEX (A MDMEDORDT_I25 ) NO_EXPAND  */ a.EXRE_RTRN_DT as RTRN_RQST_DT
+							 , null as WARD_DRUG_IJAC_RNO
+							 , a.ordr_ymd as ordr_ymd
+							 , d.CARE_PTRM_NO as PTRM_NO
+							 , a.ptno as ptno
+							 , e.ptnt_nm as ptnt_nm
+							 , a.ordr_cd as ordr_cd
+							 , c.ordr_nm as ordr_nm
+							 , a.ntm as ntm	
+							 ,  case when a.SLCT_UNIT_DVSN_CD = '1' then to_char(a.PCKN_UNAD_QTY * c.PCUN_INLS_QTY, 'FM9990.099')
+									 when a.SLCT_UNIT_DVSN_CD = '2' then to_char(a.ICUN_ADMN_VLM, 'FM9990.099')
+							    end || a.ICUN_CD as AFI_ADMN_VLM_STR
+							 , null as AFI_RTRN_CQY_STR_1
+							 , a.EXRE_RTRN_QTY || 'cc' as AFI_EXRE_RTRN_QTY_STR
+							 , a.MDTN_NO as MDTN_NO
+							 , a.ORDR_SNO as ORDR_SNO
+							 , null as CARE_PRIN_DT
+							 , null as USER_NM
+							 , a.codv_cd as CODV_CD
+							 , null as RMNN_RTRN_CNFM_ID
+							 , null as RMNN_RTRN_CNFR_IP
+							 , null as RMNN_RTRN_CNFR_DT
+						  from mdmedordt a
+						     , mdordrcmt c
+						     , aprcrptnt d
+						     , apptptntt e
+						 where a.EXRE_RTRN_DT between to_date(#{inqrStrtYmd}, 'yyyymmdd') and to_date(#{inqrStrtYmd}, 'yyyymmdd') + 0.99999
+						   and a.dc_dvsn_cd not in ('X', 'P', 'E', 'F')
+						   and a.orfr_cd <> 'P'
+						   and a.mdpr_clsf_cd in ('2', '3')
+						   and a.codv_cd in ('I', 'E', 'O')
+						   and a.ptno = nvl(#{ptno}, a.ptno)
+						   and a.ordr_ymd = to_date(nvl(#{ordrYmd}, to_char(a.ordr_ymd, 'yyyymmdd')), 'yyyymmdd')
+						   and a.ordr_sno = nvl(#{ordrSno}, a.ordr_sno)
+						   and nvl(a.OROC_DPRT_CD, 'ZZ')   = nvl(decode( #{dprtCd}, 'ETC', '', #{wardCd}), nvl(a.OROC_DPRT_CD, 'ZZ'))
+						   and nvl(a.EXRE_RTRN_QTY, 0) <> 0
+						   and c.ordr_cd = a.ordr_cd
+						   and d.mdrp_no = a.mdrp_no  
+						   and e.ptno = a.ptno
+						   and (
+								(((#{dprtCd} = 'W') and ( #{wardCd} = fn_cc_get_dprt_cd('WARD_DLR') ) and fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'W|MDP_408|MDP_410') = 'Y') /* 분만장 */
+								 or
+								 ((#{dprtCd} = 'W') and ( #{wardCd} <> fn_cc_get_dprt_cd('WARD_DLR') ))   ) or
+								(#{dprtCd} = 'O') or        /*  기타장소(ORDACPPL) */
+							    ((#{dprtCd} = '01H' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_419|MDP_436') = 'Y') or        /*  투석실(혈액)       */
+								(#{dprtCd} = 'ETC' and  (a.OROC_DPRT_CD = #{dprtCd1} or a.FRNS_DPRT_CD = #{dprtCd1})                        ) or        /*  기타장소(ORDACPPL) */
+								(#{dprtCd} = 'OP' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_PACU') ) or          /*  회복실 */
+								(#{dprtCd} = 'OP3' and  a.FRNS_DPRT_CD = FN_CC_GET_DPRT_CD('DPRT_OPRM')) or          /*  MOR-수술실 */
+								(#{dprtCd} = 'OP2' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_407') = 'Y') or        /*  MOR-준비실         */
+								(#{dprtCd} = 'BR' and  (fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_427') = 'Y' or nvl(a.FRNS_DPRT_CD, 'Z') =  'BR')) or   /*  영상의학과 */
+								(#{dprtCd} = 'WARD2' and  fn_mn_check_orocdprtcd(a.oroc_dprt_cd, 'MDP_417|MDP_418|MDP_424|MDP_425') = 'Y' ))
+							   )                      /*  병동-분만  */ 
+				)
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateOutPrintRmnnQty () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateOutPrintRmnnQty"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  >
+		<![CDATA[
+		   UPDATE /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateOutPrintRmnnQty */
+		           MNIOUTCNT
+		      set
+		           CARE_PRIN_DT        = SYSDATE
+		        ,  CARE_PNPR_ID        = #{gvUserId}
+		        ,  LAST_UPDR_ID        = #{gvUserId}
+		        ,  LAST_UPDT_IP        = #{gvUserIp}
+		        ,  LAST_UPDT_DT        = SYSDATE
+		        ,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		    where
+		           PTNO = #{ptno}
+		      and  ORDR_YMD    = to_date(#{ordrYmd}, 'yyyymmdd')
+		      and  ORDR_SNO = #{ordrSno}			  
+		      and  IJAC_RNO = #{afiMdtnNoStr}
+		    ]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateInPrintRmnnQty () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateInPrintRmnnQty"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  >
+		<![CDATA[
+		   UPDATE  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateInPrintRmnnQty */
+		           MNWADACNT
+		      set
+		           CARE_PRIN_DT        = SYSDATE
+		        ,  CARE_PNPR_ID        = #{gvUserId}
+		        ,  LAST_UPDR_ID        = #{gvUserId}
+		        ,  LAST_UPDT_IP        = #{gvUserIp}
+		        ,  LAST_UPDT_DT        = SYSDATE
+		        ,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		    where
+		           PTNO = #{ptno}
+		      and  ORDR_YMD    = to_date(#{ordrYmd}, 'yyyymmdd')
+		      and  ORDR_SNO = #{ordrSno}			  
+		      and  WARD_DRUG_IJAC_RNO = #{afiMdtnNoStr}
+		    ]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNWADACNTRmnnCnfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNWADACNTRmnnCnfm"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  >
+		<![CDATA[
+		   UPDATE  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNWADACNTRmnnCnfm */
+		           MNWADACNT
+		      set
+		           RMNN_RTRN_CNFM_ID   = #{gvUserId}
+		        ,  RMNN_RTRN_CNFR_DT   = SYSDATE
+		        ,  RMNN_RTRN_CNFR_IP   = #{gvUserIp}
+		        ,  LAST_UPDR_ID        = #{gvUserId}
+		        ,  LAST_UPDT_IP        = #{gvUserIp}
+		        ,  LAST_UPDT_DT        = SYSDATE
+		        ,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		    where
+		           PTNO = #{ptno}
+		      and  ORDR_YMD    = to_date(#{ordrYmd}, 'yyyymmdd')
+		      and  ORDR_SNO = #{ordrSno}			  
+		      and  WARD_DRUG_IJAC_RNO = #{afiMdtnNoStr}
+		      and  RMNN_RTRN_CNFM_ID is null
+		    ]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNIOUTCNTRmnnCnfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNIOUTCNTRmnnCnfm"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  >
+		<![CDATA[
+		   UPDATE  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateMNIOUTCNTRmnnCnfm */
+		           MNIOUTCNT
+		      set
+		           RMNN_RTRN_CNFM_ID   = #{gvUserId}
+		        ,  RMNN_RTRN_CNFR_DT   = SYSDATE
+		        ,  RMNN_RTRN_CNFR_IP   = #{gvUserIp}
+		        ,  LAST_UPDR_ID        = #{gvUserId}
+		        ,  LAST_UPDT_IP        = #{gvUserIp}
+		        ,  LAST_UPDT_DT        = SYSDATE
+		        ,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		    where
+		           PTNO = #{ptno}
+		      and  ORDR_YMD    = to_date(#{ordrYmd}, 'yyyymmdd')
+		      and  ORDR_SNO = #{ordrSno}			  
+		      and  IJAC_RNO = #{afiMdtnNoStr}
+		      and  RMNN_RTRN_CNFM_ID is null
+		    ]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateExreCarePrinInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateExreCarePrinInfo"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmNrdrPsdgRmnnQtyInqrDVO"  >
+		<![CDATA[
+		   UPDATE  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmNrdrPsdgRmnnQtyInqrDAO-updateExreCarePrinInfo */
+				   MDMEDORDT
+			  set
+				   LAST_UPDR_ID        = #{gvUserId}
+				,  LAST_UPDT_IP        = #{gvUserIp}
+				,  LAST_UPDT_DT        = SYSDATE
+				,  LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+</mapper>

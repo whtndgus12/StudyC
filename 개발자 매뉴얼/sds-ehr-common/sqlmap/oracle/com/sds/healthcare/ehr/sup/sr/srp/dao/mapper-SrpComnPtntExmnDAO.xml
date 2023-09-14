@@ -1,0 +1,1265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrpComnPtntExmnDAO_sql.xml 
+    Description :                                      환자검사 공통 처리
+                  -->
+<mapper namespace="SrpComnPtntExmnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSwworkmmt (insert SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSwworkmmt */
+		insert
+		  into  SWWORKMMT
+				 (
+					PTNO                     /* 환자번호           */
+				 ,  ORDR_YMD                 /* 처방일자           */
+				 ,  ORDR_SNO                 /* 처방일련번호       */
+				 ,  EXCF_CD                  /* 검사분류코드       */
+				 ,  EXMN_CD                  /* 검사코드           */
+				 ,  EXRM_CD                  /* 검사실코드         */
+				 ,  MDRP_NO                  /* 진료접수번호       */
+				 ,  CODV_CD                  /* 환자구분           */
+				 ,  MCDP_CD                  /* 진료과             */
+				 ,  WARD_CD                  /* 병동               */
+				 ,  INTR_YN                  /* 판독여부           */
+				 ,  SCHD_DTLS_TYP_CD         /* 스케줄세부타입코드 */
+				 ,  HSLC_DVSN_CD             /* 병원위치구분코드   */
+				 ,  IMPL_HSDV_CD             /* 실시병원구분코드   */
+				 ,  MCCN_CD                  /* 진료센터코드       */
+				 ,  PRTB_PRFM_YN             /* 포터블수행여부     */
+				 ,  EXMN_D3_RQST_YN          /* 검사3D요청여부     */
+				 ,  FILM_NO                  /* 필름번호           */
+		         ,  FRST_RGSR_ID	
+		         ,  FRST_RGST_IP	
+		         ,  FRST_RGST_DT	
+		         ,  FRST_RGST_CLNT_PRGM_ID
+		         ,  FRST_RGST_SRVR_PRGM_ID
+		         ,  LAST_UPDR_ID	
+		         ,  LAST_UPDT_IP	
+		         ,  LAST_UPDT_DT	
+		         ,  LAST_UPDT_CLNT_PRGM_ID
+		         ,  LAST_UPDT_SRVR_PRGM_ID
+		         )
+		  select
+					 PTNO                    /* 환자번호           */
+				 ,  ORDR_YMD                 /* 처방일자           */
+				 ,  ORDR_SNO                 /* 처방일련번호       */
+				 ,  EXCF_CD                  /* 검사분류코드       */
+				 ,  ORDR_CD                  /* 처방코드           */
+				 ,  #{exrmCd}                /* 검사실코드         */
+				 ,  MDRP_NO                  /* 진료접수번호       */
+				 ,  CODV_CD                  /* 환자구분           */
+				 ,  MCDP_CD                  /* 진료과             */
+				 ,  WARD_CD                  /* 병동               */
+				 ,  'N'                      /* 판독여부           */
+				 ,  #{schdDtlsTypCd}         /* 스케줄세부타입코드 */
+				 ,  HSLC_DVSN_CD             /* 병원위치구분코드   */
+				 ,  decode(CODV_CD,'G',HSLC_DVSN_CD,'U',HSLC_DVSN_CD,null)
+				 ,  MCCN_CD                  /* 진료센터코드       */
+				 ,  PRTB_YN                  /* 포터블여부         */
+				 ,  #{exmnD3RqstYn}          /* 검사3D요청여부     */
+				 ,  #{filmNo}                /* 필름번호           */
+				 ,  #{gvLginId}                /*  최초등록자ID                  */
+				 ,  #{gvUserIp}                /*  최초등록IP                    */
+				 ,  sysdate                    /*  최초등록일시                     */
+				 ,  #{gvClntPrgmId}            /*  최초등록 클라이언트프로그램ID */
+				 ,  #{gvSrvrPrgmId}            /*  최초등록 서버프로그램ID      */
+				 ,  #{gvLginId}                /*  최종수정자ID                  */
+				 ,  #{gvUserIp}                /*  최종수정IP                    */
+				 ,  sysdate                    /*  최종수정일시                     */
+				 ,  #{gvClntPrgmId}            /*  최종등록 클라이언트프로그램ID */
+				 ,  #{gvSrvrPrgmId}            /*  최종등록 서버프로그램ID      */
+			 from 
+		 MDEXMORDT
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = #{ordrSno}
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-updateSwworkmmt (update SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s update method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-updateSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-updateSwworkmmt */
+		UPDATE SWWORKMMT
+		       SET PTNO = #{ptno} 		/*  */
+					,ORDR_YMD = #{ordrYmd} 		/*  */
+					,ORDR_SNO = #{ordrSno} 		/*  */
+					,EXCF_CD = #{excfCd} 		/*  */
+					,EXMN_CD = #{exmnCd} 		/*  */
+					,EXRM_CD = #{exrmCd} 		/*  */
+					,EQPM_CD = #{eqpmCd} 		/*  */
+					,EXMN_STTS_CD = #{exmnSttsCd} 		/*  */
+					,EXMN_DTLS_STTS_CD = #{exmnDtlsSttsCd} 		/*  */
+					,APNT_DT = #{apntDt} 		/*  */
+					,RPTN_DT = #{rptnDt} 		/*  */
+					,RPTN_CNCL_DT = #{rptnCnclDt} 		/*  */
+					,ENFR_DT = #{enfrDt} 		/*  */
+					,RERN_PRRN_DT = #{rernPrrnDt} 		/*  */
+					,RERN_IMPL_DT = #{rernImplDt} 		/*  */
+					,EXMN_CNCL_DT = #{exmnCnclDt} 		/*  */
+					,INTR_PRRN_DT = #{intrPrrnDt} 		/*  */
+					,INTR_DT = #{intrDt} 		/*  */
+					,CNFR_DT = #{cnfrDt} 		/*  */
+					,APNT_UPDT_DT = #{apntUpdtDt} 		/*  */
+					,EXMN_FALR_DT = #{exmnFalrDt} 		/*  */
+					,EXMN_FALR_RGSR_ID = #{exmnFalrRgsrId} 		/*  */
+					,EXMN_FALR_RGST_RESN_CTN = #{exmnFalrRgstResnCtn} 		/*  */
+					,ANDV_CD = #{andvCd} 		/*  */
+					,AMPR_ID = #{amprId} 		/*  */
+					,SCHD_DTLS_TYP_CD = #{schdDtlsTypCd} 		/*  */
+					,RCPS_ID = #{rcpsId} 		/*  */
+					,ENDR_ID = #{endrId} 		/*  */
+					,IMPT_ID = #{imptId} 		/*  */
+					,IMPL_HSDV_CD = #{implHsdvCd} 		/*  */
+					,INTR_YN = #{intrYn} 		/*  */
+					,CNNT_INTR_SNO = #{cnntIntrSno} 		/*  */
+					,INDR_ID1 = #{indrId1} 		/*  */
+					,INDR_ID2 = #{indrId2} 		/*  */
+					,INDR_ID3 = #{indrId3} 		/*  */
+					,CNDR_ID = #{cndrId} 		/*  */
+					,INTR_PRRN_DR_NM = #{intrPrrnDrNm} 		/*  */
+					,TRNB_ID = #{trnbId} 		/*  */
+					,RERN_RFRC_CTN = #{rernRfrcCtn} 		/*  */
+					,SCND_ORDR_YN = #{scndOrdrYn} 		/*  */
+					,EXRS_PRIN_NTM = #{exrsPrinNtm} 		/*  */
+					,BRNS_ENDS_BEFR_STTS_CTN = #{brnsEndsBefrSttsCtn} 		/*  */
+					,BRNS_ENDS_AFSS_CTN = #{brnsEndsAfssCtn} 		/*  */
+					,NRDR_LIST_PRIN_NTM = #{nrdrListPrinNtm} 		/*  */
+					,NRDR_CUP_QTY = #{nrdrCupQty} 		/*  */
+					,DCTT_YN = #{dcttYn} 		/*  */
+					,CNSG_HSPT_CD = #{cnsgHsptCd} 		/*  */
+					,FILM_NO = #{filmNo} 		/*  */
+					,EXMN_APNT_NO = #{exmnApntNo} 		/*  */
+					,DAT_NO = #{datNo} 		/*  */
+					,EXMN_STRT_HM = #{exmnStrtHm} 		/*  */
+					,RSRC_CNFR_RMRK_CTN = #{rsrcCnfrRmrkCtn} 		/*  */
+					,NGHT_PBHL_IMPL_DVSN_CD = #{nghtPbhlImplDvsnCd} 		/*  */
+					,TRDV_CD = #{trdvCd} 		/*  */
+					,TRSP_TRDV_CD = #{trspTrdvCd} 		/*  */
+					,PRTB_PRFM_YN = #{prtbPrfmYn} 		/*  */
+					,EXMN_D3_RQST_YN = #{exmnD3RqstYn} 		/*  */
+					,EXMN_D3_IMPT_ID = #{exmnD3ImptId} 		/*  */
+					,EXMN_D3_IMPL_DT = #{exmnD3ImplDt} 		/*  */
+					,RDTN_DOSE_VL = #{rdtnDoseVl} 		/*  */
+					,HNDW_INPT_RDTN_DOSE_VL = #{hndwInptRdtnDoseVl} 		/*  */
+					,IMGN_ACQR_SPCM_CNT = #{imgnAcqrSpcmCnt} 		/*  */
+					,SPOT_INPT_VL = #{spotInptVl} 		/*  */
+					,FLUR_INPT_VL = #{flurInptVl} 		/*  */
+					,EDCT_FILE_RGSR_ID = #{edctFileRgsrId} 		/*  */
+					,ASAP_YN = #{asapYn} 		/*  */
+					,IMGN_PRRT_INTR_YN = #{imgnPrrtIntrYn} 		/*  */
+					,IMGN_ORDR_BEFR_TX_CTN = #{imgnOrdrBefrTxCtn} 		/*  */
+					,IMGN_ORDR_AFTR_TX_CTN = #{imgnOrdrAftrTxCtn} 		/*  */
+					,IMGN_BEFR_TX_ODDR_ID = #{imgnBefrTxOddrId} 		/*  */
+					,IMGN_AFTR_TX_ODDR_ID = #{imgnAftrTxOddrId} 		/*  */
+					,IRGT_YN_VL = #{irgtYnVl} 		/*  */
+					,BX_YN_VL = #{bxYnVl} 		/*  */
+					,TBLB_YN_VL = #{tblbYnVl} 		/*  */
+					,BRSH_YN_VL = #{brshYnVl} 		/*  */
+					,BAL_YN_VL = #{balYnVl} 		/*  */
+					,MDTE_YN_VL = #{mdteYnVl} 		/*  */
+					,SLID_YN_VL = #{slidYnVl} 		/*  */
+					,VIDE_YN_VL = #{videYnVl} 		/*  */
+					,PHTG_FILE_NM = #{phtgFileNm} 		/*  */
+					,PHYL_MDCT_PACS_TRDV_CD = #{phylMdctPacsTrdvCd} 		/*  */
+					,BTBNA_YN = #{btbnaYn} 		/*  */
+					,EBTB_YN = #{ebtbYn} 		/*  */
+					,RTRN_PRRN_DT = #{rtrnPrrnDt} 		/*  */
+					,PURS_MNGM_PRRN_YMD = #{pursMngmPrrnYmd} 		/*  */
+					,ENRM_EDCT_FLDV_CD = #{enrmEdctFldvCd} 		/*  */
+					,GE_PACS_ORDR_TRNM_YN = #{gePacsOrdrTrnmYn} 		/*  */
+					,GE_PACS_CNCL_ORDR_TRNM_YN = #{gePacsCnclOrdrTrnmYn} 		/*  */
+					,GE_PACS_RSLT_TRNM_YN = #{gePacsRsltTrnmYn} 		/*  */
+					,ETC_PACS_ORDR_TRNM_YN = #{etcPacsOrdrTrnmYn} 		/*  */
+					,RSLT_SORC_CD = #{rsltSorcCd} 		/*  */
+					,PACS_ACCS_NO = #{pacsAccsNo} 		/*  */
+					,CNCL_PACS_ACCS_NO = #{cnclPacsAccsNo} 		/*  */
+					,PACS_INQR_DT = #{pacsInqrDt} 		/*  */
+					,INTG_PACS_RSLT_INQR_DT = #{intgPacsRsltInqrDt} 		/*  */
+					,INTG_PACS_RSLT_TRNM_YN = #{intgPacsRsltTrnmYn} 		/*  */
+					,AFTR_DATA_YN = #{aftrDataYn} 		/*  */
+					,ISCN_YN = #{iscnYn} 		/*  */
+					,BDSD_YN = #{bdsdYn} 		/*  */
+					,TMPR_UNMD_RPTN_CNFR_YN = #{tmprUnmdRptnCnfrYn} 		/*  */
+					,INTR_SLCT_DTLS_EXRM_CD = #{intrSlctDtlsExrmCd} 		/*  */
+					,INTR_SLCT_RSRC_CNFM_ID = #{intrSlctRsrcCnfmId} 		/*  */
+					,CT_WATR_INTK_DT = #{ctWatrIntkDt} 		/*  */
+					,SMSR_TRPR_NO = #{smsrTrprNo} 		/*  */
+					,SMSR_TRNM_DT = #{smsrTrnmDt} 		/*  */
+					,SMSR_TRRS_CD = #{smsrTrrsCd} 		/*  */
+					,SMSR_TRDV_CD = #{smsrTrdvCd} 		/*  */
+					,HLSC_UNSB_CTN = #{hlscUnsbCtn} 		/*  */
+					,EXRM_MDFC_DT = #{exrmMdfcDt} 		/*  */
+					,EXRM_MDFR_ID = #{exrmMdfrId} 		/*  */
+					,INTR_SCTN_MDFR_ID = #{intrSctnMdfrId} 		/*  */
+					,INTR_SCTN_MDFC_DT = #{intrSctnMdfcDt} 		/*  */
+					,INTR_RQPR_ID = #{intrRqprId} 		/*  */
+					,INTR_RQST_DT = #{intrRqstDt} 		/*  */
+					,INTR_GRP_NO = #{intrGrpNo} 		/*  */
+					,MAC_RFA_YN = #{macRfaYn} 		/*  */
+					,CLAM_ENDR_ID = #{clamEndrId} 		/*  */
+					,RSRC_CNFR_NO = #{rsrcCnfrNo} 		/*  */
+					,PHTR_THCN_VL = #{phtrThcnVl} 		/*  */
+					,CT_WATR_INTK_YN = #{ctWatrIntkYn} 		/*  */
+					,MCDP_CD = #{mcdpCd} 		/*  */
+					,WARD_CD = #{wardCd} 		/*  */
+					,HSLC_DVSN_CD = #{hslcDvsnCd} 		/*  */
+					,MCCN_CD = #{mccnCd} 		/*  */
+					,CODV_CD = #{codvCd} 		/*  */
+					,MDRP_NO = #{mdrpNo} 		/*  */
+					,MDPC_BEFR_STTS_CECK_DT = #{mdpcBefrSttsCeckDt} 		/*  */
+					,MDPC_BEFR_STTS_CECK_INPR_ID = #{mdpcBefrSttsCeckInprId} 		/*  */
+					,MDPC_BEFR_STTS_CECK_STRT_DT = #{mdpcBefrSttsCeckStrtDt} 		/*  */
+					,MDPC_BEFR_STTS_CECK_FNSH_DT = #{mdpcBefrSttsCeckFnshDt} 		/*  */
+					,MDPC_BEFR_STTS_CECK_DR_ID = #{mdpcBefrSttsCeckDrId} 		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CD = #{mdpcBefrSttsCeckSiteCd} 		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CTN = #{mdpcBefrSttsCeckSiteCtn} 		/*  */
+					,DBML_EDCT_UNDG_CD = #{dbmlEdctUndgCd} 		/*  */
+					,FRST_RGSR_ID = #{frstRgsrId} 		/*  */
+					,FRST_RGST_IP = #{frstRgstIp} 		/*  */
+					,FRST_RGST_DT = #{frstRgstDt} 		/*  */
+					,FRST_RGST_CLNT_PRGM_ID = #{frstRgstClntPrgmId} 		/*  */
+					,FRST_RGST_SRVR_PRGM_ID = #{frstRgstSrvrPrgmId} 		/*  */
+					,LAST_UPDR_ID = #{lastUpdrId} 		/*  */
+					,LAST_UPDT_IP = #{lastUpdtIp} 		/*  */
+					,LAST_UPDT_DT = #{lastUpdtDt} 		/*  */
+					,LAST_UPDT_CLNT_PRGM_ID = #{lastUpdtClntPrgmId} 		/*  */
+					,LAST_UPDT_SRVR_PRGM_ID = #{lastUpdtSrvrPrgmId} 		/*  */
+					,SLPN_YN = #{slpnYn} 		/*  */
+					,DBML_EDCT_UNDG_CTN = #{dbmlEdctUndgCtn} 		/*  */
+					,FRWR_CMNT_CTN = #{frwrCmntCtn} 		/*  */
+					,SELF_LRNN_TRGT_YN = #{selfLrnnTrgtYn} 		/*  */
+					,VRBL_INTR_TRGT_YN = #{vrblIntrTrgtYn} 		/*  */
+					,VRBL_INDR_ID = #{vrblIndrId} 		/*  */
+					,CHLD_CALM_YN = #{chldCalmYn} 		/*  */
+					,RERN_IMPL_HSDV_CD = #{rernImplHsdvCd} 		/*  */
+					,RERN_RESN_CD = #{rernResnCd} 		/*  */
+					,RERN_AMPR_ID = #{rernAmprId} 		/*  */
+					,RERN_IMPL_NTM = #{rernImplNtm} 		/*  */
+					,BP_CTN = #{bpCtn} 		/*  */
+					,EXMN_PRPN_FINS_YN = #{exmnPrpnFinsYn} 		/*  */
+					,RSVR_ITRP_ID = #{rsvrItrpId} 		/*  */
+					,SCHD_TYP_CD = #{schdTypCd} 		/*  */
+					,EXMN_ANDV_CD = #{exmnAndvCd} 		/*  */
+					,ABRV_DPRT_CD = #{abrvDprtCd} 		/*  */
+					,FORM_RCRD_NO = #{formRcrdNo} 		/*  */
+					,ARTF_INRN_DEVC_CD = #{artfInrnDevcCd} 		/*  */
+					,MRI_CNRC_DVSN_CD = #{mriCnrcDvsnCd} 		/*  */
+					,RERN_IMPT_ID = #{rernImptId} 		/*  */
+					,EXMN_ATMT_RPTN_YN = #{exmnAtmtRptnYn} 		/*  */
+					,EXRM_ARVL_DT = #{exrmArvlDt} 		/*  */
+					,PRVS_TX_DGST_RCEP_YN = #{prvsTxDgstRcepYn} 		/*  */
+					,IMLN_CLSF_CD = #{imlnClsfCd} 		/*  */
+					,HLSC_ENDS_HGRS_GROP_YN = #{hlscEndsHgrsGropYn} 		/*  */
+					,CNMD_SDEF_CNFR_CTN = #{cnmdSdefCnfrCtn} 		/*  */
+					,ADVC_BASE_RDQY = #{advcBaseRdqy} 		/*  */
+					,ADVC_RDQY = #{advcRdqy} 		/*  */
+					,BSIS_RDQY = #{bsisRdqy} 		/*  */
+					,HLSC_ENDS_HGRS_GROP_CTN = #{hlscEndsHgrsGropCtn} 		/*  */
+					,PRVS_TX_DGST_NNRC_MDFR_ID = #{prvsTxDgstNnrcMdfrId} 		/*  */
+					,PRVS_TX_DGST_NNRC_MDFC_DT = #{prvsTxDgstNnrcMdfcDt} 		/*  */
+					,PRVS_TX_DGST_RCEP_MDFR_ID = #{prvsTxDgstRcepMdfrId} 		/*  */
+					,PRVS_TX_DGST_RCEP_MDFC_DT = #{prvsTxDgstRcepMdfcDt} 		/*  */
+					,PRVS_TX_DGST_CTN = #{prvsTxDgstCtn} 		/*  */
+					,SPUS_INTR_YN = #{spusIntrYn} 		/*  */
+					,CHDR_NM = #{chdrNm} 		/*  */
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = #{ordrSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSwworkmmt (delete SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSwworkmmt */
+		DELETE  FROM SWWORKMMT
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = #{ordrSno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="eqpmCd" column="EQPM_CD"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="exmnDtlsSttsCd" column="EXMN_DTLS_STTS_CD"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="rptnCnclDt" column="RPTN_CNCL_DT"/>
+		<result property="enfrDt" column="ENFR_DT"/>
+		<result property="rernPrrnDt" column="RERN_PRRN_DT"/>
+		<result property="rernImplDt" column="RERN_IMPL_DT"/>
+		<result property="exmnCnclDt" column="EXMN_CNCL_DT"/>
+		<result property="intrPrrnDt" column="INTR_PRRN_DT"/>
+		<result property="intrDt" column="INTR_DT"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="apntUpdtDt" column="APNT_UPDT_DT"/>
+		<result property="exmnFalrDt" column="EXMN_FALR_DT"/>
+		<result property="exmnFalrRgsrId" column="EXMN_FALR_RGSR_ID"/>
+		<result property="exmnFalrRgstResnCtn" column="EXMN_FALR_RGST_RESN_CTN"/>
+		<result property="andvCd" column="ANDV_CD"/>
+		<result property="amprId" column="AMPR_ID"/>
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="rcpsId" column="RCPS_ID"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="imptId" column="IMPT_ID"/>
+		<result property="implHsdvCd" column="IMPL_HSDV_CD"/>
+		<result property="intrYn" column="INTR_YN"/>
+		<result property="cnntIntrSno" column="CNNT_INTR_SNO"/>
+		<result property="indrId1" column="INDR_ID1"/>
+		<result property="indrId2" column="INDR_ID2"/>
+		<result property="indrId3" column="INDR_ID3"/>
+		<result property="cndrId" column="CNDR_ID"/>
+		<result property="intrPrrnDrNm" column="INTR_PRRN_DR_NM"/>
+		<result property="trnbId" column="TRNB_ID"/>
+		<result property="rernRfrcCtn" column="RERN_RFRC_CTN"/>
+		<result property="scndOrdrYn" column="SCND_ORDR_YN"/>
+		<result property="exrsPrinNtm" column="EXRS_PRIN_NTM"/>
+		<result property="brnsEndsBefrSttsCtn" column="BRNS_ENDS_BEFR_STTS_CTN"/>
+		<result property="brnsEndsAfssCtn" column="BRNS_ENDS_AFSS_CTN"/>
+		<result property="nrdrListPrinNtm" column="NRDR_LIST_PRIN_NTM"/>
+		<result property="nrdrCupQty" column="NRDR_CUP_QTY"/>
+		<result property="dcttYn" column="DCTT_YN"/>
+		<result property="cnsgHsptCd" column="CNSG_HSPT_CD"/>
+		<result property="filmNo" column="FILM_NO"/>
+		<result property="exmnApntNo" column="EXMN_APNT_NO"/>
+		<result property="datNo" column="DAT_NO"/>
+		<result property="exmnStrtHm" column="EXMN_STRT_HM"/>
+		<result property="rsrcCnfrRmrkCtn" column="RSRC_CNFR_RMRK_CTN"/>
+		<result property="nghtPbhlImplDvsnCd" column="NGHT_PBHL_IMPL_DVSN_CD"/>
+		<result property="trdvCd" column="TRDV_CD"/>
+		<result property="trspTrdvCd" column="TRSP_TRDV_CD"/>
+		<result property="prtbPrfmYn" column="PRTB_PRFM_YN"/>
+		<result property="exmnD3RqstYn" column="EXMN_D3_RQST_YN"/>
+		<result property="exmnD3ImptId" column="EXMN_D3_IMPT_ID"/>
+		<result property="exmnD3ImplDt" column="EXMN_D3_IMPL_DT"/>
+		<result property="rdtnDoseVl" column="RDTN_DOSE_VL"/>
+		<result property="hndwInptRdtnDoseVl" column="HNDW_INPT_RDTN_DOSE_VL"/>
+		<result property="imgnAcqrSpcmCnt" column="IMGN_ACQR_SPCM_CNT"/>
+		<result property="spotInptVl" column="SPOT_INPT_VL"/>
+		<result property="flurInptVl" column="FLUR_INPT_VL"/>
+		<result property="edctFileRgsrId" column="EDCT_FILE_RGSR_ID"/>
+		<result property="asapYn" column="ASAP_YN"/>
+		<result property="imgnPrrtIntrYn" column="IMGN_PRRT_INTR_YN"/>
+		<result property="imgnOrdrBefrTxCtn" column="IMGN_ORDR_BEFR_TX_CTN"/>
+		<result property="imgnOrdrAftrTxCtn" column="IMGN_ORDR_AFTR_TX_CTN"/>
+		<result property="imgnBefrTxOddrId" column="IMGN_BEFR_TX_ODDR_ID"/>
+		<result property="imgnAftrTxOddrId" column="IMGN_AFTR_TX_ODDR_ID"/>
+		<result property="irgtYnVl" column="IRGT_YN_VL"/>
+		<result property="bxYnVl" column="BX_YN_VL"/>
+		<result property="tblbYnVl" column="TBLB_YN_VL"/>
+		<result property="brshYnVl" column="BRSH_YN_VL"/>
+		<result property="balYnVl" column="BAL_YN_VL"/>
+		<result property="mdteYnVl" column="MDTE_YN_VL"/>
+		<result property="slidYnVl" column="SLID_YN_VL"/>
+		<result property="videYnVl" column="VIDE_YN_VL"/>
+		<result property="phtgFileNm" column="PHTG_FILE_NM"/>
+		<result property="phylMdctPacsTrdvCd" column="PHYL_MDCT_PACS_TRDV_CD"/>
+		<result property="btbnaYn" column="BTBNA_YN"/>
+		<result property="ebtbYn" column="EBTB_YN"/>
+		<result property="rtrnPrrnDt" column="RTRN_PRRN_DT"/>
+		<result property="pursMngmPrrnYmd" column="PURS_MNGM_PRRN_YMD"/>
+		<result property="enrmEdctFldvCd" column="ENRM_EDCT_FLDV_CD"/>
+		<result property="gePacsOrdrTrnmYn" column="GE_PACS_ORDR_TRNM_YN"/>
+		<result property="gePacsCnclOrdrTrnmYn" column="GE_PACS_CNCL_ORDR_TRNM_YN"/>
+		<result property="gePacsRsltTrnmYn" column="GE_PACS_RSLT_TRNM_YN"/>
+		<result property="etcPacsOrdrTrnmYn" column="ETC_PACS_ORDR_TRNM_YN"/>
+		<result property="rsltSorcCd" column="RSLT_SORC_CD"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="cnclPacsAccsNo" column="CNCL_PACS_ACCS_NO"/>
+		<result property="pacsInqrDt" column="PACS_INQR_DT"/>
+		<result property="intgPacsRsltInqrDt" column="INTG_PACS_RSLT_INQR_DT"/>
+		<result property="intgPacsRsltTrnmYn" column="INTG_PACS_RSLT_TRNM_YN"/>
+		<result property="aftrDataYn" column="AFTR_DATA_YN"/>
+		<result property="iscnYn" column="ISCN_YN"/>
+		<result property="bdsdYn" column="BDSD_YN"/>
+		<result property="tmprUnmdRptnCnfrYn" column="TMPR_UNMD_RPTN_CNFR_YN"/>
+		<result property="intrSlctDtlsExrmCd" column="INTR_SLCT_DTLS_EXRM_CD"/>
+		<result property="intrSlctRsrcCnfmId" column="INTR_SLCT_RSRC_CNFM_ID"/>
+		<result property="ctWatrIntkDt" column="CT_WATR_INTK_DT"/>
+		<result property="smsrTrprNo" column="SMSR_TRPR_NO"/>
+		<result property="smsrTrnmDt" column="SMSR_TRNM_DT"/>
+		<result property="smsrTrrsCd" column="SMSR_TRRS_CD"/>
+		<result property="smsrTrdvCd" column="SMSR_TRDV_CD"/>
+		<result property="hlscUnsbCtn" column="HLSC_UNSB_CTN"/>
+		<result property="exrmMdfcDt" column="EXRM_MDFC_DT"/>
+		<result property="exrmMdfrId" column="EXRM_MDFR_ID"/>
+		<result property="intrSctnMdfrId" column="INTR_SCTN_MDFR_ID"/>
+		<result property="intrSctnMdfcDt" column="INTR_SCTN_MDFC_DT"/>
+		<result property="intrRqprId" column="INTR_RQPR_ID"/>
+		<result property="intrRqstDt" column="INTR_RQST_DT"/>
+		<result property="intrGrpNo" column="INTR_GRP_NO"/>
+		<result property="macRfaYn" column="MAC_RFA_YN"/>
+		<result property="clamEndrId" column="CLAM_ENDR_ID"/>
+		<result property="rsrcCnfrNo" column="RSRC_CNFR_NO"/>
+		<result property="phtrThcnVl" column="PHTR_THCN_VL"/>
+		<result property="ctWatrIntkYn" column="CT_WATR_INTK_YN"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="mdpcBefrSttsCeckDt" column="MDPC_BEFR_STTS_CECK_DT"/>
+		<result property="mdpcBefrSttsCeckInprId" column="MDPC_BEFR_STTS_CECK_INPR_ID"/>
+		<result property="mdpcBefrSttsCeckStrtDt" column="MDPC_BEFR_STTS_CECK_STRT_DT"/>
+		<result property="mdpcBefrSttsCeckFnshDt" column="MDPC_BEFR_STTS_CECK_FNSH_DT"/>
+		<result property="mdpcBefrSttsCeckDrId" column="MDPC_BEFR_STTS_CECK_DR_ID"/>
+		<result property="mdpcBefrSttsCeckSiteCd" column="MDPC_BEFR_STTS_CECK_SITE_CD"/>
+		<result property="mdpcBefrSttsCeckSiteCtn" column="MDPC_BEFR_STTS_CECK_SITE_CTN"/>
+		<result property="dbmlEdctUndgCd" column="DBML_EDCT_UNDG_CD"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="frstRgstClntPrgmId" column="FRST_RGST_CLNT_PRGM_ID"/>
+		<result property="frstRgstSrvrPrgmId" column="FRST_RGST_SRVR_PRGM_ID"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdtClntPrgmId" column="LAST_UPDT_CLNT_PRGM_ID"/>
+		<result property="lastUpdtSrvrPrgmId" column="LAST_UPDT_SRVR_PRGM_ID"/>
+		<result property="slpnYn" column="SLPN_YN"/>
+		<result property="dbmlEdctUndgCtn" column="DBML_EDCT_UNDG_CTN"/>
+		<result property="frwrCmntCtn" column="FRWR_CMNT_CTN"/>
+		<result property="selfLrnnTrgtYn" column="SELF_LRNN_TRGT_YN"/>
+		<result property="vrblIntrTrgtYn" column="VRBL_INTR_TRGT_YN"/>
+		<result property="vrblIndrId" column="VRBL_INDR_ID"/>
+		<result property="chldCalmYn" column="CHLD_CALM_YN"/>
+		<result property="rernImplHsdvCd" column="RERN_IMPL_HSDV_CD"/>
+		<result property="rernResnCd" column="RERN_RESN_CD"/>
+		<result property="rernAmprId" column="RERN_AMPR_ID"/>
+		<result property="rernImplNtm" column="RERN_IMPL_NTM"/>
+		<result property="bpCtn" column="BP_CTN"/>
+		<result property="exmnPrpnFinsYn" column="EXMN_PRPN_FINS_YN"/>
+		<result property="rsvrItrpId" column="RSVR_ITRP_ID"/>
+		<result property="schdTypCd" column="SCHD_TYP_CD"/>
+		<result property="exmnAndvCd" column="EXMN_ANDV_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="formRcrdNo" column="FORM_RCRD_NO"/>
+		<result property="artfInrnDevcCd" column="ARTF_INRN_DEVC_CD"/>
+		<result property="mriCnrcDvsnCd" column="MRI_CNRC_DVSN_CD"/>
+		<result property="rernImptId" column="RERN_IMPT_ID"/>
+		<result property="exmnAtmtRptnYn" column="EXMN_ATMT_RPTN_YN"/>
+		<result property="exrmArvlDt" column="EXRM_ARVL_DT"/>
+		<result property="prvsTxDgstRcepYn" column="PRVS_TX_DGST_RCEP_YN"/>
+		<result property="imlnClsfCd" column="IMLN_CLSF_CD"/>
+		<result property="hlscEndsHgrsGropYn" column="HLSC_ENDS_HGRS_GROP_YN"/>
+		<result property="cnmdSdefCnfrCtn" column="CNMD_SDEF_CNFR_CTN"/>
+		<result property="advcBaseRdqy" column="ADVC_BASE_RDQY"/>
+		<result property="advcRdqy" column="ADVC_RDQY"/>
+		<result property="bsisRdqy" column="BSIS_RDQY"/>
+		<result property="hlscEndsHgrsGropCtn" column="HLSC_ENDS_HGRS_GROP_CTN"/>
+		<result property="prvsTxDgstNnrcMdfrId" column="PRVS_TX_DGST_NNRC_MDFR_ID"/>
+		<result property="prvsTxDgstNnrcMdfcDt" column="PRVS_TX_DGST_NNRC_MDFC_DT"/>
+		<result property="prvsTxDgstRcepMdfrId" column="PRVS_TX_DGST_RCEP_MDFR_ID"/>
+		<result property="prvsTxDgstRcepMdfcDt" column="PRVS_TX_DGST_RCEP_MDFC_DT"/>
+		<result property="prvsTxDgstCtn" column="PRVS_TX_DGST_CTN"/>
+		<result property="spusIntrYn" column="SPUS_INTR_YN"/>
+		<result property="chdrNm" column="CHDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt (selectOne SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s selectOne method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwworkmmt */
+		SELECT	PTNO		/*  */
+					,ORDR_YMD		/*  */
+					,ORDR_SNO		/*  */
+					,EXCF_CD		/*  */
+					,EXMN_CD		/*  */
+					,EXRM_CD		/*  */
+					,EQPM_CD		/*  */
+					,EXMN_STTS_CD		/*  */
+					,EXMN_DTLS_STTS_CD		/*  */
+					,APNT_DT		/*  */
+					,RPTN_DT		/*  */
+					,RPTN_CNCL_DT		/*  */
+					,ENFR_DT		/*  */
+					,RERN_PRRN_DT		/*  */
+					,RERN_IMPL_DT		/*  */
+					,EXMN_CNCL_DT		/*  */
+					,INTR_PRRN_DT		/*  */
+					,INTR_DT		/*  */
+					,CNFR_DT		/*  */
+					,APNT_UPDT_DT		/*  */
+					,EXMN_FALR_DT		/*  */
+					,EXMN_FALR_RGSR_ID		/*  */
+					,EXMN_FALR_RGST_RESN_CTN		/*  */
+					,ANDV_CD		/*  */
+					,AMPR_ID		/*  */
+					,SCHD_DTLS_TYP_CD		/*  */
+					,RCPS_ID		/*  */
+					,ENDR_ID		/*  */
+					,IMPT_ID		/*  */
+					,IMPL_HSDV_CD		/*  */
+					,INTR_YN		/*  */
+					,CNNT_INTR_SNO		/*  */
+					,INDR_ID1		/*  */
+					,INDR_ID2		/*  */
+					,INDR_ID3		/*  */
+					,CNDR_ID		/*  */
+					,INTR_PRRN_DR_NM		/*  */
+					,TRNB_ID		/*  */
+					,RERN_RFRC_CTN		/*  */
+					,SCND_ORDR_YN		/*  */
+					,EXRS_PRIN_NTM		/*  */
+					,BRNS_ENDS_BEFR_STTS_CTN		/*  */
+					,BRNS_ENDS_AFSS_CTN		/*  */
+					,NRDR_LIST_PRIN_NTM		/*  */
+					,NRDR_CUP_QTY		/*  */
+					,DCTT_YN		/*  */
+					,CNSG_HSPT_CD		/*  */
+					,FILM_NO		/*  */
+					,EXMN_APNT_NO		/*  */
+					,DAT_NO		/*  */
+					,EXMN_STRT_HM		/*  */
+					,RSRC_CNFR_RMRK_CTN		/*  */
+					,NGHT_PBHL_IMPL_DVSN_CD		/*  */
+					,TRDV_CD		/*  */
+					,TRSP_TRDV_CD		/*  */
+					,PRTB_PRFM_YN		/*  */
+					,EXMN_D3_RQST_YN		/*  */
+					,EXMN_D3_IMPT_ID		/*  */
+					,EXMN_D3_IMPL_DT		/*  */
+					,RDTN_DOSE_VL		/*  */
+					,HNDW_INPT_RDTN_DOSE_VL		/*  */
+					,IMGN_ACQR_SPCM_CNT		/*  */
+					,SPOT_INPT_VL		/*  */
+					,FLUR_INPT_VL		/*  */
+					,EDCT_FILE_RGSR_ID		/*  */
+					,ASAP_YN		/*  */
+					,IMGN_PRRT_INTR_YN		/*  */
+					,IMGN_ORDR_BEFR_TX_CTN		/*  */
+					,IMGN_ORDR_AFTR_TX_CTN		/*  */
+					,IMGN_BEFR_TX_ODDR_ID		/*  */
+					,IMGN_AFTR_TX_ODDR_ID		/*  */
+					,IRGT_YN_VL		/*  */
+					,BX_YN_VL		/*  */
+					,TBLB_YN_VL		/*  */
+					,BRSH_YN_VL		/*  */
+					,BAL_YN_VL		/*  */
+					,MDTE_YN_VL		/*  */
+					,SLID_YN_VL		/*  */
+					,VIDE_YN_VL		/*  */
+					,PHTG_FILE_NM		/*  */
+					,PHYL_MDCT_PACS_TRDV_CD		/*  */
+					,BTBNA_YN		/*  */
+					,EBTB_YN		/*  */
+					,RTRN_PRRN_DT		/*  */
+					,PURS_MNGM_PRRN_YMD		/*  */
+					,ENRM_EDCT_FLDV_CD		/*  */
+					,GE_PACS_ORDR_TRNM_YN		/*  */
+					,GE_PACS_CNCL_ORDR_TRNM_YN		/*  */
+					,GE_PACS_RSLT_TRNM_YN		/*  */
+					,ETC_PACS_ORDR_TRNM_YN		/*  */
+					,RSLT_SORC_CD		/*  */
+					,PACS_ACCS_NO		/*  */
+					,CNCL_PACS_ACCS_NO		/*  */
+					,PACS_INQR_DT		/*  */
+					,INTG_PACS_RSLT_INQR_DT		/*  */
+					,INTG_PACS_RSLT_TRNM_YN		/*  */
+					,AFTR_DATA_YN		/*  */
+					,ISCN_YN		/*  */
+					,BDSD_YN		/*  */
+					,TMPR_UNMD_RPTN_CNFR_YN		/*  */
+					,INTR_SLCT_DTLS_EXRM_CD		/*  */
+					,INTR_SLCT_RSRC_CNFM_ID		/*  */
+					,CT_WATR_INTK_DT		/*  */
+					,SMSR_TRPR_NO		/*  */
+					,SMSR_TRNM_DT		/*  */
+					,SMSR_TRRS_CD		/*  */
+					,SMSR_TRDV_CD		/*  */
+					,HLSC_UNSB_CTN		/*  */
+					,EXRM_MDFC_DT		/*  */
+					,EXRM_MDFR_ID		/*  */
+					,INTR_SCTN_MDFR_ID		/*  */
+					,INTR_SCTN_MDFC_DT		/*  */
+					,INTR_RQPR_ID		/*  */
+					,INTR_RQST_DT		/*  */
+					,INTR_GRP_NO		/*  */
+					,MAC_RFA_YN		/*  */
+					,CLAM_ENDR_ID		/*  */
+					,RSRC_CNFR_NO		/*  */
+					,PHTR_THCN_VL		/*  */
+					,CT_WATR_INTK_YN		/*  */
+					,MCDP_CD		/*  */
+					,WARD_CD		/*  */
+					,HSLC_DVSN_CD		/*  */
+					,MCCN_CD		/*  */
+					,CODV_CD		/*  */
+					,MDRP_NO		/*  */
+					,MDPC_BEFR_STTS_CECK_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_INPR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_STRT_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_FNSH_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_DR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CD		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CTN		/*  */
+					,DBML_EDCT_UNDG_CD		/*  */
+					,FRST_RGSR_ID		/*  */
+					,FRST_RGST_IP		/*  */
+					,FRST_RGST_DT		/*  */
+					,FRST_RGST_CLNT_PRGM_ID		/*  */
+					,FRST_RGST_SRVR_PRGM_ID		/*  */
+					,LAST_UPDR_ID		/*  */
+					,LAST_UPDT_IP		/*  */
+					,LAST_UPDT_DT		/*  */
+					,LAST_UPDT_CLNT_PRGM_ID		/*  */
+					,LAST_UPDT_SRVR_PRGM_ID		/*  */
+					,SLPN_YN		/*  */
+					,DBML_EDCT_UNDG_CTN		/*  */
+					,FRWR_CMNT_CTN		/*  */
+					,SELF_LRNN_TRGT_YN		/*  */
+					,VRBL_INTR_TRGT_YN		/*  */
+					,VRBL_INDR_ID		/*  */
+					,CHLD_CALM_YN		/*  */
+					,RERN_IMPL_HSDV_CD		/*  */
+					,RERN_RESN_CD		/*  */
+					,RERN_AMPR_ID		/*  */
+					,RERN_IMPL_NTM		/*  */
+					,BP_CTN		/*  */
+					,EXMN_PRPN_FINS_YN		/*  */
+					,RSVR_ITRP_ID		/*  */
+					,SCHD_TYP_CD		/*  */
+					,EXMN_ANDV_CD		/*  */
+					,ABRV_DPRT_CD		/*  */
+					,FORM_RCRD_NO		/*  */
+					,ARTF_INRN_DEVC_CD		/*  */
+					,MRI_CNRC_DVSN_CD		/*  */
+					,RERN_IMPT_ID		/*  */
+					,EXMN_ATMT_RPTN_YN		/*  */
+					,EXRM_ARVL_DT		/*  */
+					,PRVS_TX_DGST_RCEP_YN		/*  */
+					,IMLN_CLSF_CD		/*  */
+					,HLSC_ENDS_HGRS_GROP_YN		/*  */
+					,CNMD_SDEF_CNFR_CTN		/*  */
+					,ADVC_BASE_RDQY		/*  */
+					,ADVC_RDQY		/*  */
+					,BSIS_RDQY		/*  */
+					,HLSC_ENDS_HGRS_GROP_CTN		/*  */
+					,PRVS_TX_DGST_NNRC_MDFR_ID		/*  */
+					,PRVS_TX_DGST_NNRC_MDFC_DT		/*  */
+					,PRVS_TX_DGST_RCEP_MDFR_ID		/*  */
+					,PRVS_TX_DGST_RCEP_MDFC_DT		/*  */
+					,PRVS_TX_DGST_CTN		/*  */
+					,SPUS_INTR_YN		/*  */
+					,CHDR_NM		/*  */
+		  FROM	SWWORKMMT
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="eqpmCd" column="EQPM_CD"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="exmnDtlsSttsCd" column="EXMN_DTLS_STTS_CD"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="rptnCnclDt" column="RPTN_CNCL_DT"/>
+		<result property="enfrDt" column="ENFR_DT"/>
+		<result property="rernPrrnDt" column="RERN_PRRN_DT"/>
+		<result property="rernImplDt" column="RERN_IMPL_DT"/>
+		<result property="exmnCnclDt" column="EXMN_CNCL_DT"/>
+		<result property="intrPrrnDt" column="INTR_PRRN_DT"/>
+		<result property="intrDt" column="INTR_DT"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="apntUpdtDt" column="APNT_UPDT_DT"/>
+		<result property="exmnFalrDt" column="EXMN_FALR_DT"/>
+		<result property="exmnFalrRgsrId" column="EXMN_FALR_RGSR_ID"/>
+		<result property="exmnFalrRgstResnCtn" column="EXMN_FALR_RGST_RESN_CTN"/>
+		<result property="andvCd" column="ANDV_CD"/>
+		<result property="amprId" column="AMPR_ID"/>
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="rcpsId" column="RCPS_ID"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="imptId" column="IMPT_ID"/>
+		<result property="implHsdvCd" column="IMPL_HSDV_CD"/>
+		<result property="intrYn" column="INTR_YN"/>
+		<result property="cnntIntrSno" column="CNNT_INTR_SNO"/>
+		<result property="indrId1" column="INDR_ID1"/>
+		<result property="indrId2" column="INDR_ID2"/>
+		<result property="indrId3" column="INDR_ID3"/>
+		<result property="cndrId" column="CNDR_ID"/>
+		<result property="intrPrrnDrNm" column="INTR_PRRN_DR_NM"/>
+		<result property="trnbId" column="TRNB_ID"/>
+		<result property="rernRfrcCtn" column="RERN_RFRC_CTN"/>
+		<result property="scndOrdrYn" column="SCND_ORDR_YN"/>
+		<result property="exrsPrinNtm" column="EXRS_PRIN_NTM"/>
+		<result property="brnsEndsBefrSttsCtn" column="BRNS_ENDS_BEFR_STTS_CTN"/>
+		<result property="brnsEndsAfssCtn" column="BRNS_ENDS_AFSS_CTN"/>
+		<result property="nrdrListPrinNtm" column="NRDR_LIST_PRIN_NTM"/>
+		<result property="nrdrCupQty" column="NRDR_CUP_QTY"/>
+		<result property="dcttYn" column="DCTT_YN"/>
+		<result property="cnsgHsptCd" column="CNSG_HSPT_CD"/>
+		<result property="filmNo" column="FILM_NO"/>
+		<result property="exmnApntNo" column="EXMN_APNT_NO"/>
+		<result property="datNo" column="DAT_NO"/>
+		<result property="exmnStrtHm" column="EXMN_STRT_HM"/>
+		<result property="rsrcCnfrRmrkCtn" column="RSRC_CNFR_RMRK_CTN"/>
+		<result property="nghtPbhlImplDvsnCd" column="NGHT_PBHL_IMPL_DVSN_CD"/>
+		<result property="trdvCd" column="TRDV_CD"/>
+		<result property="trspTrdvCd" column="TRSP_TRDV_CD"/>
+		<result property="prtbPrfmYn" column="PRTB_PRFM_YN"/>
+		<result property="exmnD3RqstYn" column="EXMN_D3_RQST_YN"/>
+		<result property="exmnD3ImptId" column="EXMN_D3_IMPT_ID"/>
+		<result property="exmnD3ImplDt" column="EXMN_D3_IMPL_DT"/>
+		<result property="rdtnDoseVl" column="RDTN_DOSE_VL"/>
+		<result property="hndwInptRdtnDoseVl" column="HNDW_INPT_RDTN_DOSE_VL"/>
+		<result property="imgnAcqrSpcmCnt" column="IMGN_ACQR_SPCM_CNT"/>
+		<result property="spotInptVl" column="SPOT_INPT_VL"/>
+		<result property="flurInptVl" column="FLUR_INPT_VL"/>
+		<result property="edctFileRgsrId" column="EDCT_FILE_RGSR_ID"/>
+		<result property="asapYn" column="ASAP_YN"/>
+		<result property="imgnPrrtIntrYn" column="IMGN_PRRT_INTR_YN"/>
+		<result property="imgnOrdrBefrTxCtn" column="IMGN_ORDR_BEFR_TX_CTN"/>
+		<result property="imgnOrdrAftrTxCtn" column="IMGN_ORDR_AFTR_TX_CTN"/>
+		<result property="imgnBefrTxOddrId" column="IMGN_BEFR_TX_ODDR_ID"/>
+		<result property="imgnAftrTxOddrId" column="IMGN_AFTR_TX_ODDR_ID"/>
+		<result property="irgtYnVl" column="IRGT_YN_VL"/>
+		<result property="bxYnVl" column="BX_YN_VL"/>
+		<result property="tblbYnVl" column="TBLB_YN_VL"/>
+		<result property="brshYnVl" column="BRSH_YN_VL"/>
+		<result property="balYnVl" column="BAL_YN_VL"/>
+		<result property="mdteYnVl" column="MDTE_YN_VL"/>
+		<result property="slidYnVl" column="SLID_YN_VL"/>
+		<result property="videYnVl" column="VIDE_YN_VL"/>
+		<result property="phtgFileNm" column="PHTG_FILE_NM"/>
+		<result property="phylMdctPacsTrdvCd" column="PHYL_MDCT_PACS_TRDV_CD"/>
+		<result property="btbnaYn" column="BTBNA_YN"/>
+		<result property="ebtbYn" column="EBTB_YN"/>
+		<result property="rtrnPrrnDt" column="RTRN_PRRN_DT"/>
+		<result property="pursMngmPrrnYmd" column="PURS_MNGM_PRRN_YMD"/>
+		<result property="enrmEdctFldvCd" column="ENRM_EDCT_FLDV_CD"/>
+		<result property="gePacsOrdrTrnmYn" column="GE_PACS_ORDR_TRNM_YN"/>
+		<result property="gePacsCnclOrdrTrnmYn" column="GE_PACS_CNCL_ORDR_TRNM_YN"/>
+		<result property="gePacsRsltTrnmYn" column="GE_PACS_RSLT_TRNM_YN"/>
+		<result property="etcPacsOrdrTrnmYn" column="ETC_PACS_ORDR_TRNM_YN"/>
+		<result property="rsltSorcCd" column="RSLT_SORC_CD"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="cnclPacsAccsNo" column="CNCL_PACS_ACCS_NO"/>
+		<result property="pacsInqrDt" column="PACS_INQR_DT"/>
+		<result property="intgPacsRsltInqrDt" column="INTG_PACS_RSLT_INQR_DT"/>
+		<result property="intgPacsRsltTrnmYn" column="INTG_PACS_RSLT_TRNM_YN"/>
+		<result property="aftrDataYn" column="AFTR_DATA_YN"/>
+		<result property="iscnYn" column="ISCN_YN"/>
+		<result property="bdsdYn" column="BDSD_YN"/>
+		<result property="tmprUnmdRptnCnfrYn" column="TMPR_UNMD_RPTN_CNFR_YN"/>
+		<result property="intrSlctDtlsExrmCd" column="INTR_SLCT_DTLS_EXRM_CD"/>
+		<result property="intrSlctRsrcCnfmId" column="INTR_SLCT_RSRC_CNFM_ID"/>
+		<result property="ctWatrIntkDt" column="CT_WATR_INTK_DT"/>
+		<result property="smsrTrprNo" column="SMSR_TRPR_NO"/>
+		<result property="smsrTrnmDt" column="SMSR_TRNM_DT"/>
+		<result property="smsrTrrsCd" column="SMSR_TRRS_CD"/>
+		<result property="smsrTrdvCd" column="SMSR_TRDV_CD"/>
+		<result property="hlscUnsbCtn" column="HLSC_UNSB_CTN"/>
+		<result property="exrmMdfcDt" column="EXRM_MDFC_DT"/>
+		<result property="exrmMdfrId" column="EXRM_MDFR_ID"/>
+		<result property="intrSctnMdfrId" column="INTR_SCTN_MDFR_ID"/>
+		<result property="intrSctnMdfcDt" column="INTR_SCTN_MDFC_DT"/>
+		<result property="intrRqprId" column="INTR_RQPR_ID"/>
+		<result property="intrRqstDt" column="INTR_RQST_DT"/>
+		<result property="intrGrpNo" column="INTR_GRP_NO"/>
+		<result property="macRfaYn" column="MAC_RFA_YN"/>
+		<result property="clamEndrId" column="CLAM_ENDR_ID"/>
+		<result property="rsrcCnfrNo" column="RSRC_CNFR_NO"/>
+		<result property="phtrThcnVl" column="PHTR_THCN_VL"/>
+		<result property="ctWatrIntkYn" column="CT_WATR_INTK_YN"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="mdpcBefrSttsCeckDt" column="MDPC_BEFR_STTS_CECK_DT"/>
+		<result property="mdpcBefrSttsCeckInprId" column="MDPC_BEFR_STTS_CECK_INPR_ID"/>
+		<result property="mdpcBefrSttsCeckStrtDt" column="MDPC_BEFR_STTS_CECK_STRT_DT"/>
+		<result property="mdpcBefrSttsCeckFnshDt" column="MDPC_BEFR_STTS_CECK_FNSH_DT"/>
+		<result property="mdpcBefrSttsCeckDrId" column="MDPC_BEFR_STTS_CECK_DR_ID"/>
+		<result property="mdpcBefrSttsCeckSiteCd" column="MDPC_BEFR_STTS_CECK_SITE_CD"/>
+		<result property="mdpcBefrSttsCeckSiteCtn" column="MDPC_BEFR_STTS_CECK_SITE_CTN"/>
+		<result property="dbmlEdctUndgCd" column="DBML_EDCT_UNDG_CD"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="frstRgstClntPrgmId" column="FRST_RGST_CLNT_PRGM_ID"/>
+		<result property="frstRgstSrvrPrgmId" column="FRST_RGST_SRVR_PRGM_ID"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdtClntPrgmId" column="LAST_UPDT_CLNT_PRGM_ID"/>
+		<result property="lastUpdtSrvrPrgmId" column="LAST_UPDT_SRVR_PRGM_ID"/>
+		<result property="slpnYn" column="SLPN_YN"/>
+		<result property="dbmlEdctUndgCtn" column="DBML_EDCT_UNDG_CTN"/>
+		<result property="frwrCmntCtn" column="FRWR_CMNT_CTN"/>
+		<result property="selfLrnnTrgtYn" column="SELF_LRNN_TRGT_YN"/>
+		<result property="vrblIntrTrgtYn" column="VRBL_INTR_TRGT_YN"/>
+		<result property="vrblIndrId" column="VRBL_INDR_ID"/>
+		<result property="chldCalmYn" column="CHLD_CALM_YN"/>
+		<result property="rernImplHsdvCd" column="RERN_IMPL_HSDV_CD"/>
+		<result property="rernResnCd" column="RERN_RESN_CD"/>
+		<result property="rernAmprId" column="RERN_AMPR_ID"/>
+		<result property="rernImplNtm" column="RERN_IMPL_NTM"/>
+		<result property="bpCtn" column="BP_CTN"/>
+		<result property="exmnPrpnFinsYn" column="EXMN_PRPN_FINS_YN"/>
+		<result property="rsvrItrpId" column="RSVR_ITRP_ID"/>
+		<result property="schdTypCd" column="SCHD_TYP_CD"/>
+		<result property="exmnAndvCd" column="EXMN_ANDV_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="formRcrdNo" column="FORM_RCRD_NO"/>
+		<result property="artfInrnDevcCd" column="ARTF_INRN_DEVC_CD"/>
+		<result property="mriCnrcDvsnCd" column="MRI_CNRC_DVSN_CD"/>
+		<result property="rernImptId" column="RERN_IMPT_ID"/>
+		<result property="exmnAtmtRptnYn" column="EXMN_ATMT_RPTN_YN"/>
+		<result property="exrmArvlDt" column="EXRM_ARVL_DT"/>
+		<result property="prvsTxDgstRcepYn" column="PRVS_TX_DGST_RCEP_YN"/>
+		<result property="imlnClsfCd" column="IMLN_CLSF_CD"/>
+		<result property="hlscEndsHgrsGropYn" column="HLSC_ENDS_HGRS_GROP_YN"/>
+		<result property="cnmdSdefCnfrCtn" column="CNMD_SDEF_CNFR_CTN"/>
+		<result property="advcBaseRdqy" column="ADVC_BASE_RDQY"/>
+		<result property="advcRdqy" column="ADVC_RDQY"/>
+		<result property="bsisRdqy" column="BSIS_RDQY"/>
+		<result property="hlscEndsHgrsGropCtn" column="HLSC_ENDS_HGRS_GROP_CTN"/>
+		<result property="prvsTxDgstNnrcMdfrId" column="PRVS_TX_DGST_NNRC_MDFR_ID"/>
+		<result property="prvsTxDgstNnrcMdfcDt" column="PRVS_TX_DGST_NNRC_MDFC_DT"/>
+		<result property="prvsTxDgstRcepMdfrId" column="PRVS_TX_DGST_RCEP_MDFR_ID"/>
+		<result property="prvsTxDgstRcepMdfcDt" column="PRVS_TX_DGST_RCEP_MDFC_DT"/>
+		<result property="prvsTxDgstCtn" column="PRVS_TX_DGST_CTN"/>
+		<result property="spusIntrYn" column="SPUS_INTR_YN"/>
+		<result property="chdrNm" column="CHDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt (list SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s list method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-listSwworkmmt */
+		SELECT	PTNO		/*  */
+					,ORDR_YMD		/*  */
+					,ORDR_SNO		/*  */
+					,EXCF_CD		/*  */
+					,EXMN_CD		/*  */
+					,EXRM_CD		/*  */
+					,EQPM_CD		/*  */
+					,EXMN_STTS_CD		/*  */
+					,EXMN_DTLS_STTS_CD		/*  */
+					,APNT_DT		/*  */
+					,RPTN_DT		/*  */
+					,RPTN_CNCL_DT		/*  */
+					,ENFR_DT		/*  */
+					,RERN_PRRN_DT		/*  */
+					,RERN_IMPL_DT		/*  */
+					,EXMN_CNCL_DT		/*  */
+					,INTR_PRRN_DT		/*  */
+					,INTR_DT		/*  */
+					,CNFR_DT		/*  */
+					,APNT_UPDT_DT		/*  */
+					,EXMN_FALR_DT		/*  */
+					,EXMN_FALR_RGSR_ID		/*  */
+					,EXMN_FALR_RGST_RESN_CTN		/*  */
+					,ANDV_CD		/*  */
+					,AMPR_ID		/*  */
+					,SCHD_DTLS_TYP_CD		/*  */
+					,RCPS_ID		/*  */
+					,ENDR_ID		/*  */
+					,IMPT_ID		/*  */
+					,IMPL_HSDV_CD		/*  */
+					,INTR_YN		/*  */
+					,CNNT_INTR_SNO		/*  */
+					,INDR_ID1		/*  */
+					,INDR_ID2		/*  */
+					,INDR_ID3		/*  */
+					,CNDR_ID		/*  */
+					,INTR_PRRN_DR_NM		/*  */
+					,TRNB_ID		/*  */
+					,RERN_RFRC_CTN		/*  */
+					,SCND_ORDR_YN		/*  */
+					,EXRS_PRIN_NTM		/*  */
+					,BRNS_ENDS_BEFR_STTS_CTN		/*  */
+					,BRNS_ENDS_AFSS_CTN		/*  */
+					,NRDR_LIST_PRIN_NTM		/*  */
+					,NRDR_CUP_QTY		/*  */
+					,DCTT_YN		/*  */
+					,CNSG_HSPT_CD		/*  */
+					,FILM_NO		/*  */
+					,EXMN_APNT_NO		/*  */
+					,DAT_NO		/*  */
+					,EXMN_STRT_HM		/*  */
+					,RSRC_CNFR_RMRK_CTN		/*  */
+					,NGHT_PBHL_IMPL_DVSN_CD		/*  */
+					,TRDV_CD		/*  */
+					,TRSP_TRDV_CD		/*  */
+					,PRTB_PRFM_YN		/*  */
+					,EXMN_D3_RQST_YN		/*  */
+					,EXMN_D3_IMPT_ID		/*  */
+					,EXMN_D3_IMPL_DT		/*  */
+					,RDTN_DOSE_VL		/*  */
+					,HNDW_INPT_RDTN_DOSE_VL		/*  */
+					,IMGN_ACQR_SPCM_CNT		/*  */
+					,SPOT_INPT_VL		/*  */
+					,FLUR_INPT_VL		/*  */
+					,EDCT_FILE_RGSR_ID		/*  */
+					,ASAP_YN		/*  */
+					,IMGN_PRRT_INTR_YN		/*  */
+					,IMGN_ORDR_BEFR_TX_CTN		/*  */
+					,IMGN_ORDR_AFTR_TX_CTN		/*  */
+					,IMGN_BEFR_TX_ODDR_ID		/*  */
+					,IMGN_AFTR_TX_ODDR_ID		/*  */
+					,IRGT_YN_VL		/*  */
+					,BX_YN_VL		/*  */
+					,TBLB_YN_VL		/*  */
+					,BRSH_YN_VL		/*  */
+					,BAL_YN_VL		/*  */
+					,MDTE_YN_VL		/*  */
+					,SLID_YN_VL		/*  */
+					,VIDE_YN_VL		/*  */
+					,PHTG_FILE_NM		/*  */
+					,PHYL_MDCT_PACS_TRDV_CD		/*  */
+					,BTBNA_YN		/*  */
+					,EBTB_YN		/*  */
+					,RTRN_PRRN_DT		/*  */
+					,PURS_MNGM_PRRN_YMD		/*  */
+					,ENRM_EDCT_FLDV_CD		/*  */
+					,GE_PACS_ORDR_TRNM_YN		/*  */
+					,GE_PACS_CNCL_ORDR_TRNM_YN		/*  */
+					,GE_PACS_RSLT_TRNM_YN		/*  */
+					,ETC_PACS_ORDR_TRNM_YN		/*  */
+					,RSLT_SORC_CD		/*  */
+					,PACS_ACCS_NO		/*  */
+					,CNCL_PACS_ACCS_NO		/*  */
+					,PACS_INQR_DT		/*  */
+					,INTG_PACS_RSLT_INQR_DT		/*  */
+					,INTG_PACS_RSLT_TRNM_YN		/*  */
+					,AFTR_DATA_YN		/*  */
+					,ISCN_YN		/*  */
+					,BDSD_YN		/*  */
+					,TMPR_UNMD_RPTN_CNFR_YN		/*  */
+					,INTR_SLCT_DTLS_EXRM_CD		/*  */
+					,INTR_SLCT_RSRC_CNFM_ID		/*  */
+					,CT_WATR_INTK_DT		/*  */
+					,SMSR_TRPR_NO		/*  */
+					,SMSR_TRNM_DT		/*  */
+					,SMSR_TRRS_CD		/*  */
+					,SMSR_TRDV_CD		/*  */
+					,HLSC_UNSB_CTN		/*  */
+					,EXRM_MDFC_DT		/*  */
+					,EXRM_MDFR_ID		/*  */
+					,INTR_SCTN_MDFR_ID		/*  */
+					,INTR_SCTN_MDFC_DT		/*  */
+					,INTR_RQPR_ID		/*  */
+					,INTR_RQST_DT		/*  */
+					,INTR_GRP_NO		/*  */
+					,MAC_RFA_YN		/*  */
+					,CLAM_ENDR_ID		/*  */
+					,RSRC_CNFR_NO		/*  */
+					,PHTR_THCN_VL		/*  */
+					,CT_WATR_INTK_YN		/*  */
+					,MCDP_CD		/*  */
+					,WARD_CD		/*  */
+					,HSLC_DVSN_CD		/*  */
+					,MCCN_CD		/*  */
+					,CODV_CD		/*  */
+					,MDRP_NO		/*  */
+					,MDPC_BEFR_STTS_CECK_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_INPR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_STRT_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_FNSH_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_DR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CD		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CTN		/*  */
+					,DBML_EDCT_UNDG_CD		/*  */
+					,FRST_RGSR_ID		/*  */
+					,FRST_RGST_IP		/*  */
+					,FRST_RGST_DT		/*  */
+					,FRST_RGST_CLNT_PRGM_ID		/*  */
+					,FRST_RGST_SRVR_PRGM_ID		/*  */
+					,LAST_UPDR_ID		/*  */
+					,LAST_UPDT_IP		/*  */
+					,LAST_UPDT_DT		/*  */
+					,LAST_UPDT_CLNT_PRGM_ID		/*  */
+					,LAST_UPDT_SRVR_PRGM_ID		/*  */
+					,SLPN_YN		/*  */
+					,DBML_EDCT_UNDG_CTN		/*  */
+					,FRWR_CMNT_CTN		/*  */
+					,SELF_LRNN_TRGT_YN		/*  */
+					,VRBL_INTR_TRGT_YN		/*  */
+					,VRBL_INDR_ID		/*  */
+					,CHLD_CALM_YN		/*  */
+					,RERN_IMPL_HSDV_CD		/*  */
+					,RERN_RESN_CD		/*  */
+					,RERN_AMPR_ID		/*  */
+					,RERN_IMPL_NTM		/*  */
+					,BP_CTN		/*  */
+					,EXMN_PRPN_FINS_YN		/*  */
+					,RSVR_ITRP_ID		/*  */
+					,SCHD_TYP_CD		/*  */
+					,EXMN_ANDV_CD		/*  */
+					,ABRV_DPRT_CD		/*  */
+					,FORM_RCRD_NO		/*  */
+					,ARTF_INRN_DEVC_CD		/*  */
+					,MRI_CNRC_DVSN_CD		/*  */
+					,RERN_IMPT_ID		/*  */
+					,EXMN_ATMT_RPTN_YN		/*  */
+					,EXRM_ARVL_DT		/*  */
+					,PRVS_TX_DGST_RCEP_YN		/*  */
+					,IMLN_CLSF_CD		/*  */
+					,HLSC_ENDS_HGRS_GROP_YN		/*  */
+					,CNMD_SDEF_CNFR_CTN		/*  */
+					,ADVC_BASE_RDQY		/*  */
+					,ADVC_RDQY		/*  */
+					,BSIS_RDQY		/*  */
+					,HLSC_ENDS_HGRS_GROP_CTN		/*  */
+					,PRVS_TX_DGST_NNRC_MDFR_ID		/*  */
+					,PRVS_TX_DGST_NNRC_MDFC_DT		/*  */
+					,PRVS_TX_DGST_RCEP_MDFR_ID		/*  */
+					,PRVS_TX_DGST_RCEP_MDFC_DT		/*  */
+					,PRVS_TX_DGST_CTN		/*  */
+					,SPUS_INTR_YN		/*  */
+					,CHDR_NM		/*  */
+		  FROM	SWWORKMMT
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="hlscExmnYn" column="HLSC_EXMN_YN"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="inptUserDvsnCd" column="INPT_USER_DVSN_CD"/>
+		<result property="istpAdmnVlm" column="ISTP_ADMN_VLM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt (처방정보 조회) 
+        Description :                                           처방정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneMdexmordt */
+		select 
+		            PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  CODV_CD
+		         ,  HLSC_EXMN_YN
+		         ,  EXCF_CD 
+		         ,  ORDR_CD
+		         ,  HSLC_DVSN_CD          /* 병원위치구분코드   */
+		         ,  INPT_USER_DVSN_CD  /* 입력자구분코드     */
+		         ,  ISTP_ADMN_VLM        /* 동위원소투여용량   */
+		  from   MDEXMORDT
+		where   PTNO    = #{ptno}
+		    and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			and  ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSvworkdmt (핵의학체내 작업상세 정보 생성) 
+        Description :                                           핵의학체내 작업상세 정보 생성
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSvworkdmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-insertSvworkdmt */
+		insert
+		  into  SVWORKDMT
+			 (
+				PTNO                   /* 환자번호           */
+			 ,  ORDR_YMD               /* 처방일자           */
+			 ,  ORDR_SNO               /* 처방순번           */
+			 ,  NCMD_EXCF_CD           /* 핵의학검사분류코드 */
+			 ,  INPR_DVSN_CD           /* 입력자구분코드     */
+			 ,  IODN_MDTE_ADMN_QTY     /* 옥소치료투여량     */	  		  		  
+			 ,  FRST_RGSR_ID	
+			 ,  FRST_RGST_IP	
+			 ,  FRST_RGST_DT	
+			 ,  FRST_RGST_CLNT_PRGM_ID
+			 ,  FRST_RGST_SRVR_PRGM_ID
+			 ,  LAST_UPDR_ID	
+			 ,  LAST_UPDT_IP	
+			 ,  LAST_UPDT_DT	
+			 ,  LAST_UPDT_CLNT_PRGM_ID
+			 ,  LAST_UPDT_SRVR_PRGM_ID
+			 )
+		values
+			 (
+				#{ptno}              /* 환자번호           */
+			 ,  to_date(#{ordrYmd} ,'yyyymmdd')         /* 처방일자           */
+			 ,  #{ordrSno}          /* 처방순번           */
+			 ,  #{exrmExcfCd}        /* 핵의학검사분류코드 */
+			 ,  #{inptUserDvsnCd} /* 입력자구분코드     */
+			 ,  #{istpAdmnVlm}     /* 동위원소투여용량   */ 
+		     ,  #{gvLginId}                /*  최초등록자ID                  */
+			 ,  #{gvUserIp}                /*  최초등록IP                    */
+			 ,  sysdate                    /*  최초등록일시                     */
+			 ,  #{gvClntPrgmId}            /*  최초등록 클라이언트프로그램ID */
+			 ,  #{gvSrvrPrgmId}            /*  최초등록 서버프로그램ID      */
+			 ,  #{gvLginId}                /*  최종수정자ID                  */
+			 ,  #{gvUserIp}                /*  최종수정IP                    */
+			 , sysdate                    /*  최종수정일시                     */
+			 ,  #{gvClntPrgmId}            /*  최종등록 클라이언트프로그램ID */
+			 ,  #{gvSrvrPrgmId}            /*  최종등록 서버프로그램ID      */
+			 )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSvworkdmt (핵의학체내 작업상세 삭제) 
+        Description :                                           핵의학체내 작업상세 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSvworkdmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-deleteSvworkdmt */
+		delete  SVWORKDMT
+		where   PTNO    = #{ptno}
+		    and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			and  ORDR_SNO = #{ordrSno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="exrmCd" column="EXRM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd (건진용 검사실코드 조회) 
+        Description :                                           건진용 검사실코드 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneHlscExrmcd */
+		select  decode(#{hlscDvsnCd},'M',a.HLSC_CTRL_CHRC_VL1
+		                            ,decode((select upper(Gend_CD)
+		                                       from APPTPTNTT
+		                                      where PTNO = #{ptno}),'M',a.HLSC_CTRL_CHRC_VL2
+		                                                           ,a.HLSC_CTRL_CHRC_VL3)) as EXRM_CD
+		  from  SMCTRLMMT a
+		 where  a.HLSC_CTRL_CD = 'SMM611'
+		   and  a.HLSC_DTLS_CTRL_CD = #{ordrCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="exmnD3RqstYn" column="EXMN_D3_RQST_YN"/>
+		<result property="exrmExcfCd" column="EXRM_EXCF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt (검사코드 정보 조회) 
+        Description :                                           검사코드 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSwordrcmt */
+		   select  decode(EXCF_CD,'SV','',APNT_SCHD_SBTY_NM) as SCHD_DTLS_TYP_CD /* 스케줄세부타입코드 */
+		           ,  THDM_IMPL_YN as EXMN_D3_RQST_YN /* 검사3D요청여부     */
+		           ,  EXRM_EXCF_CD as EXRM_EXCF_CD     /* 핵의학검사분류코드 */ 
+		     from  SWORDRCMT
+		   where  ORDR_CD = #{ordrCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt (핵의학체내 작업상세 정보 조회) 
+        Description :                                           핵의학체내 작업상세 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpComnPtntExmnDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpComnPtntExmnDAO-selectOneSvworkdmt */
+		 select  PTNO
+		  from   SVWORKDMT
+		where   PTNO    = #{ptno}
+		    and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			and  ORDR_SNO = #{ordrSno}
+	</select>
+
+
+
+</mapper>

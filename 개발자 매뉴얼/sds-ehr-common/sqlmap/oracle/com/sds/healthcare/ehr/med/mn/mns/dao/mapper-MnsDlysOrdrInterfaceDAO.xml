@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnsDlysOrdrInterfaceDAO_sql.xml
+    Description : -->
+<mapper namespace="MnsDlysOrdrInterfaceDAO">
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-deleteDlysIdctDetlDltnInf ()
+        Description : parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsDlysOrdrInterfaceDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-deleteDlysIdctDetlDltnInf"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsDlysOrdrInterfaceDVO"  >
+		<![CDATA[
+		   DELETE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-deleteDlysIdctDetlDltnInf  mnd_hdliddt_d01$D01_투석지시상세삭제 */
+				   MNHDLIDDT
+			where  PTNO = #{ptno}
+			  and  ORDR_YMD =  to_date(#{ordrYmd}, 'yyyymmdd')
+			  and  substr(ORDR_CLTY_CD,1,1) =  substr(#{ordrCltyCd},1,1)
+			  and  nvl(ORDR_CD, '*') =  nvl(#{ordrCd}, nvl(ORDR_CD, '*'))
+			]]>
+	</delete>
+	
+	
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd-result" type="com.sds.healthcare.ehr.med.mn.mns.vo.MnsDlysOrdrInterfaceDVO">
+		<result property="ipprYmd" column="IPPR_YMD"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd ()
+        Description : parameterType : com.sds.healthcare.ehr.med.mn.mns.vo.MnsDlysOrdrInterfaceDVO
+resultMap : com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd"  parameterType="com.sds.healthcare.ehr.med.mn.mns.vo.MnsDlysOrdrInterfaceDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		        select  /*+ com-sds-healthcare-ehr-med-mn-mns-dao-MnsDlysOrdrInterfaceDAO-listChotNtfcDlysIpprYmd */
+				       TO_CHAR(IPPR_YMD, 'yyyymmdd') AS IPPR_YMD
+				  FROM MNHTRTORT
+				 WHERE MDRP_NO = #{mdrpNo} 
+				   AND TRUNC(IPPR_YMD) BETWEEN TO_DATE(#{ipprYmd}, 'yyyymmdd') AND TO_DATE('29991231', 'yyyymmdd')
+				   AND DLYS_ACTN_DT IS NULL
+				   AND NVL(RTRN_STTS_CD, 'N') <> 'Y'
+			]]>
+	</select>
+</mapper>

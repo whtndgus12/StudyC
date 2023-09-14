@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcAdmsRptnInqrComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcAdmsRptnInqrComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="cnclDt" column="CNCL_DT"/>
+		<result property="dschDt" column="DSCH_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn-result" useCache="true" flushCache="false">
+		 select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsRptn */
+		     a.PTNO
+		   , a.CODV_CD   
+		   , to_char(a.CNCL_DT, 'yyyymmddhh24miss') as CNCL_DT
+		   , to_char(a.DSCH_DT, 'yyyymmddhh24miss') as DSCH_DT
+		 from  APRCRPTNT a
+		where  1=1
+		  <if test='ptno != "" and ptno != null'>
+		  and  a.PTNO      = #{ptno}
+		  </if>
+		  <if test='codvCd != "" and codvCd != null'>
+		  and  a.CODV_CD   = #{codvCd}
+		  </if>
+		  <if test='cnclYn == "Y"'>
+		  and  a.CNCL_DT   is not null 
+		  and  #{cnclYn} = 'Y'}  
+		  </if>
+		  <if test='cnclYn == "N"'>
+		  and  a.CNCL_DT   is null   
+		  </if>  
+		  <if test='dschYmd != "" and dschYmd != null'>  
+		  and  a.DSCH_DT   between to_date(#{dschYmd}, 'yyyymmdd')
+		                       and to_date(#{dschYmd}, 'yyyymmdd') + 0.99999
+		  </if>                         
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ageVl" column="AGE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listAdmsErPtnt */
+		        b.PTNO                PTNO
+		     ,  b.PTNT_NM             PTNT_NM
+		     ,  b.GEND_CD             GEND_CD
+		     ,  fn_ap_age_s(b.PTNO, sysdate) AGE_VL
+		  from  APRCRPTNT a
+		     ,  APPTPTNTT b
+		 where  a.CODV_CD in ('I', 'E')
+		   and  a.DSCH_DT = to_date('29991231','yyyymmdd')
+		   <![CDATA[
+		   and  a.MDCR_YMD < trunc(sysdate) + 1       
+		   ]]>
+		   and  b.PTNO    = a.PTNO
+		   and  a.CNCL_DT is null
+		   and  b.PTNT_NM = #{ptntNm}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="wardNm" column="WARD_NM"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="admsYmd" column="ADMS_YMD"/>
+		<result property="dschYmd" column="DSCH_YMD"/>
+		<result property="admsDt" column="ADMS_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI (재원환자 + 오늘퇴원환자) 
+        Description :                                           API 사용( 출입통제제공 )
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listSthsPtntAPI */
+		<![CDATA[
+		select a.PTNO                                           /* 재원환자 */
+		      ,a.WARD_CD                                        /* 병동코드 */
+		      ,aw.ABRV_DPRT_CD               as WARD_NM         /* 병동명 */
+		      ,a.PTRM_NO                                        /* 병실번호 */
+		      ,to_char(a.MDCR_DT,'YYYYMMDD') as ADMS_YMD        /* 입원일자 */
+		      ,to_char(DSCH_DT,'yyyymmdd')      as DSCH_YMD      /* 퇴원일자 */
+		      ,to_char(a.MDCR_DT,'HH24MISS') as ADMS_DT         /* 입원시간 */
+		from (
+		    select a.PTNO
+		          ,a.WARD_CD
+		          ,a.PTRM_NO
+		          ,a.MDCR_DT
+		          ,a.DSCH_DT
+		    from APRCRPTNT a /*진료접수*/
+		    where a.CODV_CD = 'I'
+		    and a.DSCH_DT = to_date('29991231','yyyymmdd') 
+		    and a.CNCL_DT is null
+		    and a.MDCR_DT    < trunc(sysdate)+1     
+		    and a.LAST_UPDT_DT >= to_date(#{inqrDt}, 'yyyymmddhh24miss')
+		    union 
+		    select a.PTNO
+		          ,a.WARD_CD
+		          ,a.PTRM_NO
+		          ,a.MDCR_DT
+		          ,a.DSCH_DT
+		    from APRCRPTNT a /*진료접수*/
+		    where a.CODV_CD = 'I'
+		    and a.DSCH_DT between trunc(sysdate) and trunc(sysdate) + .99999
+		    and a.CNCL_DT is null
+		    and a.MDCR_DT    < trunc(sysdate)+1    
+		    and a.LAST_UPDT_DT >= to_date(#{inqrDt}, 'yyyymmddhh24miss') 
+		    )a
+		   , HZDEPTMMT aw /*  병동약어표시 사용 */
+		where a.WARD_CD = aw.DPRT_CD
+		order by PTNO
+		        ,WARD_CD
+		        ,PTRM_NO
+		        ,ADMS_YMD
+		        ,DSCH_YMD
+		        ,ABRV_DPRT_CD
+		        ,ADMS_DT
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO">
+	
+		<result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs (재원환자의 병동간호사 리스트 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnInqrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnInqrComnDAO-listWardNurs */
+			  USER_ID
+		from  APRCRPTNT a
+			 ,CCUSRDPHT b 
+		where  1=1
+		  and  a.PTNO      = #{ptno}
+		  and  a.CODV_CD   = 'I'
+		  and  a.CNCL_DT   is null
+		  and  a.DSCH_DT   between to_date('29991231', 'yyyymmdd')
+		                       and to_date('29991231', 'yyyymmdd') + 0.99999
+		  and  a.WARD_CD = b.MDCR_DPRT_CD
+	</select>
+
+
+
+</mapper>

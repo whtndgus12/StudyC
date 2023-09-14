@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmaSttmPrsgAprlDAO_sql.xml 
+    Description :                                      전표처리 결재 DAO
+                  -->
+<mapper namespace="HmaSttmPrsgAprlDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAprl (공통_전표처리_결재) 
+        Description :                                           hmd_sttbrkt_u72$U01_공통_전표처리_싱글결재_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAprl"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAprl */
+				   HMSTTBRKT
+			  set
+				   STTM_PRSS_CD       = #{sttmPrssCd}       /* 전표진행상태코드 */
+				,  STTM_PRGR_RSLT_CD  = #{sttmPrgrRsltCd}  /* 전표진행결과코드 */
+				,  DPRT_APRL_MTHD_CD  = #{dprtAprlMthdCd}  /* 부서결재방법코드 */
+				,  STTM_RRTR_ID       = #{sttmRrtrId}       /* 전표상신자ID */
+				,  STTM_RPSP_DT       = to_date(#{sttmRpspDt}, 'yyyy-mm-dd hh24:mi:ss') /* 전표상신일시 */
+				,  APRL_SNO           = #{aprlSno}           /* 결재일련번호 */
+				,  LAST_UPDR_ID       = #{gvUserId}
+				,  LAST_UPDT_IP       = #{gvUserIp}
+				,  LAST_UPDT_DT       = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where
+				   BSPL_CD  = #{bsplCd}  /* 사업장코드 */
+			  and  STTM_YMD = #{sttmYmd} /* 전표일자 */
+			  and  STTM_NO  = #{sttmNo}  /* 전표번호 */
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAftAprl (공통_전표처리_결재후 처리) 
+        Description :                                           AS-IS없음
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAftAprl"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO"  >
+		  update /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-updateSttmAftAprl */
+				   HMSTTBRKT
+			  set
+				   STTM_PRSS_CD       = #{sttmPrssCd}       /* 전표진행상태코드 */
+				,  STTM_PRGR_RSLT_CD  = #{sttmPrgrRsltCd}  /* 전표진행결과코드 */
+				,  LAST_UPDR_ID       = #{gvUserId}
+				,  LAST_UPDT_IP       = #{gvUserIp}
+				,  LAST_UPDT_DT       = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where
+				   APRL_SNO = #{aprlSno}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="sttmTypeCd" column="STTM_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm (공통_전표정보조회) 
+        Description :                                           AS-IS없음
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmPrsgAprlDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmPrsgAprlDAO-selectOneSttm */
+				   BSPL_CD
+				,  STTM_YMD
+				,  STTM_NO 
+				,  STTM_TYPE_CD
+		  from HMSTTBRKT
+		   where
+				   APRL_SNO = #{aprlSno}
+	</select>
+
+
+
+</mapper>

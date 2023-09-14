@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SlpOrdrPrsgComnDAO_sql.xml 
+    Description :                                      진료의 처방처리/의뢰를 위한 i/F class
+                  -->
+<mapper namespace="SlpOrdrPrsgComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO">
+	
+		<result property="ordrSno" column="ORDR_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-selectOneDual */
+		select 
+		  1 ordr_sno
+		 from  dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-insertPhrkCnsnRefrCtn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-insertPhrkCnsnRefrCtn"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO"  >
+		<![CDATA[
+		insert  /*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-insertPhrkCnsnRefrCtn_약물동력학자문 입력*/ 
+		  into  SLWTDMMAT
+		  	( 
+		                PTNO                    /* 환자번호             */
+		             ,  ORDR_YMD                /* 처방일자             */
+		             ,  MCDP_CD                 /* 진료과               */
+		             ,  MDRP_NO                 /* 진료접수번호         */
+		             ,  WARD_CD                 /* 병동                 */
+		             ,  ORDR_SNO                /* 처방순서             */
+		             ,  ORDR_CODV_CD            /* 처방위치             */
+		             ,  EXMN_CD                 /* 검사코드             */
+		             ,  ODDR_ID                 /* 처방의               */
+		             ,  CNSN_REFR_OBJC_CTN      /* 자문의뢰목적         */
+		             ,  ODKI_CD                 /* 일반(R),응급(S) 처방 */
+		             ,  PHRK_CNPN_CTN           /* 연락처               */
+		             ,  BDWG_VL_CTN             /* 체중                 */
+		             ,  HGHT_VL_CTN             /* 키                   */
+		             ,  MDTN_INDT_CTN           /* 투약적응증           */
+		             ,  UNSL_CTN                /* 특이사항             */
+		             ,  MTHX_CTN                /* 투약력               */
+		             ,  CNSN_SNO                /* 자문일련번호         */
+		     , 	INDS_DVSN_CD                    /* 감염증구분코드 */
+		     ,  INDS_DVSN_ETC_CTN               /* 감염증구분기타내용 */
+		     ,  LTST_IHMD_CTN                   /* 최근원내투약내용 */
+		     ,  LTST_BUN_RSLT_CTN               /* 최근BUN결과내용 */
+		     ,  LTST_CRNN_RSLT_CTN              /* 최근크리아틴결과내용 */
+		     ,  LTST_CCR_RSLT_CTN               /* 최근CCR결과내용(Crcl 계산식) */
+		     ,  REFR_BEF_DLYS_KIND_CD           /* 의뢰전투석종류코드 */
+			 ,  FRST_RGSR_ID
+			 ,  FRST_RGST_IP
+			 ,  FRST_RGST_DT
+			 ,  FRST_RGST_CLNT_PRGM_ID
+			 ,  FRST_RGST_SRVR_PRGM_ID
+			 ,  LAST_UPDR_ID
+			 ,  LAST_UPDT_IP
+			 ,  LAST_UPDT_DT
+			 ,  LAST_UPDT_CLNT_PRGM_ID
+			 ,  LAST_UPDT_SRVR_PRGM_ID
+			)
+			  values
+			( 
+		                #{ptno}                   /* 환자번호             */
+		             ,  to_date(#{ordrYmd}, 'yyyyMMdd')     	          /* 처방일자             */
+		             ,  #{mcdpCd}                 /* 진료과               */
+		             ,  #{mdrpNo}                 /* 진료접수번호         */
+		             ,  #{wardCd}                 /* 병동                 */
+		             ,  #{ordrSno}                /* 처방순서             */
+		             ,  #{ordrCodvCd}             /* 처방위치             */
+		             ,  #{exmnCd}                 /* 검사코드             */
+		             ,  #{oddrId}                 /* 처방의               */
+		             ,  #{cnsnRefrObjcCtn}        /* 자문의뢰목적         */
+		             ,  #{odkiCd}                 /* 일반(R),응급(S) 처방 */
+		             ,  #{phrkCnpnCtn}            /* 연락처               */
+		             ,  #{bdwgVlCtn}              /* 체중                 */
+		             ,  #{hghtVlCtn}              /* 키                   */
+		             ,  #{mdtnIndtCtn}            /* 투약적응증           */
+		             ,  #{unslCtn}                /* 특이사항             */
+		             ,  #{mthxCtn}                /* 투약력               */
+		             ,  (select nvl(max(CNSN_SNO)+1, 1)
+		                   from SLWTDMMAT
+		                  where PTNO     = #{ptno}
+		                    and ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		                    and ORDR_SNO = #{ordrSno}
+		                )                          /* 자문일련번호  */	
+		     , 	#{indsDvsnCd}                    /* 감염증구분코드 */
+		     ,  #{indsDvsnEtcCtn}               /* 감염증구분기타내용 */
+		     ,  #{ltstIhmdCtn}                   /* 최근원내투약내용 */
+		     ,  #{ltstBunRsltCtn}               /* 최근BUN결과내용 */
+		     ,  #{ltstCrnnRsltCtn}              /* 최근크리아틴결과내용 */
+		     ,  #{ltstCcrRsltCtn}               /* 최근CCR결과내용(Crcl 계산식) */
+		     ,  #{refrBefDlysKindCd}           /* 의뢰전투석종류코드 */		
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  current_timestamp
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  current_timestamp
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+				)
+			]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-updatePhrkCnsnRefrInptOrdr (약물동력학자문 입력 처방키 update) 
+        Description :                                           처방내림시 TDM(약물동력학)자문의뢰 검사처방인 경우 약물동력학자문 테이블에 처방키를 UPDATE 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-updatePhrkCnsnRefrInptOrdr"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpOrdrPrsgComnDVO"  >
+		<![CDATA[
+		update  /*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpOrdrPrsgComnDAO-updatePhrkCnsnRefrInptOrdr */
+		            SLWTDMMAT
+		     set  ORDR_SNO = ( select  /*+ index(MMEXMORT MMEXMORT_PK) */
+		                                           max(ORDR_SNO)
+		                                  from  MDEXMORDT
+		                                where  PTNO   = #{ptno}
+		                                    and  ORDR_YMD = to_date( #{ordrYmd}, 'yyyymmdd')
+		                                    and  ORDR_CD = #{exmnCd}
+		                                    and  DC_DVSN_CD   <> 'X'
+		                        )
+		         ,  LAST_UPDR_ID = #{gvUserId}                                         /*  최종수정자ID */
+		         ,  LAST_UPDT_IP = #{gvUserIp}                                          /*  최종수정IP */
+		         ,  LAST_UPDT_DT = sysdate                                            /*  최종수정일시 */
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                /*  최종수정클라이언트프로그램ID */
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                /*  최종수정서버프로그램ID */
+		     where  PTNO = #{ptno}
+		       and  ORDR_YMD  = to_date( #{ordrYmd}, 'yyyymmdd')
+		       and  EXMN_CD = #{exmnCd}
+		       and  ORDR_SNO = 99999999
+		]]>
+	</update>
+
+</mapper>

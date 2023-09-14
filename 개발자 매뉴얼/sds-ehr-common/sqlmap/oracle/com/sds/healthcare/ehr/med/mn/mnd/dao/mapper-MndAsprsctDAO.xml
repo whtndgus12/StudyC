@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MndAsprsctDAO_sql.xml 
+    Description :                                      수혈깜박이_근무자정보조회
+                  -->
+<mapper namespace="MndAsprsctDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct-result" type="com.sds.healthcare.ehr.med.mn.mnd.vo.MndAsprsctDVO">
+	
+		<result property="wrknDprtCd" column="WRKN_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct (수혈깜박이_근무자정보조회, AS_IS mnd_asprsct_s11) 
+        Description :                                           수혈깜박이_근무자정보조회, AS_IS mnd_asprsct_s11
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnd.vo.MndAsprsctDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct"  parameterType="com.sds.healthcare.ehr.med.mn.mnd.vo.MndAsprsctDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnd-dao-MndAsprsctDAO-selectOneAsprsct */
+		<![CDATA[
+		select  /*+ mnd_asprsct_s11$S01_근무자정보조회_입력시 */ 
+		            b.DPRT_CD AS "WRKN_DPRT_CD"
+		       from
+		             MNASPRSCT a
+		           , HZDEPTMMT b
+		      where
+		            a.WKPR_ID = #{wkprId}
+		       and  a.WRKN_STRT_YMD < trunc(sysdate)
+		       and  a.WRKN_FNSH_YMD > trunc(sysdate)
+		       and  a.CARE_WKPL_CD = b.ABRV_DPRT_CD
+		       and  rownum = 1
+		     order  by
+		            a.LAST_UPDT_DT desc
+		]]>
+			
+	</select>
+
+
+
+</mapper>

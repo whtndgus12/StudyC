@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnoPtntPathMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnoPtntPathMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001-result" type="com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="mdrpYmd" column="MDRP_YMD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="ptntSno" column="PTNT_SNO"/>
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdcrWaitSqnc" column="MDCR_WAIT_SQNC"/>
+		<result property="crntMdcrWaitSqnc" column="CRNT_MDCR_WAIT_SQNC"/>
+		<result property="pathNm" column="PATH_NM"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="postCd" column="POST_CD"/>
+		<result property="postCdNm" column="POST_CD_NM"/>
+		<result property="crntPtntSno" column="CRNT_PTNT_SNO"/>
+		<result property="crntPostCd" column="CRNT_POST_CD"/>
+		<result property="unslCtn" column="UNSL_CTN"/>
+		<result property="fnshYn" column="FNSH_YN"/>
+		<result property="apntAplcYmd" column="APNT_APLC_YMD"/>
+		<result property="isttHm" column="ISTT_HM"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001 () 
+        Description :                                           mnd_poslstt_l03 선택한 환자의 경로조회 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-listPtntPathInqr0001 */
+		          a.PTNO as PTNO           /*  환자번호 */
+		        , to_char(a.MDRP_YMD, 'YYYYMMDD')  as MDRP_YMD
+		        , a.MCDP_CD as MCDP_CD
+		        , a.MDDR_ID as MDDR_ID
+		        , a.PTNT_SNO as PTNT_SNO
+		        , to_char(d.MDCR_DT, 'YYYYMMDDHH24MISS') as MDCR_DT /*   */
+		        , a.HSLC_DVSN_CD as HSLC_DVSN_CD
+		        , a.CODV_CD as CODV_CD
+		        , a.MDCR_WAIT_SQNC as MDCR_WAIT_SQNC      /*  WAITNO  */
+		        , a.CRNT_MDCR_WAIT_NO as CRNT_MDCR_WAIT_SQNC /*  CURWAITNO */
+		        , a.PATH_NM as PATH_NM
+		        , a.MCCN_CD as MCCN_CD
+		        , a.MDRP_NO as MDRP_NO
+		        , a.POST_CD as POST_CD            /*  POSTCD ME024  */
+		        , a.POST_CD_NM as POST_CD_NM         /*  POSTNM */
+		        , a.CRNT_PTNT_SNO as CRNT_PTNT_SNO       /*  CURPATSEQ 현재환자일련번호 */
+		        , a.CRNT_POST_CD as CRNT_POST_CD       /*  CURPOSTCD */
+		        , a.UNSL_CTN as UNSL_CTN           /*  REMARK  */
+		        , a.FNSH_YN as FNSH_YN            /*   ENDYN */
+		        , a.APNT_APLC_YMD as APNT_APLC_YMD
+		        , a.ISTT_HM as ISTT_HM
+		        , a.SORT_SQNC as SORT_SQNC
+		   from
+		          MNOPOSLST a  /* 환자경로지정 */
+		        , APRCRPTNT d  /* 진료접수 */
+		   where
+		          a.PTNO      = #{ptno}
+		     and  a.MDRP_YMD  = to_date(#{mdrpYmd},'yyyymmdd')
+		     and  a.MCCN_CD   = #{mccnCd}
+		     and  a.MCDP_CD   = #{mcdpCd}
+		     and  a.MDDR_ID   = #{mddrId}
+		     and  a.MDRP_NO   =  d.MDRP_NO(+)
+		     and  d.CODV_CD in ('O','I')
+		     and  d.cncl_dt is null      
+		   order
+		      by  a.SORT_SQNC /*  a.PTNT_SNO */
+		    ]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-updatePtntPathFinsYn0001 (환자 경로 완료 여부 표시) 
+        Description :                                           mnd_poslstt_u02 환자경로 완료여부 표시저장한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-updatePtntPathFinsYn0001"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-updatePtntPathFinsYn0001 */
+				   MNOPOSLST                                       /*  환자별 POST지정      */
+			  set  FNSH_YN = decode(FNSH_YN, 'Y', 'N', 'N')          /*  완료여부 reset       */
+				,  CRNT_PTNT_SNO = 1                               /*  환자순번 1로 reset   */
+				,  CRNT_POST_CD = ( select  POST_CD
+									  from  MNOPOSLST
+									 where  PTNO = #{ptno}                               /*  환자번호             */
+									   and  MDRP_YMD = to_date(#{mdcrYmd}, 'YYYYMMDD')  /*  진료일자             */
+									   and  MCDP_CD =#{mcdpCd}                         /*  진료과                 */
+									   and  PTNT_SNO = 1
+								  )
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+		 		,  LAST_UPDR_ID  = #{gvUserId}
+		  	,  LAST_UPDT_IP  = #{gvUserIp}
+		  	,  LAST_UPDT_DT  = sysdate
+		  	,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		  	,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO         = #{ptno}                               /*  환자번호             */
+			  and  MDRP_YMD     = to_date(#{mdcrYmd}, 'YYYYMMDD')   /*  진료일자             */
+			  and  MCDP_CD      = #{mcdpCd}                           /*  진료과                 */
+			  and  MDDR_ID      = #{mddrId}                          /*  진료의사             */
+			]]>
+	</update>
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-executePtntPathInfm0001 () 
+        Description : 환자경로중 '접수'경로에 도착완료 처리
+mnd_poslstt_s01
+
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoPtntPathMngmDAO-executePtntPathInfm0001"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoPtntPathMngmDVO"  >
+		{ call SP_MN_MNOPOSLST_U( #{ptno,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         , to_date(#{mdcrYmd,mode=IN,jdbcType=VARCHAR,javaType=string}, 'YYYYMMDD')
+		                         ,#{mcdpCd,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{postCd,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{gvUserId,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{gvUserIp,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{gvClntPrgmId,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{gvSrvrPrgmId,mode=IN,jdbcType=VARCHAR,javaType=string}
+		                         ,#{errYn,mode=INOUT,jdbcType=VARCHAR,javaType=string}
+		                         ,#{errMesgCtn,mode=INOUT,jdbcType=VARCHAR,javaType=string} 
+		                        ) }
+	</select>	
+</mapper>

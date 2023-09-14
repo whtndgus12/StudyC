@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SppComnPthlRptnMngmDAO_sql.xml 
+    Description :                                      공통병리접수관리 DAO
+                  -->
+<mapper namespace="SppComnPthlRptnMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr-result" type="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlRptnMngmDVO">
+	
+		<result property="pthlNo" column="PTHL_NO"/>
+		<result property="dcDvsnCd" column="DC_DVSN_CD"/>
+		<result property="exruYn" column="EXRU_YN"/>
+		<result property="cdVl" column="CD_VL"/>
+		<result property="cd" column="CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="dvsnVl" column="DVSN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr (병리접수여부조회) 
+        Description :                                           검사처방의 병리접수 여부 체크[spd_ordinfo_s01]
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlRptnMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr"  parameterType="com.sds.healthcare.ehr.sup.sp.spp.vo.SppComnPthlRptnMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sp-spp-dao-SppComnPthlRptnMngmDAO-selectOnePthlRptnYnInqr */
+		    select  /*+ spd_ordinfo_s01$S01_처방확인 */ 
+		            nvl(SPCM_NO1, '-') PTHL_NO
+		         ,  nvl(DC_DVSN_CD, 'N') DC_DVSN_CD
+		         ,  'N' EXRU_YN
+		         ,  to_char(sysdate, 'yyyymmddhh24miss') CD_VL
+		         ,  decode(#{cd}, 'Y', nvl((select EXMN_CTRL_CHRC_VL1
+		                                                       from SZCTRLMMT
+		                                                      where EXMN_CTRL_CD = 'SPZ_078'
+		                                                        and EXMN_DTLS_CTRL_CD = m.ORDR_CD), #{spcmNo})
+		                                         , nvl((select decode(substr(ABRV_DPRT_CD, 0, 2), 'SM', nvl((select EXMN_CTRL_CHRC_VL1
+		                                                                                                       from SZCTRLMMT
+		                                                                                                      where EXMN_CTRL_CD = 'SPZ_079'
+		                                                                                                        and EXMN_DTLS_CTRL_CD = m.ORDR_CD), #{spcmNo})
+		                                                                                        , #{spcmNo})
+		                                                  from HZDEPTMMT
+		                                                 where DPRT_CD = m.MCDP_CD), '-')) CD
+		         ,  m.MDRP_NO
+		         ,  '' ORDR_CD
+		         ,  '' MCDP_CD
+		         ,  '' EXMN_STTS_CD
+		         ,  '' DVSN_VL
+		      from
+		            MDEXMORDT m
+		     where  m.PTNO      = #{ptno}
+		       and  m.ORDR_YMD  = to_date(#{ordrYmd}, 'YYYY-MM-DD')
+		       and  m.ORDR_SNO  = #{ordrSno}
+		       and  m.TMPR_ORDR_YN = #{tmprOrdrYn}
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmfBnkbDepsMngmDAO_sql.xml 
+    Description :                                      통장입금관리 DAO
+                  -->
+<mapper namespace="HmfBnkbDepsMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd-result" type="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bnkbTrasYmd" column="BNKB_TRAS_YMD"/>
+		<result property="trasSno" column="TRAS_SNO"/>
+		<result property="bnkbDepsYmd" column="BNKB_DEPS_YMD"/>
+		<result property="depsHh" column="DEPS_HH"/>
+		<result property="bnkbDepsAmt" column="BNKB_DEPS_AMT"/>
+		<result property="bnkbDeprNm" column="BNKB_DEPR_NM"/>
+		<result property="acntNo" column="ACNT_NO"/>
+		<result property="hsptAcntNm" column="HSPT_ACNT_NM"/>
+		<result property="vrtlAcntNo" column="VRTL_ACNT_NO"/>
+		<result property="depsBankCd" column="DEPS_BANK_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="depsCstrCd" column="DEPS_CSTR_CD"/>
+		<result property="inqrDvsnCd" column="INQR_DVSN_CD"/>
+		<result property="depsCnfrYmd" column="DEPS_CNFR_YMD"/>
+		<result property="depsCnfrDprtCd" column="DEPS_CNFR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="depsCnfmId" column="DEPS_CNFM_ID"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="sttmPrsgYn" column="STTM_PRSG_YN"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="detlBrkdCtn" column="DETL_BRKD_CTN"/>
+		<result property="trasId" column="TRAS_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd (통장입금관리_조회_통장입금내역) 
+        Description :                                           hmd_hmf7001_l01$S01_통장입금관리_조회_통장입금내역_HMBNDEBRT_DAM 분할조회를 위한
+                                                                Paging 처리
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listBnkbDepsBrkd */ 
+		 
+		          rownum as INQR_SNO              /* 조회일련번호[UI] */
+		        ,  BSPL_CD as BSPL_CD           /* 사업장코드 */
+		        ,  BNKB_TRAS_YMD as BNKB_TRAS_YMD     /* 통장전송일자 */
+		        ,  TRAS_SNO as TRAS_SNO          /* 전송일련번호 */
+		        ,  BNKB_DEPS_YMD as BNKB_DEPS_YMD     /* 입금일자[UI] */
+		        ,  DEPS_HH as DEPS_HH           /* 입금시간[UI] */
+		        ,  BNKB_DEPS_AMT as BNKB_DEPS_AMT     /* 입금금액[UI] */
+		        ,  BNKB_DEPR_NM as BNKB_DEPR_NM      /* 통장입금자명[UI] */
+		        ,  ACNT_NO as ACNT_NO           /* 계좌번호[UI] */
+		        ,  HSPT_ACNT_NM as HSPT_ACNT_NM     /* 계좌명 */  
+		        ,  VRTL_ACNT_NO as VRTL_ACNT_NO      /* 가상계좌번호[UI] */
+		        ,  DEPS_BANK_CD as DEPS_BANK_CD      /* 입금은행[UI] */
+		        ,  COMN_CD_NM as COMN_CD_NM        /* 입금은행명[UI] */
+		        ,  DEPS_CSTR_CD as DEPS_CSTR_CD      /* 입금거래점[UI] */
+		        ,  INQR_DVSN_CD as INQR_DVSN_CD      /* 입금확인여부 */
+		        ,  DEPS_CNFR_YMD as DEPS_CNFR_YMD     /* 확인일시[UI] */
+		        ,  DEPS_CNFR_DPRT_CD as DEPS_CNFR_DPRT_CD /* 확인부서[UI] */
+		        ,  KORN_DPRT_NM as KORN_DPRT_NM      /* 확인부서명[UI */
+		        ,  DEPS_CNFM_ID as DEPS_CNFM_ID      /* 확인자[UI] */
+		        ,  EMPY_NM as EMPY_NM           /* 확인자명[UI] */
+		        ,  STTM_PRSG_YN as STTM_PRSG_YN      /* 전표처리여부 */
+		        ,  STTM_YMD as STTM_YMD          /* 전표일자[UI] */
+		        ,  STTM_NO as STTM_NO           /* 전표번호[UI] */
+		        ,  STLN as STLN              /* 전표LINE[UI] */
+		        ,  DETL_BRKD_CTN as DETL_BRKD_CTN    /* 상세내역 */
+		        ,  TRAS_ID as TRAS_ID
+		     from (select  aa.BSPL_CD           /* 사업장코드 */
+		                ,  aa.BNKB_TRAS_YMD     /* 통장전송일자 */
+		                ,  aa.TRAS_SNO          /* 전송일련번호 */
+		                ,  aa.BNKB_DEPS_YMD     /* 입금일자[UI] */
+		                ,  aa.DEPS_HH           /* 입금시간[UI] */
+		                ,  aa.BNKB_DEPS_AMT     /* 입금금액[UI] */
+		                ,  aa.BNKB_DEPR_NM      /* 통장입금자명[UI] */
+		                ,  aa.ACNT_NO           /* 계좌번호[UI] */
+		                ,  aa.HSPT_ACNT_NM      /* 계좌명 */  
+		                ,  aa.VRTL_ACNT_NO      /* 가상계좌번호[UI] */
+		                ,  aa.DEPS_BANK_CD      /* 입금은행[UI] */
+		                ,  ad.COMN_CD_NM        /* 입금은행명[UI] */
+		                ,  aa.DEPS_CSTR_CD      /* 입금거래점[UI] */
+		                ,  aa.INQR_DVSN_CD      /* 입금확인여부 */
+		                ,  aa.DEPS_CNFR_YMD     /* 확인일시[UI] */
+		                ,  aa.DEPS_CNFR_DPRT_CD /* 확인부서[UI] */
+		                ,  ab.KORN_DPRT_NM      /* 확인부서명[UI */
+		                ,  aa.DEPS_CNFM_ID      /* 확인자[UI] */
+		                ,  ac.EMPY_NM           /* 확인자명[UI] */
+		                ,  aa.STTM_PRSG_YN      /* 전표처리여부 */
+		                ,  aa.STTM_YMD          /* 전표일자[UI] */
+		                ,  aa.STTM_NO           /* 전표번호[UI] */
+		                ,  aa.STLN              /* 전표LINE[UI] */
+		                ,  aa.DETL_BRKD_CTN     /* 상세내역 */
+		                ,  aa.TRAS_ID
+		             from
+		                  (
+		                   select
+		                           a.BSPL_CD                                                BSPL_CD           /* 사업장코드 */
+		                        ,  a.BNKB_TRAS_YMD                                          BNKB_TRAS_YMD     /* 통장전송일자 */
+		                        ,  a.TRAS_SNO                                               TRAS_SNO          /* 전송일련번호 */
+		                        ,  a.BNKB_DEPS_YMD                                          BNKB_DEPS_YMD     /* 입금일자[UI] */
+		                        ,  a.DEPS_HH                                                DEPS_HH           /* 입금시간 */
+		                        , (decode(a.TRNC_DVSN_CD, '51', -1, 1) * a.BNKB_DEPS_AMT)   BNKB_DEPS_AMT     /* 입금금액[UI] */
+		                        ,  a.BNKB_DEPR_NM                                           BNKB_DEPR_NM      /* 통장입금자명[UI] */
+		                        ,  nvl(nvl(b.DEPST_ACNT_NO, b.HSPT_ACNT_NO), a.ACNT_NO)     ACNT_NO           /* 계좌번호[UI] */
+		                        ,  b.HSPT_ACNT_NM                                           HSPT_ACNT_NM      /* 계좌명 */  
+		                        ,  ''                                                       VRTL_ACNT_NO      /* 가상계좌번호[UI] */
+		                        ,  a.DEPS_BANK_CD                                           DEPS_BANK_CD      /* 입금은행[UI] */
+		                        ,  a.DEPS_CSTR_CD                                           DEPS_CSTR_CD      /* 입금거래점[UI] */
+		                        , (case when a.DEPS_CNFR_YMD is null then 'N' else 'Y' end) INQR_DVSN_CD      /* 입금확인여부 */
+		                        ,  to_char(a.DEPS_CNFR_YMD, 'YYYYMMDDHH24MISS')             DEPS_CNFR_YMD     /* 확인일시[UI] */
+		                        ,  a.DEPS_CNFR_DPRT_CD                                      DEPS_CNFR_DPRT_CD /* 확인부서[UI] */
+		                        ,  a.DEPS_CNFM_ID                                           DEPS_CNFM_ID      /* 확인자[UI] */
+		                        ,  a.STTM_PRSG_YN                                           STTM_PRSG_YN      /* 전표처리여부 */
+		                        ,  a.STTM_YMD                                               STTM_YMD          /* 전표일자[UI] */
+		                        ,  a.STTM_NO                                                STTM_NO           /* 전표번호[UI] */
+		                        ,  a.STLN                                                   STLN              /* 전표LINE[UI] */
+		                        ,  c.DETL_BRKD_CTN                                          DETL_BRKD_CTN     /* 상세내역 */
+		                        ,  a.TRAS_ID                                                TRAS_ID
+		                     from
+		                            HMBNDEBRT a /* 통장입금내역 */
+		                          , HZHSACNOT b
+		                          , HMSTDEBRT c /* 전표상세내역 */
+		                    where
+		                           a.BSPL_CD       = b.BSPL_CD(+) 
+		                      and   a.BSPL_CD      = c.BSPL_CD(+)
+							  and	a.BSPL_CD      = #{bsplCd}
+		                      and  a.BNKB_DEPS_YMD >= #{fromInqrYmd}
+		                      and  a.BNKB_DEPS_YMD <= #{toInqrYmd}
+		                      and  a.TRNC_DVSN_CD in ('20','51','40')
+		                      and  b.HSPT_ACNT_NO  (+) = a.ACNT_NO
+		                      and  a.STTM_YMD = c.STTM_YMD (+)
+		                      and  a.STTM_NO = c.STTM_NO (+)
+		                      and  a.STLN = c.STLN (+)
+		                      and  (   nvl(#{sttmPrsgYn}, '*')  = '*'   /* 전표처리여부 */
+		                            or a.STTM_PRSG_YN = #{sttmPrsgYn}
+		                           )
+		                       and  (   nvl(#{inqrDvsnCd}, '*')      = '*'   /* 조회구분-전체 */
+		                            or (    nvl(#{inqrDvsnCd}, '*')      = '1'   /* 조회구분-확인 */
+		                                and a.DEPS_CNFR_YMD is not null
+		                               )
+		                            or (    nvl(#{inqrDvsnCd}, '*')      = '0'   /* 조회구분-미확인 */
+		                                and a.DEPS_CNFR_YMD is null
+		                               )
+		                           )
+		                      and                                                          /* 계좌번호 조건 */
+		                         (   (    #{acntNo} is null            /* 계좌번호-전체 */
+		                              and (   exists (select
+		                                                  1
+		                                              from
+		                                                  (select
+		                                                       t.HSPT_ACNT_NO  ACNT_NO
+		                                                   from
+		                                                       HZATMMDTT s /* 병원계좌번호관리부서 */
+		                                                      ,HZHSACNOT t /* 병원계좌번호 */
+		                                                   where
+		                                                       s.BSPL_CD           = #{bsplCd}   /* 사업장코드 */
+		                                                   and s.DPRT_CD           = '*'                           /* 부서코드 */
+		                                                   and t.HSPT_ACNT_MNGM_NO = s.HSPT_ACNT_MNGM_NO           /* 병원계좌관리번호 */
+		                                                   and t.USE_YN            = 'Y'
+		                                                   union
+		                                                   /* 접속한 사람의 부서에 대해 조회 권한이 있는 계좌번호 조회 */
+		                                                   select
+		                                                       t.HSPT_ACNT_NO  ACNT_NO
+		                                                   from
+		                                                       HZATMMDTT s /* 병원계좌번호관리부서 */
+		                                                      ,HZHSACNOT t /* 병원계좌번호 */
+		                                                      ,HZUSERMMT b /* 사원마스터 */
+		                                                   where
+		                                                       s.BSPL_CD           = #{bsplCd}   /* 사업장코드 */
+		                                                   and s.DPRT_CD           = b.ORGL_BLNG_DPRT_CD                     /* 부서코드 */
+		                                                   and s.MNGM_ASGN_ID      = '*'                           /* 관리담당자ID */
+		                                                   and t.HSPT_ACNT_MNGM_NO = s.HSPT_ACNT_MNGM_NO           /* 병원계좌관리번호 */
+		                                                   and t.USE_YN            = 'Y'
+		                                                   and b.EMNO              = #{gvUserId}              /* 관리담당자ID */
+		                                                   union
+		                                                   /* 접속한 사람에 대해 조회 권한이 있는 계좌번호 조회 */
+		                                                   select
+		                                                       t.HSPT_ACNT_NO  ACNT_NO
+		                                                   from
+		                                                       HZATMMDTT s /* 병원계좌번호관리부서 */
+		                                                      ,HZHSACNOT t /* 병원계좌번호 */
+		                                                      ,HZUSERMMT b /* 사원마스터 */
+		                                                   where
+		                                                       s.BSPL_CD           = #{bsplCd}   /* 사업장코드 */
+		                                                   and s.DPRT_CD           = b.ORGL_BLNG_DPRT_CD                     /* 부서코드 */
+		                                                   and s.MNGM_ASGN_ID      = b.EMNO                        /* 관리담당자ID */
+		                                                   and t.HSPT_ACNT_MNGM_NO = s.HSPT_ACNT_MNGM_NO           /* 병원계좌관리번호 */
+		                                                   and t.USE_YN            = 'Y'
+		                                                   and b.EMNO              = #{gvUserId}              /* 관리담당자ID */
+		                                                  ) u
+		                                              where
+		                                                  u.ACNT_NO   = a.ACNT_NO           /* 계좌관리번호 */
+		                                                 union all
+		                                                 select
+		                                                        1
+		                                                   from
+		                                                        HZUSERMMT a
+		                                                      , HZMICOCDT b
+		                                                  where
+		                                                        a.EMNO = #{gvUserId}
+		                                                    and b.comn_cd_nm  = a.orgl_blng_dprt_cd
+		                                                    and b.comn_grp_cd = 'HMH_001'       /* 경영관리 시스템 설정 및 상수 */
+		                                                    and b.mis_comn_cd = 'ACNN_DPRT_CD'  /* 재무부서코드 */
+		                                             )
+		                                  )
+		                             )
+		                          or (    #{acntNo} is not null  /* 계좌번호-선택 */
+		                              and a.ACNT_NO                    = #{acntNo}
+		                             )
+		                         )
+		               /* 가상계좌 */
+		                  ) aa
+		                ,  HZDEPTMMT ab /* 조직I/F */
+		                ,  HZUSERMMT ac /* 사원Master I/F */
+		                ,  HZMICOCDT ad /* MIS공통코드(은행, GA036) */
+		            where
+		           /* 입금확인부서 */
+		                   ab.DPRT_CD    (+)= aa.DEPS_CNFR_DPRT_CD
+		           /* 입금확인자 */
+		              and  ac.EMNO       (+)= aa.DEPS_CNFM_ID
+		           /* 입금은행 */
+		              and  ad.BSPL_CD    (+)= aa.BSPL_CD
+		              and  ad.COMN_GRP_CD(+)= 'GA036'
+		              and  ad.MIS_COMN_CD(+)= aa.DEPS_BANK_CD
+		            order by aa.BNKB_DEPS_YMD
+		                    ,DEPS_HH
+		          )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps-result" type="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bnkbTrasYmd" column="BNKB_TRAS_YMD"/>
+		<result property="trasSno" column="TRAS_SNO"/>
+		<result property="bnkbDepsYmd" column="BNKB_DEPS_YMD"/>
+		<result property="depsHh" column="DEPS_HH"/>
+		<result property="bnkbDepsAmt" column="BNKB_DEPS_AMT"/>
+		<result property="bnkbDeprNm" column="BNKB_DEPR_NM"/>
+		<result property="acntNo" column="ACNT_NO"/>
+		<result property="vrtlAcntNo" column="VRTL_ACNT_NO"/>
+		<result property="depsBankCd" column="DEPS_BANK_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="depsCstrCd" column="DEPS_CSTR_CD"/>
+		<result property="inqrDvsnCd" column="INQR_DVSN_CD"/>
+		<result property="depsCnfrYmd" column="DEPS_CNFR_YMD"/>
+		<result property="depsCnfrDprtCd" column="DEPS_CNFR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="depsCnfmId" column="DEPS_CNFM_ID"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="sttmPrsgYn" column="STTM_PRSG_YN"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="trasId" column="TRAS_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps (통장입금관리_조회_VAN가상계좌입금) 
+        Description :                                           hmd_hmf7001_l03$S01_통장입금관리_조회_VAN가상계좌입금_ACVNVRDPT_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-listVantVrtlAcntDeps */
+		       rownum           as INQR_SNO          /*조회일련번호[UI] */
+		      ,''               as BSPL_CD           /*사업장코드 */
+		      ,s1.BNKB_TRAS_YMD as BNKB_TRAS_YMD     /*통장전송일자 */
+		      ,s1.TRAS_SNO      as TRAS_SNO          /*전송일련번호 */
+		      ,s1.BNKB_DEPS_YMD as BNKB_DEPS_YMD     /*입금일자[UI] */
+		      ,s1.DEPS_HH       as DEPS_HH           /*입금시간[UI] */
+		      ,s1.BNKB_DEPS_AMT as BNKB_DEPS_AMT     /*입금금액[UI] */
+		      ,s1.BNKB_DEPR_NM  as BNKB_DEPR_NM      /*통장입금자명[UI] */
+		      ,(select
+		            max(ss1.DEPST_ACNT_NO)
+		        from
+		            HZHSACNOT ss1 /*(HM)병원계좌번호관리 */
+		        where
+		            ss1.HSPT_ACNT_NO = s1.ACNT_NO
+		       )                as ACNT_NO           /*계좌번호[UI] */
+		      ,s1.VRTL_ACNT_NO  as VRTL_ACNT_NO      /*가상계좌번호[UI] */
+		      ,s1.DEPS_BANK_CD  as DEPS_BANK_CD      /*입금은행[UI] */
+		      ,s1.COMN_CD_NM    as COMN_CD_NM        /*입금은행명[UI] */
+		      ,s1.DEPS_CSTR_CD  as DEPS_CSTR_CD      /*입금거래점[UI] */
+		      ,''               as INQR_DVSN_CD      /*입금확인여부 */
+		      ,''               as DEPS_CNFR_YMD     /*확인일시[UI] */
+		      ,''               as DEPS_CNFR_DPRT_CD /*확인부서[UI] */
+		      ,''               as KORN_DPRT_NM      /*확인부서명[UI */
+		      ,''               as DEPS_CNFM_ID      /*확인자[UI] */
+		      ,''               as EMPY_NM           /*확인자명[UI] */
+		      ,''               as STTM_PRSG_YN      /*전표처리여부 */
+		      ,''               as STTM_YMD          /*전표일자[UI] */
+		      ,''               as STTM_NO           /*전표번호[UI] */
+		      ,''               as STLN              /*전표LINE[UI] */
+		      ,'ACVAN'          as TRAS_ID           /*전송ID */
+		   from
+		       (select
+		            to_char(t.WORK_YMD, 'YYYYMMDD')      BNKB_TRAS_YMD     /* 통장전송일자 */
+		           ,t.WORK_SNO                           TRAS_SNO          /* 전송일련번호 */
+		           ,to_char(t.DEPS_YMD, 'YYYYMMDD')      BNKB_DEPS_YMD     /* 입금일자[UI] */
+		           ,t.DEPS_HMS                           DEPS_HH           /* 입금시간[UI] */
+		           ,case when t.VANT_TRNC_DVSN_CD = '51'
+		                 then -1
+		                 else 1
+		            end * t.DEPS_AMT                     BNKB_DEPS_AMT     /* 입금금액[UI] */
+		           ,t.DEPR_NM                            BNKB_DEPR_NM      /* 통장입금자명[UI] */
+		           ,t.MTHR_ACNT_NO                       ACNT_NO           /* 계좌번호[UI] */
+		           ,t.VRTL_ACNT_NO                       VRTL_ACNT_NO      /* 가상계좌번호[UI] */
+		           ,t.BANK_CD                            DEPS_BANK_CD      /* 입금은행[UI] */
+		           ,a.MCCS_DTLS_CTRL_NM                  COMN_CD_NM        /* 입금은행명[UI] */
+		           ,t.DEPS_BANK_BRNC_CD                  DEPS_CSTR_CD      /* 입금거래점[UI] */
+		        from
+		            ACVNVRDPT t /*(AC)VAN가상계좌입금 */
+		           ,ACCTRLMMT a /*(AC)진료비제어 */
+		        where
+		            t.DEPS_YMD             >= to_date(#{fromInqrYmd}, 'YYYYMMDD')
+		        and t.DEPS_YMD             <= to_date(#{toInqrYmd}, 'YYYYMMDD')
+		        and t.MTHR_ACNT_NO          = #{acntNo}
+		        and t.VANT_TRNC_DVSN_CD    in ('20', '51')
+		        and a.MCCS_CTRL_CD      (+) = 'AC043'
+		        and a.MCCS_DTLS_CTRL_CD (+) = t.BANK_CD
+		        order by t.DEPS_YMD
+		                ,t.DEPS_HMS
+		       ) s1
+		    ]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-updateCfcnBnkbDepsBrkd (통장입금관리_확인_확인취소_통장입금내역) 
+        Description :                                           hmd_hmf7001_u02$I01_통장입금관리_확인_확인취소_통장입금내역_HMBNDEBRT_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-updateCfcnBnkbDepsBrkd"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfBnkbDepsMngmDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfBnkbDepsMngmDAO-updateCfcnBnkbDepsBrkd */
+			   HMBNDEBRT
+		   set
+		       --1: 확인
+		       --1은 재무팀 확인인데, 이미 원무팀 확인일자가 있으면 update처리하지 않기.
+			   <if test='prsgDvsnCdLocal != null and prsgDvsnCdLocal == "1"'>
+			   DEPS_CNFR_YMD =
+			   case when (DEPS_CNFR_YMD is null) or (DEPS_CNFR_DPRT_CD  <![CDATA[<>]]>  (select COMN_CD_NM from HZMICOCDT where BSPL_CD = '1A' and COMN_GRP_CD = 'HMH_001' and MIS_COMN_CD = 'PADP_DPRT_CD'))
+		            then sysdate
+			        else DEPS_CNFR_YMD
+			         end
+			 , DEPS_CNFR_DPRT_CD  = 
+			   case when (DEPS_CNFR_DPRT_CD is null) or (DEPS_CNFR_DPRT_CD  <![CDATA[<>]]>  (select COMN_CD_NM from HZMICOCDT where BSPL_CD = '1A' and COMN_GRP_CD = 'HMH_001' and MIS_COMN_CD = 'PADP_DPRT_CD'))
+		            then #{depsCnfrDprtCd}
+			        else DEPS_CNFR_DPRT_CD
+			         end
+			 , DEPS_CNFM_ID       = 
+			   case when (DEPS_CNFM_ID is null) or (DEPS_CNFR_DPRT_CD  <![CDATA[<>]]>  (select COMN_CD_NM from HZMICOCDT where BSPL_CD = '1A' and COMN_GRP_CD = 'HMH_001' and MIS_COMN_CD = 'PADP_DPRT_CD'))
+		            then #{depsCnfmId}
+			        else DEPS_CNFM_ID
+			         end
+			   </if>
+			   --2:확인(보험심사) 전표일자를 29991231로 셋팅하고 전표처리여부를 Y로 
+			   <if test='prsgDvsnCdLocal != null and prsgDvsnCdLocal == "2"'>
+			   DEPS_CNFR_YMD      = sysdate
+			 , DEPS_CNFR_DPRT_CD  = #{depsCnfrDprtCd}
+			 , DEPS_CNFM_ID       = #{depsCnfmId}
+			 , STTM_PRSG_YN       = 'Y'
+			 , STTM_YMD           = '29991231'
+			 , STTM_NO            = '9999'
+			   </if>
+			   --0:확인취소
+			   <if test='prsgDvsnCdLocal != null and prsgDvsnCdLocal == "0"'>
+			   DEPS_CNFR_YMD      = ''
+			 , DEPS_CNFR_DPRT_CD  = ''
+			 , DEPS_CNFM_ID       = ''
+			   </if>
+			   --3:확인취소(보험심사)
+			   <if test='prsgDvsnCdLocal != null and prsgDvsnCdLocal == "3"'>
+			   DEPS_CNFR_YMD      = ''
+			 , DEPS_CNFR_DPRT_CD  = ''
+			 , DEPS_CNFM_ID       = ''
+			 , STTM_PRSG_YN       = 'N'
+			 , STTM_YMD           = ''
+			 , STTM_NO            = ''
+			   </if>
+			 , LAST_UPDR_ID       = #{gvUserId}
+			 , LAST_UPDT_IP       = #{gvUserIp}
+			 , LAST_UPDT_DT       = sysdate
+			 , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+			 , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		       --4: 확인(원무팀)
+			   <if test='prsgDvsnCdLocal != null and prsgDvsnCdLocal == "4"'>
+			   DEPS_CNFR_YMD      = sysdate
+			 , DEPS_CNFR_DPRT_CD  = #{depsCnfrDprtCd}
+			 , DEPS_CNFM_ID       = #{depsCnfmId}
+			   </if>
+		 where
+			   BSPL_CD       = #{bsplCd}
+		   and TRAS_ID       = #{trasId}
+		   and BNKB_TRAS_YMD = #{bnkbTrasYmd}
+		   and TRAS_SNO      = #{trasSno}
+		   and #{prsgDvsnCdLocal} is not null
+	</update>
+
+</mapper>

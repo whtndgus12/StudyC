@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuNotihrdDAO_sql.xml 
+    Description :                                      노티
+                  -->
+<mapper namespace="CcuNotihrdDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO">
+	
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptOcfmCd" column="HSPT_OCFM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02 (노티 등록일련번호 채번) 
+        Description :                                           노티 등록일련번호 채번
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotihrdS02 */
+		select  /*+ cud_notihrd_s02$S01_노티 등록일련번호 채번 */
+		            to_char(sysdate,'yyyy-mm-dd') AS RGST_YMD,
+		            CUNOTIMMTQ.nextval AS RGST_SNO,
+		            '' AS HSPT_CD,
+		            '' AS HSPT_OCFM_CD
+		      from  DUAL
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI01 (noti 헤더정보 등록) 
+        Description :                                           noti 헤더정보 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI01"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI01 */
+		insert  /*+ cud_notihrd_i01$I01_노티 입력 */
+		    into    CUNOTIMMT
+		            (RGST_YMD,
+		            RGST_SNO,
+		            WRTR_ID,
+		            WRTG_DT,
+		            TITL_NM,
+		            COMN_NOTC_CTN,
+		            GRAD_DVSN_CD,
+		            TRSM_TYPE_CD,
+		            DLVY_FALR_ADTN_WORK_YN,
+		            PTNO,
+		            NOTC_DVSN_CD,
+		            NOTC_APNT_SNDG_EN,
+					RESP_RQST_YN,
+		            FRST_RGSR_ID,
+		            FRST_RGST_IP,
+		            FRST_RGST_DT,
+		            FRST_RGST_CLNT_PRGM_ID,
+		            FRST_RGST_SRVR_PRGM_ID,
+		            LAST_UPDR_ID,
+		            LAST_UPDT_IP,
+		            LAST_UPDT_DT,
+		            LAST_UPDT_CLNT_PRGM_ID,
+		            LAST_UPDT_SRVR_PRGM_ID)
+		    values  (trunc(sysdate), 
+		            #{rgstSno},
+		            #{wrtrId},
+		            decode(#{notcApntSndgEn}, 'N',
+		                       to_date(#{wrtgDt},'yyyymmdd hh24:mi'), sysdate), 
+		            #{titlNm},
+		            #{comnNotcCtn},
+		            nvl(#{gradDvsnCd},'0'),
+		            #{trsmTypeCd},
+		            #{dlvyFalrAdtnWorkYn},
+		            #{ptno},
+		            #{notcDvsnCd},
+		            #{notcApntSndgEn},
+					#{respRqstYn},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI02 (노티 대상자 등록) 
+        Description :                                           노티 대상자 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI02"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI02 */
+		insert  /*+ cud_notihrd_i02$I01_노티대상자 입력 */
+		    into    CUNOTIDMT (RGST_YMD,
+		            RGST_SNO,
+		            RCVR_ID,
+		            FLDR_DVSN_CD,
+		            INQR_YN,
+		            INQR_DT,
+		            DLTN_DT,
+		            DLVY_YN,
+		            RFRC_RECV_PHSP_YN,
+		            ADRS_GRP_DVSN_CD,
+		            ADRS_GRP_NO,
+		<if test="inqrDdlnYmd != null and inqrDdlnYmd != ''">		 
+		            INQR_DDLN_YMD,
+		</if>
+		            HSPT_CD,
+		            FRST_RGSR_ID,
+		            FRST_RGST_IP,
+		            FRST_RGST_DT,
+		            FRST_RGST_CLNT_PRGM_ID,
+		            FRST_RGST_SRVR_PRGM_ID,
+		            LAST_UPDR_ID,
+		            LAST_UPDT_IP,
+		            LAST_UPDT_DT,
+		            LAST_UPDT_CLNT_PRGM_ID,
+		            LAST_UPDT_SRVR_PRGM_ID)
+		    values
+		            (trunc(sysdate),
+		            #{rgstSno},
+		            (SELECT LGIN_ID
+		              FROM (SELECT LGIN_ID
+		                      FROM CCUSRDPHT
+		                     WHERE USER_ID = #{rcvrId}
+		                     UNION ALL
+		                    SELECT #{rcvrId} AS "LGIN_ID"
+		                      FROM DUAL)
+		                WHERE ROWNUM = 1),
+		            #{fldrDvsnCd},
+		            #{inqrYn},
+		            decode(#{inqrYn}, 'Y', sysdate, null), 
+		            decode(#{yn},      'Y', sysdate, null), 
+		            #{dlvyYn},
+		            #{rfrcRecvPhspYn},
+		            #{adrsGrpDvsnCd},
+		            #{adrsGrpNo},
+		<if test="inqrDdlnYmd != null and inqrDdlnYmd != ''">
+		            TO_DATE(#{inqrDdlnYmd}, 'YYYYMMDDHH24MISS'),
+		</if>
+		            #{hsptCd},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId})  
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI03 (noti 링크 프로그램 등록) 
+        Description :                                           noti 링크 프로그램 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI03"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI03 */
+		insert  /*+ cud_notihrd_i03$I01_노티파라미터 입력 */
+		    into    CUNOTIPMT
+		            (RGST_YMD,
+		            RGST_SNO,
+		            PRGM_ID,
+		            FRST_RGSR_ID,
+		            FRST_RGST_IP,
+		            FRST_RGST_DT,
+		            FRST_RGST_CLNT_PRGM_ID,
+		            FRST_RGST_SRVR_PRGM_ID,
+		            LAST_UPDR_ID,
+		            LAST_UPDT_IP,
+		            LAST_UPDT_DT,
+		            LAST_UPDT_CLNT_PRGM_ID,
+		            LAST_UPDT_SRVR_PRGM_ID)
+		    values  (trunc(sysdate),
+		            #{rgstSno},
+		            #{prgmId},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI04 (노티화면파라미터정보 입력) 
+        Description :                                           노티화면파라미터정보 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI04"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI04 */
+		insert  /*+ cud_notihrd_i04$I01_노티화면파라미터정보 입력 */ 
+		        into  CUNOTIPAT
+		              (
+		              RGST_YMD
+		           ,  RGST_SNO
+		           ,  PRGM_ID
+		           ,  NOTC_SCRN_PRMT_SNO
+		           ,  NOTC_SCRN_PRMT_DVSN_VL
+		           ,  NOTC_SCRN_PRMT_DVSN_CTN
+		           /* AUDIT */
+		           ,  FRST_RGSR_ID
+		           ,  FRST_RGST_IP
+		           ,  FRST_RGST_DT
+		           ,  FRST_RGST_CLNT_PRGM_ID
+		           ,  FRST_RGST_SRVR_PRGM_ID
+		           ,  LAST_UPDR_ID
+		           ,  LAST_UPDT_IP
+		           ,  LAST_UPDT_DT
+		           ,  LAST_UPDT_CLNT_PRGM_ID
+		           , LAST_UPDT_SRVR_PRGM_ID)
+		      values  (
+		              trunc(sysdate)
+		           , #{rgstSno}
+		           , #{prgmId}
+		           , #{notcScrnPrmtSno}
+		           , #{notcScrnPrmtDvsnVl}
+		           , #{notcScrnPrmtDvsnCtn}
+		           /* AUDIT */
+		           , #{gvUserId}
+		           , #{gvUserIp}
+		           , sysdate
+		           , #{gvClntPrgmId}
+		           , #{gvSrvrPrgmId}
+		           , #{gvUserId}
+		           , #{gvUserIp}
+		           , sysdate
+		           , #{gvClntPrgmId}
+		           , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI05 (노티첨부파일 입력) 
+        Description :                                           노티첨부파일 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI05"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		insert  /*+ cud_notihrd_i05$I01_노티첨부파일 입력 */ 
+		        into  CUNOTIAFT
+		              (
+		              RGST_YMD
+		           ,  RGST_SNO
+		           ,  ATFL_SNO
+		           ,  FILE_ATCH_DVSN_CD
+		           ,  FILE_GRP_ID
+		           ,  FILE_ID
+		           ,  FILE_SIZE_VL                      -- 파일크기값
+		           ,  FILE_NM                           -- 파일명
+		           /* AUDIT */
+		           ,  FRST_RGSR_ID
+		           ,  FRST_RGST_IP
+		           ,  FRST_RGST_DT
+		           ,  FRST_RGST_CLNT_PRGM_ID
+		           ,  FRST_RGST_SRVR_PRGM_ID
+		           ,  LAST_UPDR_ID
+		           ,  LAST_UPDT_IP
+		           ,  LAST_UPDT_DT
+		           ,  LAST_UPDT_CLNT_PRGM_ID
+		           ,  LAST_UPDT_SRVR_PRGM_ID
+		              )
+		      values  (
+		              trunc(sysdate)
+		           ,  #{rgstSno}
+		           ,  #{atflSno}
+		           ,  #{fileAtchDvsnCd}
+		           ,  #{fileGrpId}
+		           ,  #{fileId}
+		           ,  #{fileSizeVl}                     -- 파일크기값
+		           ,  #{fileNm}                         -- 파일명
+		           ,  #{gvUserId}
+		           ,  #{gvUserIp}
+		           ,  sysdate           
+		           ,  #{gvSrvrPrgmId}
+		           ,  #{gvClntPrgmId}
+		           ,  #{gvUserId}
+		           ,  #{gvUserIp}
+		           ,  sysdate
+		           ,  #{gvClntPrgmId}
+		           ,  #{gvSrvrPrgmId}
+		              )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI06 (노티 멀티 대상자 등록) 
+        Description :                                           노티 멀티 대상자 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI06"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-insertNotihrdI06 */
+		insert  /*+ cud_notihrd_i06$I01_멀티노티대상자 입력 */
+		    into    CUNOTMDMT (RGST_YMD,
+		            RGST_SNO,
+		            RCVR_ID,
+		            FLDR_DVSN_CD,
+		            INQR_YN,
+		            INQR_DT,
+		            DLTN_DT,
+		            DLVY_YN,
+		            RFRC_RECV_PHSP_YN,
+		            ADRS_GRP_DVSN_CD,
+		            ADRS_GRP_NO,
+		<if test="inqrDdlnYmd != null and inqrDdlnYmd != ''">		 
+		            INQR_DDLN_YMD,
+		</if>
+		            HSPT_CD,
+		            FRST_RGSR_ID,
+		            FRST_RGST_IP,
+		            FRST_RGST_DT,
+		            FRST_RGST_CLNT_PRGM_ID,
+		            FRST_RGST_SRVR_PRGM_ID,
+		            LAST_UPDR_ID,
+		            LAST_UPDT_IP,
+		            LAST_UPDT_DT,
+		            LAST_UPDT_CLNT_PRGM_ID,
+		            LAST_UPDT_SRVR_PRGM_ID)
+		    values
+		            (trunc(sysdate),
+		            #{rgstSno},
+		            (SELECT LGIN_ID
+		              FROM (SELECT LGIN_ID
+		                      FROM CCUSRDPHT
+		                     WHERE USER_ID = #{rcvrId}
+		                     UNION ALL
+		                    SELECT #{rcvrId} AS "LGIN_ID"
+		                      FROM DUAL)
+		                WHERE ROWNUM = 1),
+		            #{fldrDvsnCd},
+		            #{inqrYn},
+		            decode(#{inqrYn}, 'Y', sysdate, null), 
+		            decode(#{yn},      'Y', sysdate, null), 
+		            #{dlvyYn},
+		            #{rfrcRecvPhspYn},
+		            #{adrsGrpDvsnCd},
+		            #{adrsGrpNo},
+		<if test="inqrDdlnYmd != null and inqrDdlnYmd != ''">
+		            TO_DATE(#{inqrDdlnYmd}, 'YYYYMMDDHH24MISS'),
+		</if>
+		            #{hsptCd},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId},
+		            #{gvUserId},
+		            #{gvUserIp},
+		            sysdate,
+		            #{gvClntPrgmId},
+		            #{gvSrvrPrgmId})  
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd1 (멀티병원PK값 업데이트) 
+        Description :                                           멀티병원PK값 업데이트
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd1"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd1 */
+		UPDATE CUNOTIDMT
+		   SET MULTI_RGST_YMD = TO_DATE(#{multiRgstYmd}, 'YYYY-MM-DD')
+		     , MULTI_RGST_SNO = #{multiRgstSno}
+		 WHERE RGST_YMD = TO_DATE(#{rgstYmd}, 'YYYY-MM-DD')
+		   AND RGST_SNO = #{rgstSno}
+		   AND RCVR_ID = #{rcvrId}
+		   AND HSPT_CD = #{hsptCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd2 (멀티병원PK값 업데이트) 
+        Description :                                           멀티병원PK값 업데이트
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd2"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-updateMultiNotihrd2 */
+		UPDATE CUNOTMDMT
+		   SET MULTI_RGST_YMD = TO_DATE(#{multiRgstYmd}, 'YYYY-MM-DD')
+		     , MULTI_RGST_SNO = #{multiRgstSno}
+		 WHERE RGST_YMD = TO_DATE(#{rgstYmd}, 'YYYY-MM-DD')
+		   AND RGST_SNO = #{rgstSno}
+		   AND RCVR_ID = #{rcvrId}
+		   AND HSPT_CD = #{hsptCd}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO">
+	
+		<result property="notiYn" column="NOTI_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneNotiIns */
+		 SELECT DECODE(COUNT(*), 0, 'N', 'Y') AS NOTI_YN
+		   FROM CUNOTIDMT
+		  WHERE RGST_YMD = #{rgstYmd}
+		    AND RGST_SNO = #{rgstSno}
+		    AND RCVR_ID  = #{rcvrId}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO">
+	
+		<result property="notiYn" column="NOTI_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotihrdDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotihrdDAO-selectOneMultiNotiIns */
+		 SELECT DECODE(COUNT(*), 0, 'N', 'Y') AS NOTI_YN
+		   FROM CUNOTMDMT
+		  WHERE RGST_YMD = #{rgstYmd}
+		    AND RGST_SNO = #{rgstSno}
+		    AND RCVR_ID  = #{rcvrId}
+		    AND HSPT_CD  = #{hsptCd}
+	</select>
+
+
+
+</mapper>

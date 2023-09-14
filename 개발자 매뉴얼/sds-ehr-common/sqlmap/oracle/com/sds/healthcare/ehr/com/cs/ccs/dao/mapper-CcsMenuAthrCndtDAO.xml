@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsMenuAthrCndtDAO_sql.xml 
+    Description :                                      메뉴 그룹
+                  -->
+<mapper namespace="CcsMenuAthrCndtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO">
+	
+		<result property="menuAthrId" column="MENU_ATHR_ID"/>
+		<result property="athrCndtGrpId" column="ATHR_CNDT_GRP_ID"/>
+		<result property="athrCndtGrpNm" column="ATHR_CNDT_GRP_NM"/>
+		<result property="athrCndtItemId" column="ATHR_CNDT_ITEM_ID"/>
+		<result property="athrCndtItemNm" column="ATHR_CNDT_ITEM_NM"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemNm" column="CNDT_TRGT_ITEM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem (메뉴권한 조건항목 조회) 
+        Description :                                           csd_macgrmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-listMenuAthrCndtItem_메뉴권한 조건항목 조회 */
+						   ta.MENU_ATHR_ID as MENU_ATHR_ID
+						 , ta.ATHR_CNDT_GRP_ID as ATHR_CNDT_GRP_ID
+						 , ta.ATHR_CNDT_GRP_NM as ATHR_CNDT_GRP_NM
+						 , ta.ATHR_CNDT_ITEM_ID as ATHR_CNDT_ITEM_ID
+						 , ta.ATHR_CNDT_ITEM_NM as ATHR_CNDT_ITEM_NM
+						 , ta.CNDT_TRGT_ITEM_CD as CNDT_TRGT_ITEM_CD
+						 , ta.CNDT_OPRR_CD as CNDT_OPRR_CD
+						 , ta.DETL_CD_NM as COMN_CD_NM
+						 , ta.CNDT_TRGT_ITEM_VL as CNDT_TRGT_ITEM_VL
+						 , ta.CNDT_TRGT_ITEM_NM as CNDT_TRGT_ITEM_NM
+						 , ta.LV as RTUR_VL
+						 , ta.INQR_SQNC as INQR_SQNC
+		from 			( select  a.MENU_ATHR_ID
+								  , a.ATHR_CNDT_GRP_ID
+								  , '' as ATHR_CNDT_GRP_NM
+								  , a.ATHR_CNDT_ITEM_ID
+								  , a.CNDT_TRGT_ITEM_CD
+								  , b.DETL_CD_NM as ATHR_CNDT_ITEM_NM
+								  , a.CNDT_OPRR_CD
+								  , c.DETL_CD_NM
+								  , a.CNDT_TRGT_ITEM_VL
+								  , a.CNDT_TRGT_ITEM_NM
+								  , '1' as LV
+								  , a.ATHR_CNDT_ITEM_SQNC as INQR_SQNC
+							  from  	CSMNACIMT a,
+										CCCMCDDMT b,
+										CCCMCDDMT c
+							 where  a.MENU_GRP_ID  = #{menuGrpId}
+							   and  a.MENU_ATHR_ID = #{menuAthrId}
+							   and  b.COMN_GRP_CD(+) = 'CSM_003' /*  조건대상항목코드 */
+							   and  b.COMN_DTLS_CD(+) = a.CNDT_TRGT_ITEM_CD
+							   and  c.COMN_GRP_CD(+) = 'CSM_002' /*  조건연산자코드 */
+							   and  c.COMN_DTLS_CD(+) = a.CNDT_OPRR_CD
+							union all
+							select  a.MENU_ATHR_ID
+								  , a.ATHR_CNDT_GRP_ID
+								  , a.ATHR_CNDT_GRP_NM
+								  , a.ATHR_CNDT_GRP_ID as ATHR_CNDT_ITEM_ID
+								  , '' as CNDT_TRGT_ITEM_CD
+								  , a.ATHR_CNDT_GRP_NM as ATHR_CNDT_ITEM_NM
+								  , '' as CNDT_OPRR_CD
+								  , '' as DETL_CD_NM
+								  , '' as CNDT_TRGT_ITEM_VL
+								  , '' as CNDT_TRGT_ITEM_NM
+								  , '0' as LV
+								  , a.ATHR_CNDT_GRP_APLY_SQNC as INQR_SQNC
+							  from  CSMACGRMT a
+							 where  a.MENU_GRP_ID  = #{menuGrpId}
+							   and  a.MENU_ATHR_ID = #{menuAthrId}
+							   and  substr(a.ATHR_CNDT_GRP_ID, 1, 1) = 'G'
+					) ta
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrp (메뉴권한 조건그룹 등록) 
+        Description :                                           csd_macgrmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrp_메뉴권한조건그룹 등록 */
+		into  			CSMACGRMT( MENU_ATHR_ID
+										   , MENU_GRP_ID
+										   , ATHR_CNDT_GRP_ID
+										   , ATHR_CNDT_GRP_APLY_SQNC   /*  ---*/
+										   , ATHR_CNDT_GRP_NM          /*  ---*/
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{menuAthrId}
+										   , #{menuGrpId}
+										   , #{athrCndtGrpId}
+										   , #{athrCndtGrpAplySqnc}
+										   , #{athrCndtGrpNm}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItem (메뉴권한 조건항목 등록) 
+        Description :                                           csd_mnacimt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItem_메뉴권한 조건항목 등록 */
+		into  			 CSMNACIMT( MENU_ATHR_ID
+										   , MENU_GRP_ID
+										   , ATHR_CNDT_GRP_ID
+										   , ATHR_CNDT_ITEM_ID
+										   , ATHR_CNDT_ITEM_SQNC
+										   , CNDT_OPRR_CD
+										   , CNDT_TRGT_ITEM_VL
+										   , CNDT_TRGT_ITEM_NM
+										   , CNDT_TRGT_ITEM_CD
+										   , FRST_RGSR_ID
+										   , FRST_RGST_IP
+										   , FRST_RGST_DT
+										   , FRST_RGST_CLNT_PRGM_ID
+										   , FRST_RGST_SRVR_PRGM_ID
+										   , LAST_UPDR_ID
+										   , LAST_UPDT_IP
+										   , LAST_UPDT_DT
+										   , LAST_UPDT_CLNT_PRGM_ID
+										   , LAST_UPDT_SRVR_PRGM_ID
+										   )
+									 values( #{menuAthrId}
+										   , #{menuGrpId}
+										   , #{athrCndtGrpId}
+										   , #{athrCndtItemId}
+										   , #{athrCndtItemSqnc}
+										   , #{cndtOprrCd}
+										   , #{cndtTrgtItemVl}
+										   , #{cndtTrgtItemNm}
+										   , #{cndtTrgtItemCd}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   , #{gvUserId}
+										   , #{gvUserIp}
+										   , sysdate
+										   , #{gvClntPrgmId}
+										   , #{gvSrvrPrgmId}
+										   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrpMdfcHx (메뉴권한 조건그룹 변경이력 입력) 
+        Description :                                           csd_macgrht_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrpMdfcHx"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtGrpMdfcHx_메뉴권한조건그룹변경이력 입력 DAM */
+		into  CSMACGRHT
+				   (
+				   select  MENU_ATHR_ID,
+						   MENU_GRP_ID,
+						   ATHR_CNDT_GRP_ID,
+						   sysdate,
+						   ATHR_CNDT_GRP_APLY_SQNC,
+						   ATHR_CNDT_GRP_NM,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID
+					 from  CSMACGRMT
+					where  MENU_ATHR_ID = #{menuAthrId}
+					  and  MENU_GRP_ID  = #{menuGrpId}
+						  )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtGrp (메뉴권한 조건그룹 삭제) 
+        Description :                                           csd_macgrmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtGrp"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtGrp_메뉴권한조건그룹 삭제 DAM */
+					 from  CSMACGRMT
+					where  MENU_ATHR_ID = #{menuAthrId}
+					  and  MENU_GRP_ID  = #{menuGrpId}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItemMdfcHx (메뉴권한 조건항목 변경이력 입력) 
+        Description :                                           csd_mnaciht_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItemMdfcHx"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-insertMenuAthrCndtItemMdfcHx_메뉴권한조건항목변경이력 등록 DAM */
+		into  CSMNACIHT
+				   (
+				   select  MENU_ATHR_ID,
+						   MENU_GRP_ID,
+						   ATHR_CNDT_GRP_ID,
+						   ATHR_CNDT_ITEM_ID,
+						   sysdate,
+						   ATHR_CNDT_ITEM_SQNC,
+						   CNDT_OPRR_CD,
+						   CNDT_TRGT_ITEM_CD,
+						   CNDT_TRGT_ITEM_VL,
+						   CNDT_TRGT_ITEM_NM,
+						   FRST_RGSR_ID,
+						   FRST_RGST_IP,
+						   FRST_RGST_DT,
+						   FRST_RGST_CLNT_PRGM_ID,
+						   FRST_RGST_SRVR_PRGM_ID,
+						   LAST_UPDR_ID,
+						   LAST_UPDT_IP,
+						   LAST_UPDT_DT,
+						   LAST_UPDT_CLNT_PRGM_ID,
+						   LAST_UPDT_SRVR_PRGM_ID
+					 from  CSMNACIMT
+					where  MENU_ATHR_ID = #{menuAthrId}
+					  and  MENU_GRP_ID  = #{menuGrpId}
+			   			)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtItem (메뉴권한 조건항목 삭제) 
+        Description :                                           csd_mnacimt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtItem"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsMenuAthrCndtDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsMenuAthrCndtDAO-deleteMenuAthrCndtItem_메뉴그룹 조건항목 삭제 DAM */
+		from  	CSMNACIMT
+		where  	MENU_ATHR_ID = #{menuAthrId}
+		and  		MENU_GRP_ID  = #{menuGrpId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuUserInqrDAO_sql.xml 
+    Description :                                      각종 사용자목록조회
+                  -->
+<mapper namespace="CcuUserInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserInqrDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="cmpnCd" column="CMPN_CD"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="indvEmadNm" column="INDV_EMAD_NM"/>
+		<result property="epId" column="EP_ID"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+		<result property="rturVl4" column="RTUR_VL_4"/>
+		<result property="rturVl5" column="RTUR_VL_5"/>
+		<result property="rturVl6" column="RTUR_VL_6"/>
+		<result property="rturVl7" column="RTUR_VL_7"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr (이메일 수신자 목록조회) 
+        Description :                                           cud_useramt_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserInqrDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuUserInqrDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cu-ccu-dao-CcuUserInqrDAO-listEmailRcvr_이메일 수신자 조회 */
+						  c.LGIN_ID as USER_ID,
+						  c.USER_NM as USER_NM,
+						  a.BSPL_CD as BSPL_CD,  /* 사업장코드 */
+						  a.DPRT_CD as DPRT_CD,  /* 부서코드 */
+						  a.CMPN_CD as CMPN_CD,  /* 회사코드 */
+						  c.OCCL_CD as OCCL_CD,  /* 직급 */
+						  c.OCRS_CD as OCRS_CD,  /* 직책 */
+						  c.OCPS_CD as OCPS_CD,  /* 직위ENCM_YMDENCM_YMD */
+						  c.OCDT_CD as OCDT_CD,  /* 직무 */
+						  c.EMAIL_ID as INDV_EMAD_NM,
+						  c.EP_ID as EP_ID,
+						  '0'  as RTUR_VL,  /* 선택 */
+						  i.DETL_CD_NM as RTUR_VL_1,
+						  b.KORN_DPRT_NM as RTUR_VL_2,
+						  h.DETL_CD_NM as RTUR_VL_3,   /*   회사명 */
+						  g.DETL_CD_NM as RTUR_VL_4,
+						  d.DETL_CD_NM as RTUR_VL_5,
+						  e.DETL_CD_NM as RTUR_VL_6,
+						  f.DETL_CD_NM as RTUR_VL_7
+				  from  HZUSERMMT A
+					  , HZDEPTMMT B
+					  , CCUSERAMT C
+					  , CCCMCDDMT d
+					  , CCCMCDDMT e
+					  , CCCMCDDMT f
+					  , CCCMCDDMT g
+					  , HZEMCODET h
+					  , HZEMCODET i
+				  where  A.DPRT_CD        = B.DPRT_CD
+					and  A.EMNO           = C.LGIN_ID
+					and  ((C.USER_NM like  #{userNm} || '%') or
+						  (c.LGIN_ID = #{userNm} ))
+					and  d.COMN_GRP_CD(+) = 'GP007'
+					and  c.OCRS_CD        = d.COMN_DTLS_CD(+)
+					and  e.COMN_GRP_CD(+) = 'GP008'
+					and  c.OCPS_CD        = e.COMN_DTLS_CD(+)
+					and  f.COMN_GRP_CD(+) = 'GP009'
+					and  c.OCDT_CD        = f.COMN_DTLS_CD(+)
+					and  g.COMN_GRP_CD(+) = 'GP005'
+					and  c.OCCL_CD        = g.COMN_DTLS_CD(+)
+					and  h.COMN_GRP_CD(+) = 'HA100'
+					and  a.CMPN_CD        = h.MDM_COMN_DTLS_CD(+)
+					and  i.COMN_GRP_CD(+) = 'HA110'
+					and  a.BSPL_CD        = i.MDM_COMN_DTLS_CD(+)
+				  order  by LGIN_ID
+					]]>
+	</select>
+
+
+
+</mapper>

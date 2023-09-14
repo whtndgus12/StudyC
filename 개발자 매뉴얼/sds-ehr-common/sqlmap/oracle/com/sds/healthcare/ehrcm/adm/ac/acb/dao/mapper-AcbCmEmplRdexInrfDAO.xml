@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcbCmEmplRdexInrfDAO_sql.xml 
+    Description :                                      [공통DB] 직원감면 Interface DAO
+                  -->
+<mapper namespace="AcbCmEmplRdexInrfDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-updateEmplRdexWork (직원감면 병원별 작업대상 데이터 수정) 
+        Description :                                           직원감면 병원별 작업대상 데이터 수정
+                                            
+		parameterType : com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-updateEmplRdexWork"  parameterType="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-updateEmplRdexWork */
+		update  ACCNRRWKT
+		   set  LAST_UPDR_ID            =   #{gvUserId}
+		     ,  LAST_UPDT_IP            =   #{gvUserIp}
+		     ,  LAST_UPDT_DT            =   sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		     ,  WORK_TRGT_YN            =   #{workTrgtYn}
+		 where  HSPT_CD         =   #{hsptCd}
+		   and  RDEX_ALCM_CD    =   #{rdexAlcmCd}
+		   and  EMPL_ID         =   #{emplId}
+		   and  EMFM_SNO        =   #{emfmSno}
+		   and  MDFC_HX_SNO     =   #{mdfcHxSno}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt-result" type="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO">
+	
+		<result property="rdexAlcmCd" column="RDEX_ALCM_CD"/>
+		<result property="emplId" column="EMPL_ID"/>
+		<result property="emfmSno" column="EMFM_SNO"/>
+		<result property="emplNm" column="EMPL_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="emplClsfCd" column="EMPL_CLSF_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="alcmDprtCd" column="ALCM_DPRT_CD"/>
+		<result property="alcmDprtNm" column="ALCM_DPRT_NM"/>
+		<result property="onslFmlyDvsnCd" column="ONSL_FMLY_DVSN_CD"/>
+		<result property="fmlyRltnCd" column="FMLY_RLTN_CD"/>
+		<result property="fmlyRltnNm" column="FMLY_RLTN_NM"/>
+		<result property="rdexTgprNm" column="RDEX_TGPR_NM"/>
+		<result property="rdexTgprBtdt" column="RDEX_TGPR_BTDT"/>
+		<result property="rdexTgprFrrn" column="RDEX_TGPR_FRRN"/>
+		<result property="rdexTgprBrrn" column="RDEX_TGPR_BRRN"/>
+		<result property="gendCd" column="GEND_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt (직원감면 동기화대상 조회) 
+        Description :                                           직원감면 동기화대상 조회
+                                            
+		parameterType : com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO
+		resultMap : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt"  parameterType="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO"  resultMap="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexSyncTrgt */
+		select  a.RDEX_ALCM_CD                          as RDEX_ALCM_CD
+		     ,  a.EMPL_ID                               as EMPL_ID
+		     ,  a.EMFM_SNO                              as EMFM_SNO
+		     ,  a.EMPL_NM                               as EMPL_NM
+		     ,  to_char(a.APST_YMD, 'yyyymmdd')         as APST_YMD
+		     ,  to_char(a.APFN_YMD, 'yyyymmdd')         as APFN_YMD
+		     ,  a.EMPL_CLSF_CD                          as EMPL_CLSF_CD
+		     ,  a.OCFM_NM                               as OCFM_NM
+		     ,  a.OCPS_NM                               as OCPS_NM
+		     ,  a.ALCM_DPRT_CD                          as ALCM_DPRT_CD
+		     ,  a.ALCM_DPRT_NM                          as ALCM_DPRT_NM
+		     ,  a.ONSL_FMLY_DVSN_CD                     as ONSL_FMLY_DVSN_CD
+		     ,  a.FMLY_RLTN_CD                          as FMLY_RLTN_CD
+		     ,  a.FMLY_RLTN_NM                          as FMLY_RLTN_NM
+		     ,  a.RDEX_TGPR_NM                          as RDEX_TGPR_NM
+		     ,  to_char(a.RDEX_TGPR_BTDT, 'yyyymmdd')   as RDEX_TGPR_BTDT
+		     ,  a.RDEX_TGPR_FRRN                        as RDEX_TGPR_FRRN
+		     ,  a.RDEX_TGPR_BRRN                        as RDEX_TGPR_BRRN
+		     ,  a.GEND_CD                               as GEND_CD
+		  from  ACCNRRIFT a
+		 where  WORK_TRGT_YN    =   'Y'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt-result" type="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO">
+	
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="rdexAlcmCd" column="RDEX_ALCM_CD"/>
+		<result property="emplId" column="EMPL_ID"/>
+		<result property="emfmSno" column="EMFM_SNO"/>
+		<result property="mdfcHxSno" column="MDFC_HX_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt (직원감면 작업대상 조회) 
+        Description :                                           직원감면 작업대상 조회
+                                            
+		parameterType : com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO
+		resultMap : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt"  parameterType="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO"  resultMap="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-listEmplRdexWorkTrgt */
+		select  a.HSPT_CD
+		     ,  a.RDEX_ALCM_CD
+		     ,  a.EMPL_ID
+		     ,  a.EMFM_SNO
+		     ,  a.MDFC_HX_SNO
+		  from  ACCNRRWKT a
+		 where  a.WORK_TRGT_YN      =   'Y'
+		   and  a.HSPT_CD           =    #{hsptCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf-result" type="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO">
+	
+		<result property="rdexAlcmCd" column="RDEX_ALCM_CD"/>
+		<result property="emplId" column="EMPL_ID"/>
+		<result property="emfmSno" column="EMFM_SNO"/>
+		<result property="emplNm" column="EMPL_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="emplClsfCd" column="EMPL_CLSF_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="alcmDprtCd" column="ALCM_DPRT_CD"/>
+		<result property="alcmDprtNm" column="ALCM_DPRT_NM"/>
+		<result property="onslFmlyDvsnCd" column="ONSL_FMLY_DVSN_CD"/>
+		<result property="fmlyRltnCd" column="FMLY_RLTN_CD"/>
+		<result property="fmlyRltnNm" column="FMLY_RLTN_NM"/>
+		<result property="rdexTgprNm" column="RDEX_TGPR_NM"/>
+		<result property="rdexTgprBtdt" column="RDEX_TGPR_BTDT"/>
+		<result property="rdexTgprFrrn" column="RDEX_TGPR_FRRN"/>
+		<result property="rdexTgprBrrn" column="RDEX_TGPR_BRRN"/>
+		<result property="gendCd" column="GEND_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf (직원감면 인터페이스 조회 by PK) 
+        Description :                                           직원감면 인터페이스 조회 by PK
+                                            
+		parameterType : com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO
+		resultMap : com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf-result
+    -->
+	<select id="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf"  parameterType="com.sds.healthcare.ehrcm.adm.ac.acb.vo.AcbCmEmplRdexInrfDVO"  resultMap="com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehrcm-adm-ac-acb-dao-AcbCmEmplRdexInrfDAO-selectOneEmplRdexInrf */
+		select  a.RDEX_ALCM_CD                          as RDEX_ALCM_CD
+		     ,  a.EMPL_ID                               as EMPL_ID
+		     ,  a.EMFM_SNO                              as EMFM_SNO
+		     ,  a.EMPL_NM                               as EMPL_NM
+		     ,  to_char(a.APST_YMD, 'yyyymmdd')         as APST_YMD
+		     ,  to_char(a.APFN_YMD, 'yyyymmdd')         as APFN_YMD
+		     ,  a.EMPL_CLSF_CD                          as EMPL_CLSF_CD
+		     ,  a.OCFM_NM                               as OCFM_NM
+		     ,  a.OCPS_NM                               as OCPS_NM
+		     ,  a.ALCM_DPRT_CD                          as ALCM_DPRT_CD
+		     ,  a.ALCM_DPRT_NM                          as ALCM_DPRT_NM
+		     ,  a.ONSL_FMLY_DVSN_CD                     as ONSL_FMLY_DVSN_CD
+		     ,  a.FMLY_RLTN_CD                          as FMLY_RLTN_CD
+		     ,  a.FMLY_RLTN_NM                          as FMLY_RLTN_NM
+		     ,  a.RDEX_TGPR_NM                          as RDEX_TGPR_NM
+		     ,  to_char(a.RDEX_TGPR_BTDT, 'yyyymmdd')   as RDEX_TGPR_BTDT
+		     ,  a.RDEX_TGPR_FRRN                        as RDEX_TGPR_FRRN
+		     ,  a.RDEX_TGPR_BRRN                        as RDEX_TGPR_BRRN
+		     ,  a.GEND_CD                               as GEND_CD
+		  from  ACCNRRIFT a
+		 where  a.RDEX_ALCM_CD      =   #{rdexAlcmCd}
+		   and  a.EMPL_ID           =   #{emplId}
+		   and  a.EMFM_SNO          =   #{emfmSno}
+	</select>
+
+
+
+</mapper>

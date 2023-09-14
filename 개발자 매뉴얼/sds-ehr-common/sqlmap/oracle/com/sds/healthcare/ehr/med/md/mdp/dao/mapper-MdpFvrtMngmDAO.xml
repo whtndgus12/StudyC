@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpFvrtMngmDAO_sql.xml 
+    Description :                                      즐 겨찾기기본 입력 DAO
+                  -->
+<mapper namespace="MdpFvrtMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtbtI01 () 
+        Description :                                           mdd_bfvrtbt_i01$I01_즐겨찾기기본 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtbtI01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[	
+		   insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtbtI01 */
+			 into  MDBFVRTBT
+				   (
+				   FVRT_KIND_CD
+				,  USER_DPRT_DVSN_CD
+				,  FVRT_OWNR_CD
+				,  FVRT_SNO
+				,  MCDP_CD
+				,  FVRT_TITL_NM
+				,  HGRN_FVRT_SNO
+				,  SPSB_CTN
+				,  SPSB_DVSN_CD
+				,  FVRT_SORT_SQNC
+				,  LWRN_YN
+				,  SPSB_CTN1
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				,  SPSB_CTN2
+				,  SPSB_CTN3
+				,  SPSB_CTN4
+				,  SPSB_CTN5
+				   )
+		   values(
+				   #{fvrtKindCd}
+				,  #{userDprtDvsnCd}
+				,  #{fvrtOwnrCd}
+				,  (select nvl(max(a.FVRT_SNO),0)+1
+			   			   from MDBFVRTBT a
+					 where a.FVRT_KIND_CD      = #{fvrtKindCd}
+					  and  a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+					  and  a.FVRT_OWNR_CD      = #{fvrtOwnrCd})
+				,  #{mcdpCd}
+				,  #{fvrtTitlNm}
+				,  #{hgrnFvrtSno}
+				,  #{spsbCtn}
+				,  #{spsbDvsnCd}
+				,  (select nvl(max(a.FVRT_SORT_SQNC),0)+1
+			   				 from MDBFVRTBT a
+					 where a.FVRT_KIND_CD      = #{fvrtKindCd}
+					   and a.USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+					   and a.FVRT_OWNR_CD      = #{fvrtOwnrCd})
+				,  #{lwrnYn}
+				,  #{spsbCtn1}
+				,  #{gvLginId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         ,  #{gvLginId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+				 ,  #{spsbCtn2}
+				 ,  #{spsbCtn3}
+				 ,  #{spsbCtn4}
+				 ,  #{spsbCtn5}
+				)
+		  	]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtdtI01 () 
+        Description :                                           mdd_bfvrtdt_i01$I01_즐겨찾기_상세정보 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtdtI01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[
+			   insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-insertMddBfvrtdtI01 */
+				 into  MDBFVRTDT
+					   (
+					   FVRT_KIND_CD
+					,  USER_DPRT_DVSN_CD
+					,  FVRT_OWNR_CD
+					,  FVRT_SNO
+					,  FVRT_DETL_SNO
+					,  MCDP_CD
+					,  FVRT_DETL_SORT_SQNC
+					,  FVRT_CD_VL                /* 즐겨찾기코드값 */
+					,  FVRT_CD_VL_NM             /*  즐겨찾기코드값명 */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					   )
+			   select
+					   #{fvrtKindCd}
+					,  #{userDprtDvsnCd}
+					,  #{fvrtOwnrCd}
+					,  #{fvrtSno}
+					,  nvl(max(a.FVRT_DETL_SNO), 0) + 1
+					,  #{mcdpCd}
+					,  #{fvrtDetlSortSqnc}
+					,  #{fvrtCdVl}
+					,  #{fvrtCdVlNm}
+		         ,  #{gvLginId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+		         ,  #{gvLginId}
+		         ,  #{gvUserIp}
+		         ,  sysdate
+		         ,  #{gvClntPrgmId}
+		         ,  #{gvSrvrPrgmId}
+				 from
+					   MDBFVRTDT a
+				where
+					   a.FVRT_KIND_CD      =   #{fvrtKindCd}
+				  and  a.USER_DPRT_DVSN_CD =   #{userDprtDvsnCd}
+				  and  a.FVRT_OWNR_CD      =   #{fvrtOwnrCd}
+				  and  a.FVRT_SNO          =   #{fvrtSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtbtU01 () 
+        Description :                                           mdd_bfvrtbt_u01$I01_즐겨찾기기본 수정 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtbtU01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[
+		   update  MDBFVRTBT  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtbtU01 */
+			  set  FVRT_TITL_NM      = nvl(#{fvrtTitlNm}, FVRT_TITL_NM)
+				,  HGRN_FVRT_SNO     = case when #{hgrnFvrtSno} = 0 then HGRN_FVRT_SNO
+																					   else #{hgrnFvrtSno}
+										end
+				,  SPSB_CTN          = nvl(#{spsbCtn}, SPSB_CTN)
+				,  SPSB_DVSN_CD      = nvl(#{spsbDvsnCd}, SPSB_DVSN_CD)
+				,  FVRT_SORT_SQNC    = case when #{fvrtSortSqnc} = 0 then FVRT_SORT_SQNC
+																						else #{fvrtSortSqnc}
+										end
+				,  LWRN_YN           = nvl(#{lwrnYn}, LWRN_YN)
+				,  SPSB_CTN1         = nvl(#{spsbCtn1}, SPSB_CTN1)
+		     ,  LAST_UPDR_ID          = #{gvLginId}
+		     ,  LAST_UPDT_IP          = #{gvUserIp}
+		     ,  LAST_UPDT_DT          = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID    = #{gvSrvrPrgmId}
+				,  SPSB_CTN2         = nvl(#{spsbCtn2}, SPSB_CTN2)
+				,  SPSB_CTN3         = nvl(#{spsbCtn3}, SPSB_CTN3)
+				,  SPSB_CTN4         = nvl(#{spsbCtn4}, SPSB_CTN4)
+				,  SPSB_CTN5         = nvl(#{spsbCtn5}, SPSB_CTN5)
+			where  FVRT_KIND_CD      = #{fvrtKindCd}
+			  and  USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+			  and  FVRT_OWNR_CD      = #{fvrtOwnrCd}
+			  and  FVRT_SNO	       = #{fvrtSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtdtU01 () 
+        Description :                                           mdd_bfvrtdt_u01$I01_즐겨찾기상세 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtdtU01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[
+			   update  MDBFVRTDT  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-updateMddBfvrtdtU01 */
+			   		   set  FVRT_DETL_SNO       = #{fvrtDetlSno}
+			   			 ,  MCDP_CD             = #{mcdpCd}
+			   			 ,  FVRT_DETL_SORT_SQNC	= #{fvrtDetlSortSqnc}
+					,  FVRT_CD_VL          = #{fvrtCdVl}          /*  즐겨찾기코드값 */
+					,  FVRT_CD_VL_NM       = #{fvrtCdVlNm}       /*  즐겨찾기코드값명 */
+		     ,  LAST_UPDR_ID          = #{gvLginId}
+		     ,  LAST_UPDT_IP          = #{gvUserIp}
+		     ,  LAST_UPDT_DT          = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID    = #{gvSrvrPrgmId}
+			   		 where  FVRT_KIND_CD		= #{fvrtKindCd}
+			   		   and	USER_DPRT_DVSN_CD   = #{userDprtDvsnCd}
+			   		   and	FVRT_OWNR_CD		= #{fvrtOwnrCd}
+			   		   and  FVRT_SNO            = #{fvrtSno}
+			   		   and  FVRT_DETL_SNO		= #{fvrtDetlSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtbtD01 () 
+        Description :                                           mdd_bfvrtbt_d01$I01_즐겨찾기기본 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtbtD01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[
+		   delete MDBFVRTBT  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtbtD01 */
+		   where  FVRT_KIND_CD      = #{fvrtKindCd}
+			 and  USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+			 and  FVRT_OWNR_CD      = #{fvrtOwnrCd}
+			 and  FVRT_SNO          = #{fvrtSno}
+			]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtdtD01 () 
+        Description :                                           mdd_bfvrtdt_d01$I01_즐겨찾기기본 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtdtD01"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  >
+		<![CDATA[
+		   delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-MdpFvrtMngmDAO-deleteMddBfvrtdtD01 */
+				   MDBFVRTDT
+			   	   where  FVRT_KIND_CD		= #{fvrtKindCd}
+			   	   and  USER_DPRT_DVSN_CD	= #{userDprtDvsnCd}
+			   		 and  FVRT_OWNR_CD		 = #{fvrtOwnrCd}
+			   		 and  FVRT_SNO			 = #{fvrtSno}
+			   		 and  FVRT_DETL_SNO		 = decode (#{fvrtDetlSno}, 0, FVRT_DETL_SNO, #{fvrtDetlSno})
+			]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO">
+	
+		<result property="tn" column="TN"/>
+		<result property="fvrtKindCd" column="FVRT_KIND_CD"/>
+		<result property="userDprtDvsnCd" column="USER_DPRT_DVSN_CD"/>
+		<result property="fvrtOwnrCd" column="FVRT_OWNR_CD"/>
+		<result property="fvrtSno" column="FVRT_SNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="fvrtTitlNm" column="FVRT_TITL_NM"/>
+		<result property="hgrnFvrtSno" column="HGRN_FVRT_SNO"/>
+		<result property="spsbCtn" column="SPSB_CTN"/>
+		<result property="spsbDvsnCd" column="SPSB_DVSN_CD"/>
+		<result property="fvrtSortSqnc" column="FVRT_SORT_SQNC"/>
+		<result property="lwrnYn" column="LWRN_YN"/>
+		<result property="spsbCtn1" column="SPSB_CTN1"/>
+		<result property="spsbCtn2" column="SPSB_CTN2"/>
+		<result property="spsbCtn3" column="SPSB_CTN3"/>
+		<result property="spsbCtn4" column="SPSB_CTN4"/>
+		<result property="spsbCtn5" column="SPSB_CTN5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03 (특기사항 항목별 조회) 
+        Description :                                           특기사항 항목별 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpFvrtMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpFvrtMngmDAO-listMddBfvrtbtL03 */
+		<![CDATA[
+		select  /*+ mdd_bfvrtbt_l03$S01_특기사항 항목별 조회 */
+		       rownum as tn
+		     ,  FVRT_KIND_CD          /* 즐겨찾기종류코드*/
+		     ,  USER_DPRT_DVSN_CD     /* 사용자부서구분코드*/
+		     ,  FVRT_OWNR_CD          /* 즐겨찾기오너코드*/
+		     ,  FVRT_SNO              /* 즐겨찾기일련번호*/
+		     ,  MCDP_CD               /* 진료과코드*/
+		     ,  FVRT_TITL_NM          /* 즐겨찾기제목명*/
+		     ,  HGRN_FVRT_SNO         /* 상위즐겨찾기일련번호*/
+		     ,  SPSB_CTN              /* 특기사항내용*/
+		     ,  SPSB_DVSN_CD          /* 특기사항구분코드*/
+		     ,  FVRT_SORT_SQNC        /* 즐겨찾기정렬순서*/
+		     ,  LWRN_YN               /* 하위여부*/
+		     ,  SPSB_CTN1             /* 특기사항내용1 */
+		     ,  SPSB_CTN2             /* 특기사항내용2 */
+		     ,  SPSB_CTN3             /* 특기사항내용3 */
+		     ,  SPSB_CTN4             /* 특기사항내용4 */
+		     ,  SPSB_CTN5             /* 특기사항내용5 */
+		  from
+		        MDBFVRTBT
+		 where  FVRT_KIND_CD      = #{fvrtKindCd}
+		   and  USER_DPRT_DVSN_CD = #{userDprtDvsnCd}
+		   and  FVRT_OWNR_CD      = #{fvrtOwnrCd}   
+		   and  SPSB_DVSN_CD = #{spsbDvsnCd}
+		   and  (#{fvrtTitlNm} is null or FVRT_TITL_NM = #{fvrtTitlNm})
+		 order
+		    by  tn, SPSB_DVSN_CD, FVRT_SORT_SQNC 
+		]]>
+	</select>
+
+
+
+</mapper>

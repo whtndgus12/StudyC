@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccBoardAttachedDAO_sql.xml 
+    Description : -->
+<mapper namespace="CccBoardAttachedDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-insertCubordfmt (insert CUBORDFMT) 
+        Description :                                           Table[CUBORDFMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-insertCubordfmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-insertCubordfmt */
+		INSERT INTO CUBORDFMT 
+		(
+		  WRTR_ID		/* 작성자ID */
+		 ,WRTG_DT		/* 작성일시 */
+		 ,ATFL_SNO		/* 첨부파일일련번호 */
+		 ,FILE_NM		/* 파일명 */
+		 ,ATFL_BD		/* 첨부파일자료 */
+		 ,FRST_RGSR_ID		/*  */
+		 ,FRST_RGST_IP		/*  */
+		 ,FRST_RGST_DT		/*  */
+		 ,FRST_RGST_CLNT_PRGM_ID		/*  */
+		 ,FRST_RGST_SRVR_PRGM_ID		/*  */
+		 ,LAST_UPDR_ID		/*  */
+		 ,LAST_UPDT_IP		/*  */
+		 ,LAST_UPDT_DT		/*  */
+		 ,LAST_UPDT_CLNT_PRGM_ID		/*  */
+		 ,LAST_UPDT_SRVR_PRGM_ID		/*  */
+		)
+		VALUES
+		(
+		  #{wrtrId}
+		 ,to_date(#{wrtgDt},'YYYYMMDDHH24MISS')
+		 ,#{atflSno}
+		 ,#{fileNm}
+		 ,#{atflBdByte}
+		                 , #{gvUserId}                               -- 최초등록자ID
+		                 , #{gvUserIp}                               -- 최초등록IP
+		                 , sysdate                                   -- 최초등록일시
+		                 , #{gvClntPrgmId}                           -- 최초등록EMR클라이언트프로그램ID
+		                 , #{gvSrvrPrgmId}                           -- 최초등록EMR서버프로그램ID
+		                 , #{gvUserId}                               -- 최종수정자ID
+		                 , #{gvUserIp}                               -- 최종수정IP
+		                 , sysdate                                   -- 최종수정일시
+		                 , #{gvClntPrgmId}                           -- 최종수정EMR클라이언트프로그램ID
+		                 , #{gvSrvrPrgmId}                           -- 최종수정EMR서버프로그램ID
+		)
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-deleteCubordfmt (delete CUBORDFMT) 
+        Description :                                           Table[CUBORDFMT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-deleteCubordfmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-deleteCubordfmt */
+		DELETE  FROM CUBORDFMT
+		  where WRTR_ID = #{wrtrId} 		/* 작성자ID */
+		     and WRTG_DT = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')		/* 작성일시 */
+		    and  ATFL_SNO = #{atflSno}
+			
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="atflSizeVl" column="ATFL_SIZE_VL"/>
+		<result property="atflBdByte" column="ATFL_BD_BYTE"/>
+		<result property="atflBd" column="ATFL_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt (list CUBORDFMT) 
+        Description :                                           Table[CUBORDFMT]'s list method
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt */
+		SELECT	WRTR_ID		/* 작성자ID */
+					,to_char(WRTG_DT,'YYYYMMDDHH24MISS') as WRTG_DT		/* 작성일시 */
+					,ATFL_SNO		/* 첨부파일일련번호 */
+					,FILE_NM		/* 파일명 */
+					,length(ATFL_BD) as ATFL_SIZE_VL
+					,ATFL_BD as ATFL_BD_BYTE 		/* 첨부파일자료 */
+		    	    ,'' as ATFL_BD
+		      from
+		           CUBORDFMT
+		     where  WRTR_ID  = #{wrtrId}
+		       and   WRTG_DT  = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+		  order by ATFL_SNO
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="atflSizeVl" column="ATFL_SIZE_VL"/>
+		<result property="atflBdByte" column="ATFL_BD_BYTE"/>
+		<result property="atflBd" column="ATFL_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-selectOneCubordfmt */
+		SELECT	WRTR_ID		/* 작성자ID */
+					,to_char(WRTG_DT,'YYYYMMDDHH24MISS') as WRTG_DT		/* 작성일시 */
+					,ATFL_SNO		/* 첨부파일일련번호 */
+					,FILE_NM		/* 파일명 */
+					,length(ATFL_BD) as ATFL_SIZE_VL
+					,ATFL_BD as ATFL_BD_BYTE 		/* 첨부파일자료 */
+		    	    ,'' as ATFL_BD
+		      from
+		           CUBORDFMT
+		     where  WRTR_ID  = #{wrtrId}
+		       and   WRTG_DT  = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+		       and  ATFL_SNO = #{atflSno}
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="atflSizeVl" column="ATFL_SIZE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardAttachedDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardAttachedDAO-listCubordfmt2 */
+		SELECT	WRTR_ID		/* 작성자ID */
+					,to_char(WRTG_DT,'YYYYMMDDHH24MISS') as WRTG_DT		/* 작성일시 */
+					,ATFL_SNO		/* 첨부파일일련번호 */
+					,FILE_NM		/* 파일명 */
+					,length(ATFL_BD) as ATFL_SIZE_VL
+		      from
+		           CUBORDFMT
+		     where  WRTR_ID  = #{wrtrId}
+		       and   WRTG_DT  = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+		  order by ATFL_SNO
+			
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsValidmtDAO_sql.xml 
+    Description :                                      로그인 유효성
+                  -->
+<mapper namespace="CcsValidmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO">
+	
+		<result property="emitId" column="EMIT_ID"/>
+		<result property="exmnBaseVl" column="EXMN_BASE_VL"/>
+		<result property="aplyYn" column="APLY_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt () 
+        Description :                                           비밀번호 변경 주기 단건조회를 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-selectOnePwdValidmt */
+				             EMIT_ID as EMIT_ID,
+				             EXMN_BASE_VL as EXMN_BASE_VL,
+		                     APLY_YN
+				      from
+				             CSVALIDMT
+				      where
+				             EXMN_TMNG_CD = 'L'
+				        and  EMIT_ID = '10' 
+			 
+			
+			
+			
+			
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO">
+	
+		<result property="emitId" column="EMIT_ID"/>
+		<result property="emitNm" column="EMIT_NM"/>
+		<result property="exmnMesgCtn" column="EXMN_MESG_CTN"/>
+		<result property="exmnCeckKindCd" column="EXMN_CECK_KIND_CD"/>
+		<result property="exmnBaseVl" column="EXMN_BASE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsValidmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsValidmtDAO-listValidmt */
+		<![CDATA[
+				   select  /*+ csd_validmt_l01$S01_유효성 검사 List 조회 DAM */ 
+						    		EMIT_ID as EMIT_ID,
+						    		EMIT_NM as EMIT_NM,
+						    		EXMN_MESG_CTN as EXMN_MESG_CTN,
+						    		EXMN_CECK_KIND_CD as EXMN_CECK_KIND_CD,
+				                    EXMN_BASE_VL as EXMN_BASE_VL
+						      from
+						      	  	CSVALIDMT
+						     where
+						     	 	EXMN_TMNG_CD = #{exmnTmngCd}  /*  login 수행절차 */
+						       and  APLY_YN in ('M', 'Y')                            /*  Mandatory, Yes */
+					]]>
+			
+			
+			
+			
+	</select>
+
+
+
+</mapper>

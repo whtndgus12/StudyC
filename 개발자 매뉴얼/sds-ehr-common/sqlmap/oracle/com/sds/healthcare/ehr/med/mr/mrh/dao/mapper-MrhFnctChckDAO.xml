@@ -1,0 +1,1506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MrhFnctChckDAO_sql.xml 
+    Description :                                      신포괄기능체크DAO
+                  -->
+<mapper namespace="MrhFnctChckDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001 (추천상병 일부등록완료 여부) 
+        Description :                                           추천상병 일부등록완료 여부 FINS_YN
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0001 */
+		<![CDATA[
+				select  decode( count(*)
+				              , 0,  'N'
+				              , 'Y'
+				              ) as FINS_YN
+				  from  MRRCSCIDT a -- 의무기록 추천상병 상세
+				 where  1=1
+				   and  a.MDRP_NO = #{mdrpNo}
+				   -- 대표부서코드가 같은지 비교
+				   --and  FN_MR_CHECK_DPRT_YN(a.MCDP_CD, {mcdpCd}, '1') = 'Y'
+				   and  a.MAIN_SCIN_YN = 'N'  -- 주상병여부
+				   and  exists  (
+				                select  1
+				                  from  MDPACLNCT s1 -- 환자임상진단내역
+				                 where  s1.MDRP_NO    = a.MDRP_NO
+				                   and  s1.CLNC_DX_CD = a.CLNC_DX_CD
+				                   -- 대표부서코드가 같은지 비교
+				                   --and  FN_MR_CHECK_DPRT_YN(s1.MCDP_CD, {mcdpCd}, '1') = 'Y'
+				                   and  s1.MAIN_CLNC_DX_YN = 'N'
+				                )
+				   -- 추천상병 예외 환자
+				   and  a.MDRP_NO not in (
+				                         select  s2.MDRP_NO
+				                           from  MRCTRLMMT s1
+				                              ,  MRRCSCINT s2
+				                          where  s1.MR_CTRL_CD = 'MRH_013' -- 추천상병 처리 예외 환자 목록
+				                            and  s1.MR_DTLS_CTRL_CD = s2.PTNO
+				                         )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002 (추천상병 전체등록완료 여부) 
+        Description :                                           추천상병 전체등록완료 여부
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0002 */
+		<![CDATA[
+				-- 의사상병과 추천상병은 무조건 같아야 한다.
+				select  decode( count(*)
+				              , 0, 'Y'
+				              , 'N'
+				              ) as FINS_YN
+				  from  MDPACLNCT -- 환자임상진단내역
+				 where  1=1
+				   and  MDRP_NO         = #{mdrpNo}
+				   -- 대표부서코드가 같은지 비교
+				   --and  FN_MR_CHECK_DPRT_YN(MCDP_CD, {mcdpCd}, '1') = 'Y'
+				   and  MAIN_CLNC_DX_YN = 'N' -- 주상병
+				   -- 의무기록추천상병과 환자임상진단이 같아야함
+				   -- 같기 위해서는 의무기록추천상병제외하고 환자임상진단에 진단이 없어야함
+				   and  CLNC_DX_CD not in (
+				                          select  CLNC_DX_CD
+				                            from  MRRCSCIDT  -- 의무기록 추천상병 상세
+				                           where  1=1
+				                             and  MDRP_NO = #{mdrpNo}
+				                             -- 대표부서코드가 같은지 비교
+				                             --and  FN_MR_CHECK_DPRT_YN(MCDP_CD, {mcdpCd}, '1') = 'Y'
+				                             and  MAIN_SCIN_YN = 'N'
+				                          )
+				   -- 추천상병 예외 환자
+				   and  MDRP_NO not in (
+				                       select  b.MDRP_NO
+				                         from  MRCTRLMMT a
+				                            ,  MRRCSCINT b
+				                        where  a.MR_CTRL_CD = 'MRH_013' -- 추천상병 처리 예외 환자 목록
+				                          and  a.MR_DTLS_CTRL_CD = b.PTNO
+				                       )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003 (패혈증평가지 작성 완료 여부) 
+        Description :                                           패혈증평가지 작성 완료 여부
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0003 */
+		select  DECODE( COUNT(*)
+		              , 0, 'N'
+		              , 'Y'
+		              ) as FINS_YN -- 질향상점검표작업상태코드
+		  from  MRSPSDXMT -- 의무기록 패혈증진단
+		 where  MDRP_NO = #{mdrpNo}
+		   and  CRTF_YN = 'Y'  -- 인증여부
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004 (질향상점검표 작성 완료 여부) 
+        Description :                                           질향상점검표 작성 완료 여부
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0004 */
+		select CASE WHEN NEW_INLN_TRGT_YN = 'Y' THEN
+								(select  DECODE(count(*)
+								              , 0, 'N'
+								              , 'Y'
+								              ) as FINS_YN
+								  from  MRHIQICMT -- 질향상점검표
+								 where  MDRP_NO = #{mdrpNo}
+								   and  CRTF_DT is not null -- 질향상점검표 인증여부 체크
+								   )
+		       ELSE
+								(select  DECODE(count(*)
+								              , 0, 'N'
+								              , 'Y'
+								              ) as FINS_YN
+								  from  MDDRGCHKT -- 질향상점검표
+								 where  MDRP_NO = #{mdrpNo}
+								 )
+					 END as FINS_YN		 
+		  from CCCHOSPMT
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005 (상병코딩완료여부) 
+        Description :                                           상병코딩완료여부
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOne0005 */
+		select  DECODE(count(*)
+		              , 0, 'N'
+		              , 'Y'
+		              ) as FINS_YN
+		  from  MRDSCDOMT -- 퇴원요약
+		 where  MDRP_NO = #{mdrpNo}
+		   and  MDRC_SCIN_WORK_STTS_CD = '9' -- 의무기록상병작업상태코드 9:작업완료
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="rgstRfslYn" column="RGST_RFSL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn (등록거부여부 조회) 
+        Description :                                           등록거부여부 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstRfslYn */
+		select  decode( count(*), 0, 'N', 'Y') as RGST_RFSL_YN -- 등록거부여부
+		  from  MRRCSCINT -- 의무기록 추천상병
+		 where  MDRP_NO = #{mdrpNo}
+		   and  MCDP_CD = #{mcdpCd}
+		   and  RGST_RFSL_YN = 'Y'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="rgstCct" column="RGST_CCT"/>
+		<result property="rgstCct01" column="RGST_CCT01"/>
+		<result property="rgstCct02" column="RGST_CCT02"/>
+		<result property="masiRgstCct01" column="MASI_RGST_CCT01"/>
+		<result property="masiRgstCct02" column="MASI_RGST_CCT02"/>
+		<result property="susiRgstCct01" column="SUSI_RGST_CCT01"/>
+		<result property="susiRgstCct02" column="SUSI_RGST_CCT02"/>
+		<result property="excpYn" column="EXCP_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct (추천상병 등록건수) 
+        Description :                                           추천상병 등록건수
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetRgstCct */
+		            a.MDRP_NO
+		         ,  count(*)                                  as RGST_CCT       -- 등록건수
+		         ,  (
+		            -- 환자임상진단 주진단 등록건수
+		            select  count(*)
+		              from  MDPACLNCT s1 -- 환자임상진단내역
+		             where  s1.MDRP_NO          = a.MDRP_NO
+		               and  (  (s1.MAIN_CLNC_DX_YN = 'Y')    -- 주상병은 진료과 관련없음
+		                    or (   s1.MAIN_CLNC_DX_YN = 'N'  -- 부상병은 해당 진료과 상병으로 처리
+		                       -- and FN_MR_CHECK_DPRT_YN(s1.MCDP_CD, {mcdpCd}, '1') = 'Y'
+		                       )
+		                    )
+		            )                                         as RGST_CCT01
+		         ,  (
+		            -- 추천진단 주진단 등록건수
+		            select  count(*)
+		              from  MRRCSCIDT s2 -- 의무기록 추천상병 상세
+		             where  s2.MDRP_NO       = a.MDRP_NO
+		               and  s2.MAIN_SCIN_YN in ('Y', 'N')
+		               -- 주진단은 등록과와 상관없이 처리
+		               and  (  (s2.MAIN_SCIN_YN = 'Y')    -- 주상병은 진료과 관련없음
+		                    or (   s2.MAIN_SCIN_YN = 'N'  -- 부상병은 해당 진료과 상병으로 처리
+		                       -- and FN_MR_CHECK_DPRT_YN(s2.MCDP_CD, {mcdpCd}, '1') = 'Y'
+		                       )
+		                    )
+		            )                                         as RGST_CCT02
+		         ,  (
+		            -- 환자임상진단 주진단 등록건수
+		            select  count(*)
+		              from  MDPACLNCT s1 -- 환자임상진단내역
+		             where  s1.MDRP_NO         = a.MDRP_NO
+		               and  s1.MAIN_CLNC_DX_YN = 'Y'
+		               -- 주진단은 등록과와 상관없이 처리
+		            )                                         as MASI_RGST_CCT01
+		         ,  (
+		            -- 추천진단 주진단 등록건수
+		            select  count(*)
+		              from  MRRCSCIDT s2 -- 의무기록 추천상병 상세
+		             where  s2.MDRP_NO      = a.MDRP_NO
+		               and  s2.MAIN_SCIN_YN = 'Y'
+		               -- 주진단은 등록과와 상관없이 처리
+		            )                                         as MASI_RGST_CCT02
+		         ,  (
+		            -- 환자임상진단 주진단 등록건수
+		            select  count(*)
+		              from  MDPACLNCT s3 -- 환자임상진단내역
+		             where  s3.MDRP_NO         = a.MDRP_NO
+		               and  s3.MAIN_CLNC_DX_YN <> 'Y'
+		               --and  FN_MR_CHECK_DPRT_YN(s3.MCDP_CD, {mcdpCd}, '1') = 'Y'
+		            )                                         as SUSI_RGST_CCT01
+		          , (
+		            -- 추천진단 주진단 등록건수
+		            select  count(*)
+		              from  MRRCSCIDT s4 -- 의무기록 추천상병 상세
+		             where  s4.MDRP_NO      = a.MDRP_NO
+		               and  s4.MAIN_SCIN_YN = 'N'  --- 추천상병상세 Y,N,X가
+		               --and  FN_MR_CHECK_DPRT_YN(s4.MCDP_CD, {mcdpCd}, '1') = 'Y'
+		            )                                         as SUSI_RGST_CCT02
+		            -- 추천상병 예외 환자
+		         ,  (
+		            select  decode(count(*), 0, 'N', 'Y')
+		              from  MRCTRLMMT z1
+		             where  z1.MR_CTRL_CD = 'MRH_013' -- 추천상병 처리 예외 환자 목록
+		               and  z1.MR_DTLS_CTRL_CD = a.PTNO
+		            )                                         as EXCP_YN -- 예외여부
+		      from  APRCRPTNT a -- 진료접수
+		     where  a.MDRP_NO = #{mdrpNo}
+		     group
+		        by  a.MDRP_NO
+		         ,  a.PTNO
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="drgYn" column="DRG_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn (DRG 대상 환자여부 검증) 
+        Description :                                           DRG 대상 환자여부 검증
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetDrgYn */
+		select  decode(count(DRG_YN)
+		              , 0, 'N'
+		              , 'Y'
+		              ) as DRG_YN
+		  from  APRCRPTNT a
+		 where  MDRP_NO = #{mdrpNo}
+		   and  DRG_YN  = 'Y'  /* DRG 대상환자 Y:대상 */
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="cnstVl" column="CNST_VL"/>
+		<result property="rmrk" column="RMRK"/>
+		<result property="cnstGrpDscrCtn" column="CNST_GRP_DSCR_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal (상수정보 조회) 
+        Description :                                           상수정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetConstVal */
+		select  CNST_VL
+		     ,  RMRK
+		     ,  CNST_GRP_DSCR_CTN
+		  from  COCONSTDT  /* 상수테이블 */
+		 where  1=1
+		   and  CNST_GRP_ID = #{cnstGrpId}
+		   and  CNST_ID     = #{cnstId}
+		   and  APLY_YN     = nvl(#{aplyYn}, 'Y')
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="masiFinsYn" column="MASI_FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn (주상병등록 완료여부) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetMainScinYn */
+		<![CDATA[
+				-- 추천상병중 현재 환자임상진단의 주진단을 제외하고
+				-- 등록된 주상병이 남이 있으면 추천상병 미등록으로 처리
+				select  decode( count(*)
+				              , 0, 'Y'
+				              , 'N'
+				              ) as MASI_FINS_YN
+				  from  MRRCSCIDT a -- 의무기록 추천상병 상세
+				     ,  APRCRPTNT b -- 진료접수
+				 where  1=1
+				   and  a.MDRP_NO = b.MDRP_NO
+				   and  a.MDRP_NO = #{mdrpNo}
+				        -- 주진단은 등록과와 상관없이 동일주진단이 등록되어 있으면 주진등록완료로 처리
+				   and  a.MAIN_SCIN_YN = 'Y'
+				   and  a.CLNC_DX_CD not in (
+				                            -- 환자 임상진단 주상병
+				                            select  CLNC_DX_CD
+				                              from  MDPACLNCT -- 환자임상진단내역
+				                             where  1=1
+				                               and  MDRP_NO = #{mdrpNo}
+				                               -- 주진단은 등록과와 상관없이 동일주진단이 등록되어 있으면 주진등록완료로 처리
+				                               and  MAIN_CLNC_DX_YN = 'Y'
+				                            )
+				   -- 추천상병 예외 환자
+				   and  b.PTNO not in (
+				                      select  MR_DTLS_CTRL_CD
+				                        from  MRCTRLMMT
+				                       where  MR_CTRL_CD = 'MRH_013' -- 추천상병 처리 예외 환자 목록
+				                      )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="bsdvCd" column="BSDV_CD"/>
+		<result property="cnstGrpId" column="CNST_GRP_ID"/>
+		<result property="cnstGrpCd" column="CNST_GRP_CD"/>
+		<result property="cnstId" column="CNST_ID"/>
+		<result property="cnstVl1" column="CNST_VL1"/>
+		<result property="cnstVl2" column="CNST_VL2"/>
+		<result property="aplyYn" column="APLY_YN"/>
+		<result property="rmrk" column="RMRK"/>
+		<result property="cnstGrpDscrCtn" column="CNST_GRP_DSCR_CTN"/>
+		<result property="afiEtcNm" column="AFI_ETC_NM"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="mstrCd" column="MSTR_CD"/>
+		<result property="mstrTablNm" column="MSTR_TABL_NM"/>
+		<result property="rfrnClmnNm" column="RFRN_CLMN_NM"/>
+		<result property="rfrnTablNm" column="RFRN_TABL_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal (공통 상수정보 목록조회) 
+        Description :                                           공통 상수정보 목록조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-listGetComConstVal */
+		        a.BSDV_CD               as BSDV_CD              /* 업무구분코드 */
+		     ,  a.CNST_GRP_ID           as CNST_GRP_ID          /* 상수그룹ID */
+		     ,  a.CNST_GRP_CD           as CNST_GRP_CD          /* 상수그룹코드 */
+		     ,  a.CNST_ID               as CNST_ID              /* 상수ID */
+		     ,  a.CNST_VL               as CNST_VL1             /* 상수값1 */
+		     ,  ''                      as CNST_VL2             /* 상수값2 */
+		     ,  a.APLY_YN               as APLY_YN              /* 적용여부 */
+		     ,  substrb(a.RMRK, 1, 256) as RMRK                 /* 비고 */
+		     ,  (
+		        select  min(CNST_GRP_DSCR_CTN) keep(dense_rank first order by LAST_UPDT_DT desc) as CNST_GRP_DSCR_CTN
+		          from  COCONSTDT
+		         where BSDV_CD           = a.BSDV_CD
+		           and CNST_GRP_ID       = a.CNST_GRP_ID
+		           and CNST_GRP_DSCR_CTN is not null
+		        )                       as CNST_GRP_DSCR_CTN    /* 상수그룹설명  */
+		     ,  decode( (
+		                select  min(CNST_GRP_DSCR_CTN) keep(dense_rank first order by LAST_UPDT_DT desc) as CNST_GRP_DSCR_CTN
+		                  from  COCONSTDT
+		                 where  BSDV_CD      = a.BSDV_CD
+		                   and  CNST_GRP_ID = a.CNST_GRP_ID
+		                   and  CNST_GRP_DSCR_CTN is not null
+		                )
+		              , '', a.CNST_GRP_ID
+		              , null, a.CNST_GRP_ID
+		              , a.CNST_GRP_ID || ' [ ' || SUBSTR( (
+		                                                  select  min(CNST_GRP_DSCR_CTN) keep(dense_rank first order by LAST_UPDT_DT desc) as CNST_GRP_DSCR_CTN
+		                                                    from  COCONSTDT
+		                                                   where  BSDV_CD     = a.BSDV_CD
+		                                                     and  CNST_GRP_ID = a.CNST_GRP_ID
+		                                                     and CNST_GRP_DSCR_CTN is not null
+		                                                  ), 1, 1000) || ' ]'
+		              )                 as AFI_ETC_NM       /* 상수그룹설명내용(조정본) */
+		     ,  a.LAST_UPDR_ID          as LAST_UPDR_ID     /* 최종사용자ID */
+		     ,  c.USER_NM               as USER_NM          /* 최종사용명 */
+		     ,  a.MSTR_CD               as MSTR_CD          /* 마스터코드 */
+		     ,  a.MSTR_TABL_NM          as MSTR_TABL_NM     /* 마스터테이블명 */
+		     ,  a.RFRN_CLMN_NM          as RFRN_CLMN_NM     /* 참조컬럼명 */
+		     ,  a.RFRN_TABL_NM          as RFRN_TABL_NM     /* 참조테이블명 */
+		  from  COCONSTDT  a  /* 공통상수관리_T */
+		     ,  CCCMCDDMT  b  /* 공통코드값_T */
+		     ,  CCUSRDPHT  c  /* NEXMED-EHR 사용자 역할정보_T */
+		 where  b.COMN_DTLS_CD       = a.BSDV_CD
+		   and  b.COMN_GRP_CD        in ('CCC_005','CCC_006','CCC_007')
+		   and  c.USER_ID(+)         = a.LAST_UPDR_ID
+		   and  ((nvl(#{bsdvCd}, '*') = '*')     or (a.BSDV_CD     like #{bsdvCd}   || '%'))
+		   and  ((nvl(#{rgsrId}, '*') = '*')     or (a.FRST_RGSR_ID   = #{rgsrId}))
+		   and  ((nvl(#{cnstGrpId}, '*') = '*')  or (a.CNST_GRP_ID like #{cnstGrpId} || '%'))
+		]]>
+		<if test='cnstId != null and cnstId != ""'>
+		   and  a.CNST_ID   =   #{cnstId}
+		</if>
+		<if test='cnstVl != null and cnstVl != ""'>
+		  and  a.CNST_VL like '%' || #{cnstVl} || '%'
+		</if>
+		<if test='rmrk != null and rmrk != ""'>
+		  and  a.RMRK like '%' || #{rmrk} || '%'
+		</if>
+		<if test='aplyYn != "A"'>
+		  and  a.APLY_YN   =   'Y'
+		</if>
+		<![CDATA[
+		 order
+		    by  a.CNST_GRP_ID
+		     ,  a.CNST_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="mrAdmsYmd" column="MR_ADMS_YMD"/>
+		<result property="mrDschYmd" column="MR_DSCH_YMD"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="zpcd" column="ZPCD"/>
+		<result property="deadNm" column="DEAD_NM"/>
+		<result property="admsNtm" column="ADMS_NTM"/>
+		<result property="lastDschYmd" column="LAST_DSCH_YMD"/>
+		<result property="mdrcIstyCd" column="MDRC_ISTY_CD"/>
+		<result property="mrAmpaCd" column="MR_AMPA_CD"/>
+		<result property="cohsWhcrCd" column="COHS_WHCR_CD"/>
+		<result property="dschMcdpCd" column="DSCH_MCDP_CD"/>
+		<result property="mrGndrId" column="MR_GNDR_ID"/>
+		<result property="mrMjdrId" column="MR_MJDR_ID"/>
+		<result property="chcmCd" column="CHCM_CD"/>
+		<result property="cancRgstDvsnCd" column="CANC_RGST_DVSN_CD"/>
+		<result property="adtnSbjcAplyYn" column="ADTN_SBJC_APLY_YN"/>
+		<result property="adtnSbjcYn" column="ADTN_SBJC_YN"/>
+		<result property="admsPntmDxCd" column="ADMS_PNTM_DX_CD"/>
+		<result property="dschMdteRsltCd" column="DSCH_MDTE_RSLT_CD"/>
+		<result property="dschFrmtCd" column="DSCH_FRMT_CD"/>
+		<result property="ocptCd" column="OCPT_CD"/>
+		<result property="drgNo" column="DRG_NO"/>
+		<result property="admsMcdpCd" column="ADMS_MCDP_CD"/>
+		<result property="sbdpDprtCd" column="SBDP_DPRT_CD"/>
+		<result property="padvCd" column="PADV_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="abcMccnCd" column="ABC_MCCN_CD"/>
+		<result property="prpdFrmtCd" column="PRPD_FRMT_CD"/>
+		<result property="infrEnfrYn" column="INFR_ENFR_YN"/>
+		<result property="csrnYn" column="CSRN_YN"/>
+		<result property="sbbyCnt" column="SBBY_CNT"/>
+		<result property="prpdNo" column="PRPD_NO"/>
+		<result property="bornFrmtCd" column="BORN_FRMT_CD"/>
+		<result property="prgnWeekCnt" column="PRGN_WEEK_CNT"/>
+		<result property="mrNwbrBdwgVl" column="MR_NWBR_BDWG_VL"/>
+		<result property="clncDxCd1" column="CLNC_DX_CD1"/>
+		<result property="mrDethCausCd1" column="MR_DETH_CAUS_CD1"/>
+		<result property="clncDxCd2" column="CLNC_DX_CD2"/>
+		<result property="mrDethCausCd2" column="MR_DETH_CAUS_CD2"/>
+		<result property="atpsYn" column="ATPS_YN"/>
+		<result property="oprtDethCd" column="OPRT_DETH_CD"/>
+		<result property="etcTxAftrInfcYn" column="ETC_TX_AFTR_INFC_YN"/>
+		<result property="ursyInfcYn" column="URSY_INFC_YN"/>
+		<result property="rssyInfcYn" column="RSSY_INFC_YN"/>
+		<result property="dgsyInfcYn" column="DGSY_INFC_YN"/>
+		<result property="spssInfcYn" column="SPSS_INFC_YN"/>
+		<result property="etcInfcYn" column="ETC_INFC_YN"/>
+		<result property="simsClsfCd" column="SIMS_CLSF_CD"/>
+		<result property="cmrsUsgeMainDxdpCd" column="CMRS_USGE_MAIN_DXDP_CD"/>
+		<result property="mrSimsCd" column="MR_SIMS_CD"/>
+		<result property="ccuSthsDdcn" column="CCU_STHS_DDCN"/>
+		<result property="micuSthsDdcn" column="MICU_STHS_DDCN"/>
+		<result property="picuSthsDdcn" column="PICU_STHS_DDCN"/>
+		<result property="picuNrSthsDdcn" column="PICU_NR_STHS_DDCN"/>
+		<result property="csicuSthsDdcn" column="CSICU_STHS_DDCN"/>
+		<result property="nsicuSthsDdcn" column="NSICU_STHS_DDCN"/>
+		<result property="sicuSthsDdcn" column="SICU_STHS_DDCN"/>
+		<result property="errmIcuSthsDdcn" column="ERRM_ICU_STHS_DDCN"/>
+		<result property="incmAprlAsgnId" column="INCM_APRL_ASGN_ID"/>
+		<result property="incmAprlDt" column="INCM_APRL_DT"/>
+		<result property="incmCnfrMdfcDt" column="INCM_CNFR_MDFC_DT"/>
+		<result property="rchcPsblYn" column="RCHC_PSBL_YN"/>
+		<result property="rchcChupCnfrYn" column="RCHC_CHUP_CNFR_YN"/>
+		<result property="tissExmnMdfcCnfrYn" column="TISS_EXMN_MDFC_CNFR_YN"/>
+		<result property="dschSmryWodvCd" column="DSCH_SMRY_WODV_CD"/>
+		<result property="dschSmryWorkAsgnId" column="DSCH_SMRY_WORK_ASGN_ID"/>
+		<result property="frgnYn" column="FRGN_YN"/>
+		<result property="srgcBpsyNtm" column="SRGC_BPSY_NTM"/>
+		<result property="edscBpsyNtm" column="EDSC_BPSY_NTM"/>
+		<result property="neasBpsyNtm" column="NEAS_BPSY_NTM"/>
+		<result property="etcBpsyNtm" column="ETC_BPSY_NTM"/>
+		<result property="nwbrDethCd" column="NWBR_DETH_CD"/>
+		<result property="oprtAnstEn" column="OPRT_ANST_EN"/>
+		<result property="cmtxYn" column="CMTX_YN"/>
+		<result property="qlasImplYn" column="QLAS_IMPL_YN"/>
+		<result property="gndrMdfcYn" column="GNDR_MDFC_YN"/>
+		<result property="tdfNo" column="TDF_NO"/>
+		<result property="damgCausActtCd" column="DAMG_CAUS_ACTT_CD"/>
+		<result property="damgOcrnYmd" column="DAMG_OCRN_YMD"/>
+		<result property="frstMdtePlacCd" column="FRST_MDTE_PLAC_CD"/>
+		<result property="sucdRiskPrfcCd" column="SUCD_RISK_PRFC_CD"/>
+		<result property="damgRcvyRsltCd" column="DAMG_RCVY_RSLT_CD"/>
+		<result property="retuYn" column="RETU_YN"/>
+		<result property="damgOcrnPlacCd" column="DAMG_OCRN_PLAC_CD"/>
+		<result property="infcCausOprtYn" column="INFC_CAUS_OPRT_YN"/>
+		<result property="infcCausTxYn" column="INFC_CAUS_TX_YN"/>
+		<result property="infcCausExmnYn" column="INFC_CAUS_EXMN_YN"/>
+		<result property="infcCausInjcYn" column="INFC_CAUS_INJC_YN"/>
+		<result property="infcCausEtcYn" column="INFC_CAUS_ETC_YN"/>
+		<result property="cmplYn" column="CMPL_YN"/>
+		<result property="trnfYn" column="TRNF_YN"/>
+		<result property="qlasReOprtYn" column="QLAS_RE_OPRT_YN"/>
+		<result property="qlasReAdmsYn" column="QLAS_RE_ADMS_YN"/>
+		<result property="qlasInhsInfcYn" column="QLAS_INHS_INFC_YN"/>
+		<result property="qlasEtcYn" column="QLAS_ETC_YN"/>
+		<result property="qlasPlanNthnAdmsYn" column="QLAS_PLAN_NTHN_ADMS_YN"/>
+		<result property="qlasFldwYn" column="QLAS_FLDW_YN"/>
+		<result property="qlasDschAftHour48BefrAimsYn" column="QLAS_DSCH_AFT_HOUR48_BEFR_AIMS_YN"/>
+		<result property="qlasDschAftHour48BefrDethYn" column="QLAS_DSCH_AFT_HOUR48_BEFR_DETH_YN"/>
+		<result property="qlasHour24BefrReAdmsYn" column="QLAS_HOUR24_BEFR_RE_ADMS_YN"/>
+		<result property="qlasOprtCnclYn" column="QLAS_OPRT_CNCL_YN"/>
+		<result property="nonSrgcBpsyNtm" column="NON_SRGC_BPSY_NTM"/>
+		<result property="opsiInfcYn" column="OPSI_INFC_YN"/>
+		<result property="crsyInfcYn" column="CRSY_INFC_YN"/>
+		<result property="cancRgstTrgtYn" column="CANC_RGST_TRGT_YN"/>
+		<result property="tumrMlgtYn" column="TUMR_MLGT_YN"/>
+		<result property="tumrPstvYn" column="TUMR_PSTV_YN"/>
+		<result property="tumrBnunYn" column="TUMR_BNUN_YN"/>
+		<result property="prpdDethYn" column="PRPD_DETH_YN"/>
+		<result property="twinYn" column="TWIN_YN"/>
+		<result property="nwbrScksYn" column="NWBR_SCKS_YN"/>
+		<result property="nicuSthsDdcn" column="NICU_STHS_DDCN"/>
+		<result property="cicuSthsDdcn" column="CICU_STHS_DDCN"/>
+		<result property="nedisCnfrYn" column="NEDIS_CNFR_YN"/>
+		<result property="pthlCnfrYn" column="PTHL_CNFR_YN"/>
+		<result property="pthlCnfrCtn" column="PTHL_CNFR_CTN"/>
+		<result property="mdanCd" column="MDAN_CD"/>
+		<result property="lastDxUpdtDt" column="LAST_DX_UPDT_DT"/>
+		<result property="dschSmppWorkSttsCd" column="DSCH_SMPP_WORK_STTS_CD"/>
+		<result property="mdrcScinWorkSttsCd" column="MDRC_SCIN_WORK_STTS_CD"/>
+		<result property="qultImrvChtsWorkSttsCd" column="QULT_IMRV_CHTS_WORK_STTS_CD"/>
+		<result property="mdrcScinWrkrId" column="MDRC_SCIN_WRKR_ID"/>
+		<result property="mdrcScinWorkDt" column="MDRC_SCIN_WORK_DT"/>
+		<result property="oprtYn" column="OPRT_YN"/>
+		<result property="dethYn" column="DETH_YN"/>
+		<result property="hour48WthnReEnrmYn" column="HOUR48_WTHN_RE_ENRM_YN"/>
+		<result property="infcYn1" column="INFC_YN1"/>
+		<result property="infcYn2" column="INFC_YN2"/>
+		<result property="infcYn3" column="INFC_YN3"/>
+		<result property="infcYn4" column="INFC_YN4"/>
+		<result property="infcYn5" column="INFC_YN5"/>
+		<result property="infcYn6" column="INFC_YN6"/>
+		<result property="infcYn7" column="INFC_YN7"/>
+		<result property="infcYn8" column="INFC_YN8"/>
+		<result property="infcYn9" column="INFC_YN9"/>
+		<result property="qlasTrgtYn01" column="QLAS_TRGT_YN01"/>
+		<result property="qlasTrgtYn02" column="QLAS_TRGT_YN02"/>
+		<result property="qlasTrgtYn03" column="QLAS_TRGT_YN03"/>
+		<result property="qlasTrgtYn04" column="QLAS_TRGT_YN04"/>
+		<result property="qlasTrgtYn05" column="QLAS_TRGT_YN05"/>
+		<result property="qlasTrgtYn06" column="QLAS_TRGT_YN06"/>
+		<result property="qlasTrgtYn07" column="QLAS_TRGT_YN07"/>
+		<result property="qlasTrgtYn08" column="QLAS_TRGT_YN08"/>
+		<result property="qlasTrgtYn09" column="QLAS_TRGT_YN09"/>
+		<result property="qlasTrgtYn10" column="QLAS_TRGT_YN10"/>
+		<result property="stlbDt" column="STLB_DT"/>
+		<result property="dethDt" column="DETH_DT"/>
+		<result property="trnfDvsnCd" column="TRNF_DVSN_CD"/>
+		<result property="dzClsfCd" column="DZ_CLSF_CD"/>
+		<result property="trifIntdDvsnCd" column="TRIF_INTD_DVSN_CD"/>
+		<result property="trifDmmcCd" column="TRIF_DMMC_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001 (퇴원요약정보 조회) 
+        Description :                                           퇴원요약정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrdscdomt0001 */
+		        MDRP_NO                                               as MDRP_NO                                               /* 진료접수번호 */
+		     ,  PTNO                                                  as PTNO                                                  /* 환자번호 */
+		     ,  to_char(MR_ADMS_YMD, 'YYYYMMDDHH24MISS')              as MR_ADMS_YMD                                           /* MR입원일자 */
+		     ,  to_char(MR_DSCH_YMD, 'YYYYMMDDHH24MISS')              as MR_DSCH_YMD                                           /* MR퇴원일자 */
+		     ,  PTNT_NM                                               as PTNT_NM                                               /* 환자명 */
+		     ,  GEND_CD                                               as GEND_CD                                               /* 성별코드 */
+		     ,  ZPCD                                                  as ZPCD                                                  /* 우편번호 */
+		     ,  DEAD_NM                                               as DEAD_NM                                               /* 상세주소명 */
+		     ,  ADMS_NTM                                              as ADMS_NTM                                              /* 입원횟수 */
+		     ,  to_char(LAST_DSCH_YMD, 'YYYYMMDDHH24MISS')            as LAST_DSCH_YMD                                         /* 최종퇴원일자 */
+		     ,  MDRC_ISTY_CD                                          as MDRC_ISTY_CD                                          /* 의무기록보험유형코드 */
+		     ,  MR_AMPA_CD                                            as MR_AMPA_CD                                            /* MR입원경로코드 */
+		     ,  COHS_WHCR_CD                                          as COHS_WHCR_CD                                          /* 내원경위코드 */
+		     ,  DSCH_MCDP_CD                                          as DSCH_MCDP_CD                                          /* 퇴원진료과코드 */
+		     ,  MR_GNDR_ID                                            as MR_GNDR_ID                                            /* MR주치의사ID */
+		     ,  MR_MJDR_ID                                            as MR_MJDR_ID                                            /* MR전공의사ID */
+		     ,  CHCM_CD                                               as CHCM_CD                                               /* 주호소코드 */
+		     ,  CANC_RGST_DVSN_CD                                     as CANC_RGST_DVSN_CD                                     /* 암등록구분코드 */
+		     ,  ADTN_SBJC_APLY_YN                                     as ADTN_SBJC_APLY_YN                                     /* 추가사항적용여부 */
+		     ,  ADTN_SBJC_YN                                          as ADTN_SBJC_YN                                          /* 추가사항여부 */
+		     ,  ADMS_PNTM_DX_CD                                       as ADMS_PNTM_DX_CD                                       /* 입원시점진단코드 */
+		     ,  DSCH_MDTE_RSLT_CD                                     as DSCH_MDTE_RSLT_CD                                     /* 퇴원치료결과코드 */
+		     ,  DSCH_FRMT_CD                                          as DSCH_FRMT_CD                                          /* 퇴원형태코드 */
+		     ,  OCPT_CD                                               as OCPT_CD                                               /* 직업코드 */
+		     ,  DRG_NO                                                as DRG_NO                                                /* DRG번호 */
+		     ,  ADMS_MCDP_CD                                          as ADMS_MCDP_CD                                          /* 입원진료과코드 */
+		     ,  SBDP_DPRT_CD                                          as SBDP_DPRT_CD                                          /* 분과부서코드 */
+		     ,  PADV_CD                                               as PADV_CD                                               /* 장소구분코드 */
+		     ,  MCCN_CD                                               as MCCN_CD                                               /* 진료센터코드 */
+		     ,  ABC_MCCN_CD                                           as ABC_MCCN_CD                                           /* ABC진료센터코드 */
+		     ,  PRPD_FRMT_CD                                          as PRPD_FRMT_CD                                          /* 산모형태코드 */
+		     ,  INFR_ENFR_YN                                          as INFR_ENFR_YN                                          /* 불임시행여부 */
+		     ,  CSRN_YN                                               as CSRN_YN                                               /* 제왕절개여부 */
+		     ,  SBBY_CNT                                              as SBBY_CNT                                              /* 사산아수 */
+		     ,  PRPD_NO                                               as PRPD_NO                                               /* 산모번호 */
+		     ,  BORN_FRMT_CD                                          as BORN_FRMT_CD                                          /* 출생형태코드 */
+		     ,  PRGN_WEEK_CNT                                         as PRGN_WEEK_CNT                                         /* 임신주수 */
+		     ,  MR_NWBR_BDWG_VL                                       as MR_NWBR_BDWG_VL                                       /* MR신생아체중값 */
+		     ,  CLNC_DX_CD1                                           as CLNC_DX_CD1                                           /* 임상진단코드1 */
+		     ,  MR_DETH_CAUS_CD1                                      as MR_DETH_CAUS_CD1                                      /* MR사망원인코드1 */
+		     ,  CLNC_DX_CD2                                           as CLNC_DX_CD2                                           /* 임상진단코드2 */
+		     ,  MR_DETH_CAUS_CD2                                      as MR_DETH_CAUS_CD2                                      /* MR사망원인코드2 */
+		     ,  ATPS_YN                                               as ATPS_YN                                               /* 부검여부 */
+		     ,  OPRT_DETH_CD                                          as OPRT_DETH_CD                                          /* 수술사망코드 */
+		     ,  ETC_TX_AFTR_INFC_YN                                   as ETC_TX_AFTR_INFC_YN                                   /* 기타처치이후감염여부 */
+		     ,  URSY_INFC_YN                                          as URSY_INFC_YN                                          /* 비뇨기계감염여부 */
+		     ,  RSSY_INFC_YN                                          as RSSY_INFC_YN                                          /* 호흡기계감염여부 */
+		     ,  DGSY_INFC_YN                                          as DGSY_INFC_YN                                          /* 소화기계감염여부 */
+		     ,  SPSS_INFC_YN                                          as SPSS_INFC_YN                                          /* 패혈증감염여부 */
+		     ,  ETC_INFC_YN                                           as ETC_INFC_YN                                           /* 기타감염여부 */
+		     ,  SIMS_CLSF_CD                                          as SIMS_CLSF_CD                                          /* 중증도분류코드 */
+		     ,  CMRS_USGE_MAIN_DXDP_CD                                as CMRS_USGE_MAIN_DXDP_CD                                /* 비교용도주진단과코드 */
+		     ,  MR_SIMS_CD                                            as MR_SIMS_CD                                            /* MR중증도코드 */
+		     ,  CCU_STHS_DDCN                                         as CCU_STHS_DDCN                                         /* 심장내과ICU재원일수 */
+		     ,  MICU_STHS_DDCN                                        as MICU_STHS_DDCN                                        /* 내과ICU재원일수 */
+		     ,  PICU_STHS_DDCN                                        as PICU_STHS_DDCN                                        /* 신경소아ICU재원일수 */
+		     ,  PICU_NR_STHS_DDCN                                     as PICU_NR_STHS_DDCN                                     /* 신경소아ICU_NR재원일수 */
+		     ,  CSICU_STHS_DDCN                                       as CSICU_STHS_DDCN                                       /* 심장외과ICU재원일수 */
+		     ,  NSICU_STHS_DDCN                                       as NSICU_STHS_DDCN                                       /* 신경외과ICU재원일수 */
+		     ,  SICU_STHS_DDCN                                        as SICU_STHS_DDCN                                        /* 외과ICU재원일수 */
+		     ,  ERRM_ICU_STHS_DDCN                                    as ERRM_ICU_STHS_DDCN                                    /* 응급실ICU재원일수 */
+		     ,  INCM_APRL_ASGN_ID                                     as INCM_APRL_ASGN_ID                                     /* 미비결재담당자ID */
+		     ,  to_char(INCM_APRL_DT, 'YYYYMMDDHH24MISS')             as INCM_APRL_DT                                          /* 미비결재일시 */
+		     ,  to_char(INCM_CNFR_MDFC_DT, 'YYYYMMDDHH24MISS')        as INCM_CNFR_MDFC_DT                                     /* 미비확인변경일시 */
+		     ,  RCHC_PSBL_YN                                          as RCHC_PSBL_YN                                          /* 리첵가능여부 */
+		     ,  RCHC_CHUP_CNFR_YN                                     as RCHC_CHUP_CNFR_YN                                     /* 리첵점검확인여부 */
+		     ,  TISS_EXMN_MDFC_CNFR_YN                                as TISS_EXMN_MDFC_CNFR_YN                                /* 조직검사변경확인여부 */
+		     ,  DSCH_SMRY_WODV_CD                                     as DSCH_SMRY_WODV_CD                                     /* 퇴원요약작업구분코드 */
+		     ,  DSCH_SMRY_WORK_ASGN_ID                                as DSCH_SMRY_WORK_ASGN_ID                                /* 퇴원요약작업담당자ID */
+		     ,  FRGN_YN                                               as FRGN_YN                                               /* 외국인여부 */
+		     ,  SRGC_BPSY_NTM                                         as SRGC_BPSY_NTM                                         /* 외과적생검횟수 */
+		     ,  EDSC_BPSY_NTM                                         as EDSC_BPSY_NTM                                         /* 내시경적생검횟수 */
+		     ,  NEAS_BPSY_NTM                                         as NEAS_BPSY_NTM                                         /* 세침흡인술생검횟수 */
+		     ,  ETC_BPSY_NTM                                          as ETC_BPSY_NTM                                          /* 기타생검횟수 */
+		     ,  NWBR_DETH_CD                                          as NWBR_DETH_CD                                          /* 신생아사망코드 */
+		     ,  OPRT_ANST_EN                                          as OPRT_ANST_EN                                          /* 수술마취유무 */
+		     ,  CMTX_YN                                               as CMTX_YN                                               /* 협진여부 */
+		     ,  QLAS_IMPL_YN                                          as QLAS_IMPL_YN                                          /* QA실시여부 */
+		     ,  GNDR_MDFC_YN                                          as GNDR_MDFC_YN                                          /* 주치의사변경여부 */
+		     ,  TDF_NO                                                as TDF_NO                                                /* TD번호 */
+		     ,  DAMG_CAUS_ACTT_CD                                     as DAMG_CAUS_ACTT_CD                                     /* 손상원인활동코드 */
+		     ,  to_char(DAMG_OCRN_YMD, 'YYYYMMDDHH24MISS')            as DAMG_OCRN_YMD                                         /* 손상발생일자 */
+		     ,  FRST_MDTE_PLAC_CD                                     as FRST_MDTE_PLAC_CD                                     /* 최초치료장소코드 */
+		     ,  SUCD_RISK_PRFC_CD                                     as SUCD_RISK_PRFC_CD                                     /* 자살위험요인코드 */
+		     ,  DAMG_RCVY_RSLT_CD                                     as DAMG_RCVY_RSLT_CD                                     /* 손상회복결과코드 */
+		     ,  RETU_YN                                               as RETU_YN                                               /* 회송여부 */
+		     ,  DAMG_OCRN_PLAC_CD                                     as DAMG_OCRN_PLAC_CD                                     /* 손상발생장소코드 */
+		     ,  INFC_CAUS_OPRT_YN                                     as INFC_CAUS_OPRT_YN                                     /* 감염원인수술여부 */
+		     ,  INFC_CAUS_TX_YN                                       as INFC_CAUS_TX_YN                                       /* 감염원인처치여부 */
+		     ,  INFC_CAUS_EXMN_YN                                     as INFC_CAUS_EXMN_YN                                     /* 감염원인검사여부 */
+		     ,  INFC_CAUS_INJC_YN                                     as INFC_CAUS_INJC_YN                                     /* 감염원인주사여부 */
+		     ,  INFC_CAUS_ETC_YN                                      as INFC_CAUS_ETC_YN                                      /* 감염원인기타여부 */
+		     ,  CMPL_YN                                               as CMPL_YN                                               /* 합병증여부 */
+		     ,  TRNF_YN                                               as TRNF_YN                                               /* 수혈여부 */
+		     ,  QLAS_RE_OPRT_YN                                       as QLAS_RE_OPRT_YN                                       /* QA재수술여부 */
+		     ,  QLAS_RE_ADMS_YN                                       as QLAS_RE_ADMS_YN                                       /* QA재입원여부 */
+		     ,  QLAS_INHS_INFC_YN                                     as QLAS_INHS_INFC_YN                                     /* QA원내감염여부 */
+		     ,  QLAS_ETC_YN                                           as QLAS_ETC_YN                                           /* QA기타여부 */
+		     ,  QLAS_PLAN_NTHN_ADMS_YN                                as QLAS_PLAN_NTHN_ADMS_YN                                /* QA계획없음입원여부 */
+		     ,  QLAS_FLDW_YN                                          as QLAS_FLDW_YN                                          /* QA낙상여부 */
+		     ,  QLAS_DSCH_AFT_HOUR48_BEFR_AIMS_YN                     as QLAS_DSCH_AFT_HOUR48_BEFR_AIMS_YN                     /* QA퇴원후48시간이전심근경색여부 */
+		     ,  QLAS_DSCH_AFT_HOUR48_BEFR_DETH_YN                     as QLAS_DSCH_AFT_HOUR48_BEFR_DETH_YN                     /* QA퇴원후48시간이전사망여부 */
+		     ,  QLAS_HOUR24_BEFR_RE_ADMS_YN                           as QLAS_HOUR24_BEFR_RE_ADMS_YN                           /* QA24시간이전재입원여부 */
+		     ,  QLAS_OPRT_CNCL_YN                                     as QLAS_OPRT_CNCL_YN                                     /* QA수술취소여부 */
+		     ,  NON_SRGC_BPSY_NTM                                     as NON_SRGC_BPSY_NTM                                     /* 비외과적생검횟수 */
+		     ,  OPSI_INFC_YN                                          as OPSI_INFC_YN                                          /* 수술부위감염여부 */
+		     ,  CRSY_INFC_YN                                          as CRSY_INFC_YN                                          /* 순환기계감염여부 */
+		     ,  CANC_RGST_TRGT_YN                                     as CANC_RGST_TRGT_YN                                     /* 암등록대상여부 */
+		     ,  TUMR_MLGT_YN                                          as TUMR_MLGT_YN                                          /* 종양미상여부 */
+		     ,  TUMR_PSTV_YN                                          as TUMR_PSTV_YN                                          /* 종양양성여부 */
+		     ,  TUMR_BNUN_YN                                          as TUMR_BNUN_YN                                          /* 종양미상여부 */
+		     ,  PRPD_DETH_YN                                          as PRPD_DETH_YN                                          /* 산모사망여부 */
+		     ,  TWIN_YN                                               as TWIN_YN                                               /* 쌍둥이여부 */
+		     ,  NWBR_SCKS_YN                                          as NWBR_SCKS_YN                                          /* 신생아병여부 */
+		     ,  NICU_STHS_DDCN                                        as NICU_STHS_DDCN                                        /* 신생아ICU재원일수 */
+		     ,  CICU_STHS_DDCN                                        as CICU_STHS_DDCN                                        /* 통합ICU재원일수 */
+		     ,  NEDIS_CNFR_YN                                         as NEDIS_CNFR_YN                                         /* NEDIS확인여부 */
+		     ,  PTHL_CNFR_YN                                          as PTHL_CNFR_YN                                          /* 병리확인여부 */
+		     ,  PTHL_CNFR_CTN                                         as PTHL_CNFR_CTN                                         /* 병리확인내용 */
+		     ,  MDAN_CD                                               as MDAN_CD                                               /* 의료기관코드 */
+		     ,  to_char(LAST_DX_UPDT_DT, 'YYYYMMDDHH24MISS')          as LAST_DX_UPDT_DT                                       /* 최종진단수정일시 */
+		     ,  DSCH_SMPP_WORK_STTS_CD                                as DSCH_SMPP_WORK_STTS_CD                                /* 퇴원요약지작업상태코드 */
+		     ,  MDRC_SCIN_WORK_STTS_CD                                as MDRC_SCIN_WORK_STTS_CD                                /* 의무기록상병작업상태코드 */
+		     ,  QULT_IMRV_CHTS_WORK_STTS_CD                           as QULT_IMRV_CHTS_WORK_STTS_CD                           /* 질향상점검표작업상태코드 */
+		     ,  MDRC_SCIN_WRKR_ID                                     as MDRC_SCIN_WRKR_ID                                     /* 의무기록상병작업자ID */
+		     ,  to_char(MDRC_SCIN_WORK_DT, 'YYYYMMDDHH24MISS')        as MDRC_SCIN_WORK_DT                                     /* 의무기록상병작업일시 */
+		     ,  OPRT_YN                                               as OPRT_YN                                               /* 수술여부 */
+		     ,  DETH_YN                                               as DETH_YN                                               /* 사망여부 */
+		     ,  HOUR48_WTHN_RE_ENRM_YN                                as HOUR48_WTHN_RE_ENRM_YN                                /* 48시간내 재입실 여부 */
+		     ,  INFC_YN1                                              as INFC_YN1                                              /* 감염여부1 */
+		     ,  INFC_YN2                                              as INFC_YN2                                              /* 감염여부2 */
+		     ,  INFC_YN3                                              as INFC_YN3                                              /* 감염여부3 */
+		     ,  INFC_YN4                                              as INFC_YN4                                              /* 감염여부4 */
+		     ,  INFC_YN5                                              as INFC_YN5                                              /* 감염여부5 */
+		     ,  INFC_YN6                                              as INFC_YN6                                              /* 감염여부6 */
+		     ,  INFC_YN7                                              as INFC_YN7                                              /* 감염여부7 */
+		     ,  INFC_YN8                                              as INFC_YN8                                              /* 감염여부8 */
+		     ,  INFC_YN9                                              as INFC_YN9                                              /* 감염여부9 */
+		     ,  QLAS_TRGT_YN01                                        as QLAS_TRGT_YN01                                        /* QA대상여부01 */
+		     ,  QLAS_TRGT_YN02                                        as QLAS_TRGT_YN02                                        /* QA대상여부02 */
+		     ,  QLAS_TRGT_YN03                                        as QLAS_TRGT_YN03                                        /* QA대상여부03 */
+		     ,  QLAS_TRGT_YN04                                        as QLAS_TRGT_YN04                                        /* QA대상여부04 */
+		     ,  QLAS_TRGT_YN05                                        as QLAS_TRGT_YN05                                        /* QA대상여부05 */
+		     ,  QLAS_TRGT_YN06                                        as QLAS_TRGT_YN06                                        /* QA대상여부06 */
+		     ,  QLAS_TRGT_YN07                                        as QLAS_TRGT_YN07                                        /* QA대상여부07 */
+		     ,  QLAS_TRGT_YN08                                        as QLAS_TRGT_YN08                                        /* QA대상여부08 */
+		     ,  QLAS_TRGT_YN09                                        as QLAS_TRGT_YN09                                        /* QA대상여부09 */
+		     ,  QLAS_TRGT_YN10                                        as QLAS_TRGT_YN10                                        /* QA대상여부10 */
+		     ,  to_char(STLB_DT, 'YYYYMMDDHH24MISS')                  as STLB_DT                                               /* 사산일시 */
+		     ,  to_char(DETH_DT, 'YYYYMMDDHH24MISS')                  as DETH_DT                                               /* 사망일시 */
+		     ,  TRNF_DVSN_CD                                          as TRNF_DVSN_CD                                          /* 수혈구분코드 */
+		     ,  DZ_CLSF_CD                                            as DZ_CLSF_CD                                            /* 질병분류코드 */
+		     ,  TRIF_INTD_DVSN_CD                                     as TRIF_INTD_DVSN_CD                                     /* 외상정보의도구분코드 */
+		     ,  TRIF_DMMC_CD                                          as TRIF_DMMC_CD                                          /* 외상정보손상메커니즘코드 */
+		  from  MRDSCDOMT /* 퇴원요약 */
+		 where  MDRP_NO = #{mdrpNo}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrdscdomt0001 (퇴원요약 퇴원요약지작업 상태 코드 변경) 
+        Description :                                           원무에서 퇴원 취소 발생시 의무기록 취소상태로 변경처리
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrdscdomt0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrdscdomt0001 */
+		        MRDSCDOMT /* 퇴원요약 */
+		   set  DSCH_SMPP_WORK_STTS_CD = #{dschSmppWorkSttsCd}    /* 퇴원요약지작업상태코드 */
+		     ,  MDRC_SCIN_WORK_STTS_CD = #{mdrcScinWorkSttsCd}    /* 의무기록상병작업상태코드 */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  MDRP_NO = #{mdrpNo}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="mrCtrlCd" column="MR_CTRL_CD"/>
+		<result property="mrDtlsCtrlCd" column="MR_DTLS_CTRL_CD"/>
+		<result property="mrCtrlNm" column="MR_CTRL_NM"/>
+		<result property="mrDtlsCtrlNm" column="MR_DTLS_CTRL_NM"/>
+		<result property="mrDtlsCtrlAllNm" column="MR_DTLS_CTRL_ALL_NM"/>
+		<result property="mrDtlsCtrlAbrvNm" column="MR_DTLS_CTRL_ABRV_NM"/>
+		<result property="mrLwrnCtrlCd" column="MR_LWRN_CTRL_CD"/>
+		<result property="ctrlSortSqnc" column="CTRL_SORT_SQNC"/>
+		<result property="mrCtrlChrcVl1" column="MR_CTRL_CHRC_VL1"/>
+		<result property="mrCtrlChrcVl2" column="MR_CTRL_CHRC_VL2"/>
+		<result property="mrCtrlChrcVl3" column="MR_CTRL_CHRC_VL3"/>
+		<result property="mrCtrlChrcVl4" column="MR_CTRL_CHRC_VL4"/>
+		<result property="mrCtrlChrcVl5" column="MR_CTRL_CHRC_VL5"/>
+		<result property="mrCtrlChrcVl6" column="MR_CTRL_CHRC_VL6"/>
+		<result property="mrCtrlChrcVl7" column="MR_CTRL_CHRC_VL7"/>
+		<result property="mrCtrlChrcVl8" column="MR_CTRL_CHRC_VL8"/>
+		<result property="mrCtrlChrcVl9" column="MR_CTRL_CHRC_VL9"/>
+		<result property="mrCtrlChrcVl10" column="MR_CTRL_CHRC_VL10"/>
+		<result property="mrCtrlNmbrVl1" column="MR_CTRL_NMBR_VL1"/>
+		<result property="mrCtrlNmbrVl2" column="MR_CTRL_NMBR_VL2"/>
+		<result property="mrCtrlNmbrVl3" column="MR_CTRL_NMBR_VL3"/>
+		<result property="mrCtrlNmbrVl4" column="MR_CTRL_NMBR_VL4"/>
+		<result property="mrCtrlNmbrVl5" column="MR_CTRL_NMBR_VL5"/>
+		<result property="mrCtrlNmbrVl6" column="MR_CTRL_NMBR_VL6"/>
+		<result property="mrCtrlNmbrVl7" column="MR_CTRL_NMBR_VL7"/>
+		<result property="mrCtrlNmbrVl8" column="MR_CTRL_NMBR_VL8"/>
+		<result property="mrCtrlNmbrVl9" column="MR_CTRL_NMBR_VL9"/>
+		<result property="mrCtrlNmbrVl10" column="MR_CTRL_NMBR_VL10"/>
+		<result property="aplyPartCd" column="APLY_PART_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="ctrlDscrCtn" column="CTRL_DSCR_CTN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt */
+				<![CDATA[
+				select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneMrctrlmmt */
+				        MR_CTRL_CD                                 as MR_CTRL_CD                                 /* MR제어코드 */
+				     ,  MR_DTLS_CTRL_CD                            as MR_DTLS_CTRL_CD                            /* MR세부제어코드 */
+				     ,  MR_CTRL_NM                                 as MR_CTRL_NM                                 /* MR제어명 */
+				     ,  MR_DTLS_CTRL_NM                            as MR_DTLS_CTRL_NM                            /* MR세부제어명 */
+				     ,  MR_DTLS_CTRL_ALL_NM                        as MR_DTLS_CTRL_ALL_NM                        /* MR세부제어전체명 */
+				     ,  MR_DTLS_CTRL_ABRV_NM                       as MR_DTLS_CTRL_ABRV_NM                       /* MR세부제어약어명 */
+				     ,  MR_LWRN_CTRL_CD                            as MR_LWRN_CTRL_CD                            /* MR하위제어코드 */
+				     ,  CTRL_SORT_SQNC                             as CTRL_SORT_SQNC                             /* 제어정렬순서 */
+				     ,  MR_CTRL_CHRC_VL1                           as MR_CTRL_CHRC_VL1                           /* MR제어문자값1 */
+				     ,  MR_CTRL_CHRC_VL2                           as MR_CTRL_CHRC_VL2                           /* MR제어문자값2 */
+				     ,  MR_CTRL_CHRC_VL3                           as MR_CTRL_CHRC_VL3                           /* MR제어문자값3 */
+				     ,  MR_CTRL_CHRC_VL4                           as MR_CTRL_CHRC_VL4                           /* MR제어문자값4 */
+				     ,  MR_CTRL_CHRC_VL5                           as MR_CTRL_CHRC_VL5                           /* MR제어문자값5 */
+				     ,  MR_CTRL_CHRC_VL6                           as MR_CTRL_CHRC_VL6                           /* MR제어문자값6 */
+				     ,  MR_CTRL_CHRC_VL7                           as MR_CTRL_CHRC_VL7                           /* MR제어문자값7 */
+				     ,  MR_CTRL_CHRC_VL8                           as MR_CTRL_CHRC_VL8                           /* MR제어문자값8 */
+				     ,  MR_CTRL_CHRC_VL9                           as MR_CTRL_CHRC_VL9                           /* MR제어문자값9 */
+				     ,  MR_CTRL_CHRC_VL10                          as MR_CTRL_CHRC_VL10                          /* MR제어문자값10 */
+				     ,  MR_CTRL_NMBR_VL1                           as MR_CTRL_NMBR_VL1                           /* MR제어숫자값1 */
+				     ,  MR_CTRL_NMBR_VL2                           as MR_CTRL_NMBR_VL2                           /* MR제어숫자값2 */
+				     ,  MR_CTRL_NMBR_VL3                           as MR_CTRL_NMBR_VL3                           /* MR제어숫자값3 */
+				     ,  MR_CTRL_NMBR_VL4                           as MR_CTRL_NMBR_VL4                           /* MR제어숫자값4 */
+				     ,  MR_CTRL_NMBR_VL5                           as MR_CTRL_NMBR_VL5                           /* MR제어숫자값5 */
+				     ,  MR_CTRL_NMBR_VL6                           as MR_CTRL_NMBR_VL6                           /* MR제어숫자값6 */
+				     ,  MR_CTRL_NMBR_VL7                           as MR_CTRL_NMBR_VL7                           /* MR제어숫자값7 */
+				     ,  MR_CTRL_NMBR_VL8                           as MR_CTRL_NMBR_VL8                           /* MR제어숫자값8 */
+				     ,  MR_CTRL_NMBR_VL9                           as MR_CTRL_NMBR_VL9                           /* MR제어숫자값9 */
+				     ,  MR_CTRL_NMBR_VL10                          as MR_CTRL_NMBR_VL10                          /* MR제어숫자값10 */
+				     ,  APLY_PART_CD                               as APLY_PART_CD                               /* 적용파트코드 */
+				     ,  to_char(APST_YMD, 'YYYY-MM-DD')            as APST_YMD                                   /* 적용시작일자 */
+				     ,  to_char(APFN_YMD, 'YYYY-MM-DD')            as APFN_YMD                                   /* 적용종료일자 */
+				     ,  CTRL_DSCR_CTN                              as CTRL_DSCR_CTN                              /* 제어설명내용 */
+				     ,  RMRK_CTN                                   as RMRK_CTN                                   /* 비고내용 */
+				  from  MRCTRLMMT /* MR제어정보 */
+				 where  MR_CTRL_CD      = #{mrCtrlCd}
+				   and  MR_DTLS_CTRL_CD = #{mrDtlsCtrlCd}
+				   and  rownum <= 1
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rgstCct" column="RGST_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno */
+		<![CDATA[
+				select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetExcpPtno */
+				        PTNO
+				     ,  (
+				        select  count(*)
+				          from  MRCTRLMMT s1
+				         where  s1.MR_CTRL_CD = 'MRH_013' -- 추천상병 처리 예외 환자 목록
+				           and  s1.MR_DTLS_CTRL_CD = a.PTNO
+				        ) as RGST_CCT   -- 등록건수
+				  from  APRCRPTNT a -- 진료접수
+				 where  MDRP_NO = #{mdrpNo}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct-result" type="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO">
+	
+		<result property="poaRgstCct" column="POA_RGST_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-selectOneGetPoaRgstCct */
+		<![CDATA[
+		select  count(*)  as POA_RGST_CCT
+		  from  (
+		        select  B.MDRP_NO                       as MDRP_NO              /* 진료접수번호 */
+		             ,  A.MCDP_CD                       as MCDP_CD
+		             ,  a.CLNC_DX_CD                    as CLNC_DX_CD
+		             ,  a.CLNC_DX_NM                    as CLNC_DX_NM
+		             ,  B.SCIN_CD                       as SCIN_CD
+		             ,  B.MAIN_SCIN_YN                  as MAIN_SCIN_YN         /* 주상병여부 */
+		             ,  nvl(B.STHS_SCIN_DVSN_CD, 'Y')   as POA_CD               /* 재원상병구분코드 */
+		             ,  B.PTNT_CLNC_DX_SNO              as PTNT_CLNC_DX_SNO_S   /* 환자임상진단일련번호 */
+		          from  MDPACLNCT A  -- 환자임상진단내역
+		             ,  MDPADIAGT B  -- 환자상병내역
+		         where  1=1
+		           and  A.MDRP_NO = #{mdrpNo}
+		           and  A.MDRP_NO = B.MDRP_NO
+		           and  A.PTNT_CLNC_DX_SNO = B.PTNT_CLNC_DX_SNO
+		        )  a1
+		     ,  (
+		        select  A.MDRP_NO         as MDRP_NO
+		             ,  (
+		                select  s1.MCDP_CD
+		                  from  MRRCSCIDT s1
+		                 where  s1.MDRP_NO = A.mdrp_no
+		                   and  s1.MAIN_SCIN_YN <> 'X'
+		                   and  s1.CLNC_DX_CD = b.CLNC_DX_CD
+		                )                 as MCDP_CD
+		             ,  B.CLNC_DX_CD      as CLNC_DX_CD
+		             ,  B.CLNC_DX_NM      as CLNC_DX_NM
+		             ,  b.SCIN_CD         as SCIN_CD
+		             ,  nvl((
+		                select  s1.MAIN_SCIN_YN
+		                  from  MRRCSCIDT s1
+		                 where  s1.MDRP_NO = A.mdrp_no
+		                   and  s1.MAIN_SCIN_YN = 'Y'
+		                   and  s1.CLNC_DX_CD = b.CLNC_DX_CD
+		                ), 'N')                 as MAIN_SCIN_YN
+		             ,  decode(B.POA_CD, 'X', NULL, B.POA_CD)             as POA_CD
+		          from  MRRCSCINT A
+		             ,  MRRCSCIDT B
+		         where  A.MDRP_NO = #{mdrpNo}
+		           and  A.MDRP_NO = B.MDRP_NO
+		           and  A.MCDP_CD = B.MCDP_CD
+		           and  b.MAIN_SCIN_YN = 'X'
+		        ) a2
+		 where  a1.MDRP_NO    = a2.MDRP_NO
+		   and  a1.CLNC_DX_CD = a2.CLNC_DX_CD
+		   and  a1.SCIN_CD    = a2.SCIN_CD
+		   --and  FN_MR_CHECK_DPRT_YN(a1.MCDP_CD, {mcdpCd}, '1') = 'Y'
+		   and  a1.POA_CD    <> a2.POA_CD
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrhidscmt0001 (퇴원요약지 전송결과 변경처리) 
+        Description :                                           퇴원요약지 전송결과 변경처리
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrhidscmt0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrhidscmt0001 */
+		update  MRHIDSCMT /* 신포괄퇴원요약지내역 */
+		   set  CLAM_NO           = nvl(#{clamNo}    ,CLAM_NO     )   -- 청구번호
+		     ,  RPTN_NO           = nvl(#{rptnNo}    ,RPTN_NO     )   -- 심평원접수번호
+		     ,  RPTN_YY           = nvl(#{rptnYy}    ,RPTN_YY     )   -- 접수년도
+		     ,  CLDC_SNO          = nvl(#{cldcSno}   ,CLDC_SNO    )   -- 청구서일련번호
+		     ,  CLSP_SNO          = nvl(#{clspSno}   ,CLSP_SNO    )   -- 청구명세서일련번호
+		     ,  CLPR_VL           = nvl(#{clprVl}    ,CLPR_VL     )   -- 청구키
+		     ,  ASRR_DVSN_CD      = nvl(#{asrrDvsnCd},ASRR_DVSN_CD)   -- 보험자구분코드
+		     ,  RFRC_BSDV_CD      = nvl(#{rfrcBsdvCd},RFRC_BSDV_CD)   -- 참고업무구분코드
+		     ,  HIRA_RQST_NO      = nvl(#{hiraRqstNo},HIRA_RQST_NO)   -- 요청번호
+		     ,  RECH_RPTN_ID      = nvl(#{rechRptnId},RECH_RPTN_ID)   -- 재심사접수ID
+		        /* ====================================================================================== */
+		     ,  DSCH_SMPP_WORK_STTS_CD = #{dschSmppWorkSttsCd}                        /* 퇴원요약지작업상태코드 */
+		        /* 점검상태 처리 ======================================================================== */
+		     ,  HIRA_CHUP_STTS_CD      = nvl(#{hiraChupSttsCd}, HIRA_CHUP_STTS_CD)          /* 심평원점검상태코드 */
+		     ,  HIRA_CHUP_DT           = case
+		                                 when #{hiraChupSttsCd} is null then HIRA_CHUP_DT   /* 심평원점검일시 */
+		                                                                else sysdate
+		                                 end
+		     ,  HIRA_INSE_ID           = case
+		                                 when #{hiraChupSttsCd} is null then HIRA_INSE_ID   /* 심평원점검자ID */
+		                                                                else #{gvUserId}
+		                                 end                                                /* 심평원점검자ID */
+		        /* 전송상태 처리 ======================================================================== */
+		     ,  HIRA_TRAS_STTS_CD = nvl(#{hiraTrasSttsCd}, HIRA_TRAS_STTS_CD)      -- 심평원전송상태코드
+		     ,  HIRA_TRAS_DT      = case
+		                            when #{hiraTrasSttsCd} is null then HIRA_TRAS_DT
+		                                                           else sysdate
+		                            end                                           -- 심평원전송일시
+		     ,  HIRA_TSMT_ID      = case
+		                            when #{hiraTrasSttsCd} is null then HIRA_TSMT_ID
+		                                                           else #{gvUserId}
+		                            end                                           -- 심평원전송자ID
+		        /* ====================================================================================== */
+		     ,  LAST_UPDR_ID           = #{gvUserId}            /* 최종수정자ID */
+		     ,  LAST_UPDT_IP           = #{gvUserIp}            /* 최종수정IP */
+		     ,  LAST_UPDT_DT           = sysdate                /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}        /* 최종수정클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}        /* 최종수정서버프로그램ID */
+		 where  MDRP_NO       = #{mdrpNo}          /*접수번호*/
+		   and  HIRA_TRAS_SNO = #{hiraTrasSno}     /*심평원전송일련번호*/
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhidscht0001 (퇴원요약지(전송용) 이력생성) 
+        Description :                                           퇴원요약지(전송용) 이력생성
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhidscht0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhidscht0001 */
+		insert
+		  into  MRHIDSCHT     /* 신포괄퇴원요약지이력 */
+		     (  MDRP_NO                                               /* 접수번호 */
+		     ,  HIRA_TRAS_SNO                                         /* 심평원전송일련번호 */
+		     ,  WORK_SNO                                              /* 작업일련번호 */
+		     ,  NINL_SBMS_FORM_CD                                     /* 신포괄제출서식코드 */
+		     ,  NINL_SBMS_FORM_VRSN_NO                                /* 신포괄제출서식버젼번호 */
+		     ,  CLAM_NO                                               /* 청구번호 */
+		     ,  RPTN_NO                                               /* 심평원접수번호 */
+		     ,  RPTN_YY                                               /* 접수년도 */
+		     ,  CLDC_SNO                                              /* 청구서일련번호 */
+		     ,  CLSP_SNO                                              /* 청구명세서일련번호 */
+		     ,  CLPR_VL                                               /* 청구키 */
+		     ,  ASRR_DVSN_CD                                          /* 보험자구분코드 */
+		     ,  RFRC_BSDV_CD                                          /* 참고업무구분코드 */
+		     ,  HIRA_RQST_NO                                          /* 요청번호 */
+		     ,  RECH_RPTN_ID                                          /* 재심사접수ID */
+		     ,  PTNO                                                  /* 환자번호 */
+		     ,  PTNT_NM                                               /* 환자성명 */
+		     ,  PTNT_RSRN                                             /* 환자주민등록번호 */
+		     ,  ADMS_DT                                               /* 입원일시 */
+		     ,  ADMS_MCDP_CD                                          /* 입원진료과코드 */
+		     ,  HIAD_CD                                               /* 심평원입원과코드 */
+		     ,  HIAD_IMDP_DTLS_CD                                     /* 심평원입원과내과세부코드 */
+		     ,  ADMS_MDDR_ID                                          /* 입원진료의사ID */
+		     ,  HIRA_ADMS_DR_NM                                       /* 심평원입원의사명 */
+		     ,  DSCH_DT                                               /* 퇴원일시 */
+		     ,  DSCH_MCDP_CD                                          /* 퇴원진료과코드 */
+		     ,  HIDD_CD                                               /* 심평원퇴원과코드 */
+		     ,  HIDD_IMDP_DTLS_CD                                     /* 심평원퇴원과내과세부코드 */
+		     ,  DSCH_MDDR_ID                                          /* 퇴원진료의사ID */
+		     ,  HIRA_DSCH_DR_NM                                       /* 심평원퇴원의사명 */
+		     ,  DSCH_SMPP_WRTR_ID                                     /* 퇴원요약지작성자ID */
+		     ,  DSCH_SMPP_WRTR_NM                                     /* 퇴원요약지작성자명 */
+		     ,  DSCH_SMPP_WRTG_DT                                     /* 퇴원요약지작성일시 */
+		     ,  DYS30_WTHN_RE_ADMS_YN                                 /* 30일이내재입원여부 */
+		     ,  DYS30_WTHN_RE_AMRE_CTN                                /* 30일이내재입원사유내용 */
+		     ,  RE_ADMS_PLAN_YN                                       /* 재입원계획여부 */
+		     ,  BEFR_DSCH_YMD_CNFR_CD                                 /* 이전퇴원일자확인코드 */
+		     ,  BEFR_DSCH_YMD                                         /* 이전퇴원일자 */
+		     ,  HIRA_CHCM_CTN                                         /* 심평원주호소내용 */
+		     ,  DSOC_TMNG_CTN                                         /* 발병시기내용 */
+		     ,  HIRA_AMRE_CTN                                         /* 심평원입원사유내용 */
+		     ,  HIRA_ADMS_ELPS_CTN                                    /* 심평원입원경과내용 */
+		     ,  ALRG_YN                                               /* 알러지여부 */
+		     ,  HIRA_ALRG_CTN                                         /* 심평원알러지내용 */
+		     ,  INFC_YN                                               /* 감염여부 */
+		     ,  HIRA_INFC_CTN                                         /* 심평원감염내용 */
+		     ,  CMPL_YN                                               /* 합병증여부 */
+		     ,  HIRA_CMPL_CTN                                         /* 심평원합병증내용 */
+		     ,  PTNT_SAFE_OCRN_YN                                     /* 환자안전발생여부 */
+		     ,  PTNT_SAFE_OCRN_DETL_CTN                               /* 환자안전발생상세내용 */
+		     ,  HIRA_DSCH_FRMT_CD                                     /* 심평원퇴원형태코드 */
+		     ,  HIRA_DSCH_FRMT_ETC_CTN                                /* 심평원퇴원형태기타내용 */
+		     ,  HIRA_DSCH_PTSS_CD                                     /* 심평원퇴원환자상태코드 */
+		     ,  HIRA_DSCH_PTSS_ETC_CTN                                /* 심평원퇴원환자상태기타내용 */
+		     ,  DETH_DT                                               /* 사망일시 */
+		     ,  HIRA_DETH_CAUS_SCIN_CLSF_CD                           /* 심평원사망원인상병분류코드 */
+		     ,  HIRA_DETH_DX_CD                                       /* 심평원사망진단코드 */
+		     ,  HIRA_DETH_DX_NM                                       /* 심평원사망진단명 */
+		     ,  HIRA_HSTR_RESN_CTN                                    /* 심평원전원사유내용 */
+		     ,  HIRA_DSAF_MDCR_PLAN_CD                                /* 심평원퇴원이후진료계획코드 */
+		     ,  HIRA_DSAF_MDCR_PLAN_ETC_CTN                           /* 심평원퇴원이후진료계획기타내용 */
+		     ,  DSCH_SMPP_WORK_STTS_CD                                /* 퇴원요약지작업상태코드 */
+		     ,  HIRA_CHUP_STTS_CD                                     /* 심평원점검상태코드 */
+		     ,  HIRA_CHUP_DT                                          /* 심평원점검일시 */
+		     ,  HIRA_INSE_ID                                          /* 심평원점검자ID */
+		     ,  HIRA_TRAS_STTS_CD                                     /* 심평원전송상태코드 */
+		     ,  HIRA_TRAS_DT                                          /* 심평원전송일시 */
+		     ,  HIRA_TSMT_ID                                          /* 심평원전송자ID */
+		     ,  FRST_RGSR_ID                                     			/* 최초등록자ID */
+		     ,  FRST_RGST_IP                                     			/* 최초등록IP */
+		     ,  FRST_RGST_DT                                     			/* 최초등록일시 */
+		     ,  FRST_RGST_CLNT_PRGM_ID                           			/* 최초등록클라이언트프로그램ID */
+		     ,  FRST_RGST_SRVR_PRGM_ID                           			/* 최초등록서버프로그램ID */
+		     ,  LAST_UPDR_ID                                     			/* 최종수정자ID */
+		     ,  LAST_UPDT_IP                                     			/* 최종수정IP */
+		     ,  LAST_UPDT_DT                                     			/* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID                           			/* 최종수정클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID                           			/* 최종수정서버프로그램ID */
+		     )
+		select  a.MDRP_NO                                               /* 접수번호 */
+		     ,  a.HIRA_TRAS_SNO                                         /* 심평원전송일련번호 */
+		     ,  (
+		        select  nvl(max(WORK_SNO), 0) + 1
+		          from  MRHIDSCHT s1  /* 신포괄퇴원요약지이력 */
+		         where  s1.MDRP_NO       = a.MDRP_NO
+		           and  s1.HIRA_TRAS_SNO = a.HIRA_TRAS_SNO
+		        )                                         as WORK_SNO   /* 작업일련번호 */
+		     ,  a.NINL_SBMS_FORM_CD                                     /* 신포괄제출서식코드 */
+		     ,  a.NINL_SBMS_FORM_VRSN_NO                                /* 신포괄제출서식버젼번호 */
+		     ,  a.CLAM_NO                                               /* 청구번호 */
+		     ,  a.RPTN_NO                                               /* 심평원접수번호 */
+		     ,  a.RPTN_YY                                               /* 접수년도 */
+		     ,  a.CLDC_SNO                                              /* 청구서일련번호 */
+		     ,  a.CLSP_SNO                                              /* 청구명세서일련번호 */
+		     ,  a.CLPR_VL                                               /* 청구키 */
+		     ,  a.ASRR_DVSN_CD                                          /* 보험자구분코드 */
+		     ,  a.RFRC_BSDV_CD                                          /* 참고업무구분코드 */
+		     ,  a.HIRA_RQST_NO                                          /* 요청번호 */
+		     ,  a.RECH_RPTN_ID                                          /* 재심사접수ID */
+		     ,  a.PTNO                                                  /* 환자번호 */
+		     ,  a.PTNT_NM                                               /* 환자성명 */
+		     ,  a.PTNT_RSRN                                             /* 환자주민등록번호 */
+		     ,  a.ADMS_DT                                               /* 입원일시 */
+		     ,  a.ADMS_MCDP_CD                                          /* 입원진료과코드 */
+		     ,  a.HIAD_CD                                               /* 심평원입원과코드 */
+		     ,  a.HIAD_IMDP_DTLS_CD                                     /* 심평원입원과내과세부코드 */
+		     ,  a.ADMS_MDDR_ID                                          /* 입원진료의사ID */
+		     ,  a.HIRA_ADMS_DR_NM                                       /* 심평원입원의사명 */
+		     ,  a.DSCH_DT                                               /* 퇴원일시 */
+		     ,  a.DSCH_MCDP_CD                                          /* 퇴원진료과코드 */
+		     ,  a.HIDD_CD                                               /* 심평원퇴원과코드 */
+		     ,  a.HIDD_IMDP_DTLS_CD                                     /* 심평원퇴원과내과세부코드 */
+		     ,  a.DSCH_MDDR_ID                                          /* 퇴원진료의사ID */
+		     ,  a.HIRA_DSCH_DR_NM                                       /* 심평원퇴원의사명 */
+		     ,  a.DSCH_SMPP_WRTR_ID                                     /* 퇴원요약지작성자ID */
+		     ,  a.DSCH_SMPP_WRTR_NM                                     /* 퇴원요약지작성자명 */
+		     ,  a.DSCH_SMPP_WRTG_DT                                     /* 퇴원요약지작성일시 */
+		     ,  a.DYS30_WTHN_RE_ADMS_YN                                 /* 30일이내재입원여부 */
+		     ,  a.DYS30_WTHN_RE_AMRE_CTN                                /* 30일이내재입원사유내용 */
+		     ,  a.RE_ADMS_PLAN_YN                                       /* 재입원계획여부 */
+		     ,  a.BEFR_DSCH_YMD_CNFR_CD                                 /* 이전퇴원일자확인코드 */
+		     ,  a.BEFR_DSCH_YMD                                         /* 이전퇴원일자 */
+		     ,  a.HIRA_CHCM_CTN                                         /* 심평원주호소내용 */
+		     ,  a.DSOC_TMNG_CTN                                         /* 발병시기내용 */
+		     ,  a.HIRA_AMRE_CTN                                         /* 심평원입원사유내용 */
+		     ,  a.HIRA_ADMS_ELPS_CTN                                    /* 심평원입원경과내용 */
+		     ,  a.ALRG_YN                                               /* 알러지여부 */
+		     ,  a.HIRA_ALRG_CTN                                         /* 심평원알러지내용 */
+		     ,  a.INFC_YN                                               /* 감염여부 */
+		     ,  a.HIRA_INFC_CTN                                         /* 심평원감염내용 */
+		     ,  a.CMPL_YN                                               /* 합병증여부 */
+		     ,  a.HIRA_CMPL_CTN                                         /* 심평원합병증내용 */
+		     ,  a.PTNT_SAFE_OCRN_YN                                     /* 환자안전발생여부 */
+		     ,  a.PTNT_SAFE_OCRN_DETL_CTN                               /* 환자안전발생상세내용 */
+		     ,  a.HIRA_DSCH_FRMT_CD                                     /* 심평원퇴원형태코드 */
+		     ,  a.HIRA_DSCH_FRMT_ETC_CTN                                /* 심평원퇴원형태기타내용 */
+		     ,  a.HIRA_DSCH_PTSS_CD                                     /* 심평원퇴원환자상태코드 */
+		     ,  a.HIRA_DSCH_PTSS_ETC_CTN                                /* 심평원퇴원환자상태기타내용 */
+		     ,  a.DETH_DT                                               /* 사망일시 */
+		     ,  a.HIRA_DETH_CAUS_SCIN_CLSF_CD                           /* 심평원사망원인상병분류코드 */
+		     ,  a.HIRA_DETH_DX_CD                                       /* 심평원사망진단코드 */
+		     ,  a.HIRA_DETH_DX_NM                                       /* 심평원사망진단명 */
+		     ,  a.HIRA_HSTR_RESN_CTN                                    /* 심평원전원사유내용 */
+		     ,  a.HIRA_DSAF_MDCR_PLAN_CD                                /* 심평원퇴원이후진료계획코드 */
+		     ,  a.HIRA_DSAF_MDCR_PLAN_ETC_CTN                           /* 심평원퇴원이후진료계획기타내용 */
+		     ,  a.DSCH_SMPP_WORK_STTS_CD                                /* 퇴원요약지작업상태코드 */
+		     ,  a.HIRA_CHUP_STTS_CD                                     /* 심평원점검상태코드 */
+		     ,  a.HIRA_CHUP_DT                                          /* 심평원점검일시 */
+		     ,  a.HIRA_INSE_ID                                          /* 심평원점검자ID */
+		     ,  a.HIRA_TRAS_STTS_CD                                     /* 심평원전송상태코드 */
+		     ,  a.HIRA_TRAS_DT                                          /* 심평원전송일시 */
+		     ,  a.HIRA_TSMT_ID                                          /* 심평원전송자ID */
+		     ,  a.FRST_RGSR_ID                                     			/* 최초등록자ID */
+		     ,  a.FRST_RGST_IP                                     			/* 최초등록IP */
+		     ,  a.FRST_RGST_DT                                     			/* 최초등록일시 */
+		     ,  a.FRST_RGST_CLNT_PRGM_ID                           			/* 최초등록클라이언트프로그램ID */
+		     ,  a.FRST_RGST_SRVR_PRGM_ID                           			/* 최초등록서버프로그램ID */
+		     ,  a.LAST_UPDR_ID                                     			/* 최종수정자ID */
+		     ,  a.LAST_UPDT_IP                                     			/* 최종수정IP */
+		     ,  a.LAST_UPDT_DT                                     			/* 최종수정일시 */
+		     ,  a.LAST_UPDT_CLNT_PRGM_ID                           			/* 최종수정클라이언트프로그램ID */
+		     ,  a.LAST_UPDT_SRVR_PRGM_ID                           			/* 최종수정서버프로그램ID */
+		  from  MRHIDSCMT  a /* 신포괄퇴원요약지내역 */
+		 where  MDRP_NO       = #{mdrpNo}          /*접수번호*/
+		   and  HIRA_TRAS_SNO = #{hiraTrasSno}     /*심평원전송일련번호*/
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrhiqicmt0001 (질향상점검표 전송상태 변경) 
+        Description :                                           질향상점검표 전송상태 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-updateMrhiqicmt0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  >
+		update
+		        MRHIQICMT /* 신포괄질향상점검표내역 */
+		   set  CLAM_NO           = nvl(#{clamNo}    ,CLAM_NO     )   -- 청구번호
+		     ,  RPTN_NO           = nvl(#{rptnNo}    ,RPTN_NO     )   -- 심평원접수번호
+		     ,  CLSP_SNO          = nvl(#{clspSno}   ,CLSP_SNO    )   -- 청구명세서일련번호
+		     ,  CLPR_VL           = nvl(#{clprVl}    ,CLPR_VL     )   -- 청구키
+		        /* ====================================================================================== */
+		     ,  QULT_IMRV_CHTS_WORK_STTS_CD	= nvl(#{qultImrvChtsWorkSttsCd}, QULT_IMRV_CHTS_WORK_STTS_CD)   /* 질향상점검표작업상태코드 */
+		        /* 점검상태 처리 ======================================================================== */
+		     ,  HIRA_CHUP_STTS_CD      = nvl(#{hiraChupSttsCd}, HIRA_CHUP_STTS_CD)          /* 심평원점검상태코드 */
+		     ,  HIRA_CHUP_DT           = case
+		                                 when #{hiraChupSttsCd} is null then HIRA_CHUP_DT   /* 심평원점검일시 */
+		                                                                else sysdate
+		                                 end
+		     ,  HIRA_INSE_ID           = case
+		                                 when #{hiraChupSttsCd} is null then HIRA_INSE_ID   /* 심평원점검자ID */
+		                                                                else #{gvUserId}
+		                                 end                                                /* 심평원점검자ID */
+		        /* 전송상태 처리 ======================================================================== */
+		     ,  HIRA_TRAS_STTS_CD = nvl(#{hiraTrasSttsCd}, HIRA_TRAS_STTS_CD)      -- 심평원전송상태코드
+		     ,  HIRA_TRAS_DT      = case
+		                            when #{hiraTrasSttsCd} is null then HIRA_TRAS_DT
+		                                                           else sysdate
+		                            end                                           -- 심평원전송일시
+		     ,  HIRA_TSMT_ID      = case
+		                            when #{hiraTrasSttsCd} is null then HIRA_TSMT_ID
+		                                                           else #{gvUserId}
+		                            end                                           -- 심평원전송자ID
+		        /* ====================================================================================== */
+		     ,  LAST_UPDR_ID           = #{gvUserId}            /* 최종수정자ID */
+		     ,  LAST_UPDT_IP           = #{gvUserIp}            /* 최종수정IP */
+		     ,  LAST_UPDT_DT           = sysdate                /* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}        /* 최종수정클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}        /* 최종수정서버프로그램ID */
+		 where  MDRP_NO       = #{mdrpNo}          /*접수번호*/
+		   and  HIRA_TRAS_SNO = #{hiraTrasSno}     /*심평원전송일련번호*/
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhiqicht0001 (질향상 점검표 이력생성) 
+        Description :                                           질향상 점검표 이력생성
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhiqicht0001"  parameterType="com.sds.healthcare.ehr.med.mr.mrh.vo.MrhFnctChckDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mrh-dao-MrhFnctChckDAO-insertMrhiqicht0001 */
+		insert
+		  into  MRHIQICHT /* 신포괄질향상점검표이력 */
+		     (  MDRP_NO                                               /* 접수번호 */
+		     ,  HIRA_TRAS_SNO                                         /* 심평원전송일련번호 */
+		     ,  WORK_SNO                                              /* 작업일련번호 */
+		     ,  PTNO                                                  /* 환자번호 */
+		     ,  CLAM_NO                                               /* 청구번호 */
+		     ,  RPTN_NO                                               /* 접수번호 */
+		     ,  CLSP_SNO                                              /* 청구명세서일련번호 */
+		     ,  CLPR_VL                                               /*  */
+		     ,  NINL_SBMS_FORM_CD                                     /* 신포괄제출서식코드 */
+		     ,  NINL_SBMS_FORM_VRSN_NO                                /* 신포괄제출서식버젼번호 */
+		     ,  WRTG_DT                                               /* 작성일시 */
+		     ,  WRTR_ID                                               /* 작성자ID */
+		     ,  CNDR_NM                                               /* 확인의사명 */
+		     ,  CNNU_NM                                               /* 확인간호사명 */
+		     ,  DSCH_SMPP_WRTR_NM                                     /* 퇴원요약지작성자명 */
+		     ,  SGNT_IMAG_BD                                          /* 서명이미지자료 */
+		     ,  ADMS_YMD                                              /* 입원일자 */
+		     ,  DSCH_YMD                                              /* 퇴원일자 */
+		     ,  HIRA_WEEK_DX_CD                                       /* 심평원주진단코드 */
+		     ,  HIRA_WEEK_DX_NM                                       /* 심평원주진단명 */
+		     ,  OPRT_BEF_NEED_EXMN_ENFR_YN                            /* 수술전필요검사시행여부 */
+		     ,  OPRT_AGDC_WRTG_YN                                     /* 수술동의서작성여부 */
+		     ,  OPRT_BFAF_PTNT_EDCT_YN                                /* 수술전후환자교육여부 */
+		     ,  OPRT_NRML_ENFR_YN                                     /* 수술정상시행여부 */
+		     ,  PHYC_ACDN_YN                                          /* 물리적사고여부 */
+		     ,  TRNF_ACDN_YN                                          /* 수혈사고여부 */
+		     ,  MDTN_ACDN_YN                                          /* 투약사고여부 */
+		     ,  MDTN_ACDN_CTN                                         /* 투약사고내용 */
+		     ,  ANST_ACDN_YN                                          /* 마취사고여부 */
+		     ,  ANST_ACDN_CTN                                         /* 마취사고내용 */
+		     ,  CRPT_ROM_UTLZ_YN                                      /* 중환자실이용여부 */
+		     ,  INDS_YN                                               /* 감염증여부 */
+		     ,  OPRT_CMPL_YN                                          /* 수술합병증여부 */
+		     ,  OPRT_CMPL_CTN                                         /* 수술합병증내용 */
+		     ,  RE_OPRT_YN                                            /* 재수술여부 */
+		     ,  DETH_YN                                               /* 사망여부 */
+		     ,  HIRA_DETH_TYPE_CD                                     /* 심평원사망유형코드 */
+		     ,  DSCH_SMPP_WRTG_YN                                     /* 퇴원요약지작성여부 */
+		     ,  DSCH_PLAN_APRP_YN                                     /* 퇴원계획적절성여부 */
+		     ,  NRML_DSCH_YN                                          /* 정상퇴원여부 */
+		     ,  HIRA_DSCH_TYPE_CD                                     /* 심평원퇴원유형코드 */
+		     ,  BP_PRBM_YN                                            /* 혈압문제여부 */
+		     ,  BDTM_PRBM_YN                                          /* 체온문제여부 */
+		     ,  PULS_PRBM_YN                                          /* 맥박문제여부 */
+		     ,  EXMN_PRBM_YN                                          /* 검사문제여부 */
+		     ,  OPSI_PRBM_YN                                          /* 수술부위문제여부 */
+		     ,  ATHN_ID                                               /* 인증자ID */
+		     ,  CRTF_IP                                               /* 인증IP */
+		     ,  CRTF_DT                                               /* 인증일시 */
+		     ,  CRTF_YN                                               /* 인증여부 */
+		     ,  CRTF_RCRD_NO                                          /* 인증기록번호 */
+		     ,  QULT_IMRV_CHTS_WORK_STTS_CD                           /* 질향상점검표작업상태코드 */
+		     ,  HIRA_CHUP_STTS_CD                                     /* 심평원점검상태코드 */
+		     ,  HIRA_CHUP_DT                                          /* 심평원점검일시 */
+		     ,  HIRA_INSE_ID                                          /* 심평원점검자ID */
+		     ,  HIRA_TRAS_STTS_CD                                     /* 심평원전송상태코드 */
+		     ,  HIRA_TRAS_DT                                          /* 심평원전송일시 */
+		     ,  HIRA_TSMT_ID                                          /* 심평원전송자ID */
+		     ,  FRST_RGSR_ID                                     			/* 최초등록자ID */
+		     ,  FRST_RGST_IP                                     			/* 최초등록IP */
+		     ,  FRST_RGST_DT                                     			/* 최초등록일시 */
+		     ,  FRST_RGST_CLNT_PRGM_ID                           			/* 최초등록클라이언트프로그램ID */
+		     ,  FRST_RGST_SRVR_PRGM_ID                           			/* 최초등록서버프로그램ID */
+		     ,  LAST_UPDR_ID                                     			/* 최종수정자ID */
+		     ,  LAST_UPDT_IP                                     			/* 최종수정IP */
+		     ,  LAST_UPDT_DT                                     			/* 최종수정일시 */
+		     ,  LAST_UPDT_CLNT_PRGM_ID                           			/* 최종수정클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID                           			/* 최종수정서버프로그램ID */
+		     )
+		select  a.MDRP_NO                                               /* 접수번호 */
+		     ,  a.HIRA_TRAS_SNO                                         /* 심평원전송일련번호 */
+		     ,  (
+		        select  nvl(max(WORK_SNO), 0) + 1
+		          from  MRHIQICHT s1  /* 신포괄질향상점검표이력 */
+		         where  s1.MDRP_NO       = a.MDRP_NO
+		           and  s1.HIRA_TRAS_SNO = a.HIRA_TRAS_SNO
+		        )                                         as WORK_SNO   /* 작업일련번호 */
+		     ,  a.PTNO                                                  /* 환자번호 */
+		     ,  a.CLAM_NO                                               /* 청구번호 */
+		     ,  a.RPTN_NO                                               /* 접수번호 */
+		     ,  a.CLSP_SNO                                              /* 청구명세서일련번호 */
+		     ,  a.CLPR_VL                                               /*  */
+		     ,  a.NINL_SBMS_FORM_CD                                     /* 신포괄제출서식코드 */
+		     ,  a.NINL_SBMS_FORM_VRSN_NO                                /* 신포괄제출서식버젼번호 */
+		     ,  a.WRTG_DT                                               /* 작성일시 */
+		     ,  a.WRTR_ID                                               /* 작성자ID */
+		     ,  a.CNDR_NM                                               /* 확인의사명 */
+		     ,  a.CNNU_NM                                               /* 확인간호사명 */
+		     ,  a.DSCH_SMPP_WRTR_NM                                     /* 퇴원요약지작성자명 */
+		     ,  a.SGNT_IMAG_BD                                          /* 서명이미지자료 */
+		     ,  a.ADMS_YMD                                              /* 입원일자 */
+		     ,  a.DSCH_YMD                                              /* 퇴원일자 */
+		     ,  a.HIRA_WEEK_DX_CD                                       /* 심평원주진단코드 */
+		     ,  a.HIRA_WEEK_DX_NM                                       /* 심평원주진단명 */
+		     ,  a.OPRT_BEF_NEED_EXMN_ENFR_YN                            /* 수술전필요검사시행여부 */
+		     ,  a.OPRT_AGDC_WRTG_YN                                     /* 수술동의서작성여부 */
+		     ,  a.OPRT_BFAF_PTNT_EDCT_YN                                /* 수술전후환자교육여부 */
+		     ,  a.OPRT_NRML_ENFR_YN                                     /* 수술정상시행여부 */
+		     ,  a.PHYC_ACDN_YN                                          /* 물리적사고여부 */
+		     ,  a.TRNF_ACDN_YN                                          /* 수혈사고여부 */
+		     ,  a.MDTN_ACDN_YN                                          /* 투약사고여부 */
+		     ,  a.MDTN_ACDN_CTN                                         /* 투약사고내용 */
+		     ,  a.ANST_ACDN_YN                                          /* 마취사고여부 */
+		     ,  a.ANST_ACDN_CTN                                         /* 마취사고내용 */
+		     ,  a.CRPT_ROM_UTLZ_YN                                      /* 중환자실이용여부 */
+		     ,  a.INDS_YN                                               /* 감염증여부 */
+		     ,  a.OPRT_CMPL_YN                                          /* 수술합병증여부 */
+		     ,  a.OPRT_CMPL_CTN                                         /* 수술합병증내용 */
+		     ,  a.RE_OPRT_YN                                            /* 재수술여부 */
+		     ,  a.DETH_YN                                               /* 사망여부 */
+		     ,  a.HIRA_DETH_TYPE_CD                                     /* 심평원사망유형코드 */
+		     ,  a.DSCH_SMPP_WRTG_YN                                     /* 퇴원요약지작성여부 */
+		     ,  a.DSCH_PLAN_APRP_YN                                     /* 퇴원계획적절성여부 */
+		     ,  a.NRML_DSCH_YN                                          /* 정상퇴원여부 */
+		     ,  a.HIRA_DSCH_TYPE_CD                                     /* 심평원퇴원유형코드 */
+		     ,  a.BP_PRBM_YN                                            /* 혈압문제여부 */
+		     ,  a.BDTM_PRBM_YN                                          /* 체온문제여부 */
+		     ,  a.PULS_PRBM_YN                                          /* 맥박문제여부 */
+		     ,  a.EXMN_PRBM_YN                                          /* 검사문제여부 */
+		     ,  a.OPSI_PRBM_YN                                          /* 수술부위문제여부 */
+		     ,  a.ATHN_ID                                               /* 인증자ID */
+		     ,  a.CRTF_IP                                               /* 인증IP */
+		     ,  a.CRTF_DT                                               /* 인증일시 */
+		     ,  a.CRTF_YN                                               /* 인증여부 */
+		     ,  a.CRTF_RCRD_NO                                          /* 인증기록번호 */
+		     ,  a.QULT_IMRV_CHTS_WORK_STTS_CD                           /* 질향상점검표작업상태코드 */
+		     ,  a.HIRA_CHUP_STTS_CD                                     /* 심평원점검상태코드 */
+		     ,  a.HIRA_CHUP_DT                                          /* 심평원점검일시 */
+		     ,  a.HIRA_INSE_ID                                          /* 심평원점검자ID */
+		     ,  a.HIRA_TRAS_STTS_CD                                     /* 심평원전송상태코드 */
+		     ,  a.HIRA_TRAS_DT                                          /* 심평원전송일시 */
+		     ,  a.HIRA_TSMT_ID                                          /* 심평원전송자ID */
+		     ,  a.FRST_RGSR_ID                                     			/* 최초등록자ID */
+		     ,  a.FRST_RGST_IP                                     			/* 최초등록IP */
+		     ,  a.FRST_RGST_DT                                     			/* 최초등록일시 */
+		     ,  a.FRST_RGST_CLNT_PRGM_ID                           			/* 최초등록클라이언트프로그램ID */
+		     ,  a.FRST_RGST_SRVR_PRGM_ID                           			/* 최초등록서버프로그램ID */
+		     ,  a.LAST_UPDR_ID                                     			/* 최종수정자ID */
+		     ,  a.LAST_UPDT_IP                                     			/* 최종수정IP */
+		     ,  a.LAST_UPDT_DT                                     			/* 최종수정일시 */
+		     ,  a.LAST_UPDT_CLNT_PRGM_ID                           			/* 최종수정클라이언트프로그램ID */
+		     ,  a.LAST_UPDT_SRVR_PRGM_ID                           			/* 최종수정서버프로그램ID */
+		  from  MRHIQICMT a /* 신포괄질향상점검표내역 */
+		 where  MDRP_NO       = #{mdrpNo}          /*접수번호*/
+		   and  HIRA_TRAS_SNO = #{hiraTrasSno}     /*심평원전송일련번호*/
+	</insert>
+
+</mapper>

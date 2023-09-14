@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnaHrmHolyDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnaHrmHolyDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmHolyDAO-listNursWardChkInqr-result" type="com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmHolyDVO">
+	
+		<result property="careWkplCd" column="CARE_WKPL_CD"/>
+		<result property="wkprId" column="WKPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="careGradCd" column="CARE_GRAD_CD"/>
+		<result property="prrtSqnc" column="PRRT_SQNC"/>
+		<result property="wrknStrtYmd" column="WRKN_STRT_YMD"/>
+		<result property="wrknFnshYmd" column="WRKN_FNSH_YMD"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="acnsYy" column="ACNS_YY"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="lginId" column="LGIN_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmHolyDAO-listNursWardChkInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmHolyDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmHolyDAO-listNursWardChkInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmHolyDAO-listNursWardChkInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmHolyDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmHolyDAO-listNursWardChkInqr-result" useCache="true" flushCache="false">
+		<![CDATA[  
+		SELECT	/*SQL_ID: com-sds-healthcare-ehr-med-mn-mna-dao-MnaNursWardInfmDAO-listNursWardChkInqr */
+		     A.CARE_WKPL_CD
+		  ,  A.WKPR_ID
+		  ,  B.USER_NM
+		  ,  A.CARE_GRAD_CD
+		  ,  nvl(F.SORT_SQNC, 999)       as PRRT_SQNC
+		  ,	 to_char(A.WRKN_STRT_YMD, 'yyyymmdd')			 as WRKN_STRT_YMD
+		  ,	 to_char(A.WRKN_FNSH_YMD, 'yyyymmdd')			 as WRKN_FNSH_YMD
+		  ,  RANK() OVER(PARTITION BY A.WKPR_ID ORDER BY A.WRKN_STRT_YMD)	AS SQNC
+		  ,	 CASE
+				WHEN	to_date(#{inqrStrtYmd},'yyyymmdd')	BETWEEN	to_date(SUBSTR(to_date(#{inqrStrtYmd},'yyyymmdd'), 1, 4) || '0301', 'yyyymmdd')	
+															AND		to_date(SUBSTR(ADD_MONTHS(to_date(#{inqrStrtYmd},'yyyymmdd'), 12), 1, 4) || '0201', 'yyyymmdd')	
+															THEN	SUBSTR(to_date(#{inqrStrtYmd},'yyyymmdd'), 1, 4)
+				ELSE	SUBSTR(ADD_MONTHS(to_date(#{inqrStrtYmd},'yyyymmdd'), -12), 1, 4)
+			 END				as	ACNS_YY	
+		  , #{inqrStrtYmd}		as	STRT_YMD
+		  , #{inqrFnshYmd}		as	FNSH_YMD
+		  ,	C.LGIN_ID
+		FROM
+		     MNASPRSCT A
+		  ,  CCUSERAMT B
+		  ,  CCUSRDPHT C
+		  ,  MNWWTEAMT D
+		  ,  MNAGRADCT E
+		  ,  MNANSLRMT F
+		WHERE
+		     A.WKPR_ID = C.USER_ID
+		AND	 NVL(WRKN_CRTN_YN, 'Y') = 'Y'
+		AND  C.LGIN_ID = B.LGIN_ID
+		/*AND  nvl( B.USER_STTS_CD, 'Z') <> '9' -- 퇴직자 제외*/
+		AND  A.CARE_TEAM_CD = D.CARE_TEAM_CD(+)
+		AND  A.CARE_WKPL_CD = D.CARE_WKPL_CD(+)
+		AND  A.CARE_GRAD_CD = E.CARE_GRAD_CD
+		AND  a.CARE_WKPL_CD = #{careWkplCd}
+		AND  a.WRKN_STRT_YMD <= to_date(#{inqrFnshYmd},'yyyymmdd')
+		AND  a.WRKN_FNSH_YMD >= to_date(#{inqrStrtYmd},'yyyymmdd')
+		AND  A.WKPR_ID = F.WKPR_ID(+)
+		ORDER BY
+				F.SORT_SQNC
+		]]>	                        
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:http="http://www.springframework.org/schema/integration/http"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <http:inbound-gateway id="jsonGateway"
+                          request-channel="request_channel" reply-channel="reply_channel"
+                          path="/service/{serviceId}" supported-methods="GET, POST"  message-converters="messageConverterList" >
+		<http:header name="serviceId" expression="#pathVariables.serviceId"/>
+	</http:inbound-gateway>
+                          
+     <util:list id="messageConverterList" value-type="org.springframework.http.converter.HttpMessageConverter">
+            <ref bean="stringMessageConverter" />
+            <ref bean="byteMessageConverter" />
+    </util:list>
+    
+    <bean id="stringMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg index="0" value="UTF-8" />
+    </bean>
+    
+    <bean id="byteMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+
+	<int:channel id="request_channel">
+		<int:interceptors>
+			<ref bean="decInterceptor"/>
+			<ref bean="certificationChannelInterceptor"/>
+		</int:interceptors>
+	</int:channel>
+
+    <int:transformer input-channel="request_channel" output-channel="client_info_channel" >
+    	<!-- Version up -->
+        <!--  bean class="com.anyframe.online.runtime.integration.transformer.ClientInfoSetter"/ -->
+        <bean class="com.anyframe.online.runtime.service.transformer.ClientInfoSetter"/>
+    </int:transformer>
+
+    <int:channel id="client_info_channel" />
+
+	<int:transformer input-channel="client_info_channel" output-channel="service_execute_channel" >
+				<bean class="com.anyframe.online.runtime.service.transformer.ServiceExecutionInfoTransformer">
+					<property name="serviceDispatcher" ref="serviceDispatcher" />
+					<property name="argumentResolver" ref="jsonArgumentResolver" />
+				</bean>
+	</int:transformer>
+	
+	
+	<int:channel id="service_execute_channel"/>
+	
+	<int:service-activator input-channel="service_execute_channel" output-channel="service_result_channel"  ref="serviceDispatcher" method="dispatch"/>
+	
+    <int:channel id="service_result_channel"/>
+
+    <int:channel id="reply_channel">
+    	<int:interceptors>
+    		<ref bean="encInterceptor"/>
+    	</int:interceptors>	    
+	</int:channel>
+    
+    <int:wire-tap channel="logger" pattern="*request_channel" />
+    
+	<!--int:logging-channel-adapter id="logger" level="INFO" expression="payload.length > 1000 ? '' : 'Input Payload:['+new String(payload)+']'"/-->
+	<int:logging-channel-adapter id="logger" level="DEBUG" expression="'Input Payload:['+new String(payload)+']'"/>
+    
+	<int:chain id="serviceResultProcessor" input-channel="service_result_channel" output-channel="reply_channel">
+		<int:transformer>
+			<bean class="com.anyframe.online.runtime.service.transformer.ServiceExecutionResultTransformer">
+				<!-- <property name="defaultMessageCode" value=""/> -->
+			</bean>
+		</int:transformer>
+
+		<int:transformer>
+   			<bean class="com.sds.healthcare.ehr.com.sy.fwk.EHRObjectTransformer" /> <!-- 마스킹 관련 Transformer -->
+  		</int:transformer>
+  
+		<int:transformer>
+			<bean class="com.anyframe.online.runtime.service.transformer.ObjectToAuiMapTransformer" />
+		</int:transformer>
+		
+		<int:enricher id="messageCodeEnricher">
+		    <int:property name="errorcode" value="0" />
+		    <int:property name="errormsg"  expression="T(com.anyframe.online.runtime.service.context.ServiceExecutionContextUtil).returnMessages"/>
+		</int:enricher>
+		
+		<int:transformer>
+			<bean class="com.sds.healthcare.ehr.com.sy.msg.EHRMsgCodeTransformer" >
+			</bean>
+		</int:transformer>
+				
+		<int:transformer>
+			<bean class="com.anyframe.online.runtime.service.transformer.ObjectToJsonTransformer">
+				<property name="objectMapper" ref="objectMapper" />
+			</bean>
+		</int:transformer>
+	</int:chain>
+	
+
+</beans>

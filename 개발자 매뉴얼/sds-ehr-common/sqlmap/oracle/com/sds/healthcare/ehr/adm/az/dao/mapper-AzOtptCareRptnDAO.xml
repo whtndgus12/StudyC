@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzOtptCareRptnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzOtptCareRptnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn-result" type="com.sds.healthcare.ehr.adm.az.vo.AzOtptCareRptnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzOtptCareRptnDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzOtptCareRptnDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzOtptCareRptnDAO-selectOneCareRptn */
+		        ptno
+		  from (
+		      select a.ptno
+		        from aprcrptnt a
+		           , mecfsdomt b
+		           , mecfsirmt c
+		       where a.mdrp_no = #{mdrpNo}
+		         and b.mdrp_no = a.mdrp_no
+		         and c.cnos_rcrd_no = b.cnos_rcrd_no
+		         and nvl(c.dltn_yn, 'N') = 'N'
+		         and rownum = 1
+		      union all
+		      select a.ptno
+		        from aprcrptnt a
+		           , MNOTFLDWT b
+		       where a.mdrp_no = #{mdrpNo}
+		         and b.mdrp_no = a.mdrp_no
+		         and nvl(b.dltn_yn, 'N') = 'N'
+		        and rownum = 1
+		        )
+		 where rownum = 1 
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmfFbTnsfBrkdPrsgDAO_sql.xml 
+    Description :                                      FB이체내역처리 DAO
+                  -->
+<mapper namespace="HmfFbTnsfBrkdPrsgDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfFbTnsfBrkdPrsgDAO-updateFbTnsfBrkdPrsgStts (FB이체내역_처리상태_수정) 
+        Description :                                           hmd_fbtnbdt_u01$I01_FB이체내역_처리상태_수정_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfFbTnsfBrkdPrsgDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfFbTnsfBrkdPrsgDAO-updateFbTnsfBrkdPrsgStts"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfFbTnsfBrkdPrsgDVO"  >
+		<![CDATA[
+			   update  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfFbTnsfBrkdPrsgDAO-updateFbTnsfBrkdPrsgStts */
+				   HMFBTNBDT /*(HM)FB이체내역상세 */
+			   set
+				   TNSF_STTS_CD      = case (select
+												 ss1.DPRT_APRL_MTHD_CD
+											 from
+												 HMSTTBRKT ss1 /*(HM)전표내역 */
+											 where
+												 ss1.BSPL_CD  = #{bsplCd}
+											 and ss1.STTM_YMD = #{sttmYmd}
+											 and ss1.STTM_NO  = #{sttmNo}
+											) when 'E' /*전자결재(전표) */
+											  then case #{aprvYn} when 'Y'
+																					then '1' /*이체의뢰 */
+																					else 'T' /*등록 */
+												   end
+											  when 'P' /*수기결재(전표) /*발행 */
+											  then case #{aprvYn} when 'Y'
+																					then 'P' /*이체대기 */
+																					else 'T' /*등록 */
+												   end
+											  when '*' /*수기결재(전표) /*발행취소 */
+											  then case #{aprvYn} when 'Y'
+																					then 'P' /*이체대기 */
+																					else 'T' /*등록 */
+												   end
+									   end
+				  ,TNSF_RFRR_ID      = (select
+											max(ss1.FRST_RGSR_ID)
+										from
+											HMSTTBRKT ss1 /*(HM)전표내역 */
+										where
+											ss1.BSPL_CD                 = #{bsplCd}
+										and ss1.STTM_YMD                = #{sttmYmd}
+										and ss1.STTM_NO                 = #{sttmNo}
+										and ss1.DPRT_APRL_MTHD_CD       = 'E' /*전자결재(전표) */
+										and #{aprvYn} = 'Y'
+									   )
+				  ,LAST_UPDR_ID      = #{gvUserId}
+				  ,LAST_UPDT_IP      = #{gvUserIp}
+				  ,LAST_UPDT_DT      = sysdate
+				  ,LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				  ,LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			   where
+				   BSPL_CD      = #{bsplCd}
+			   and STTM_YMD     = #{sttmYmd}
+			   and STTM_NO      = #{sttmNo}
+			   and TNSF_STTS_CD = (select
+									   case when     ss1.DPRT_APRL_MTHD_CD = 'E'
+												 and 'Y'                   = #{aprvYn}
+												 and #{apvrId} is not null /*전자결재 전표를 진행상태 무관하게 발행을 했을 때 이체상태를 바꾸지 않기 위함 */
+											then 'T'
+											when     ss1.DPRT_APRL_MTHD_CD = 'E'
+												 and 'N'                   = #{aprvYn}
+												 and #{apvrId} is not null /*전자결재 전표를 진행상태 무관하게 발행을 했을 때 이체상태를 바꾸지 않기 위함 */
+											then '1'
+											when     ss1.DPRT_APRL_MTHD_CD = 'P'
+												 and ss1.STTM_PRSS_CD      = '5'
+												 and 'Y'                   = #{aprvYn}
+											then 'T'
+											when     ss1.DPRT_APRL_MTHD_CD  = '*'
+												 and ss1.STTM_PRSS_CD      in ('1', '3')
+												 and 'N'                    = #{aprvYn}
+											then 'P'
+									   end
+								   from
+									   HMSTTBRKT ss1 /*(HM)전표내역 */
+								   where
+									   ss1.BSPL_CD  = #{bsplCd}
+								   and ss1.STTM_YMD = #{sttmYmd}
+								   and ss1.STTM_NO  = #{sttmNo}
+								  )
+			]]>
+	</update>
+
+</mapper>

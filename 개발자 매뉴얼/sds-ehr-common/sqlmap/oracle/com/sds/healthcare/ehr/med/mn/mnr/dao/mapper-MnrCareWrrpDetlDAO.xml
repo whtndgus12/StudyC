@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : MnrCareWrrpDetlDAO.xml 
+	Description : MnrCareWrrpDetlDAO 클래스 
+-->
+<mapper namespace="MnrCareWrrpDetlDAO">
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-deleteMnwdtyrdt () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-deleteMnwdtyrdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO"  >
+		<![CDATA[
+		   delete  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-deleteMnwdtyrdt_[간호활동] 근무보고 환자 삽입관 제거 상세내역 삭제 */
+			   from MNWDTYRDT
+		   where 1=1
+			   and PTNO                = #{ptno}
+			   and MDRP_NO             = #{mdrpNo}
+			   and RGCA_GRP_CD         = #{rgcaGrpCd}
+			   and RGCA_ITEM_CD        = #{rgcaItemCd}
+			   and RGCA_ITEM_SNO       = #{rgcaItemSno}
+			   /*         and RGCA_ITEM_RMVL_SNO  = :mns_wrcpnit_070[0].rgca_item_rmvl_sno, */
+		]]>
+	</delete>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-insertMnwdtyrdt () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-insertMnwdtyrdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO"  >
+		<![CDATA[
+		   insert  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-insertMnwdtyrdt_[간호활동] 근무보고 환자 삽입관 제거 상세내역 입력 */
+			   into MNWDTYRDT
+		   		(
+				   RPRT_YMD
+				,  WARD_CD
+				,  SHDT_CD
+				,  WRRP_DVSN_CD
+				,  PTNO
+				,  WRRP_DETL_SNO
+				,  MDRP_NO
+				,  RGCA_GRP_CD
+				,  RGCA_ITEM_CD
+				,  RGCA_ITEM_SNO
+				,  RGCA_ITEM_RMVL_SNO
+				,  SELF_RMVL_OCPR_YN
+				,  ETT_LCTN_MDFC_OCPR_YN
+				,  SETN_CARE_IPRG_OCPR_YN
+				,  PSMD_PNTM_OCPR_YN
+				,  OCPR_BDWG_MSRM_PNTM_YN
+				,  DRSN_OCPR_YN
+				,  OCPR_ETC_YN
+				,  OCPR_ETSB_CTN
+				,  RMVL_PNTM_PTSS_YN
+				,  RSBN_USE_EN
+				,  SDTV_USE_EN
+				,  SCRT_ECSV_YN
+				,  SUTR_STTS_YN
+				,  PSVR_O2_SPLY_YN
+				,  NNIV_VNTT_OFFR_YN
+				,  PSVR_IMDT_RNTB_YN
+				,  INTB_DELY_PSVR_YN
+				,  PSVR_IDAF_PRHL_MDFC_YN
+				,  RNSR_PSVR_YN
+				,  VS_VRTN_ADTN_MDTE_YN
+				,  CPR_OCRN_PSVR_YN
+				,  DIET_SHIF_YN
+				,  TKOV_OCPN_UNSB_YN
+				,  CPR_OCRN_UNSB_YN
+				,  OCPN_UNSB_OTRS_PCME_YN
+				,  EXMN_MDTE_OCRN_UNSB_YN
+				,  TRSF_IPRG_YN
+				,  TUBE_FXNG_MTHD_YN
+				,  DELM_STTS_CD
+				,  CALM_STTS_CD
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+		   		)
+		   values
+		   		(
+				   to_date(#{rprtYmd}, 'YYYYMMDD')
+				,  #{wardCd}
+				,  #{shdtCd}
+				,  #{wrrpDvsnCd}
+				,  #{ptno}
+				,  (select nvl(max(WRRP_DETL_SNO), 0) + 1
+						from MNWDTYRDT
+					where 1=1
+			   /*                  and RPRT_YMD = to_date(:mns_wdtyrdt_002[0].rprt_ymd, 'YYYYMMDD') */
+						and WARD_CD = #{wardCd}
+			   /*                  and SHDT_CD = :mns_wdtyrdt_002[0].shdt_cd */
+						and WRRP_DVSN_CD = #{wrrpDvsnCd}
+						and PTNO = #{ptno}
+					)
+				,  #{mdrpNo}
+				,  #{rgcaGrpCd}
+				,  #{rgcaItemCd}
+				,  #{rgcaItemSno}
+				,  #{rgcaItemRmvlSno}
+				,  nvl(#{selfRmvlOcprYn}       , 'N')
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{ettLctnMdfcOcprYn}   , 'N'), #{ettLctnMdfcOcprYn})
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{setnCareIprgOcprYn}   , 'N'), #{setnCareIprgOcprYn})
+				,  nvl(#{psmdPntmOcprYn}       , 'N')
+				,  nvl(#{ocprBdwgMsrmPntmYn}  , 'N')
+				,  decode(#{wrrpDvsnCd}, '2', nvl(#{drsnOcprYn}   , 'N'), #{drsnOcprYn})
+				,  nvl(#{ocprEtcYn}             , 'N')
+				,  decode(#{ocprEtcYn}, 'Y',  #{ocprEtsbCtn}, null)
+				,  nvl(#{rmvlPntmPtssYn}       , 'N')
+				,  nvl(#{rsbnUseEn}             , 'N')
+				,  nvl(#{sdtvUseEn}             , 'N')
+				,  nvl(#{scrtEcsvYn}            , 'N')
+				,  #{sutrSttsYn}            /* 화면에는 없는 컬럼*/
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{psvrO2SplyYn}   , 'N'), #{psvrO2SplyYn})
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{nnivVnttOffrYn}   , 'N'), #{nnivVnttOffrYn})
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{psvrImdtRntbYn}   , 'N'), #{psvrImdtRntbYn})
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{intbDelyPsvrYn}   , 'N'), #{intbDelyPsvrYn})
+				,  decode(#{wrrpDvsnCd}, '2', nvl(#{psvrIdafPrhlMdfcYn}   , 'N'), #{psvrIdafPrhlMdfcYn})
+				,  decode(#{wrrpDvsnCd}, '2', nvl(#{rnsrPsvrYn}   , 'N'), #{rnsrPsvrYn})
+				,  decode(#{wrrpDvsnCd}, '2', nvl(#{vsVrtnAdtnMdteYn}   , 'N'), #{vsVrtnAdtnMdteYn})
+				,  nvl(#{cprOcrnPsvrYn}        , 'N')
+				,  nvl(#{dietShifYn}            , 'N')
+				,  nvl(#{tkovOcpnUnsbYn}       , 'N')
+				,  nvl(#{cprOcrnUnsbYn}        , 'N')
+				,  nvl(#{ocpnUnsbOtrsPcmeYn}  , 'N')
+				,  nvl(#{exmnMdteOcrnUnsbYn}  , 'N')
+				,  nvl(#{trsfIprgYn}            , 'N')
+				,  decode(#{wrrpDvsnCd}, '1', nvl(#{tubeFxngMthdYn}   , 'N'), #{tubeFxngMthdYn})
+				,  #{delmSttsCd}
+				,  #{calmSttsCd}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+		   		)
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO">
+		<result property="rprtYmd" column="RPRT_YMD"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="shdtCd" column="SHDT_CD"/>
+		<result property="wrrpDvsnCd" column="WRRP_DVSN_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="wrrpDetlSno" column="WRRP_DETL_SNO"/>
+		<result property="selfRmvlOcprYn" column="SELF_RMVL_OCPR_YN"/>
+		<result property="ettLctnMdfcOcprYn" column="ETT_LCTN_MDFC_OCPR_YN"/>
+		<result property="setnCareIprgOcprYn" column="SETN_CARE_IPRG_OCPR_YN"/>
+		<result property="psmdPntmOcprYn" column="PSMD_PNTM_OCPR_YN"/>
+		<result property="ocprBdwgMsrmPntmYn" column="OCPR_BDWG_MSRM_PNTM_YN"/>
+		<result property="drsnOcprYn" column="DRSN_OCPR_YN"/>
+		<result property="ocprEtcYn" column="OCPR_ETC_YN"/>
+		<result property="ocprEtsbCtn" column="OCPR_ETSB_CTN"/>
+		<result property="rmvlPntmPtssYn" column="RMVL_PNTM_PTSS_YN"/>
+		<result property="rsbnUseEn" column="RSBN_USE_EN"/>
+		<result property="sdtvUseEn" column="SDTV_USE_EN"/>
+		<result property="scrtEcsvYn" column="SCRT_ECSV_YN"/>
+		<result property="sutrSttsYn" column="SUTR_STTS_YN"/>
+		<result property="psvrO2SplyYn" column="PSVR_O2_SPLY_YN"/>
+		<result property="nnivVnttOffrYn" column="NNIV_VNTT_OFFR_YN"/>
+		<result property="psvrImdtRntbYn" column="PSVR_IMDT_RNTB_YN"/>
+		<result property="intbDelyPsvrYn" column="INTB_DELY_PSVR_YN"/>
+		<result property="psvrIdafPrhlMdfcYn" column="PSVR_IDAF_PRHL_MDFC_YN"/>
+		<result property="rnsrPsvrYn" column="RNSR_PSVR_YN"/>
+		<result property="vsVrtnAdtnMdteYn" column="VS_VRTN_ADTN_MDTE_YN"/>
+		<result property="cprOcrnPsvrYn" column="CPR_OCRN_PSVR_YN"/>
+		<result property="dietShifYn" column="DIET_SHIF_YN"/>
+		<result property="tkovOcpnUnsbYn" column="TKOV_OCPN_UNSB_YN"/>
+		<result property="cprOcrnUnsbYn" column="CPR_OCRN_UNSB_YN"/>
+		<result property="ocpnUnsbOtrsPcmeYn" column="OCPN_UNSB_OTRS_PCME_YN"/>
+		<result property="exmnMdteOcrnUnsbYn" column="EXMN_MDTE_OCRN_UNSB_YN"/>
+		<result property="trsfIprgYn" column="TRSF_IPRG_YN"/>
+		<result property="tubeFxngMthdYn" column="TUBE_FXNG_MTHD_YN"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="rgcaGrpCd" column="RGCA_GRP_CD"/>
+		<result property="rgcaItemCd" column="RGCA_ITEM_CD"/>
+		<result property="rgcaItemSno" column="RGCA_ITEM_SNO"/>
+		<result property="rgcaItemRmvlSno" column="RGCA_ITEM_RMVL_SNO"/>
+		<result property="delmSttsCd" column="DELM_STTS_CD"/>
+		<result property="calmSttsCd" column="CALM_STTS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-selectOneMnwdtyrdt_[간호활동] 근무보고 환자 삽입관 제거 상세내역 조회 */
+			 to_char(RPRT_YMD, 'YYYYMMDD') as RPRT_YMD
+		   , WARD_CD as WARD_CD
+		   , SHDT_CD as SHDT_CD
+		   , WRRP_DVSN_CD as WRRP_DVSN_CD
+		   , PTNO as PTNO
+		   , WRRP_DETL_SNO as WRRP_DETL_SNO
+		   , SELF_RMVL_OCPR_YN as SELF_RMVL_OCPR_YN
+		   , ETT_LCTN_MDFC_OCPR_YN as ETT_LCTN_MDFC_OCPR_YN
+		   , SETN_CARE_IPRG_OCPR_YN as SETN_CARE_IPRG_OCPR_YN
+		   , PSMD_PNTM_OCPR_YN as PSMD_PNTM_OCPR_YN
+		   , OCPR_BDWG_MSRM_PNTM_YN as OCPR_BDWG_MSRM_PNTM_YN
+		   , DRSN_OCPR_YN as DRSN_OCPR_YN
+		   , OCPR_ETC_YN as OCPR_ETC_YN
+		   , OCPR_ETSB_CTN as OCPR_ETSB_CTN
+		   , RMVL_PNTM_PTSS_YN as RMVL_PNTM_PTSS_YN
+		   , RSBN_USE_EN as RSBN_USE_EN
+		   , SDTV_USE_EN as SDTV_USE_EN
+		   , SCRT_ECSV_YN as SCRT_ECSV_YN
+		   , SUTR_STTS_YN as SUTR_STTS_YN
+		   , PSVR_O2_SPLY_YN as PSVR_O2_SPLY_YN
+		   , NNIV_VNTT_OFFR_YN as NNIV_VNTT_OFFR_YN
+		   , PSVR_IMDT_RNTB_YN as PSVR_IMDT_RNTB_YN
+		   , INTB_DELY_PSVR_YN as INTB_DELY_PSVR_YN
+		   , PSVR_IDAF_PRHL_MDFC_YN as PSVR_IDAF_PRHL_MDFC_YN
+		   , RNSR_PSVR_YN as RNSR_PSVR_YN
+		   , VS_VRTN_ADTN_MDTE_YN as VS_VRTN_ADTN_MDTE_YN
+		   , CPR_OCRN_PSVR_YN as CPR_OCRN_PSVR_YN
+		   , DIET_SHIF_YN as DIET_SHIF_YN
+		   , TKOV_OCPN_UNSB_YN as TKOV_OCPN_UNSB_YN
+		   , CPR_OCRN_UNSB_YN as CPR_OCRN_UNSB_YN
+		   , OCPN_UNSB_OTRS_PCME_YN as OCPN_UNSB_OTRS_PCME_YN
+		   , EXMN_MDTE_OCRN_UNSB_YN as EXMN_MDTE_OCRN_UNSB_YN
+		   , TRSF_IPRG_YN as TRSF_IPRG_YN
+		   , TUBE_FXNG_MTHD_YN as TUBE_FXNG_MTHD_YN
+		   , MDRP_NO as MDRP_NO
+		   , RGCA_GRP_CD as RGCA_GRP_CD
+		   , RGCA_ITEM_CD as RGCA_ITEM_CD
+		   , RGCA_ITEM_SNO as RGCA_ITEM_SNO
+		   , RGCA_ITEM_RMVL_SNO as RGCA_ITEM_RMVL_SNO
+		   , DELM_STTS_CD as DELM_STTS_CD
+		   , CALM_STTS_CD as CALM_STTS_CD
+		from
+		   MNWDTYRDT
+		where 1=1
+		   and PTNO                = #{ptno}
+		   and MDRP_NO             = #{mdrpNo}
+		   and RGCA_GRP_CD         = #{rgcaGrpCd}
+		   and RGCA_ITEM_CD        = #{rgcaItemCd}
+		   and RGCA_ITEM_SNO       = #{rgcaItemSno}
+		   and RGCA_ITEM_RMVL_SNO  = #{rgcaItemRmvlSno}
+		]]>
+	</select>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-updateMnwdtyrdt () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-updateMnwdtyrdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareWrrpDetlDVO"  >
+		<![CDATA[
+		update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareWrrpDetlDAO-updateMnwdtyrdt_[간호활동] 근무보고 환자 삽입관 제거 상세내역 수정 */
+		   MNWDTYRDT
+		set
+			 RPRT_YMD                  = to_date(#{rprtYmd}, 'YYYYMMDD')
+		   , SHDT_CD                   = nvl(#{shdtCd}                 , SHDT_CD                 )
+		   , SELF_RMVL_OCPR_YN         = decode(SELF_RMVL_OCPR_YN      , 'Y', nvl(#{selfRmvlOcprYn}       , 'N'), nvl(#{selfRmvlOcprYn}     , SELF_RMVL_OCPR_YN       ))
+		   , ETT_LCTN_MDFC_OCPR_YN     = decode(ETT_LCTN_MDFC_OCPR_YN  , 'Y', nvl(#{ettLctnMdfcOcprYn}   , 'N'), nvl(#{ettLctnMdfcOcprYn} , ETT_LCTN_MDFC_OCPR_YN   ))
+		   , SETN_CARE_IPRG_OCPR_YN    = decode(SETN_CARE_IPRG_OCPR_YN , 'Y', nvl(#{setnCareIprgOcprYn}  , 'N'), nvl(#{setnCareIprgOcprYn}, SETN_CARE_IPRG_OCPR_YN  ))
+		   , PSMD_PNTM_OCPR_YN         = decode(PSMD_PNTM_OCPR_YN      , 'Y', nvl(#{psmdPntmOcprYn}       , 'N'), nvl(#{psmdPntmOcprYn}     , PSMD_PNTM_OCPR_YN       ))
+		   , OCPR_BDWG_MSRM_PNTM_YN    = decode(OCPR_BDWG_MSRM_PNTM_YN , 'Y', nvl(#{ocprBdwgMsrmPntmYn}  , 'N'), nvl(#{ocprBdwgMsrmPntmYn}, OCPR_BDWG_MSRM_PNTM_YN  ))
+		   , DRSN_OCPR_YN              = decode(DRSN_OCPR_YN           , 'Y', nvl(#{drsnOcprYn}            , 'N'), nvl(#{drsnOcprYn}          , DRSN_OCPR_YN            ))
+		   , OCPR_ETC_YN               = decode(OCPR_ETC_YN            , 'Y', nvl(#{ocprEtcYn}             , 'N'), nvl(#{ocprEtcYn}           , OCPR_ETC_YN             ))
+		   , OCPR_ETSB_CTN             = decode(#{ocprEtcYn}, 'Y', #{ocprEtsbCtn}, null)
+		   , RMVL_PNTM_PTSS_YN         = nvl(#{rmvlPntmPtssYn}       , RMVL_PNTM_PTSS_YN       )
+		   , RSBN_USE_EN               = nvl(#{rsbnUseEn}             , RSBN_USE_EN             )
+		   , SDTV_USE_EN               = nvl(#{sdtvUseEn}             , SDTV_USE_EN             )
+		   , SCRT_ECSV_YN              = nvl(#{scrtEcsvYn}            , SCRT_ECSV_YN            )
+		   , SUTR_STTS_YN              = #{sutrSttsYn}
+		   , PSVR_O2_SPLY_YN           = decode(PSVR_O2_SPLY_YN        , 'Y', nvl(#{psvrO2SplyYn}         , 'N'), nvl(#{psvrO2SplyYn}         , PSVR_O2_SPLY_YN         ))
+		   , NNIV_VNTT_OFFR_YN         = decode(NNIV_VNTT_OFFR_YN      , 'Y', nvl(#{nnivVnttOffrYn}       , 'N'), nvl(#{nnivVnttOffrYn}       , NNIV_VNTT_OFFR_YN       ))
+		   , PSVR_IMDT_RNTB_YN         = decode(PSVR_IMDT_RNTB_YN      , 'Y', nvl(#{psvrImdtRntbYn}       , 'N'), nvl(#{psvrImdtRntbYn}       , PSVR_IMDT_RNTB_YN       ))
+		   , INTB_DELY_PSVR_YN         = decode(INTB_DELY_PSVR_YN      , 'Y', nvl(#{intbDelyPsvrYn}       , 'N'), nvl(#{intbDelyPsvrYn}       , INTB_DELY_PSVR_YN       ))
+		   , PSVR_IDAF_PRHL_MDFC_YN    = decode(PSVR_IDAF_PRHL_MDFC_YN , 'Y', nvl(#{psvrIdafPrhlMdfcYn}  , 'N'), nvl(#{psvrIdafPrhlMdfcYn}  , PSVR_IDAF_PRHL_MDFC_YN  ))
+		   , RNSR_PSVR_YN              = decode(RNSR_PSVR_YN           , 'Y', nvl(#{rnsrPsvrYn}            , 'N'), nvl(#{rnsrPsvrYn}            , RNSR_PSVR_YN            ))
+		   , VS_VRTN_ADTN_MDTE_YN      = decode(VS_VRTN_ADTN_MDTE_YN   , 'Y', nvl(#{vsVrtnAdtnMdteYn}    , 'N'), nvl(#{vsVrtnAdtnMdteYn}    , VS_VRTN_ADTN_MDTE_YN    ))
+		   , CPR_OCRN_PSVR_YN          = decode(CPR_OCRN_PSVR_YN       , 'Y', nvl(#{cprOcrnPsvrYn}        , 'N'), nvl(#{cprOcrnPsvrYn}        , CPR_OCRN_PSVR_YN        ))
+		   , DIET_SHIF_YN              = decode(DIET_SHIF_YN           , 'Y', nvl(#{dietShifYn}            , 'N'), nvl(#{dietShifYn}            , DIET_SHIF_YN            ))
+		   , TKOV_OCPN_UNSB_YN         = decode(TKOV_OCPN_UNSB_YN      , 'Y', nvl(#{tkovOcpnUnsbYn}       , 'N'), nvl(#{tkovOcpnUnsbYn}       , TKOV_OCPN_UNSB_YN       ))
+		   , CPR_OCRN_UNSB_YN          = decode(CPR_OCRN_UNSB_YN       , 'Y', nvl(#{cprOcrnUnsbYn}        , 'N'), nvl(#{cprOcrnUnsbYn}        , CPR_OCRN_UNSB_YN        ))
+		   , OCPN_UNSB_OTRS_PCME_YN    = decode(OCPN_UNSB_OTRS_PCME_YN , 'Y', nvl(#{ocpnUnsbOtrsPcmeYn}  , 'N'), nvl(#{ocpnUnsbOtrsPcmeYn}  , OCPN_UNSB_OTRS_PCME_YN  ))
+		   , EXMN_MDTE_OCRN_UNSB_YN    = decode(EXMN_MDTE_OCRN_UNSB_YN , 'Y', nvl(#{exmnMdteOcrnUnsbYn}  , 'N'), nvl(#{exmnMdteOcrnUnsbYn}  , EXMN_MDTE_OCRN_UNSB_YN  ))
+		   , TRSF_IPRG_YN              = decode(TRSF_IPRG_YN           , 'Y', nvl(#{trsfIprgYn}            , 'N'), nvl(#{trsfIprgYn}            , TRSF_IPRG_YN            ))
+		   , TUBE_FXNG_MTHD_YN         = nvl(#{tubeFxngMthdYn}       , TUBE_FXNG_MTHD_YN       )
+		   , DELM_STTS_CD              = nvl(#{delmSttsCd}            , DELM_STTS_CD            )
+		   , CALM_STTS_CD              = nvl(#{calmSttsCd}            , CALM_STTS_CD            )
+		   , LAST_UPDR_ID        = #{gvUserId}
+		   , LAST_UPDT_IP        = #{gvUserIp}
+		   , LAST_UPDT_DT        = sysdate
+		   , LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		   , LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		where 1=1
+		   and PTNO                = #{ptno}
+		   and MDRP_NO             = #{mdrpNo}
+		   and RGCA_GRP_CD         = #{rgcaGrpCd}
+		   and RGCA_ITEM_CD        = #{rgcaItemCd}
+		   and RGCA_ITEM_SNO       = #{rgcaItemSno}
+		   and RGCA_ITEM_RMVL_SNO  = #{rgcaItemRmvlSno}
+		]]>
+	</update>
+
+</mapper>

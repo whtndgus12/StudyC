@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzElcrAgdcDAO_sql.xml 
+    Description :                                      전자동의서DAO
+                  -->
+<mapper namespace="AzElcrAgdcDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId-result" type="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="opflId" column="OPFL_ID"/>
+		<result property="rcrdNo" column="RCRD_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId (광파일ID조회) 
+        Description :                                           환자의 최신 광파일ID를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflId */
+		          PTNO        /* 환자번호 */
+		        , OPFL_ID    /* 광파일 ID*/
+		        , RCRD_NO  /* 기록NO */
+		from MROPTCHRV 
+		where RCRD_NO = 
+		(select 
+		     RCRD_NO 
+		from 
+		(select RCRD_NO
+			  from MROPTCHRV
+		where PTNO = #{ptno}
+		   and RCKI_CD = '102' /* 원무 */
+		   and FORM_NO in( #{formNo} , decode(#{formNo}, '10204120001', '10206690001'
+		   	                                           , '10204140001', '10206680001'))
+		   order by SAVE_DT desc)
+		where rownum = 1) 
+		and PTNO = #{ptno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo-result" type="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO">
+	
+		<result property="opflId" column="OPFL_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo (기록번호로 광파일 ID 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo-result" useCache="true" flushCache="false">
+		select /*+ USE_NL(V.A V.B V.C) */ /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-listOpflIdByRcrdNo */ 
+		        OPFL_ID
+		from MROPTCHRV
+		where RCRD_NO = #{rcrdNo}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm-result" type="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO">
+	
+		<result property="rcrdNo" column="RCRD_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm (개인정보동의서명) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzElcrAgdcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzElcrAgdcDAO-selectOnePtntInifAgrm */
+		select RCRD_NO
+		  from MROCRPRNV
+		where PTNO = #{ptno}
+		  and FORM_NO = #{formNo}
+		  and rownum = 1 
+	</select>
+
+
+
+</mapper>

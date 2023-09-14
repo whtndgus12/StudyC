@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbDsblInfmComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbDsblInfmComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO">
+	
+		<result property="wodvCd" column="WODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-selectOneDummy */
+		select '' as WODV_CD
+		from dual 
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-updateDsblInfm (장애정보 변경) 
+        Description :                                           apd_ptdsblt_u01$U01_장애정보 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-updateDsblInfm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-updateDsblInfm */
+			   APPTDSBLT
+		  set
+			   DBPR_DVSN_CD       = #{dbprDvsnCd}
+			,  DSBL_GRAD_VL       = #{dsblGradVl}
+			,  DSBL_INFM_RGST_YMD = to_date(#{dsblInfmRgstYmd}, 'yyyymmdd')
+			,  DBPR_RGST_YMD      = to_date(#{dbprRgstYmd}, 'yyyymmdd')
+			,  LAST_UPDR_ID = #{gvUserId}
+			,  LAST_UPDT_IP = #{gvUserIp}
+			,  LAST_UPDT_DT = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO               = #{ptno}
+		  and  DSBL_SNO           = #{dsblSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-insertDsblInfm (장애정보 생성) 
+        Description :                                           apd_ptdsblt_i01$I01_장애정보 생성
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-insertDsblInfm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-insertDsblInfm */
+		 into APPTDSBLT
+		(
+				PTNO
+			 ,  DSBL_SNO/* 장애일련번호 */
+			 ,  DBPR_DVSN_CD/* 장애인구분코드 */
+			 ,  DSBL_GRAD_VL/* 장애등급값 */
+			 ,  DSBL_INFM_RGST_YMD/* 장애정보등록일자 */
+			 ,  DBPR_RGST_YMD/* 장애인등록일자 */
+			 /*  서버 프로그램 전환시 자동 추가된 항목 */
+			 ,  FRST_RGSR_ID
+			 ,  FRST_RGST_IP
+			 ,  FRST_RGST_DT
+			 ,  FRST_RGST_CLNT_PRGM_ID
+			 ,  FRST_RGST_SRVR_PRGM_ID
+			 ,  LAST_UPDR_ID
+			 ,  LAST_UPDT_IP
+			 ,  LAST_UPDT_DT
+			 ,  LAST_UPDT_CLNT_PRGM_ID
+			 ,  LAST_UPDT_SRVR_PRGM_ID
+		)
+		values
+		(
+		       #{ptno}
+			 ,  (select nvl(max(DSBL_SNO), 0) + 1
+				   from APPTDSBLT inner
+				 where inner.PTNO = #{ptno})
+			 ,  #{dbprDvsnCd}
+			 ,  #{dsblGradVl}
+			 ,  to_date(#{dsblInfmRgstYmd}, 'yyyymmdd')
+			 ,  to_date(#{dbprRgstYmd}, 'yyyymmdd')
+			 /*  서버 프로그램 전환시 자동 추가된 항목 */
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  sysdate
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+			 ,  #{gvUserId}
+			 ,  #{gvUserIp}
+			 ,  sysdate
+			 ,  #{gvClntPrgmId}
+			 ,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-deleteDsblInfm (장애정보 삭제) 
+        Description :                                           apd_ptdsblt_d01$D01_장애정보 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-deleteDsblInfm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbDsblInfmComnDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbDsblInfmComnDAO-deleteDsblInfm */
+			   APPTDSBLT/* 환자장애 */
+		where  PTNO  = #{ptno}
+		  and  DSBL_SNO           = #{dsblSno}
+	</delete>
+
+</mapper>

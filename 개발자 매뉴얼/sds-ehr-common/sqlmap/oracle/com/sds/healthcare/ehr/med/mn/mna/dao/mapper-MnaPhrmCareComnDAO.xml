@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnaPhrmCareComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnaPhrmCareComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr-result" type="com.sds.healthcare.ehr.med.mn.mna.vo.MnaPhrmCareComnDVO">
+	
+		<result property="careWkplCd" column="CARE_WKPL_CD"/>
+		<result property="wrknDvsnCd" column="WRKN_DVSN_CD"/>
+		<result property="wrknStrtYmd" column="WRKN_STRT_YMD"/>
+		<result property="wrknFnshYmd" column="WRKN_FNSH_YMD"/>
+		<result property="careTeamCd" column="CARE_TEAM_CD"/>
+		<result property="careGradCd" column="CARE_GRAD_CD"/>
+		<result property="careDetlGradCd" column="CARE_DETL_GRAD_CD"/>
+		<result property="otptWkprMcdpCd" column="OTPT_WKPR_MCDP_CD"/>
+		<result property="careWrknCntrCd" column="CARE_WRKN_CNTR_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr () 
+        Description :                                           약제부에서 사용하는 간호 공통코드
+                                                                제작자 - 안시현
+                                                                MnaSelectOneOtptAsnuCnfrCSID
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mna.vo.MnaPhrmCareComnDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr"  parameterType="com.sds.healthcare.ehr.med.mn.mna.vo.MnaPhrmCareComnDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mna-dao-MnaPhrmCareComnDAO-selectOneOtptAsnuCnfr */
+		/* MnaSelectOneOtptAsnuCnfrCSID */
+		select         a.CARE_WKPL_CD as CARE_WKPL_CD                /* 간호근무장소코드 */
+				        , a.WRKN_DVSN_CD as WRKN_DVSN_CD                /* 근무구분코드 */
+				        , a.WRKN_STRT_YMD as WRKN_STRT_YMD              /* 근무시작일자 */
+				        , a.WRKN_FNSH_YMD as WRKN_FNSH_YMD              /* 근무종료일자 */
+				        , a.CARE_TEAM_CD  as CARE_TEAM_CD               /* 간호팀코드 */
+				        , a.CARE_GRAD_CD  as CARE_GRAD_CD               /* 간호등급코드 */
+				        , a.CARE_DETL_GRAD_CD as CARE_DETL_GRAD_CD      /* 간호상세등급코드 */
+				        , a.OTPT_WKPR_MCDP_CD as OTPT_WKPR_MCDP_CD      /* 외래근무자진료과코드 */
+				        , a.CARE_WRKN_CNTR_CD as CARE_WRKN_CNTR_CD      /* 간호근무센터코드 */
+				        , (select z.ABRV_DPRT_CD from HZDEPTMMT z where a.OTPT_WKPR_MCDP_CD = z.DPRT_CD ) as ABRV_DPRT_CD  /* 외래부서 약어 */
+				        , (select z.KORN_DPRT_NM from HZDEPTMMT z where a.OTPT_WKPR_MCDP_CD = z.DPRT_CD ) as KORN_DPRT_NM /* 외래부서 한글명 */
+		    from MNASPRSCT a, HZDEPTMMT b 
+		    where b.DPRT_CD ='530000' 
+		      and WKPR_ID = #{emno}
+		]]>
+	</select>
+
+
+
+</mapper>

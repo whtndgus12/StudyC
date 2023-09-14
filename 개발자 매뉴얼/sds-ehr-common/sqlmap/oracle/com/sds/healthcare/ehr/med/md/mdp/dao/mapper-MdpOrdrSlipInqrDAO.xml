@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrSlipInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpOrdrSlipInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="slipCd1" column="SLIP_CD_1"/>
+		<result property="etcCtn1" column="ETC_CTN_1"/>
+		<result property="slipCd2" column="SLIP_CD_2"/>
+		<result property="etcCtn2" column="ETC_CTN_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList (SLIP 대, 중, 소분류 목록을 조회) 
+        Description :                                           SLIP 대, 중, 소분류 목록을 조회한다..
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipLrclList */  /*+ mdd_bslipct_l03$S01_SLIP 대분류 조회 */
+				  SLIP_CD as SLIP_CD
+				, SLIP_NM as SLIP_NM
+				, SLIP_CD_1 as SLIP_CD_1
+				, ETC_CTN_1 as ETC_CTN_1
+				, SLIP_CD_2 as SLIP_CD_2
+				, ETC_CTN_2 as ETC_CTN_2
+			 from
+				  (
+				   select
+						  a.SLIP_CD   as SLIP_CD
+						, a.SLIP_NM   as SLIP_NM
+						, b.SLIP_CD   as SLIP_CD_1
+						, b.SLIP_NM   as ETC_CTN_1
+						, c.SLIP_CD   as SLIP_CD_2
+						, c.SLIP_NM   as ETC_CTN_2
+						, a.SORT_SQNC as SORT_SQNC
+						, b.SORT_SQNC as SORT_SQNC_1
+						, c.SORT_SQNC as SORT_SQNC_2
+					 from
+						  ( select SLIP_CD
+								 , SLIP_NM
+								 , SLIP_CD2
+								 , ORDR_CLTY_CD
+								 , SCRN_DSPL_YN
+								 , SORT_SQNC
+							  from MDBSLIPCT
+							 where SLIP_CD1 = '*'
+							   and SLIP_CD2 = '*'
+							   and SCRN_DSPL_YN = 'Y'
+							   and USE_YN = 'Y'      ) a
+						, ( select SLIP_CD
+								 , SLIP_NM
+								 , SLIP_CD2
+								 , ORDR_CLTY_CD
+								 , SCRN_DSPL_YN
+								 , SORT_SQNC
+							  from MDBSLIPCT
+							 where SLIP_CD1 = '*'
+							   and SLIP_CD2 <> '*'
+							   and SCRN_DSPL_YN = 'Y'
+							   and USE_YN = 'Y') b
+						, ( select SLIP_CD
+								 , SLIP_NM
+								 , SLIP_CD2
+								 , ORDR_CLTY_CD
+								 , SCRN_DSPL_YN
+								 , SORT_SQNC
+							  from MDBSLIPCT
+							 where SLIP_CD1 <> '*'
+							   and SLIP_CD2 <> '*'
+							   and SCRN_DSPL_YN = 'Y'
+							   and USE_YN = 'Y'     ) c
+					where  1 = 1
+					  and a.ORDR_CLTY_CD like #{ordrCltyCd}||'%'
+					  and b.SLIP_CD2(+) = a.SLIP_CD
+					  and c.SLIP_CD2(+) = b.SLIP_CD
+					  and a.SLIP_CD = b.SLIP_CD2(+)
+					  and b.SLIP_CD = c.SLIP_CD2(+)
+					  and (
+								(
+										( nvl(#{mcdpCd}, 'X') != '004000' ) /*  SLM : SAMSUNG LAB. */
+									and ( nvl(nvl(c.SLIP_CD, b.SLIP_CD), a.SLIP_CD) not in ('CRP', 'CTC', 'GRC') )  /*  (SLIPCODE3 not in ('CRP','CTC','GRC')) 추후 확인필요 */
+								)
+							   or
+								(
+										(nvl(#{mcdpCd}, 'X') = '004000')
+								)
+						  )
+			  )
+		   order
+			  by SORT_SQNC, SORT_SQNC_1, SORT_SQNC_2, SLIP_CD, SLIP_CD_1, SLIP_CD_2
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="optnCtn1" column="OPTN_CTN1"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrList (약효군 SLIP 목록을 조회) 
+        Description :                                           약효군 SLIP 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegr_약효군 조회(SLIP) */
+		                   OPTN_CTN1         /* 분류  L : 대분류 M : 중분류 S : 소분류 */
+		                ,  COMN_DTLS_CD      /* 코드   */
+		                ,  DETL_CD_NM        /* 코드명 */
+		            from  SDCMCDDMV
+		           where  COMN_GRP_CD = 'SD016'
+		             and  OPTN_CTN1 is not null
+		             and  APST_YMD < sysdate
+		             and  APFN_YMD > sysdate
+		        order by  COMN_DTLS_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="mdefClsf1Cd" column="MDEF_CLSF_1_CD"/>
+		<result property="mdefClsf2Cd" column="MDEF_CLSF_2_CD"/>
+		<result property="mdefClsf3Cd" column="MDEF_CLSF_3_CD"/>
+		<result property="mdefClsf4Cd" column="MDEF_CLSF_4_CD"/>
+		<result property="mdefClsfNm" column="MDEF_CLSF_NM"/>
+		<result property="grpClsfDvsnCd" column="GRP_CLSF_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccList (약효능 SLIP 목록을 조회.) 
+        Description :                                           약효능 SLIP 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfcc_약효능 조회(SLIP) */
+		                   MDEF_CLSF_1_CD   /* 약효분류코드1       */
+		                ,  MDEF_CLSF_2_CD   /* 약효분류코드2       */
+		                ,  MDEF_CLSF_3_CD   /* 약효분류코드3       */
+		                ,  MDEF_CLSF_4_CD   /* 약효분류코드4       */
+		                ,  MDEF_CLSF_NM     /* 약효분류명          */
+		                ,  GRP_CLSF_DVSN_CD /* 그룹 분류코드       */
+		             from  SDDATGRPT
+		            where  MDEF_CLSF_1_CD   = nvl(#{mdefClsf1Cd}, MDEF_CLSF_1_CD)    /* 약효분류코드1        */
+		              and  MDEF_CLSF_2_CD   = nvl(#{mdefClsf2Cd}, MDEF_CLSF_2_CD)    /* 약효분류코드2        */
+		              and  MDEF_CLSF_3_CD   = nvl(#{mdefClsf3Cd}, MDEF_CLSF_3_CD)    /* 약효분류코드3        */
+		              and  MDEF_CLSF_4_CD   = nvl(#{mdefClsf4Cd}, MDEF_CLSF_4_CD)    /* 약효분류코드4        */
+		              and  MDEF_CLSF_5_CD   = nvl(#{mdefClsf5Cd}, MDEF_CLSF_5_CD)    /* 대표약품명ID         */
+		              and  GRP_CLSF_DVSN_CD = nvl(#{grpClsfDvsnCd}, GRP_CLSF_DVSN_CD)  /* 그룹분류구분         */
+		              and  ANTB_INGR_YN = nvl('','N')
+		            order by  MDEF_CLSF_1_CD, MDEF_CLSF_2_CD, MDEF_CLSF_3_CD, MDEF_CLSF_4_CD
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="mdfeItdvCd" column="MDFE_ITDV_CD"/>
+		<result property="ihohDvsnCd" column="IHOH_DVSN_CD"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="ingrNm" column="INGR_NM"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="afiOrdrCltyNm" column="AFI_ORDR_CLTY_NM"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="tdmCdDvsnCd" column="TDM_CD_DVSN_CD"/>
+		<result property="phrkExmnCd" column="PHRK_EXMN_CD"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="antbYn" column="ANTB_YN"/>
+		<result property="optnCtn1" column="OPTN_CTN_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList (SLIP 처방조회(약효능)) 
+        Description :                                           효능 분류(대,중,소)를 기준으로 분류에 해당하는 처방코드목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList-result" useCache="true" flushCache="false">
+		SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDrugEfccOrdrList */   /*+ mdd_ordrcmt_l06$S01_SLIP 처방조회 (약효능) */
+				   a.ORDR_CD as ORDR_CD        /*  처방코드     */
+				,  a.ORDR_NM as ORDR_NM
+				,  a.ORDR_CLTY_CD as ORDR_CLTY_CD   /*  처방구별     */
+				,  a.SLIP_CD as SLIP_CD        /*  SLIP코드     */
+				,  to_char(nvl(a.SORT_SQNC, 0)) as SORT_SQNC /*  나열순서  */
+				,  c.MDFE_ITDV_CD as MDFE_ITDV_CD   /*  필수(수가)입력구분 */
+				,  a.IHOH_DVSN_CD as IHOH_DVSN_CD   /*  원내/외구분(1,2,3) */
+				,  a.MDPR_CLSF_CD as MDPR_CLSF_CD   /*  약품구분     */
+				,  a.INGR_NM as INGR_NM        /*  약성분명     */
+				,  a.INVN_PCUN_CD as INVN_PCUN_CD   /*  포장단위     */
+				,  a.ICUN_CD as ICUN_CD        /*  함량단위     */
+				, ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'MM182' and COMN_DTLS_CD = a.ORDR_CLTY_CD and rownum = 1) as AFI_ORDR_CLTY_NM /* (공통) 처방구별명 */
+				,  a.SET_EXMN_YN as SET_EXMN_YN    /*  SET검사여부  */
+				,  b.SLIP_NM as SLIP_NM        /*  SLIP분류명   */
+				,  a.RSTC_CMPN_NM as RSTC_CMPN_NM   /*  제약회사     */
+				,  a.TDM_CD_DVSN_CD as TDM_CD_DVSN_CD /*  TDM코드구분(약물검사:Y,TDM자문의뢰검사:T) */
+				,  a.PHRK_EXMN_CD as PHRK_EXMN_CD   /*  약물동력학CODE(검사) */
+				,  a.CNMD_PRVN_ANTB_TRGT_YN as CNMD_PRVN_ANTB_TRGT_YN      /*  조영제 여부  */
+				,  a.ANTB_YN as ANTB_YN        /*  항생제여부 */
+				,  e.OPTN_CTN1 as OPTN_CTN_1      /*  insulin 색깔 */
+			 from  MDORDRCMT a  /*  처방코드마스터 */
+				,  SDDGEFFCT s
+				,  MDBSLIPCT b
+				,  AIMFMDFET c  /*  수가코드 */
+				,  SDCMCDDMV d
+				,  SDCMCDDMV e
+		        ,  SDDDGCDMT f
+			where  1=1
+		    <if test='efccLrclCd != null and efccLrclCd != "" '>
+		      and  s.EFCC_LRCL_CD = #{efccLrclCd}  /*  효능대분류 */
+		    </if>
+		    <if test='efccMdcsCd != null and efccMdcsCd != "" '>
+			  and  s.EFCC_MDCS_CD = #{efccMdcsCd} /*  효능중분류 */
+		    </if>
+		    <if test='efccSmclCd != null and efccSmclCd != "" '>
+			  and  s.EFCC_SMCL_CD = #{efccSmclCd} /*  효능소분류 */
+		    </if>
+		    <if test='efccDtclCd != null and efccDtclCd != "" '>
+			  and  s.EFCC_DTCL_CD = #{efccDtclCd} /*  효능세분류코드 */
+		    </if>
+			  and  a.ORDR_CD  = s.MDPR_CD
+		      and  a.ORDR_CD  = f.MDPR_CD
+			  and  a.ORDR_CLTY_CD like 'B%'
+			  and  a.ORDR_PSBL_DVSN_CD   = 'Y'
+			  and  nvl(a.CLNC_EXAM_DRUG_YN, 'N') != 'Y' /*  20100504YKC */
+		      and  f.DGMT_RGST_TYPE_CD != '3' 
+			  and  b.SLIP_CD(+)  = a.SLIP_CD
+			  and  c.MDFE_CD     = a.ORDR_CD
+			  and  c.APST_YMD  <![CDATA[ <= ]]> decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.APFN_YMD  <![CDATA[ >= ]]> decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.ORDR_PSBL_YN     = 'Y'
+			  and  d.COMN_GRP_CD(+)    = 'SD802'
+			  and  e.COMN_GRP_CD(+)    = 'SD801'
+			  and  e.COMN_DTLS_CD(+)   = d.OPTN_CTN1
+			  and  d.COMN_DTLS_CD(+)   = a.ORDR_CD
+			order
+			   by  a.ORDR_CLTY_CD
+				,  a.ORDR_NM
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="mdfeItdvCd" column="MDFE_ITDV_CD"/>
+		<result property="ihohDvsnCd" column="IHOH_DVSN_CD"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="ingrNm" column="INGR_NM"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="afiOrdrCltyNm" column="AFI_ORDR_CLTY_NM"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="tdmCdDvsnCd" column="TDM_CD_DVSN_CD"/>
+		<result property="phrkExmnCd" column="PHRK_EXMN_CD"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="antbYn" column="ANTB_YN"/>
+		<result property="optnCtn1" column="OPTN_CTN_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList (SLIP 처방조회(약효군)) 
+        Description :                                           약효군코드를 기준으로 분류에 해당하는 처방코드목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipMegrOrdrList */   /*+ mdd_ordrcmt_l08$S01_SLIP 처방조회 (약효군) */
+					   a.ORDR_CD as ORDR_CD        /*  처방코드     */
+					,  a.ORDR_NM as ORDR_NM
+					,  a.ORDR_CLTY_CD as ORDR_CLTY_CD   /*  처방구별     */
+					,  a.SLIP_CD as SLIP_CD        /*  SLIP코드     */
+					,  to_char(nvl(a.SORT_SQNC, 0)) as SORT_SQNC /*  나열순서  */
+					,  c.MDFE_ITDV_CD as MDFE_ITDV_CD   /*  필수(수가)입력구분 */
+					,  a.IHOH_DVSN_CD as IHOH_DVSN_CD   /*  원내/외구분(1,2,3) */
+					,  a.MDPR_CLSF_CD as MDPR_CLSF_CD   /*  약품구분     */
+					,  a.INGR_NM as INGR_NM        /*  약성분명     */
+					,  a.INVN_PCUN_CD as INVN_PCUN_CD   /*  포장단위     */
+					,  a.ICUN_CD as ICUN_CD        /*  함량단위     */
+					, ( select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'MM182' and COMN_DTLS_CD = a.ORDR_CLTY_CD and rownum = 1) as AFI_ORDR_CLTY_NM /* (공통) 처방구별명 */
+					,  a.SET_EXMN_YN as SET_EXMN_YN    /*  SET검사여부  */
+					,  b.SLIP_NM as SLIP_NM        /*  SLIP분류명   */
+					,  a.RSTC_CMPN_NM as RSTC_CMPN_NM   /*  제약회사     */
+					,  a.TDM_CD_DVSN_CD as TDM_CD_DVSN_CD /*  TDM코드구분(약물검사:Y,TDM자문의뢰검사:T) */
+					,  a.PHRK_EXMN_CD as PHRK_EXMN_CD   /*  약물동력학CODE(검사) */
+					,  a.CNMD_PRVN_ANTB_TRGT_YN as CNMD_PRVN_ANTB_TRGT_YN      /*  조영제 여부  */
+					,  a.ANTB_YN as ANTB_YN        /*  항생제여부 */
+					,  e.OPTN_CTN1 as OPTN_CTN_1      /*  insulin 색깔 */
+				 from  MDORDRCMT a  /*  처방코드마스터 */
+					,  MDBSLIPCT b  /*  SLIP CODE */
+					,  AIMFMDFET c  /*  수가코드 */
+					,  SDCMCDDMV d
+					,  SDCMCDDMV e
+			   where  a.MEGR_CD = #{megrCd}
+				 and  a.ORDR_CLTY_CD like 'B%'
+				 /*  16.08.05 주석처리 */
+		   /*       and  decode(to_date(:mds_ordrcmt_017[0].ordr_ymd, 'YYYYMMDD'), null, trunc(sysdate), to_date(:mds_ordrcmt_017[0].ordr_ymd, 'YYYYMMDD')) between a.APST_YMD and a.APFN_YMD */
+				 /*  ================= */
+				 and  a.ORDR_PSBL_DVSN_CD   = 'Y'
+				 and  nvl(a.CLNC_EXAM_DRUG_YN, 'N') != 'Y' /*  20100504YKC */
+				 and  b.SLIP_CD(+)  = a.SLIP_CD
+				 and  c.MDFE_CD     = a.ORDR_CD
+				 and  c.APST_YMD   <= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+				 and  c.APFN_YMD   >= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+				 and  c.ORDR_PSBL_YN     = 'Y'
+				  and  d.COMN_GRP_CD(+)    = 'SD802'
+				  and  e.COMN_GRP_CD(+)    = 'SD801'
+				  and  e.COMN_DTLS_CD(+)   = d.OPTN_CTN1
+				  and  d.COMN_DTLS_CD(+)   = a.ORDR_CD
+				order
+				   by  a.ORDR_CLTY_CD
+					,  a.ORDR_NM
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="mdfeItdvCd" column="MDFE_ITDV_CD"/>
+		<result property="ihohDvsnCd" column="IHOH_DVSN_CD"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="ingrNm" column="INGR_NM"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="afiOrdrCltyNm" column="AFI_ORDR_CLTY_NM"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="tdmCdDvsnCd" column="TDM_CD_DVSN_CD"/>
+		<result property="phrkExmnCd" column="PHRK_EXMN_CD"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="antbYn" column="ANTB_YN"/>
+		<result property="optnCtn1" column="OPTN_CTN_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList (SLIP 처방조회 (진단검사의학과)) 
+        Description :                                           진단검사의학과 SLIP에 해당하는 처방코드목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipDxExmnOrdrList */   /*+ mdd_ordrcmt_l10$S01_SLIP 처방조회 (진단검사의학과) */
+				   b.ORDR_CD  as ORDR_CD   /*  처방코드     */
+				   /*  2003.12.24 김만태 추가:  급여구분에 따른 처방명에 안내문구 표시(요청자: 보험심사과-이주은) */
+				, decode(c.INSR_IPDV_CD, '1', decode(c.INSR_BTTY_CD, 'C', b.ORDR_NM||'" 기준外 100/100가능】', b.ORDR_NM)
+									   , '3', decode(c.INSR_BTTY_CD, 'E', decode(b.ORDR_CD, 'BL5241', b.ORDR_NM  /*  3E중 제외코드 */
+																						  , 'BL5242', b.ORDR_NM  /*  3E중 제외코드 */
+																						  , 'BL5243', b.ORDR_NM  /*  3E중 제외코드 */
+																						  ,  b.ORDR_NM||'"기준內 보험가능】')
+																   , 'D', decode(b.ORCL_CD, 'DG1', b.ORDR_NM||'"기준內 보험가능】'
+																						  , 'IJ1', b.ORDR_NM||'"기준內 보험가능】'
+																						  ,  b.ORDR_NM)
+																   , b.ORDR_NM)
+									   , '2', decode(c.INSR_BTTY_CD, 'X', decode(b.ORCL_CD, 'MAT', b.ORDR_NM||'"무산정가】', b.ORDR_NM)
+																   , 'T', b.ORDR_NM
+																   , b.ORDR_NM||'"비급여】')
+									   , '6', decode(c.INSR_BTTY_CD, 'E', b.ORDR_NM||'"기준內 보험가능】'
+																   , b.ORDR_NM)
+									   , b.ORDR_NM) as ORDR_NM
+				   /*  처방명(표시): 1C-(기준外 100/100가능), 3E/6E-(기준外 100/100가능), 3D-(전액본인부담), 2%-(비급여)<2X,2T는 제외> */
+				   /* -------------------------------------------------------------------------------------------------------------*/
+				,  b.ORDR_CLTY_CD as ORDR_CLTY_CD   /*  처방구별     */
+				,  b.SLIP_CD as SLIP_CD        /*  SLIP코드     */
+				,  to_char(nvl(b.SORT_SQNC, 0)) as SORT_SQNC /*  나열순서  */
+				,  c.MDFE_ITDV_CD as MDFE_ITDV_CD   /*  필수(수가)입력구분 */
+				,  b.IHOH_DVSN_CD as IHOH_DVSN_CD   /*  원내/외구분(1,2,3) */
+				,  b.MDPR_CLSF_CD as MDPR_CLSF_CD   /*  약품구분     */
+				,  b.INGR_NM as INGR_NM        /*  약성분명     */
+				,  b.INVN_PCUN_CD as INVN_PCUN_CD   /*  포장단위     */
+				,  b.ICUN_CD as ICUN_CD        /*  함량단위     */
+				, (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'MM182' and COMN_DTLS_CD = b.ORDR_CLTY_CD and rownum = 1) as AFI_ORDR_CLTY_NM /* (공통) 처방구별명 */
+				,  b.SET_EXMN_YN as SET_EXMN_YN    /*  SET검사여부  */
+				,  d.SLIP_NM as SLIP_NM        /*  SLIP분류명   */
+				,  b.RSTC_CMPN_NM as RSTC_CMPN_NM   /*  제약회사     */
+				,  b.TDM_CD_DVSN_CD as TDM_CD_DVSN_CD /*  TDM코드구분(약물검사:Y,TDM자문의뢰검사:T) */
+				,  b.PHRK_EXMN_CD as PHRK_EXMN_CD   /*  약물동력학CODE(검사) */
+				,  b.CNMD_PRVN_ANTB_TRGT_YN as CNMD_PRVN_ANTB_TRGT_YN      /*  조영제 여부  */
+				,  b.ANTB_YN as ANTB_YN        /*  항생제여부 */
+				,  null as OPTN_CTN_1  /*  insulin 색깔 */
+			 from  MZCTRLMMT a
+				,  MDORDRCMT b
+				,  AIMFMDFET c
+				,  MDBSLIPCT d
+			where  a.MDCR_CTRL_CD = 'MM987'
+			  and  a.MDCR_DTLS_CTRL_CD like #{optnCtn1} ||'%'
+			  and  a.MDCR_CTRL_CHRC_VL1 = #{optnCtn1}
+			  and  a.MDCR_CTRL_CHRC_VL2 = #{optnCtn2}
+			  and  b.ORDR_CD   = a.MDCR_CTRL_CHRC_VL3
+			  and  b.ORDR_PSBL_DVSN_CD   = 'Y'
+			  and  b.ORCL_CD  <> 'SM'  /*  건진처방 제외 (단, SM1중 몇몇 처방만[숙박검진] 사용가능) */
+			  and  b.ORCL_CD  <> 'NTR' /*  간호처치 */
+			  and  c.MDFE_CD  = b.ORDR_CD
+			  and  c.APST_YMD <= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.APFN_YMD >= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.ORDR_PSBL_YN = 'Y'
+			  and  d.SLIP_CD = a.MDCR_CTRL_CHRC_VL1
+			order
+			   by  b.ORDR_CLTY_CD
+				,  nvl(b.SORT_SQNC, 0)
+				,  b.ORDR_NM
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="mdfeItdvCd" column="MDFE_ITDV_CD"/>
+		<result property="ihohDvsnCd" column="IHOH_DVSN_CD"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="ingrNm" column="INGR_NM"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="afiOrdrCltyNm" column="AFI_ORDR_CLTY_NM"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="tdmCdDvsnCd" column="TDM_CD_DVSN_CD"/>
+		<result property="phrkExmnCd" column="PHRK_EXMN_CD"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="antbYn" column="ANTB_YN"/>
+		<result property="optnCtn1" column="OPTN_CTN_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList (SLIP 기본처방 조회) 
+        Description :                                           SLIP에 해당하는 기본처방코드목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipBsisOrdrList */   /*+ mdd_ordrcmt_l12$S01_SLIP 기본처방 조회 */
+					   a.ORDR_CD as ORDR_CD       /*  처방코드 */
+					,  a.ORDR_NM as ORDR_NM       /*  처방명 */
+					,  a.ORDR_CLTY_CD as ORDR_CLTY_CD  /*  처방구별 */
+					,  a.SLIP_CD as SLIP_CD       /*  SLIP코드 */
+					,  '' as SORT_SQNC /*  나열순서  */
+					,  '' as MDFE_ITDV_CD   /*  필수(수가)입력구분 */
+					,  '' as IHOH_DVSN_CD   /*  원내/외구분(1,2,3) */
+					,  '' as MDPR_CLSF_CD   /*  약품구분     */
+					,  '' as INGR_NM        /*  약성분명     */
+					,  '' as INVN_PCUN_CD   /*  포장단위     */
+					,  '' as ICUN_CD        /*  함량단위     */
+					, (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'MM182' and COMN_DTLS_CD = b.ORDR_CLTY_CD and rownum = 1) as AFI_ORDR_CLTY_NM /*  처방구별명 */
+					,  '' as SET_EXMN_YN    /*  SET검사여부  */
+					,  case when #{slipCd} = 'F13' then 'Diet' /*  F13은  */
+							 else b.SLIP_NM end as SLIP_NM                                   /*  SLIP분류명 */
+					,  '' as RSTC_CMPN_NM   /*  제약회사     */
+					,  '' as TDM_CD_DVSN_CD /*  TDM코드구분(약물검사:Y,TDM자문의뢰검사:T) */
+					,  '' as PHRK_EXMN_CD   /*  약물동력학CODE(검사) */
+					,  '' as CNMD_PRVN_ANTB_TRGT_YN      /*  조영제 여부  */
+					,  '' as ANTB_YN        /*  항생제여부 */
+					,  '' as OPTN_CTN_1      /*  insulin 색깔 */
+				 from  MDORDRCMT a
+					,  MDBSLIPCT b
+				where  a.SLIP_CD  = #{slipCd}
+				  /*  16.08.05 주석처리 */
+		   /*        and  trunc(sysdate) between a.APST_YMD and a.APFN_YMD */
+				  /*  ================= */
+				  and  a.ORDR_PSBL_DVSN_CD   = 'Y'
+				  and  'TRUE' = case when a.MCDP_CD1 is null
+									  and a.MCDP_CD2 is null
+									  and a.MCDP_CD3 is null then 'TRUE'
+									 else case when a.MCDP_CD1 = #{mcdpCd}
+												 or a.MCDP_CD2 = #{mcdpCd}
+												 or a.MCDP_CD3 = #{mcdpCd} then 'TRUE'
+											   else 'FALSE'
+										  end
+								end
+				  and  b.SLIP_CD(+) = a.SLIP_CD
+				order
+				   by  a.ORDR_CLTY_CD, nvl(a.SORT_SQNC, 0), a.ORDR_NM
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="mdfeItdvCd" column="MDFE_ITDV_CD"/>
+		<result property="ihohDvsnCd" column="IHOH_DVSN_CD"/>
+		<result property="mdprClsfCd" column="MDPR_CLSF_CD"/>
+		<result property="ingrNm" column="INGR_NM"/>
+		<result property="invnPcunCd" column="INVN_PCUN_CD"/>
+		<result property="icunCd" column="ICUN_CD"/>
+		<result property="afiOrdrCltyNm" column="AFI_ORDR_CLTY_NM"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="rstcCmpnNm" column="RSTC_CMPN_NM"/>
+		<result property="tdmCdDvsnCd" column="TDM_CD_DVSN_CD"/>
+		<result property="phrkExmnCd" column="PHRK_EXMN_CD"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="antbYn" column="ANTB_YN"/>
+		<result property="optnCtn1" column="OPTN_CTN_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList (특정 SLIP에 해당하는 처방코드목록을 조회) 
+        Description :                                           특정 SLIP에 해당하는 처방코드목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrSlipInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrSlipInqrDAO-listSlipOrdrList */   /*+ mdd_ordrcmt_l09$S01_SLIP 처방조회  */
+				   a.ORDR_CD as ORDR_CD        /*  처방코드     */
+				,  a.ORDR_NM as ORDR_NM
+				,  a.ORDR_CLTY_CD as ORDR_CLTY_CD   /*  처방구별     */
+				,  a.SLIP_CD as SLIP_CD        /*  SLIP코드     */
+				,  to_char(nvl(a.SORT_SQNC, 0)) as SORT_SQNC /*  나열순서  */
+				,  c.MDFE_ITDV_CD as MDFE_ITDV_CD   /*  필수(수가)입력구분 */
+				,  a.IHOH_DVSN_CD as IHOH_DVSN_CD   /*  원내/외구분(1,2,3) */
+				,  a.MDPR_CLSF_CD as MDPR_CLSF_CD   /*  약품구분     */
+				,  a.INGR_NM as INGR_NM        /*  약성분명     */
+				,  a.INVN_PCUN_CD as INVN_PCUN_CD   /*  포장단위     */
+				,  a.ICUN_CD as ICUN_CD        /*  함량단위     */
+				, (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'MM182' and COMN_DTLS_CD = a.ORDR_CLTY_CD and rownum = 1) as AFI_ORDR_CLTY_NM /* (공통) 처방구별명 */
+				,  a.SET_EXMN_YN as SET_EXMN_YN    /*  SET검사여부  */
+				,  b.SLIP_NM as SLIP_NM        /*  SLIP분류명   */
+				,  a.RSTC_CMPN_NM as RSTC_CMPN_NM   /*  제약회사     */
+				,  a.TDM_CD_DVSN_CD as TDM_CD_DVSN_CD /*  TDM코드구분(약물검사:Y,TDM자문의뢰검사:T) */
+				,  a.PHRK_EXMN_CD as PHRK_EXMN_CD   /*  약물동력학CODE(검사) */
+				,  a.CNMD_PRVN_ANTB_TRGT_YN as CNMD_PRVN_ANTB_TRGT_YN      /*  조영제 여부  */
+				,  a.ANTB_YN as ANTB_YN        /*  항생제여부 */
+				,  e.OPTN_CTN1 as OPTN_CTN_1      /*  insulin 색깔 */
+		   from    MDORDRCMT a /*  처방코드마스터 */
+				,  MDBSLIPCT b   /*  SLIP CODE */
+				,  AIMFMDFET c
+				,  SDCMCDDMV d
+				,  SDCMCDDMV e
+			where
+				   ((#{slipCd} is null) or
+					(#{slipCd} is not null) and (a.SLIP_CD like #{slipCd})) /*  'C'=Slip코드로 조회 */
+			  and  ((#{ordrCd} is null) or
+					(#{ordrCd} is not null) and (a.ORDR_CD like #{ordrCd}||'%'))
+			  and  ((#{ordrNm} is null) or
+					(#{ordrNm} is not null) and (upper(a.ORDR_NM) like '%'||upper(#{ordrNm})||'%'))
+			  and  a.ORDR_PSBL_DVSN_CD   = 'Y'
+			  and  a.ORCL_CD <> 'SM'  /*  건진처방 제외 (단, SM1중 몇몇 처방만[숙박검진] 사용가능) */
+			  and  a.ORCL_CD <> 'NTR' /*  간호처치 */
+			  and  nvl(a.SLIP_CD, 'X') != FN_CC_GET_CNST_VL('MDP_005', 'SLIP_CD_DT_01')
+			  and  a.ORDR_CD != 'C030019' /*  ▷▷EN 조성처방◁◁ 은 직접조회하지 않음.20101022KCY */
+			  and  (
+					(
+					  (nvl(#{mcdpCd}, 'X') != '004000') /*  SLM */
+					   and  (nvl(a.EXCF_CD, 'X') not in ('CR', 'CT', 'GR'))
+					   and  (nvl(a.SLIP_CD, 'X') not in ('CRP', 'CTC', 'GRC'))
+					   and  (nvl(a.ORCL_CD, 'X') != 'SL1')
+					)
+					or
+					(
+					  (nvl(#{mcdpCd}, 'X') = '004000') /*  SLM */
+					)
+				  )
+			  and  nvl(a.CLNC_EXAM_DRUG_YN, 'N') != 'Y'
+			  and  b.SLIP_CD = a.SLIP_CD
+			  and  c.MDFE_CD = a.ORDR_CD
+			  and  c.APST_YMD   <= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.APFN_YMD   >= decode(to_date(#{ordrYmd}, 'YYYYMMDD'), null, trunc(sysdate), to_date(#{ordrYmd}, 'YYYYMMDD'))
+			  and  c.ORDR_PSBL_YN     = 'Y'
+			  and  d.COMN_GRP_CD(+)    = 'SD802'
+			  and  e.COMN_GRP_CD(+)    = 'SD801'
+			  and  e.COMN_DTLS_CD(+)   = d.OPTN_CTN1
+			  and  d.COMN_DTLS_CD(+)   = a.ORDR_CD
+			order
+			  by  a.ORDR_CLTY_CD
+			   ,  a.SORT_SQNC /*  nvl(a.SORT_SQNC, 0) */
+			   ,  a.ORDR_CD
+			]]>
+	</select>
+
+
+
+</mapper>

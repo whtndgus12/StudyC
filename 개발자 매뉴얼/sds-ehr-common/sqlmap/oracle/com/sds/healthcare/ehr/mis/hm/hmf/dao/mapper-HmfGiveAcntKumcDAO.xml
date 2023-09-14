@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmfGiveAcntKumcDAO_sql.xml 
+    Description : -->
+<mapper namespace="HmfGiveAcntKumcDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt-result" type="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO">
+	
+		<result property="giveTrgtMngmNo" column="GIVE_TRGT_MNGM_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt (EHR 지급계좌번호 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserGiveAcnt */
+		       GIVE_TRGT_MNGM_NO
+		  from HMGITRACT
+		 where GIVE_TRGT_MNGM_DVSN_CD = '1' /* 1: 사원 */
+		   and GIVE_TRGT_MNGM_NO = #{userId}
+		   and BSPL_CD = #{bsplCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertUserGiveAcnt (고대 인사시스템에서 넘어온 정보를 EHR 지급계좌번호에 추가) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertUserGiveAcnt"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertUserGiveAcnt */
+		  into  HMGITRACT i /* 지급대상계좌번호 */
+		     (
+			   i.BSPL_CD                 /* 사업장코드 */
+			 , i.GIVE_TRGT_MNGM_DVSN_CD  /* 지급대상관리구분코드 */
+			 , i.GIVE_TRGT_SNO           /* 지급대상일련번호 */
+			 , i.GIVE_TRGT_MNGM_NO       /* 지급대상관리번호 */
+			 , i.GIVE_TRGT_MNGM_INST_NM  /* 지급대상관리기관명 */
+			 , i.RGST_RQST_DPRT_CD       /* 등록요청부서코드 */
+			 , i.DEPST_BANK_CD           /* 예금은행코드 */
+			 , i.DEPST_BNKB_DVSN_CD      /* 예금통장구분코드 */
+			 , i.DEPST_ACNT_NO           /* 예금계좌번호 */
+			 , i.DEPST_DPOS_NM           /* 예금예금주명 */
+			 , i.DEPST_RSRN              /* 예금주민등록번호 */
+			 , i.DEPST_CNFR_RSLT_CD      /* 예금확인결과코드 */
+			 , i.ELCR_PMNT_EN            /* 전자어음유무 */
+			 , i.USE_YN                  /* 사용여부 */
+			 , i.FRST_RGSR_ID            
+			 , i.FRST_RGST_IP            
+			 , i.FRST_RGST_DT            
+			 , i.FRST_RGST_CLNT_PRGM_ID  
+			 , i.FRST_RGST_SRVR_PRGM_ID  
+			 , i.LAST_UPDR_ID            
+			 , i.LAST_UPDT_IP            
+			 , i.LAST_UPDT_DT            
+			 , i.LAST_UPDT_CLNT_PRGM_ID  
+			 , i.LAST_UPDT_SRVR_PRGM_ID  
+			 )
+		 values
+			(
+			   #{bsplCd}                /* 사업장코드 */
+			 , '1'  			        /* 지급대상관리구분코드 */
+		     , (select NVL(max(GIVE_TRGT_SNO),0)+ 1 from HMGITRACT
+				 where BSPL_CD = #{bsplCd}
+				   and  GIVE_TRGT_MNGM_DVSN_CD = '1'
+				)	                    /* 지급대상일련번호 */
+			 , #{userId}       	        /* 지급대상관리번호 :사원ID*/
+			 , (select EMPY_NM from HZUSERMMT where EMNO = #{userId}) /* 지급대상관리기관명 : 사원명*/
+			 , (select DPRT_CD from HZUSERMMT where EMNO = #{userId}) /* 등록요청부서코드 : 사원부서*/
+			 , (select MIS_COMN_CD
+		          from HZMICOCDT
+		         where COMN_GRP_CD = 'GA036'
+		           and (CHRC_CD_VL09 = #{bankCd}
+		                or
+		                CHRC_CD_VL10 = #{bankCd} 
+		               )
+		           and BSPL_CD = #{bsplCd}
+		       )                        /* 예금은행코드 : GA036의 문자9,10에 HRM에서 넘어오는 은행코드를 매핑*/
+			 , '1'						/* 예금통장구분코드( 1:개인 , 2:법인)*/
+			 , #{depstAcntNo}           /* 예금계좌번호 */
+			 , #{depstDposNm}           /* 예금예금주명 */
+			 , '999999'                 /* 예금주민등록번호(앞7자리) : 임의의 값 고정시킴 */
+			 , '0000'      			    /* 예금확인결과코드 */
+			 , 'N'      			    /* 전자어음유무 */
+			 , 'Y' 	  	         	    /* 사용여부 */
+			 , #{gvUserId}    
+			 , #{gvUserIp}    
+			 , sysdate        
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			 , #{gvUserId}    
+			 , #{gvUserIp}    
+			 , sysdate        
+			 , #{gvClntPrgmId}
+			 , #{gvSrvrPrgmId}
+			)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertCopyUserGiveAcnt (안암 지급계좌번호를 그대로 의료원 사업장으로 복사) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertCopyUserGiveAcnt"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO"  >
+		 insert  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-insertCopyUserGiveAcnt */
+		  into  HMGITRACT i /* 지급대상계좌번호 */
+		 (
+			   i.BSPL_CD                 /* 사업장코드 */
+			 , i.GIVE_TRGT_MNGM_DVSN_CD  /* 지급대상관리구분코드 */
+			 , i.GIVE_TRGT_SNO           /* 지급대상일련번호 */
+			 , i.GIVE_TRGT_MNGM_NO       /* 지급대상관리번호 */
+			 , i.GIVE_TRGT_MNGM_INST_NM  /* 지급대상관리기관명 */
+			 , i.RGST_RQST_DPRT_CD       /* 등록요청부서코드 */
+			 , i.DEPST_BANK_CD           /* 예금은행코드 */
+			 , i.DEPST_BNKB_DVSN_CD      /* 예금통장구분코드 */
+			 , i.DEPST_ACNT_NO           /* 예금계좌번호 */
+			 , i.DEPST_DPOS_NM           /* 예금예금주명 */
+			 , i.DEPST_RSRN              /* 예금주민등록번호 */
+			 , i.DEPST_CNFR_RSLT_CD      /* 예금확인결과코드 */
+			 , i.ELCR_PMNT_EN            /* 전자어음유무 */
+			 , i.USE_YN                  /* 사용여부 */
+			 , i.FRST_RGSR_ID            
+			 , i.FRST_RGST_IP            
+			 , i.FRST_RGST_DT            
+			 , i.FRST_RGST_CLNT_PRGM_ID  
+			 , i.FRST_RGST_SRVR_PRGM_ID  
+			 , i.LAST_UPDR_ID            
+			 , i.LAST_UPDT_IP            
+			 , i.LAST_UPDT_DT            
+			 , i.LAST_UPDT_CLNT_PRGM_ID  
+			 , i.LAST_UPDT_SRVR_PRGM_ID  
+			 )
+		 select   '1B'                 /* 의료원 사업장코드 */
+			 , GIVE_TRGT_MNGM_DVSN_CD  /* 지급대상관리구분코드 */
+			 ,(select NVL(max(GIVE_TRGT_SNO),0)+ 1 from HMGITRACT
+				 where BSPL_CD = '1B'
+				   and  GIVE_TRGT_MNGM_DVSN_CD = '1'
+				)	                    /* 지급대상일련번호 */
+			 , GIVE_TRGT_MNGM_NO	    /* 지급대상관리번호 :사원ID*/
+			 , GIVE_TRGT_MNGM_INST_NM  /* 지급대상관리기관명 */
+			 , RGST_RQST_DPRT_CD       /* 등록요청부서코드 */
+			 , DEPST_BANK_CD           /* 예금은행코드 */
+			 , DEPST_BNKB_DVSN_CD      /* 예금통장구분코드 */
+			 , DEPST_ACNT_NO           /* 예금계좌번호 */
+			 , DEPST_DPOS_NM           /* 예금예금주명 */
+			 , DEPST_RSRN              /* 예금주민등록번호 */
+			 , DEPST_CNFR_RSLT_CD      /* 예금확인결과코드 */
+			 , ELCR_PMNT_EN            /* 전자어음유무 */
+			 , USE_YN                  /* 사용여부 */
+			 , FRST_RGSR_ID            
+			 , FRST_RGST_IP            
+			 , FRST_RGST_DT            
+			 , FRST_RGST_CLNT_PRGM_ID  
+			 , FRST_RGST_SRVR_PRGM_ID  
+			 , LAST_UPDR_ID            
+			 , LAST_UPDT_IP            
+			 , LAST_UPDT_DT            
+			 , LAST_UPDT_CLNT_PRGM_ID  
+			 , LAST_UPDT_SRVR_PRGM_ID 
+		from  HMGITRACT
+		where BSPL_CD = #{bsplCd}
+		and GIVE_TRGT_MNGM_DVSN_CD = '1'
+		and decode(#{bsplCd}, '1A', '1', '2') =  '1'
+		and GIVE_TRGT_MNGM_NO = #{userId}      
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-updateUserGiveAcnt (고대 인사시스템에서 넘어온 정보를 EHR 지급계좌번호에 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-updateUserGiveAcnt"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO"  >
+		update/*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-updateUserGiveAcnt */
+		       HMGITRACT
+		   set 
+		       --은행코드: 고대 인사시스템에서 넘어오는 은행코드를 GA036 문자9, 10에 매핑하여 EHR은행코드 셋팅
+		       DEPST_BANK_CD = (
+								select MIS_COMN_CD
+								  from HZMICOCDT
+								 where COMN_GRP_CD = 'GA036' /* 은행코드 */
+								   and (   CHRC_CD_VL09 = #{bankCd}
+								        or CHRC_CD_VL10 = #{bankCd}
+								       )
+								   and BSPL_CD = #{bsplCd}
+							   )
+		       -- 계좌번호
+		     , DEPST_ACNT_NO = #{depstAcntNo} 
+		       -- 예금주
+		     , DEPST_DPOS_NM = #{depstDposNm} 
+		     , LAST_UPDR_ID      = #{gvUserId}
+		     , LAST_UPDT_IP      = #{gvUserIp}
+		     , LAST_UPDT_DT      = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where GIVE_TRGT_MNGM_DVSN_CD = '1' /* 1: 사원 */
+		   and GIVE_TRGT_MNGM_NO = #{userId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm-result" type="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO">
+	
+		<result property="empyNm" column="EMPY_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm (사용자명 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm"  parameterType="com.sds.healthcare.ehr.mis.hm.hmf.vo.HmfGiveAcntKumcDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hmf-dao-HmfGiveAcntKumcDAO-selectOneUserNmUserNm */
+		       EMPY_NM
+		  from HZUSERMMT
+		 where EMNO = #{userId}
+	</select>
+
+
+
+</mapper>

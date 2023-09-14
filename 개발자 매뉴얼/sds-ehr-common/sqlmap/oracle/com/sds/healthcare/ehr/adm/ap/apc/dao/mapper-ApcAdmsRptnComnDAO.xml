@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcAdmsRptnComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcAdmsRptnComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt-result" useCache="true" flushCache="false">
+		  select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-selectOneMdrpNoByErrmArvlDt */
+		            MDRP_NO	      
+		    from APRCRPTNT
+		   where 1=1
+			 and ptno     = #{ptno}
+			 and CODV_CD ='I'
+			 and ERRM_ARVL_DT  = to_date(#{errmArvlDt}, 'yyyymmddhh24mi')
+			 and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-updateAdmsRptn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-updateAdmsRptn"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-updateAdmsRptn */
+			   APRCRPTNT
+		  set	   LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+		  	    ,  LAST_UPDT_DT      = sysdate
+			    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		 	    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		        <if test="rmtrAplcYn != null">
+		        ,  RMTR_APLC_YN      = #{rmtrAplcYn}                            /*  01. 전실신청여부 */
+		        </if>
+		        <if test="mainRmtrWntdGradCd != null">
+		        , MAIN_RMTR_WNTD_GRAD_CD = #{mainRmtrWntdGradCd}
+		        </if>
+		        <if test="subRmtrWntdGradCd != null">
+		        , SUB_RMTR_WNTD_GRAD_CD = #{subRmtrWntdGradCd}
+		        </if>
+		        <if test="rmtrAplcRmrkCtn != null">
+		        , RMTR_APLC_RMRK_CTN = #{rmtrAplcRmrkCtn}
+		        </if>
+		where  MDRP_NO           = #{mdrpNo}
+	</update>
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-executeChngIpToOp (입원취소시 입원처방 외래로 자동 전환) 
+        Description : 
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-executeChngIpToOp"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcAdmsRptnComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcAdmsRptnComnDAO-executeChngIpToOp */
+		 { call  SP_AC_CHNG_IPTOOP  ( #{mdrpNo, mode=IN, jdbcType=NUMERIC, javaType=java.math.BigDecimal}
+		                            , #{gvUserId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                            , #{gvUserIp, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                            , #{gvClntPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                            , #{gvSrvrPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+		                            , #{errYn, mode=INOUT, jdbcType=VARCHAR, javaType=string}
+		                            , #{errCtn, mode=INOUT, jdbcType=VARCHAR, javaType=string}  
+		     )}
+	</select>	
+</mapper>

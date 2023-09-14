@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmErrmMngmDAO_sql.xml 
+    Description :                                      응급실 관리 DAO
+                  -->
+<mapper namespace="MnmErrmMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErIntlEspaSthsYn (응급 초기 평가지 재원 여부 수정) 
+        Description :                                           응급 초기 평가지 재원 여부 수정 - mnd_eerrpat_u01 (원무에서 풀기시 호출)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmErrmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErIntlEspaSthsYn"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmErrmMngmDVO"  >
+		<![CDATA[
+		UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErIntlEspaSthsYn_응급환자정보조사 재원여부 수정 */
+		        MNEERRPAT                        /*  응급환자정보조사     */
+		   SET
+		        STHS_YN                 = 'Y'                   /*  재원여부         */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 WHERE  MDRP_NO             = #{mdrpNo}                  /*  진료접수번호  */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErRptnCncl (응급 접수 취소 시 초기평가 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmErrmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErRptnCncl"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmErrmMngmDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmErrmMngmDAO-updateErRptnCncl */
+		update MNEERRPAT
+		          set ERMR_RSLT_CD = 'D'  /* 접수취소 */
+		            , STHS_YN = 'N'  /* 재원여부 */
+		            , CHOT_DT = sysdate  /* 퇴실일시 */
+		            , LAST_UPDR_ID            = #{gvUserId}
+		            , LAST_UPDT_IP            = #{gvUserIp}
+		            , LAST_UPDT_DT            = sysdate
+		            , LAST_UPDT_CLNT_PRGM_ID       = #{gvClntPrgmId}
+		            , LAST_UPDT_SRVR_PRGM_ID       = #{gvSrvrPrgmId}
+		        where PTNO    = #{ptno}
+		          and COHS_DT = to_date(#{cohsDt} ,'yyyymmddhh24miss')
+		          and MDRP_NO = #{mdrpNo}
+		]]>
+	</update>
+
+</mapper>

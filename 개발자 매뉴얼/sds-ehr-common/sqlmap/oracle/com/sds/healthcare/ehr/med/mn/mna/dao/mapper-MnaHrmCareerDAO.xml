@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnaHrmCareerDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnaHrmCareerDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr-result" type="com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmCareerDVO">
+	
+		<result property="careWkplCd" column="CARE_WKPL_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="wkprId" column="WKPR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="wrknStrtYmd" column="WRKN_STRT_YMD"/>
+		<result property="wrknFnshYmd" column="WRKN_FNSH_YMD"/>
+		<result property="careGradNm" column="CARE_GRAD_NM"/>
+		<result property="lcnsDclrYmd" column="LCNS_DCLR_YMD"/>
+		<result property="nextLcnsDclrYmd" column="NEXT_LCNS_DCLR_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmCareerDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mna.vo.MnaHrmCareerDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		 select /*SQL_ID: com-sds-healthcare-ehr-med-mn-mna-dao-MnaHrmCareerDAO-listNursCareerInfmInqr */
+				       a.CARE_WKPL_CD                          as CARE_WKPL_CD      /* 간호근무장소코드 */
+				      ,d.KORN_DPRT_NM                          as KORN_DPRT_NM      /* 부서한글명       */ 
+				      ,a.WKPR_ID                               as WKPR_ID           /* 근무자ID         */
+				      ,b.USER_NM                               as USER_NM           /* 사용자명         */
+				      ,to_char(a.WRKN_STRT_YMD,'yyyymmdd')     as WRKN_STRT_YMD     /* 근무시작일자     */
+				      ,to_char(a.WRKN_FNSH_YMD,'yyyymmdd')     as WRKN_FNSH_YMD     /* 근무종료일자     */
+				      ,ze.CARE_GRAD_NM                         as CARE_GRAD_NM /* 간호등급명 */
+				      ,to_char(zf.LCNS_DCLR_YMD,'yyyymmdd')    as LCNS_DCLR_YMD /* 면허신고일자(갱신)  */
+				      ,to_char(zf.NEXT_LCNS_DCLR_YMD,'yyyy')   as NEXT_LCNS_DCLR_YMD /* 다음신고년도  */
+				  from MNASPRSCT a    /* 간호 근무지별근무자 마스터 */
+				      ,CCUSERAMT b    /* 사용자마스터     */
+				      ,CCUSRDPHT C    /* 사용자부서마스터 */
+				      ,HZDEPTMMT d    /* 부서마스터       */
+				      ,MNAGRADCT ze   /* 간호사등급마스터 */
+				      ,MNANSLRMT zf   /* 간호사 순번 및 면허신고일자 마스터 */
+				 where a.WKPR_ID         = c.USER_ID
+				   and c.LGIN_ID         = b.LGIN_ID
+				   and a.CARE_WKPL_CD    = d.DPRT_CD		 		 		   
+				   and a.CARE_WKPL_CD 	 = nvl(#{careWkplCd}, a.CARE_WKPL_CD)
+				   and a.WKPR_ID		 = nvl(#{wkprId}, a.WKPR_ID)
+				   and a.WRKN_FNSH_YMD = to_date('29991231','yyyymmdd')		  		 		 
+				   and a.CARE_GRAD_CD    = ze.CARE_GRAD_CD(+)
+				   and a.WKPR_ID         = zf.WKPR_ID(+)
+				  ORDER BY a.CARE_WKPL_CD, zf.SORT_SQNC, a.WRKN_STRT_YMD desc
+		]]>	 		  
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+	
+	<bean id="injectionPatternPostProcessor"
+		class="org.anyframe.jdbc.support.impl.DefaultInjectionPatternPostProcessor">
+	</bean>
+
+	<bean id="connectionAspect" class="com.anyframe.online.runtime.jdbc.p6spy.ConnectionAspect">
+		<property name="injectionPatternPostProcessor" ref="injectionPatternPostProcessor" />
+		<property name="completeQueryPostProcessor" ref="completeQueryPostProcessor" />
+		<property name="eventProcessor" ref="eventProcessor"/>
+	</bean>
+	<bean id="eventProcessor" class="com.anyframe.online.runtime.jdbc.impl.DefaultEventProcessor" />
+	<bean id="completeQueryPostProcessor" class="org.anyframe.jdbc.support.impl.DefaultCompleteQueryPostProcessor"/>
+
+	<aop:config>
+		<aop:pointcut id="jdbcPointcut" expression="execution(* *..*BasicDataSource.*(..))  and !bean(manageDataSource)" />
+		<aop:advisor advice-ref="connectionAspect" pointcut-ref="jdbcPointcut" />
+	</aop:config>
+
+</beans>

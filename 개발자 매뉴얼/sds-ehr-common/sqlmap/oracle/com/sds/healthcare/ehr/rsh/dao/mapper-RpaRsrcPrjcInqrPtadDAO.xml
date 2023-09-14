@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_RpaRsrcPrjcInqrPtadDAO_sql.xml 
+    Description :                                      원무 ACB207F1 화면에서의 조회를 위한 DAO. 병원마다 쿼리가 다르므로, 이 파일만 병원마다 소스를 관리하고
+                                                       원무에서는 Biz를 호출하여 병원별로 소스를 수정할 필요 없도록 하기 위함.
+                  -->
+<mapper namespace="RpaRsrcPrjcInqrPtadDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc-result" type="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO">
+	
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="irbrPrjcNo" column="IRBR_PRJC_NO"/>
+		<result property="crisNo" column="CRIS_NO"/>
+		<result property="rsrcPrjcRealStrtYmd" column="RSRC_PRJC_REAL_STRT_YMD"/>
+		<result property="rsrcPrjcRealFnshYmd" column="RSRC_PRJC_REAL_FNSH_YMD"/>
+		<result property="rsrcRnprEmno" column="RSRC_RNPR_EMNO"/>
+		<result property="rsrcRnprNm" column="RSRC_RNPR_NM"/>
+		<result property="clno" column="CLNO"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc (연구과제 정보 조회 - 고대특화) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO
+		resultMap : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc-result
+    -->
+	<select id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc"  parameterType="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO"  resultMap="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-selectOneRsrcPrjc */
+		        a.RSRC_PRJC_CD --연구과제코드
+		     ,  a.RSRC_PRJC_NM --연구과제명
+		     ,  a.IRBR_PRJC_NO --IRB No
+		     ,  a.CRIS_NO --CRIS No
+		     ,  a.RSRC_PRJC_REAL_STRT_YMD --연구과제실제시작일자
+		     ,  a.RSRC_PRJC_REAL_FNSH_YMD --연구과제실제종료일자
+		     ,  a.RSRC_RNPR_EMNO --연구책임자사원번호
+		     ,  b.EMPY_NM as RSRC_RNPR_NM --연구책임자명
+		     ,  b.EMPY_CLNO as CLNO --연구책임자휴대폰
+		     ,  a.RMRK_CTN --비고
+		  from  RPRSRPRJT a --연구과제관리
+		     ,  HZUSERMMT b --사원
+		 where  a.RSRC_PRJC_CD = #{rsrcPrjcCd}
+		   and  b.EMNO (+)= a.RSRC_RNPR_EMNO
+		        --고대특화: 연구과제관리 테이블의 삭제여부 where조건 필요없음.
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh-result" type="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO">
+	
+		<result property="rsrhId" column="RSRH_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="clno" column="CLNO"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh (공동연구자 목록 조회 - 고대특화) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO
+		resultMap : com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh-result
+    -->
+	<select id="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh"  parameterType="com.sds.healthcare.ehr.rsh.vo.RpaRsrcPrjcInqrPtadDVO"  resultMap="com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-rsh-dao-RpaRsrcPrjcInqrPtadDAO-listJontRsrh */
+		        s.RSRH_ID               --연구자ID
+		     ,  a.EMPY_NM    as USER_NM --연구자명
+		     ,  a.EMPY_CLNO  as CLNO    --연구자 휴대폰
+		     ,  FN_HZ_GET_MIS_COMCODENM(s.BSPL_CD, 'RPA_008', s.RSRH_DVSN_CD ) as DVSN_NM --연구자구분명
+		     ,  a.DPRT_CD               -- 부서코드
+		     ,  b.KORN_DPRT_NM          -- 한글부서명
+		     ,  b.ABRV_DPRT_CD          -- 약어부서코드
+		  from
+		        RPJONRSRT s /* 공동연구자 */
+		     ,  RPRSRPRJT r /* 연구과제 */
+		     ,  HZUSERMMT a /* 사원 */
+		     ,  HZDEPTMMT b /* 부서 */
+		 where  --고대특화: 유효한 공동연구자 
+		        (s.DLTN_YN is null  or s.DLTN_YN != 'Y')
+		        --고대특화: 연구과제관리 테이블의 삭제여부 where조건 필요없음.
+		   and  r.BSPL_CD      = s.BSPL_CD
+		   and  r.RSRC_PRJC_CD = #{rsrcPrjcCd}
+		   and  r.RSRC_PRJC_CD = s.RSRC_PRJC_CD
+		   and  a.EMNO(+) = s.RSRH_ID
+		   and  b.DPRT_CD (+) = a.DPRT_CD
+		 order
+		    by  s.RSRH_DVSN_CD
+		     ,  s.RSRH_ID 
+	</select>
+
+
+
+</mapper>

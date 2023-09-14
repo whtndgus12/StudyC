@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaMdadMdcrAprvComnDAO_sql.xml 
+    Description :                                      의료급여 진료승인 관련 DAO
+                  -->
+<mapper namespace="AcaMdadMdcrAprvComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO">
+	
+		<result property="mcclWorkPrkyVl" column="MCCL_WORK_PRKY_VL"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rcpnPtno" column="RCPN_PTNO"/>
+		<result property="mcrcYmd" column="MCRC_YMD"/>
+		<result property="mcrcRno" column="MCRC_RNO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="implYmd" column="IMPL_YMD"/>
+		<result property="admsOtdvCd" column="ADMS_OTDV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="istyStrtYmd" column="ISTY_STRT_YMD"/>
+		<result property="istyFnshYmd" column="ISTY_FNSH_YMD"/>
+		<result property="istyCd" column="ISTY_CD"/>
+		<result property="istyAsstCd" column="ISTY_ASST_CD"/>
+		<result property="odmnDntrKeepAdexFrchNtm" column="ODMN_DNTR_KEEP_ADEX_FRCH_NTM"/>
+		<result property="aprvYn" column="APRV_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt (진료 승인 대상 조회) 
+        Description :                                           acm_guebyep_m01 (acd_rcrcptt_l08)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		with last_day_view as
+		    (
+		        select  c.MDRP_NO
+		              , max(b.CLAM_TRGT_FNSH_YMD + 1) as next_clam_ymd
+		          from  ACRCRCPTT c
+		              , ACRCRCPCT a
+		              , AICRSPCFT b
+		         where  c.MCCL_WORK_PRKY_VL = #{mcclWorkPrkyVl}
+		           and  a.MDRP_NO           (+)= c.MDRP_NO
+		           and  a.CODV_CD           (+)in ('I', 'D')
+		           and  a.RCDV_CD           (+)= 'M'
+		           and  a.ISTY_CD           (+)in ('21','22','23')           
+		           and  b.CLPR_VL           (+)= a.CLPR_VL
+		           and  b.CHCK_STTS_CD      (+)not in ('D','C')
+		         group  by
+		                c.MDRP_NO
+		    )
+		    select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMdadMdcrAprvTrgt */
+		            a.MCCL_WORK_PRKY_VL                     as mccl_work_prky_vl                    /* 진료비계산작업키값         */
+		          , a.PTNO                                  as ptno                                 /* 환자번호                   */
+		          , d.RCPN_PTNO                             as rcpn_ptno                            /* 수혜자환자번호             */
+		          , to_char(a.MCRC_YMD,'yyyymmdd')          as mcrc_ymd                             /* 진료비수납일자             */
+		          , a.MCRC_RNO                              as mcrc_rno                             /* 진료비수납회차             */
+		          , max(a.CODV_CD)                          as codv_cd                              /* 내원구분코드               */
+		          , a.MCDP_CD                               as mcdp_cd                              /* 진료과코드                 */
+		          , to_char(a.MDCR_YMD,'yyyymmdd')          as impl_ymd                             /* 실시일자                   */
+		          , max(a.ADMS_OTDV_CD)                     as adms_otdv_cd                         /* 입원외래구분코드           */
+		          , min(a.MDRP_NO)                          as mdrp_no                              /* 진료접수번호               */
+		          , null                                    as isty_strt_ymd                        /* 보험유형시작일자           */
+		          , null                                    as isty_fnsh_ymd                        /* 보험유형종료일자           */
+		          , max(a.ISTY_CD)                          as isty_cd                              /* 보험유형코드               */
+		          , max(a.ISTY_ASST_CD)                     as isty_asst_cd                         /* 보험유형보조코드           */
+		          , max(c.ODMN_DNTR_KEEP_ADEX_FRCH_NTM)     as odmn_dntr_keep_adex_frch_ntm         /* 노인틀니유지관리비무상횟수 */
+		          , case
+		                when count(b.MCCL_WORK_PRKY_VL) > 0
+		                then 'Y'
+		                else 'N'
+		            end                                     as aprv_yn                              /* 승인(필요)여부*/
+		      from  ACRCRCPTT a
+		          , ACCLMCCTT b
+		          , APRCADBLT c
+		          , APRCRPTNT d
+		     where  a.MCCL_WORK_PRKY_VL  = #{mcclWorkPrkyVl}
+		       and  a.CODV_CD            in ('O','H', 'E')
+		       and  a.ISTY_CD            in ('21', '22','23')
+		       and  a.CNCL_DT            is null
+		       and  b.MCCL_WORK_PRKY_VL  (+)= a.MCCL_WORK_PRKY_VL
+		       and  b.MDRP_NO            (+)= a.MDRP_NO
+		       and  b.MCRC_YMD           (+)= a.MCRC_YMD
+		       and  b.MCRC_SNO           (+)= a.MCRC_SNO
+		       and  b.ISTY_CD            (+)like '2%'
+		       and  b.CNCL_DT            (+)is null
+		       and  d.MDRP_NO               = a.MDRP_NO
+		       and  c.MDRP_NO            (+)= a.MDRP_NO
+		     group  by
+		            a.MCCL_WORK_PRKY_VL
+		          , a.PTNO
+		          , d.RCPN_PTNO
+		          , to_char(a.MCRC_YMD,'yyyymmdd')
+		          , a.MCRC_RNO
+		          , a.MCDP_CD
+		          , to_char(a.MDCR_YMD,'yyyymmdd')
+		     union  all
+		    select  a.MCCL_WORK_PRKY_VL
+		          , a.PTNO
+		          , b.RCPN_PTNO
+		          , to_char(a.MCRC_YMD,'yyyymmdd')
+		          , a.MCRC_SNO                              /* 입원 DSC는 MCRC_SNO */
+		          , a.CODV_CD
+		          , a.MCDP_CD
+		          , to_char(case when a.ISTY_FNSH_YMD = to_date('29991231', 'yyyymmdd') then trunc(sysdate)
+		                         else a.ISTY_FNSH_YMD
+		                    end, 'yyyymmdd')
+		          , a.ADMS_OTDV_CD
+		          , a.MDRP_NO
+		          , to_char(greatest(a.ISTY_STRT_YMD, nvl(d.next_clam_ymd, a.ISTY_STRT_YMD)), 'yyyymmdd')
+		          , to_char(case when a.ISTY_FNSH_YMD = to_date('29991231', 'yyyymmdd') then trunc(sysdate)
+		                         else a.ISTY_FNSH_YMD
+		                    end, 'yyyymmdd')
+		          , a.ISTY_CD
+		          , a.ISTY_ASST_CD
+		          , c.ODMN_DNTR_KEEP_ADEX_FRCH_NTM
+		          , 'Y'
+		      from  ACRCRCPTT a
+		          , APRCADBLT c
+		          , APRCRPTNT b
+		          , last_day_view    d
+		     where  a.MCCL_WORK_PRKY_VL  = #{mcclWorkPrkyVl}
+		       and  a.CODV_CD            in ('D','I')
+		       and  a.ISTY_CD            in ('21', '22','23')
+		       and  case
+		                when a.ISTY_STRT_YMD >= nvl(d.next_clam_ymd(+), a.ISTY_STRT_YMD)                          then 1
+		                when nvl(d.next_clam_ymd(+), a.isty_strt_ymd) between a.isty_strt_ymd and a.isty_fnsh_ymd then 1
+		                else 0
+		            end = 1
+		       and  a.CNCL_DT            is null
+		       and  d.MDRP_NO            (+)= a.MDRP_NO
+		       and  b.MDRP_NO            = a.MDRP_NO
+		       and  c.MDRP_NO            (+)= a.MDRP_NO
+		     order by  decode(isty_asst_cd, 'M0', 999, 1)
+		      ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="trnmDt" column="TRNM_DT"/>
+		<result property="mccrSno" column="MCCR_SNO"/>
+		<result property="mccrNo" column="MCCR_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey (중복 진료확인 승인 키 리스트 조회) 
+        Description :                                           acm_guebyep_m01 (acd_etmclgt_l03)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listDplcMdadMdcrAprvKey */
+		            clg.PTNO                                   PTNO
+		          , to_char(clg.TRNM_DT, 'yyyymmddhh24miss')   TRNM_DT
+		          , clg.MCCR_SNO                               MCCR_SNO
+		          , clg.MCCR_NO                                MCCR_NO   
+		      from  ACETMCLGT clg
+		     where  clg.PTNO  = #{ptno}
+		       and  clg.TRNM_MDCR_YMD = to_date(#{trnmMdcrYmd}, 'yyyymmdd')
+		       and  nvl(CLG.MCDP_CD, '*') = nvl(#{mcdpCd}, '*')
+		       and  clg.MCCR_NO is not null
+		       and  clg.MCCR_APRV_DVSN_CD = '03'
+		       and  clg.CNCL_DT is null
+		       and  nvl(clg.RCDV_CD, 'N') != 'M'
+		     order  by
+		            clg.RECV_DT desc
+		      ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO">
+	
+		<result property="mccrNo" column="MCCR_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt (진료확인번호 승인 취소 대상 리스트 조회) 
+        Description :                                           aco_guebyep_m02 (acd_etmclgt_l04)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-listMccrNoAprvCnclTrgt */
+		           distinct
+		           b.MCCR_NO
+		     from  ACRCRCPTT a
+		        ,  ACETMCLGT b
+		    where  a.MCCL_WORK_PRKY_VL = #{mcclWorkPrkyVl}
+		      and  a.PTNO = b.PTNO
+		      and  a.MCRC_YMD = b.MCRC_YMD
+		      and  a.MCRC_RNO = b.MCRC_RNO
+		      and  b.CNCL_DT is null
+		      and  b.MCCR_NO is not null
+		      and  b.RSPN_MESG_CD = 'IWS20002'  /*정상적으로 진료확인 되었습니다. */
+		]]>
+	</select>
+
+
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMdadMdcrAprvInfm (의료급여환자의 진료승인을 위한 정보 조회) 
+        Description : acm_guebyep_m01 (acd_urucoct_s04)
+
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMdadMdcrAprvInfm"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMdadMdcrAprvInfm */
+		{ call  sp_ac_check_medconf_info
+		              (
+		              #{mcclWorkPrkyVl,mode=IN,jdbcType=VARCHAR,javaType=string}                           /* in      varchar2     1.진료비계산작업키값                       */
+		            , #{ptno,mode=IN,jdbcType=VARCHAR,javaType=string}                                     /* in      varchar2     2.환자번호                                 */
+		            , to_date(#{mcrcYmd,mode=IN,jdbcType=VARCHAR,javaType=string}, 'yyyymmdd')             /* in      date         3.진료비수납일자                           */
+		            , #{mcrcRno,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}                   /* in      number       4.진료비수납회차                           */
+		            , #{codvCd,mode=IN,jdbcType=VARCHAR,javaType=string}                                   /* in      varchar2     5.내원구분코드                             */
+		            , #{mcdpCd,mode=IN,jdbcType=VARCHAR,javaType=string}                                   /* in      varchar2     6.진료과코드                               */
+		            , to_date(#{implYmd,mode=IN,jdbcType=VARCHAR,javaType=string}, 'yyyymmdd')             /* in      date         7.실시일자                                 */
+		            , #{mdrpNo,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}                    /* in      number       8.진료접수번호                             */
+		            , to_date(#{istyStrtYmd,mode=IN,jdbcType=VARCHAR,javaType=string}, 'yyyymmdd')         /* in      date         9.유형시작일자 (입원,응급,DSC인 경우 사용) */
+		            , to_date(#{istyFnshYmd,mode=IN,jdbcType=VARCHAR,javaType=string}, 'yyyymmdd')         /* in      date         10.유형종료일자 (입원,응급,DSC인 경우 사용)*/
+		            , #{admsOtdvCd,mode=IN,jdbcType=VARCHAR,javaType=string}                               /* in      varchar2     11.입원외래구분코드                        */
+		            , #{istyCd,mode=IN,jdbcType=VARCHAR,javaType=string}                                   /* in      varchar2     12.보험유형코드                            */
+		            , #{istyAsstCd,mode=IN,jdbcType=VARCHAR,javaType=string}                               /* in      varchar2    13.유형보조코드                            */
+		            , #{mdcrDdcn,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}                  /* in out  number       14.진료일수                                */
+		            , #{mdtnDdcn,mode=IN,jdbcType=NUMERIC, javaType=java.math.BigDecimal}                  /* in out  number       15.투약일수                                */
+		            , #{scinCd,mode=INOUT,jdbcType=VARCHAR,javaType=string}                                /* in out  varchar2     16.상병코드                                */
+		            , #{scinNm,mode=INOUT,jdbcType=VARCHAR,javaType=string}                                /* in out  varchar2     17.상병명                                  */
+		            , #{mdtnNoDvsnNm,mode=INOUT,jdbcType=VARCHAR,javaType=string}                                /* in out  varchar2     18.투약번호                                */
+		            , #{otrsInstRefrYn,mode=INOUT,jdbcType=VARCHAR,javaType=string}                        /* in out  varchar2     19.타기관의뢰여부                          */
+		            , #{ptadAstnMcdpCd,mode=INOUT,jdbcType=VARCHAR,javaType=string}                        /* in out  varchar2     20.진료과를 전송용                         */
+		            , #{inpyOnbrAmt,mode=INOUT,jdbcType=NUMERIC, javaType=java.math.BigDecimal}            /* in out  number       21.급여본인부담금                          */
+		            , #{clamAmt,mode=INOUT,jdbcType=NUMERIC, javaType=java.math.BigDecimal}                /* in out  number       22.청구금액                                */
+		            , #{hlthLifeKeepExpnAmt,mode=INOUT,jdbcType=NUMERIC, javaType=java.math.BigDecimal}    /* in out  number       23.건강생활유지비용금액                    */
+		            , #{prnlMccsSbtrAmt,mode=INOUT,jdbcType=NUMERIC, javaType=java.math.BigDecimal}        /* in out  number       24.산전진료비청구금액                      */
+		            , #{totlNnpyAmt,mode=INOUT,jdbcType=NUMERIC, javaType=java.math.BigDecimal}            /* in out  number       25.총비급여금액                            */
+		            , #{mdcrRefrMdadInsyId,mode=INOUT,jdbcType=VARCHAR,javaType=string}                    /* in out  varchar2     26.진료의뢰의료급여기관기호ID              */
+		            , #{errYn,mode=INOUT,jdbcType=VARCHAR,javaType=string}                                 /* in out  varchar2     27.오류여부                                */
+		            , #{errCtn,mode=INOUT,jdbcType=VARCHAR,javaType=string}                                /* in out  varchar2     28.오류내용                                */
+		             ) }
+	</select>	
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMccsMccrNoInlmUpdt (진료비 진료확인번호 일괄 수정) 
+        Description : acm_guebyep_m01 (acd_guebyep_u01)
+
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMccsMccrNoInlmUpdt"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaMdadMdcrAprvComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaMdadMdcrAprvComnDAO-executeMccsMccrNoInlmUpdt */
+		{ call   sp_ac_update_mccr_no
+		     (
+		         #{mcclWorkPrkyVl, mode=IN, jdbcType=VARCHAR, javaType=string}               /* 01. 진료비계산작업키값              */
+		       , #{ptno, mode=IN, jdbcType=VARCHAR, javaType=string}                            /* 02. 환자번호                        */
+		       , to_date(#{mcrcYmd, mode=IN, jdbcType=VARCHAR, javaType=string}, 'yyyymmdd')   /* 03. 진료비수납일자                  */
+		       , #{mcrcRno, mode=IN, jdbcType=NUMERIC, javaType=java.math.BigDecimal}          /* 04. 진료비수납일련번호              */
+		       , #{codvCd, mode=IN, jdbcType=VARCHAR, javaType=string}                         /* 05. 내원구분코드                    */
+		       , #{mccrNo, mode=IN, jdbcType=VARCHAR, javaType=string}                         /* 06. 진료확인번호                    */
+		       , #{onbrDvsnCd, mode=IN, jdbcType=VARCHAR, javaType=string}                     /* 07. 본인부담구분코드                    */
+		       , #{gvUserId, mode=IN, jdbcType=VARCHAR, javaType=string}                        /* 08. 최종수정자ID                    */
+		       , #{gvUserIp, mode=IN, jdbcType=VARCHAR, javaType=string}                        /* 09. 최종수정IP                      */
+		       , #{gvClntPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}                    /* 10. 최종수정SMC클라이언트프로그램ID */
+		       , #{gvSrvrPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}                    /* 11. 최종수정SMC서버프로그램ID       */
+		     )}
+	</select>	
+</mapper>

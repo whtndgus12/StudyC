@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhTainCnplPpupDAO_sql.xml 
+    Description :                                      자보계약처 팝업용 DAO
+                  -->
+<mapper namespace="HzhTainCnplPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="cnplRdexCd" column="CNPL_RDEX_CD"/>
+		<result property="cnplNm" column="CNPL_NM"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+		<result property="bsnmRgstNoCtn" column="BSNM_RGST_NO_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1 (HZH010FH_1_Popup_자보계약처_목록 조회1) 
+        Description :                                           hzd_hzh010f_l02$S01_HZH010FH_1_Popup_자보계약처_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1-result" useCache="true" flushCache="false">
+			   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup1 */
+						   rownum             as SQNC             /* ******* 순서 */
+						,  z.CNPL_RDEX_CD     as CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+						,  z.CNPL_NM          as CNPL_NM          /* VC2(1H) 계약처명 */
+						,  z.RPPR_NM          as RPPR_NM          /* VC2(1H) 대표자명 */
+						,  z.BSNM_RGST_NO_CTN as BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+					 from
+						  (select
+								   m.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+								,  m.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+								,  m.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+								,  m.BSNM_RGST_NO_CTN BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+							 from
+								  (select  /*+ index(s ACCNCNPLT_I01) */
+										   s.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+										,  s.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+										,  s.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+										,  replace(s.BSNM_RGST_NO_CTN,'-','') BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+									 from
+										   ACCNCNPLT s /* (AC)계약처 */
+									where
+										   #{inqrDvsnCd} = 'N'  /* 계약처명 */
+									  and  s.CNPL_NM   like '%' || #{srchCdNm} || '%' /* 계약처명 */
+									  and  sysdate between s.APST_YMD and s.APFN_YMD /* 적용시작일자 ,적용종료일자 */
+		   /*                           and  s.CNPL_DVSN_CD = nvl(:hms_hzh010f_003[0].inqr_dvsn_cd, s.CNPL_DVSN_CD)  /* 계약처구분코드[7:자보] */
+									  and (s.CNPL_RDEX_DVSN_CD = 'A' or s.CNPL_RDEX_DVSN_CD = 'C')
+								   union all
+								   select  /*+ index(s ACCNCNPLT_I01) */
+										   a.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+										,  a.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+										,  a.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+										,  replace(a.BSNM_RGST_NO_CTN,'-','') BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+									 from
+										   ACCNCNPLT a /* (AC)계약처 */
+									where
+										   #{inqrDvsnCd} = 'C'  /* 계약처감면코드 */
+									  and  a.CNPL_RDEX_CD like #{srchCdNm} || '%' /* 계약처감면코드 */
+									  and  sysdate between a.APST_YMD and a.APFN_YMD /* 적용시작일자 ,적용종료일자 */
+		   /*                           and  a.CNPL_DVSN_CD = nvl(:hms_hzh010f_003[0].inqr_dvsn_cd, a.CNPL_DVSN_CD)  /* 계약처구분코드[7:자보] */
+									  and (a.CNPL_RDEX_DVSN_CD = 'A' or a.CNPL_RDEX_DVSN_CD = 'C')
+		   						union all
+		   						select  /*+ index(s ACCNCNPLT_I01) */
+		   								 a.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+		   							 ,  a.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+		   							 ,  a.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+		   							 ,  replace(a.BSNM_RGST_NO_CTN,'-','') BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+		   						  from
+		   								 ACCNCNPLT a /* (AC)계약처 */
+		   						 where
+		   								#{inqrDvsnCd} = 'B'   /* 사업자등록번호 */
+									<if test="srchCdNm != null">
+		   						   and  replace(a.BSNM_RGST_NO_CTN,'-','') like #{srchCdNm} || '%' /* 사업자등록번호내용 */
+									</if>
+		   						   and  sysdate between a.APST_YMD and a.APFN_YMD /* 적용시작일자 ,적용종료일자 */
+		   /*                           and  a.CNPL_DVSN_CD = nvl(:hms_hzh010f_003[0].inqr_dvsn_cd, a.CNPL_DVSN_CD)  /* 계약처구분코드[7:자보] */
+		   						   and (a.CNPL_RDEX_DVSN_CD = 'A' or a.CNPL_RDEX_DVSN_CD = 'C')
+		   					  ) m
+		   						order  by  m.CNPL_NM  asc
+		   								,  m.CNPL_RDEX_CD  asc
+		   								,  m.BSNM_RGST_NO_CTN  asc
+						  ) z
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="cnplRdexCd" column="CNPL_RDEX_CD"/>
+		<result property="cnplNm" column="CNPL_NM"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+		<result property="bsnmRgstNoCtn" column="BSNM_RGST_NO_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2 (HZH010FH_1_Popup_자보계약처_목록 조회2) 
+        Description :                                           hzd_hzh010f_l03$S01_HZH010FH_1_Popup_자보계약처_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhTainCnplPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhTainCnplPpupDAO-listTainCnplPpup2 */
+						   rownum             as SQNC             /* ******* 순서 */
+						,  z.CNPL_RDEX_CD     as CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+						,  z.CNPL_NM          as CNPL_NM          /* VC2(1H) 계약처명 */
+						,  z.RPPR_NM          as RPPR_NM          /* VC2(1H) 대표자명 */
+						,  z.BSNM_RGST_NO_CTN as BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+					 from
+						  (select  distinct
+								   m.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+								,  m.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+								,  m.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+								,  m.BSNM_RGST_NO_CTN BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+							 from
+								  (select  /*+ index(s ACCNCNPLT_I01) */
+										   s.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+										,  s.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+										,  s.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+										,  replace(s.BSNM_RGST_NO_CTN,'-','') BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+									 from
+										   ACCNCNPLT s /* (AC)계약처 */
+									where
+										   s.CNPL_NM   like '%' || #{srchCdNm} || '%' /* 계약처명 */
+									  and  sysdate between s.APST_YMD and s.APFN_YMD /* 적용시작일자 ,적용종료일자 */
+									  and  s.CNPL_DVSN_CD = nvl(#{inqrDvsnCd}, s.CNPL_DVSN_CD)  /* 계약처구분코드[7:자보] */
+									  and (s.CNPL_RDEX_DVSN_CD = 'A' or s.CNPL_RDEX_DVSN_CD = 'C')
+								   union all
+								   select  /*+ index(s ACCNCNPLT_I01) */
+										   a.CNPL_RDEX_CD     CNPL_RDEX_CD     /* VC2( 5) 계약처감면코드 */
+										,  a.CNPL_NM          CNPL_NM          /* VC2(1H) 계약처명 */
+										,  a.RPPR_NM          RPPR_NM          /* VC2(1H) 대표자명 */
+										,  replace(a.BSNM_RGST_NO_CTN,'-','') BSNM_RGST_NO_CTN /* VC2(50) 사업자등록번호내용 */
+									 from
+										   ACCNCNPLT a /* (AC)계약처 */
+									where
+										   a.CNPL_RDEX_CD like #{srchCdNm} || '%' /* 계약처감면코드 */
+									  and  sysdate between a.APST_YMD and a.APFN_YMD /* 적용시작일자 ,적용종료일자 */
+									  and  a.CNPL_DVSN_CD = nvl(#{inqrDvsnCd}, a.CNPL_DVSN_CD)  /* 계약처구분코드[7:자보] */
+									  and (a.CNPL_RDEX_DVSN_CD = 'A' or a.CNPL_RDEX_DVSN_CD = 'C')
+		   					  ) m
+		   						order  by  m.CNPL_NM  asc
+		   								,  m.CNPL_RDEX_CD  asc
+		   								,  m.BSNM_RGST_NO_CTN  asc
+						  ) z
+				]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,2414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrpExmnImplDAO_sql.xml 
+    Description :                                      검사실시
+                  -->
+<mapper namespace="SrpExmnImplDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="orprVl" column="ORPR_VL"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="scndOrdrYn" column="SCND_ORDR_YN"/>
+		<result property="exrmHsdvCd" column="EXRM_HSDV_CD"/>
+		<result property="rdqyWighVl" column="RDQY_WIGH_VL"/>
+		<result property="hndwInptRdtnDoseVl" column="HNDW_INPT_RDTN_DOSE_VL"/>
+		<result property="sngnSpcmBrcdSpsbCtn" column="SNGN_SPCM_BRCD_SPSB_CTN"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="afiAbrvMcdpCd" column="AFI_ABRV_MCDP_CD"/>
+		<result property="filmExmnYn" column="FILM_EXMN_YN"/>
+		<result property="rernYn" column="RERN_YN"/>
+		<result property="afiDyofResnNm" column="AFI_DYOF_RESN_NM"/>
+		<result property="dcDvsnCd" column="DC_DVSN_CD"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="ptadClbaYmd" column="PTAD_CLBA_YMD"/>
+		<result property="setExmnYn" column="SET_EXMN_YN"/>
+		<result property="exrsFrmtCd" column="EXRS_FRMT_CD"/>
+		<result property="dschYn" column="DSCH_YN"/>
+		<result property="chckSttsCd" column="CHCK_STTS_CD"/>
+		<result property="mdpcCd" column="MDPC_CD"/>
+		<result property="ipdvCd" column="IPDV_CD"/>
+		<result property="elbdDsplPrsnCnt" column="ELBD_DSPL_PRSN_CNT"/>
+		<result property="opcaYn" column="OPCA_YN"/>
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="implDprtCd" column="IMPL_DPRT_CD"/>
+		<result property="pacsInrfYn" column="PACS_INRF_YN"/>
+		<result property="cisInrfYn" column="CIS_INRF_YN"/>
+		<result property="cnmdPrvnAntbTrgtYn" column="CNMD_PRVN_ANTB_TRGT_YN"/>
+		<result property="chldYn" column="CHLD_YN"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="exmnAndvCd" column="EXMN_ANDV_CD"/>
+		<result property="andvCd" column="ANDV_CD"/>
+		<result property="apntClYn" column="APNT_CL_YN"/>
+		<result property="schdTypCd" column="SCHD_TYP_CD"/>
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="etcMdrpNo" column="ETC_MDRP_NO"/>
+		<result property="paclYmd" column="PACL_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm (검사 실시 가능 정보) 
+        Description :                                           검사 실시 가능 정보
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnImplPsblInfm */
+		<![CDATA[
+		           select  /*+ swd_swexexm_s01$S01_검사실시가능정보조회 */
+		       e.PTNO                                                    as PTNO                     /*  환자번호                   */
+		    ,  to_char(e.ORDR_YMD, 'yyyyMMdd')                           as ORDR_YMD                 /*  처방일자                   */
+		    ,  e.ORDR_SNO                                                as ORDR_SNO                 /*  처방일련번호               */
+		    ,  e.EXCF_CD                                                 as EXCF_CD                  /*  검사분류코드               */
+		    ,  e.PTNO ||
+		       to_char(e.ORDR_YMD, 'yyyy-MM-dd') ||
+		       lpad(e.ORDR_SNO, 22, '0')                                 as ORPR_VL                  /*  처방키값                   */
+		    ,  e.EXOR_PRSS_CD                                            as EXMN_STTS_CD             /*  검사상태코드               */
+		    ,  (
+		       select  case
+		                   when count(*) > 0 then 'Y'
+		                   else                   'N'
+		               end
+		         from  SWSNDMAMT
+		        where  PTNO = e.PTNO
+		          and  ORDR_YMD = e.ORDR_YMD
+		          and  ORDR_SNO = e.ORDR_SNO
+		       )                                                         as SCND_ORDR_YN             /*  2차처방여부                */
+		    ,  nvl(b.EXRM_HSDV_CD, 'M')                                  as EXRM_HSDV_CD             /*  검사실병원구분코드         */
+		    ,  nvl(c.RDQY_WIGH_VL, 1)                                    as RDQY_WIGH_VL             /*  방사선량가중치값           */
+		    ,  a.HNDW_INPT_RDTN_DOSE_VL                                  as HNDW_INPT_RDTN_DOSE_VL   /*  수기입력방사선피폭량값     */
+		    ,  d.SNGN_SPCM_BRCD_SPSB_CTN                                 as SNGN_SPCM_BRCD_SPSB_CTN  /*  단독검체바코드특기사항내용 */
+		    ,  e.CODV_CD                                                 as CODV_CD                  /*  내원구분코드               */
+		    ,  e.MCDP_CD                                                 as MCDP_CD                  /*  진료과코드                 */
+		    ,  (
+		       select  ABRV_DPRT_CD
+		         from  HZDEPTMMT
+		        where  DPRT_CD = e.MCDP_CD
+		          and  rownum  < 2
+		       )                                                         as AFI_ABRV_MCDP_CD         /*  AFI약어진료과코드          */
+		    ,  decode(c.FILM_EXMN_YN, 'Y', 'Y', 'N')                     as FILM_EXMN_YN             /*  필름검사여부               */
+		    ,  nvl2(a.RERN_PRRN_DT, 'Y', 'N')                            as RERN_YN                  /*  재검여부                   */
+		    ,  (
+		       select  y.DETL_CD_NM
+		         from  MDBDYOFST x
+		            ,  CCCMCDDMT y
+		        where  x.MDDR_ID         = ''
+		          and  x.ADMS_OTDV_CD    = e.CODV_CD
+		          and  trunc(sysdate)    between x.STRT_YMD
+		                                     and x.FNSH_YMD
+		          and  x.DYOF_RESN_CD    in ('5', '8')
+		          and  y.COMN_GRP_CD(+)  = 'MM265'
+		          and  y.COMN_DTLS_CD(+) = x.DYOF_RESN_CD
+		          and  rownum            < 2
+		       )                                                         as AFI_DYOF_RESN_NM         /*  AFI휴진사유명              */
+		    ,  nvl(e.DC_DVSN_CD, 'N')                                    as DC_DVSN_CD               /*  DC구분코드                 */
+		    ,  e.RCST_CD                                                 as RCST_CD                  /*  수납상태코드               */
+		    ,  e.ODKI_CD                                                 as ODKI_CD                  /*  처방종류코드               */
+		    ,  e.PTAD_MDRP_NO                                            as PTAD_MDRP_NO             /*  원무진료접수번호           */
+		    ,  e.PTAD_CODV_CD                                            as PTAD_CODV_CD             /*  원무계산기준일자           */
+		    ,  to_char(e.PTAD_CLBA_YMD, 'yyyyMMdd')                      as PTAD_CLBA_YMD            /*  원무내원구분코드           */
+		    ,  nvl(f.SET_EXMN_YN, 'N')                                   as SET_EXMN_YN              /*  SET검사여부                */
+		    ,  c.EXRS_FRMT_CD                                            as EXRS_FRMT_CD             /*  검사결과형태코드           */
+		    ,  case
+		           when h.CODV_CD in ('I', 'D', 'E')
+		            and h.DSCH_DT < sysdate
+		            and h.CNCL_DT is null   then 'Y'
+		           else                          'N'
+		       end                                                       as DSCH_YN                  /*  퇴원여부                   */
+		    ,  h.CHCK_STTS_CD                                            as CHCK_STTS_CD             /*  심사상태코드               */
+		    ,  (
+		       select  case
+		                   when count(*) > 0 then '34'
+		                   else                   '46'
+		               end
+		         from  HZMICOCDT z
+		        where  z.BSPL_CD     = '1A'
+		          and  z.COMN_GRP_CD = 'GG043'
+		          and  z.MIS_COMN_CD = e.ORDR_CD
+		       )                                                         as MDPC_CD                  /*  시술코드                   */
+		    ,  nvl(nvl(e.PTAD_IPDV_CD, e.ORDR_IPDV_CD), i.INSR_IPDV_CD)  as IPDV_CD                  /*  급여구분코드               */
+		    ,  (
+		       select  count(*)
+		         from  MNZDISPPT z
+		        where  z.PTNO     = e.PTNO
+		          and  z.ORDR_YMD = e.ORDR_YMD
+		          and  z.ORDR_SNO = e.ORDR_SNO
+		          and  z.ELBD_NO  = 'DBS4101'
+		          and  z.ORTA_NM  = 'MDEXMORDT'
+		       )                                                         as ELBD_DSPL_PRSN_CNT       /*  전광판표시인원수           */
+		       , fn_ac_get_opca_rgst_yn( #{ptno}  , trunc(sysdate) ) as    OPCA_YN
+		       , e.PTAD_MDRP_NO as PTAD_MDRP_NO
+		       , e.ORDR_CD
+		      /* , c.IMPL_DPRT_CD as IMPL_DPRT_CD */
+		       , nvl(c.IMPL_DPRT_CD, b.EXCT_DPRT_CD) as IMPL_DPRT_CD
+		       , f.PACS_INRF_YN
+		       , f.CIS_INRF_YN
+		       , f.CNMD_PRVN_ANTB_TRGT_YN    /* 조영제여부 */
+		       , case when FN_AP_AGE_S(a.PTNO,sysdate) < 18  then 'Y' else 'N' end as CHLD_YN  /* 소아여부 */  
+		       , to_char(a.APNT_DT , 'yyyymmddhh24mi')                             as APNT_DT  /* 예약일자 */  
+		       , a.EXMN_ANDV_CD                                                    as EXMN_ANDV_CD  /* 검사예약구분코드 */  
+		       , a.ANDV_CD                                                         as ANDV_CD  /* 예약구분코드 - S 비예약검사, C 통합예약, Y 검사실 */  
+		       , case when (a.APNT_DT is not null) and (to_char(a.APNT_DT , 'yyyymmdd') > to_char(sysdate , 'yyyymmdd')) 
+		              then 'Y' 
+		              else 'N' 
+		              end            as APNT_CL_YN        /* 미래예약 여부 */
+		       , a.SCHD_TYP_CD       as SCHD_TYP_CD       /* 스케줄타입 */
+		       , a.SCHD_DTLS_TYP_CD  as SCHD_DTLS_TYP_CD  /* 스케쥴 세부타입 */
+		       , nvl(a.ETC_MDRP_NO, 0) as ETC_MDRP_NO    /* 진료번호 */
+		       , to_char(e.PACL_YMD, 'yyyyMMdd') as PACL_YMD   /* 원무계산일자 */
+		 from  MDEXMORDT e  
+		    ,  SZROOMCMT b
+		    ,  SWORDRCMT c
+		    ,  SFCORDRCT d    
+		    ,  SWWORKMMT a
+		    ,  MDORDRCMT f
+		    ,  APPTPTNTT g
+		    ,  APRCRPTNT h
+		    ,  AIMFMDFET i
+		where  e.PTNO        = #{ptno}
+		  and  e.ORDR_YMD    = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  e.ORDR_SNO    = #{ordrSno}
+		   and  b.EXRM_CD(+)     = a.EXRM_CD
+		  and  b.EXCF_CD(+)     = a.EXCF_CD
+		  and  c.ORDR_CD     = e.ORDR_CD
+		  and  d.ORDR_CD(+)  = e.ORDR_CD
+		  and  e.PTNO        = a.PTNO(+)
+		  and  e.ORDR_YMD    = a.ORDR_YMD(+)
+		  and  e.ORDR_SNO    = a.ORDR_SNO(+)
+		  and  f.ORDR_CD     = e.ORDR_CD
+		  and  g.PTNO        = e.PTNO
+		  and  h.MDRP_NO     = e.MDRP_NO
+		  and  i.MDFE_CD(+)  = e.ORDR_CD
+		  and  i.APST_YMD(+) >= decode(e.PTAD_CODV_CD, 'O', nvl(e.MDFE_APLY_YMD, e.ORDR_YMD)
+		                                             , 'E', nvl(e.MDFE_APLY_YMD, e.ORDR_YMD)
+		                                             , 'I', e.PACL_YMD
+		                                             , 'D', e.PACL_YMD)
+		  and  i.APFN_YMD(+) <= decode(e.PTAD_CODV_CD, 'O', nvl(e.MDFE_APLY_YMD, e.ORDR_YMD)
+		                                             , 'E', nvl(e.MDFE_APLY_YMD, e.ORDR_YMD)
+		                                             , 'I', e.PACL_YMD
+		                                             , 'D', e.PACL_YMD)
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndMterImplInfm (2차 재료 실시 정보) 
+        Description :                                           2차 재료 실시 정보
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndMterImplInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndMterImplInfm */
+		<![CDATA[
+				   update  /*+ swd_swexexm_u01$U01_2차ORDER실시정보 수정 */
+			   SWSNDMAMT
+		  set  ENFR_DT           = to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+			,  IMPT_ID           = nvl2(IMPT_ID, IMPT_ID, #{imptId})
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRernDt (재검 일시) 
+        Description :                                           재검 일시
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRernDt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRernDt */
+		<![CDATA[
+				   update  /*+ swd_swexexm_u03$U01_REPEAT일시 수정 */
+			   SWWORKMMT
+		  set  RERN_IMPL_DT      = to_date(#{rernImplDt}, 'yyyyMMddhh24miss')
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm1 (실시정보 수정_SY) 
+        Description :                                           실시정보 수정_SY
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm1 */
+		<![CDATA[
+				   update  /*+ swd_swexexm_u04$U01_실시정보 수정_SY */
+			   SWWORKMMT
+		  set  EXMN_STTS_CD           = 'D'
+			,  AFTR_DATA_YN           = 'Y'
+		    ,  EXRM_CD                 = #{exrmCd}
+			,  ENDR_ID                = #{endrId}
+			,  ENDR_ID2                = #{endrId2}
+			,  ENDR_ID3                = #{endrId3}
+			,  IMPT_ID                = #{imptId} 
+			,  IMPT_ID2                = #{imptId2} 
+			,  IMPT_ID3                = #{imptId3} 
+		    ,  IMPL_DPRT_CD        = #{implDprtCd}
+			,  RPTN_DT                = nvl(to_date(#{rptnDt}, 'yyyyMMddhh24miss'),RPTN_DT )
+			,  ENFR_DT                = to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+			,  FILM_NO                = #{filmNo}
+			,  EQPM_CD                = #{eqpmCd}
+			,  EXMN_STRT_HM           = #{exmnStrtHm}
+			,  NGHT_PBHL_IMPL_DVSN_CD = #{nghtPbhlImplDvsnCd}
+			,  EXMN_APNT_NO           = #{exmnApntNo}
+			,  DAT_NO                 = #{datNo} 
+		    ,  RCPS_ID = nvl(#{rcpsId}, RCPS_ID)
+			,  LAST_UPDR_ID           = #{gvUserId}
+			,  LAST_UPDT_IP           = #{gvUserIp}
+			,  LAST_UPDT_DT           = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID      = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID      = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm2 (실시정보 수정) 
+        Description :                                           실시정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateImplInfm2 */
+		<![CDATA[
+		  update  /*+ swd_swexexm_u05$U01_실시정보 수정 */
+			   SWWORKMMT
+		  set  EXMN_STTS_CD       = 'D'
+			,  AFTR_DATA_YN            = 'Y'
+			,  IMPT_ID                 = nvl(#{imptId}, nvl(IMPT_ID, #{gvUserId}))
+			,  IMPT_ID2                = #{imptId2} 
+			,  IMPT_ID3                = #{imptId3}
+			,  ENDR_ID                 = nvl(#{endrId}, ENDR_ID)
+			,  ENDR_ID2                = #{endrId2}
+			,  ENDR_ID3                = #{endrId3} 
+		    ,  IMPL_DPRT_CD        = #{implDprtCd}
+			,  ENFR_DT                 = to_date(#{enfrDt}, 'yyyymmddhh24miss')
+			,  FILM_NO                 = nvl(#{filmNo}, FILM_NO)
+			,  EQPM_CD                  = #{eqpmCd}   /* 메인장비 */
+		    ,  EQPM_CD1                = #{eqpmCd1} /* 내시경장비 */
+		    ,  EQPM_CD2                = #{eqpmCd2} /* 내시경장비 */
+		    ,  EQPM_CD3                = #{eqpmCd3} /* 내시경장비 */
+		    ,  EQPM_CD4                = #{eqpmCd4} /* 내시경장비 */
+			,  BRNS_ENDS_BEFR_STTS_CTN = #{brnsEndsBefrSttsCtn}
+			,  BRNS_ENDS_AFSS_CTN      = #{brnsEndsAfssCtn}
+			,  EXMN_STRT_HM            = #{exmnStrtHm}
+			,  NGHT_PBHL_IMPL_DVSN_CD  = #{nghtPbhlImplDvsnCd}
+			,  EXMN_APNT_NO            = #{exmnApntNo}
+			,  EXRM_CD                 = #{exrmCd}
+			,  PRTB_PRFM_YN            = nvl(#{prtbPrfmYn}, 'N')
+			,  IMPL_HSDV_CD            = decode(#{excfCd}, 'SR', nvl(#{implHsdvCd}, IMPL_HSDV_CD), IMPL_HSDV_CD)
+			,  EXMN_D3_RQST_YN         = #{exmnD3RqstYn}
+			,  RDTN_DOSE_VL            = (
+										 case
+											 when #{afiRdqyClclPrsgDvsnCd} = 'A' then
+												  decode(#{excfCd}
+													  , 'SR', trim(
+																  to_char(
+																	  nvl(
+																		  nvl(
+																			  #{rdtnDoseVl},
+																			  #{hndwInptRdtnDoseVl}
+																		  ),
+																		  #{sngnSpcmBrcdSpsbCtn}
+																	  ) * #{rdqyWighVl},
+																	  '99990.999'
+																  )
+															  )
+													  , ''
+												  )
+											 when #{afiRdqyClclPrsgDvsnCd} = 'B' then
+												  decode(#{excfCd}
+													  , 'SR', trim(to_char((nvl(nvl(#{spotInptVl}  , '0'), '0') * '220' * #{rdqyWighVl}) +
+																  (nvl(nvl(#{flurInptVl}, '0'), '0') *  '50' * #{rdqyWighVl}) , '99990.999')
+															  )
+													  , ''
+												  )
+											 else ''
+										 end
+										 )
+			,  HNDW_INPT_RDTN_DOSE_VL    = decode(#{excfCd}
+											   , 'SR', nvl(
+														   nvl(
+															   #{rdtnDoseVl},
+															   #{hndwInptRdtnDoseVl}
+														   ),
+														   #{sngnSpcmBrcdSpsbCtn}
+													   )
+											   , ''
+										   )
+			,  IMGN_ACQR_SPCM_CNT        = nvl2(#{afiImgnAcqrSpcmCntVl}, to_number(#{afiImgnAcqrSpcmCntVl}), null)
+			,  SPOT_INPT_VL              = decode(#{excfCd}, 'SR', trim(to_char(nvl(nvl(#{spotInptVl}  , '0'), '0') , '999999999')), '')
+			,  FLUR_INPT_VL              = decode(#{excfCd}, 'SR', trim(to_char(nvl(nvl(#{flurInptVl}, '0'), '0') , '999999999')), '')
+			,  MAC_RFA_YN                = decode(#{excfCd}, 'SR', nvl(#{macRfaYn}, MAC_RFA_YN), MAC_RFA_YN)
+			,  ENRM_EDCT_FLDV_CD         = decode(#{excfCd}, 'SR', decode(#{macRfaYn}, 'Y', 'R', '')
+			                                               , 'SO', decode(#{macRfaYn}, 'E', decode(ENRM_EDCT_FLDV_CD,'Y','E',ENRM_EDCT_FLDV_CD), ENRM_EDCT_FLDV_CD)
+			                                               , ENRM_EDCT_FLDV_CD)
+			,  CLAM_ENDR_ID              = (
+										   case
+											   /* 영상의학 초음파검사실 */
+											   when (#{excfCd} = 'SR') and ((substr(EXMN_CD, 1, 2) = 'RU') or (substr(EXMN_CD, 1, 2) = 'RS')) then
+											   nvl(#{endrId}, ENDR_ID)
+											   /* 신경검사실 */
+											   when (#{exrmCd} in ('BS17')) then
+											   nvl(#{endrId}, ENDR_ID)
+											   /* 비뇨기과 검사실 */
+											   when (#{excfCd} = 'SG4') and (#{exrmCd} in ('URO1')) then
+											   nvl(#{endrId}, ENDR_ID)
+											   /* 정형외과 초음파검사 */
+											   when (#{excfCd} = 'OS') then
+											   nvl(#{endrId}, ENDR_ID)
+											   /* 혈관검사실 */
+											   when (EXMN_CD like 'BS7%') and (#{exrmCd} in ('BS70')) then
+											   nvl(#{endrId}, ENDR_ID)
+											   /* 안과검사실 */
+											   when (#{excfCd} = 'SG1') and (#{exrmCd} in ('OUS')) then
+												   (
+												   select  ODDR_ID
+													 from  MDEXMORDT
+													where  PTNO     = #{ptno}
+													  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+													  and  ORDR_SNO = #{ordrSno}
+												   )
+										   end
+										   )
+		    ,  RPTN_DT = nvl(to_date( #{rptnDt} , 'yyyymmddhh24miss') , RPTN_DT)  
+		    ,  RCPS_ID = nvl(#{rcpsId}, RCPS_ID)
+		    ,  GRP_IMPL_YN = #{grpImplYn}   /* 그룹실시여부 */
+		    ,  GRP_IMPL_NO = #{grpImplNo}   /* 그룹실시번호 */
+			,  LAST_UPDR_ID                = #{gvUserId}
+			,  LAST_UPDT_IP                 = #{gvUserIp}
+			,  LAST_UPDT_DT                = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID           = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID           = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExrmClbyEXAMNO (검사실별EXAMNO, DATNO 수정) 
+        Description :                                           검사실별EXAMNO, DATNO 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExrmClbyEXAMNO"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExrmClbyEXAMNO */
+		<![CDATA[
+				       update  /*+ szd_swexexm_u01$U01_검사실별EXAMNO, DATNO 수정 */
+		            SZCTRLMMT
+		       set  EXMN_CTRL_NMBR_VL1 = #{exmnApntNo}
+		         ,  EXMN_CTRL_NMBR_VL2 = #{datNo}
+				 , LAST_UPDR_ID = #{gvLginId}
+				 , LAST_UPDT_IP = #{gvUserIp}
+				 , LAST_UPDT_DT = sysdate
+				 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+		     where  EXMN_CTRL_CD      = 'SR007'
+		       and  EXMN_DTLS_CTRL_CD = #{exrmCd}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdImpl (핵의학실시) 
+        Description :                                           핵의학실시
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdImpl"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdImpl */
+		<![CDATA[
+				   update  /*+ svd_swexexm_u01$U01_핵의학실시 수정 */
+			   SVWORKDMT
+		  set  INJC_KIND_NM       = #{injcKindNm}
+			,  MDSI_CD            = #{mdsiCd}
+			,  INJC_DT            = to_date(#{injcDt}, 'yyyyMMddhh24miss')
+			,  VLM                = nvl2(#{vlm}, to_number(#{vlm}), null)
+			,  THYR_INTK_RT       = nvl2(#{afiThyrIntkRtVl}, to_number(#{afiThyrIntkRtVl}), null)
+			,  IJPR_ID            = #{ijprId}
+			,  PRVS_INJC_DT       = to_date(#{prvsInjcDt}, 'yyyyMMddhh24miss')
+			,  PRVS_INJC_QTY      = nvl2(#{afiPrvsInjcQtyVl}, to_number(#{afiPrvsInjcQtyVl}), null)
+			,  MNGR_INJC_DT       = to_date(#{mngrInjcDt}, 'yyyyMMddhh24miss')
+			,  MNGR_INJC_QTY      = nvl2(#{afiMngrInjcQtyVl}, to_number(#{afiMngrInjcQtyVl}), null)
+			,  EXPS_INJC_DT       = to_date(#{expsInjcDt}, 'yyyyMMddhh24miss')
+			,  EXPS_INJC_QTY      = nvl2(#{afiExpsInjcQtyVl}, to_number(#{afiExpsInjcQtyVl}), null)
+			,  BLSG_NCVL_VL       = #{blsgNcvlVl}
+			,  DRML_EN            = #{drmlEn}
+			,  MNSN_YN            = #{mnsnYn}
+			,  UNSL_CTN           = #{unslCtn}
+			,  LYMPH_EXMN_KIND_CD = #{lymphExmnKindCd}
+		    ,  EXMN_ENFR_DT = to_date(#{exmnEnfrDt}  , 'yyyyMMddhh24miss')
+			,  LAST_UPDR_ID       = #{gvUserId}
+			,  LAST_UPDT_IP       = #{gvUserIp}
+			,  LAST_UPDT_DT       = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdExrm (핵의학 검사실) 
+        Description :                                           핵의학 검사실
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdExrm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateNcmdExrm */
+		<![CDATA[
+				   update  /*+ swd_swexexm_u06$U01_핵의학검사실 수정 */
+			   SWWORKMMT
+		  set  EXRM_CD           = #{exrmCd}
+			,  IMPL_HSDV_CD      = #{implHsdvCd}
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertRsltIntlInfmRgst1 (결과초기정보 등록 1) 
+        Description :                                           검사실시중 검사결과의 SET검사코드에 준한 초기정보 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertRsltIntlInfmRgst1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertRsltIntlInfmRgst1 */
+		<![CDATA[
+				insert  /*+ szd_swexexm_i01$I01_결과조기정보 등록 1 */
+		      into  SZRESULMT
+		            (
+		            PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  SPCM_NO
+		         ,  EXMN_CD
+		         ,  RPRT_DT
+		         ,  EXCF_CD
+		         ,  EXMN_PRSS_CD
+		         ,  EXRS_FRMT_CD
+				 , FRST_RGSR_ID	 
+				 , FRST_RGST_IP
+				 , FRST_RGST_DT
+				 , FRST_RGST_CLNT_PRGM_ID
+				 , FRST_RGST_SRVR_PRGM_ID
+				 , LAST_UPDR_ID
+				 , LAST_UPDT_IP
+				 , LAST_UPDT_DT
+				 , LAST_UPDT_CLNT_PRGM_ID
+				 , LAST_UPDT_SRVR_PRGM_ID	
+		            )
+		            select  #{ptno}
+		                 ,  to_date(#{ordrYmd},'yyyyMMdd')
+		                 ,  #{ordrSno}
+		                 ,  '*'
+		                 ,  EXMN_CD
+		                 ,  to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+		                 ,  #{excfCd}
+		                 ,  'D'
+		                 ,  #{exrsFrmtCd}
+						 ,  #{gvLginId}
+						 ,  #{gvUserIp}
+						 ,  sysdate
+						 ,  #{gvClntPrgmId}
+						 ,  #{gvSrvrPrgmId}
+						 ,  #{gvLginId}
+						 ,  #{gvUserIp}
+						 ,  sysdate
+						 ,  #{gvClntPrgmId}
+						 ,  #{gvSrvrPrgmId}
+		              from  SZSETEXMT
+		             where  SET_EXOR_CD = #{exmnCd}
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertRsltIntlInfmRgst2 (결과조기정보 등록 2) 
+        Description :                                           검사실시중 검사결과의 초기정보 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertRsltIntlInfmRgst2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		<![CDATA[
+			 insert  /*+ szd_swexexm_i02$I01_결과조기정보 등록 2 */
+		      into  SZRESULMT
+		            (
+		            PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  SPCM_NO
+		         ,  EXMN_CD
+		         ,  RPRT_DT
+		         ,  EXCF_CD
+		         ,  EXMN_PRSS_CD
+		         ,  EXRS_FRMT_CD
+				 ,  FRST_RGSR_ID	 
+				 ,  FRST_RGST_IP
+				 ,  FRST_RGST_DT
+				 ,  FRST_RGST_CLNT_PRGM_ID
+				 ,  FRST_RGST_SRVR_PRGM_ID
+				 ,  LAST_UPDR_ID
+				 ,  LAST_UPDT_IP
+				 ,  LAST_UPDT_DT
+				 ,  LAST_UPDT_CLNT_PRGM_ID
+				 ,  LAST_UPDT_SRVR_PRGM_ID
+		            )
+		    values  (
+		                #{ptno}
+					 ,  to_date(#{ordrYmd},'yyyyMMdd')
+					 ,  #{ordrSno}
+					 ,  '*'
+					 ,  #{exmnCd}
+					 ,  to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+					 ,  #{excfCd}
+					 ,  'D'
+					 ,  #{exrsFrmtCd}
+		             ,  #{gvLginId}
+					 ,  #{gvUserIp}
+					 ,  sysdate
+					 ,  #{gvClntPrgmId}
+					 ,  #{gvSrvrPrgmId}
+					 ,  #{gvLginId}
+					 ,  #{gvUserIp}
+					 ,  sysdate
+					 ,  #{gvClntPrgmId}
+					 ,  #{gvSrvrPrgmId}
+		            )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCmtxRplyUpdt (COLSULT 회신 수정) 
+        Description :                                           미실시 Consult에 대한 회신정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCmtxRplyUpdt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCmtxRplyUpdt */
+		<![CDATA[
+		    update  /*+ mdd_swexexm_u01$U01_COLSULT 회신 수정 */
+		            MDCONSRCT
+		       set  RPLY_YMD          = sysdate
+		         ,  RPLY_DR_ID        = #{endrId}
+		         ,  RPLY_DR_MCDP_CD   = '112121' /* BRO */
+		         ,  CMTX_RPLY_CTN     = '검사가 시행되었습니다.'
+		         ,  IMPL_YMD          = sysdate
+		         ,  CMTX_STTS_CD      = '4'
+				 , LAST_UPDR_ID = #{gvLginId}
+				 , LAST_UPDT_IP = #{gvUserIp}
+				 , LAST_UPDT_DT = sysdate
+				 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 	
+		     where  PTNO            = #{ptno}
+		       and  ORDR_YMD        = to_date(#{ordrYmd}, 'yyyyMMdd')
+		       and  WNTD_DR_MCDP_CD = '112121'
+		       and  ORDR_CD         = (
+		                              select  EXMN_CD
+		                                from  SWWORKMMT
+		                               where  PTNO     = #{ptno}
+		                                 and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		                                 and  ORDR_SNO = #{ordrSno}
+		                              )
+		       and  IMPL_YMD        is null
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="chckSttsCd" column="CHCK_STTS_CD"/>
+		<result property="afiScndOrdrPblcCct" column="AFI_SCND_ORDR_PBLC_CCT"/>
+		<result property="afiScndOrdrRcpcCct" column="AFI_SCND_ORDR_RCPC_CCT"/>
+		<result property="afiScndOrdrNrdrCct" column="AFI_SCND_ORDR_NRDR_CCT"/>
+		<result property="exrsFrmtCd" column="EXRS_FRMT_CD"/>
+		<result property="macRfaYn" column="MAC_RFA_YN"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm (검사 정합성 점검 정보) 
+        Description :                                           검사실시취소를 진행하기 위하여 진행가불여부를 판단하기 위한 검사정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnPillSyntChupInfm */
+		<![CDATA[
+				   select  /*+ swd_swexcnl_s01$S01_검사정합성점검정보조회 */
+			   a.CODV_CD                                               as CODV_CD             /*  내원구분코드     */
+			,  b.ODKI_CD                                               as ODKI_CD             /*  처방종류코드     */
+			,  a.EXMN_STTS_CD                                           as EXMN_STTS_CD
+			,  d.CHCK_STTS_CD                                          as CHCK_STTS_CD        /*  심사상태코드     */
+			,  (
+			   select  count(*)
+				 from  SWSNDMAMT
+				where  PTNO     = a.PTNO
+				  and  ORDR_YMD = a.ORDR_YMD
+				  and  ORDR_SNO = a.ORDR_SNO
+			   )                                                   as AFI_SCND_ORDR_PBLC_CCT  /*  2차처방발행건수  */
+			,  (
+			   select  count(*)
+				 from  SWSNDMAMT
+				where  PTNO              = a.PTNO
+				  and  ORDR_YMD          = a.ORDR_YMD
+				  and  ORDR_SNO          = a.ORDR_SNO
+				  and  nvl(RCST_CD, 'N') = 'Y'
+			   )                                                   as AFI_SCND_ORDR_RCPC_CCT  /*  2차처방수납건수  */
+			,  (
+			   select  count(*)
+				 from  SWSNDMAMT x
+				where  x.PTNO     = a.PTNO
+				  and  x.ORDR_YMD = a.ORDR_YMD
+				  and  x.ORDR_SNO = a.ORDR_SNO
+				  and  exists  (
+							   select  '1'
+								 from  SDJORDOUT
+								where  PTNO     = x.PTNO
+								  and  ORDR_YMD = x.ORDR_YMD
+								  and  ORDR_SNO = x.ORDR_SNO
+								  and  ORDR_CD  = x.EXMN_CD
+								  and  MDPR_CD  = x.MTER_CD
+								  and  MDTN_NO  = x.PTNO ||
+												  x.MTER_TXOR_SNO
+							   )
+			   )                                                   as AFI_SCND_ORDR_NRDR_CCT  /*  2차처방마약건수  */
+			,  e.EXRS_FRMT_CD                                          as EXRS_FRMT_CD        /*  검사결과형태코드 */
+			,  a.MAC_RFA_YN                                            as MAC_RFA_YN          /*  MAC_RFA여부      */
+			,  a.EXRM_CD                                               as EXRM_CD             /*  검사실코드       */
+		    ,  a.APNT_DT                                               as APNT_DT     /*  예약시간       */
+		    ,  b.PTAD_MDRP_NO as PTAD_MDRP_NO
+		 from  SWWORKMMT a
+			,  MDEXMORDT b
+			,  APPTPTNTT c
+			,  APRCRPTNT d
+			,  SWORDRCMT e
+		where  a.PTNO        = #{ptno}
+		  and  a.ORDR_YMD    = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  a.ORDR_SNO    = #{ordrSno}
+		  and  a.EXCF_CD     = #{excfCd}
+		  and  b.PTNO        = a.PTNO
+		  and  b.ORDR_YMD    = a.ORDR_YMD
+		  and  b.ORDR_SNO    = a.ORDR_SNO
+		  and  c.PTNO        = b.PTNO
+		  and  d.MDRP_NO(+)  = nvl(b.PTAD_MDRP_NO, b.MDRP_NO)
+		  and  d.CODV_CD(+)  = 'I'
+		  and  e.ORDR_CD     = a.EXMN_CD
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst (수납환불요청수정) 
+        Description :                                           검사실시취소를 진행하기 위하여 수납된 2차ORDER(재료)에 대하여 환불요청정보로 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst */
+		<![CDATA[
+				   update  /*+ swd_swexcnl_u01$U01_수납환불요청 */
+			   SWSNDMAMT
+		  set  RTRN_STTS_CD      = 'Y'
+		     ,  RTRN_RQPR_ID = #{gvUserId}
+		     , RTRN_RQST_DT = sysdate
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO              = #{ptno}
+		  and  ORDR_YMD          = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO          = #{ordrSno}
+		  and  EXCF_CD           = #{excfCd}
+		  and  nvl(RCST_CD, 'N') = 'Y'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertScndOrdrDltnHx (2차처방삭제이력저장) 
+        Description :                                           검사실시취소 진행시 2차ORDER(재료)를 삭제하기전에 해당 내역을 이력정보로 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertScndOrdrDltnHx"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertScndOrdrDltnHx */
+		<![CDATA[
+				   insert  /*+ swd_swexcnl_i01$I01_2차처방삭제이력저장 */
+		 into  SWSNDEHMT
+			   (
+			   PTNO                     /*  환자번호                        */
+			,  ORDR_YMD                 /*  처방일시                        */
+			,  ORDR_SNO                 /*  처방일련번호                    */
+			,  MTER_CD                  /*  재료코드                        */
+			,  MTER_TXOR_SNO            /*  재료처치처방일련번호            */
+			,  EXCF_CD                  /*  검사분류코드                    */
+			,  CODV_CD                  /*  내원구분코드                    */
+			,  MCDP_CD                  /*  진료과코드                      */
+			,  ENFR_DT                  /*  시행일시                        */
+			,  MTER_QTY                 /*  소모량                          */
+			,  ORDR_IPDV_CD             /*  처방급여구분코드                */
+			,  PTAD_IPDV_CD             /*  원무급여구분코드                */
+			,  ADTN_DVSN_CD             /*  추가구분코드                    */
+			,  RCST_CD                  /*  수납상태코드                    */
+			,  MCRC_YMD                 /*  진료비수납일자                  */
+			,  RPNT_ID                  /*  수납자ID                        */
+			,  ADTN_CNSM_MTER_RMRK_CTN  /*  추가소모재료비고내용            */
+			,  IMPT_ID                  /*  실시자ID                        */
+			,  SMDR_ID                  /*  선택의사ID                      */
+			,  MCCL_DT                  /*  진료비계산일시                  */
+			,  ODDR_ID                  /*  처방의사ID                      */
+			,  PTAD_CLBA_DT             /*  원무계산기준일시                */
+			,  ISTY_ASST_CD             /*  보험유형보조코드                */
+			,  PTAD_CODV_CD             /*  원무내원구분코드                */
+			,  ISTY_CD                  /*  보험유형코드                    */
+			,  ODKI_CD                  /*  처방종류코드                    */
+			,  CNPL_CD                  /*  계약처코드                      */
+			,  CLAM_YMD                 /*  청구일자                        */
+			,  VIA_ADMS_RCST_CD         /*  경유입원수납상태코드            */
+			,  CLRS_PRJC_CD             /*  임상연구과제코드                */
+			,  NRDR_LIST_PRIN_NTM       /*  마약목록출력횟수                */
+			,  ENDS_NRDR_CUP_QTY        /*  내시경마약잔량                  */
+			,  FRST_RGSR_ID             /*  최초등록자ID                    */
+			,  FRST_RGST_IP             /*  최초등록IP                      */
+			,  FRST_RGST_DT             /*  최초등록일시                    */
+			,  FRST_RGST_CLNT_PRGM_ID          /*  최초등록SMC클라이언트프로그램ID */
+			,  FRST_RGST_SRVR_PRGM_ID        /*  최초등록SMC서버프로그램ID       */
+			,  LAST_UPDR_ID             /*  최종수정자ID                    */
+			,  LAST_UPDT_IP             /*  최종수정IP                      */
+			,  LAST_UPDT_DT             /*  최종수정일시                    */
+			,  LAST_UPDT_CLNT_PRGM_ID        /*  최종수정SMC클라이언트프로그램ID */
+			,  LAST_UPDT_SRVR_PRGM_ID        /*  최종수정SMC서버프로그램ID       */
+			   )
+			   select  a.PTNO
+					,  a.ORDR_YMD
+					,  a.ORDR_SNO
+					,  a.MTER_CD
+					,  a.MTER_TXOR_SNO +
+					   (
+					   select  nvl(max(MTER_TXOR_SNO), 0)
+						 from  SWSNDEHMT
+						where  PTNO     = a.PTNO
+						  and  ORDR_YMD = a.ORDR_YMD
+						  and  ORDR_SNO = a.ORDR_SNO
+						  and  EXCF_CD  = a.EXCF_CD
+					   )
+					,  a.EXCF_CD
+					,  a.CODV_CD
+					,  a.MCDP_CD
+					,  a.ENFR_DT
+					,  a.MTER_QTY
+					,  a.ORDR_IPDV_CD
+					,  a.PTAD_IPDV_CD
+					,  a.ADTN_DVSN_CD
+					,  a.RCST_CD
+					,  a.MCRC_YMD
+					,  a.RPNT_ID
+					,  a.ADTN_CNSM_MTER_RMRK_CTN
+					,  a.IMPT_ID
+					,  a.SMDR_ID
+					,  a.MCCL_DT
+					,  a.ODDR_ID
+					,  a.PTAD_CLBA_DT
+					,  a.ISTY_ASST_CD
+					,  a.PTAD_CODV_CD
+					,  a.ISTY_CD
+					,  a.ODKI_CD
+					,  a.CNPL_CD
+					,  a.CLAM_YMD
+					,  a.VIA_ADMS_RCST_CD
+					,  a.CLRS_PRJC_CD
+					,  a.NRDR_LIST_PRIN_NTM
+					,  a.ENDS_NRDR_CUP_QTY
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+				 from  SWSNDMAMT a
+				where  a.PTNO     = #{ptno}
+				  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+				  and  a.ORDR_SNO = #{ordrSno}
+				  and  a.EXCF_CD  = #{excfCd}
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteScndOrdr1 (2차처방삭) 
+        Description :                                           검사실시취소시 기 발행된 2차ORDER(재료)를 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteScndOrdr1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteScndOrdr1 */
+		<![CDATA[
+				   delete  /*+ swd_swexcnl_d01$D01_2차처방삭제 */
+		 from  SWSNDMAMT
+		where  PTNO              = #{ptno}
+		  and  ORDR_YMD          = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO          = #{ordrSno}
+		  and  EXCF_CD           = #{excfCd}
+		  and  nvl(RCST_CD, 'N') not in ('Y', 'R')
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndOrdrDltnHx (핵체내검사상세수정) 
+        Description :                                           검사실시취소대상 검사의 검사분류가 핵의학체내(SV)인 경우에 대한 핵의학체내작업상세에서의 검사실시취소 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndOrdrDltnHx"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateScndOrdrDltnHx */
+		<![CDATA[
+		    update  /*+ svd_swexcnl_u01$U01_핵체내검사상세수정 */
+		            SVWORKDMT
+		       set  INJC_KIND_NM      = null
+		         ,  MDSI_CD           = null
+		         ,  INJC_DT           = null
+		         ,  VLM               = null
+		         ,  THYR_INTK_RT      = null
+		         ,  IJPR_ID           = null
+				 ,  LAST_UPDR_ID = #{gvLginId}
+				 ,  LAST_UPDT_IP = #{gvUserIp}
+				 ,  LAST_UPDT_DT = sysdate
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 	
+		     where  PTNO         = #{ptno}
+		       and  ORDR_YMD     = to_date(#{ordrYmd}, 'yyyyMMdd')
+		       and  ORDR_SNO     = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnMdfcHx (검사변경이력등록) 
+        Description :                                           검사실시취소대상 검사의 환자검사작업관리 정보를 검사취소LOG관리 정보로 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnMdfcHx"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnMdfcHx */
+		<![CDATA[
+				   insert  /*+ swd_swexcnl_i02$I01_검사변경이력등록 */
+		 into  SWWORKLMT
+			   (
+			   PTNO
+			,  ORDR_YMD
+			,  ORDR_SNO
+			,  EXMN_CNCL_DT
+			,  EXCF_CD
+			,  EXMN_CD
+			,  EXMN_STTS_CD
+			,  AMPR_ID
+			,  RCPS_ID
+			,  ENDR_ID
+			,  ENDR_ID2
+			,  ENDR_ID3
+			,  IMPT_ID
+			,  IMPT_ID2
+			,  IMPT_ID3
+			,  TRNB_ID
+			,  CNDR_ID
+			,  CNCR_ID
+			,  EXRM_CD
+			,  ANDV_CD
+			,  APNT_DT
+			,  RPTN_DT
+			,  ENFR_DT
+			,  INTR_DT
+			,  SCND_ORDR_YN
+			,  RERN_PRRN_DT
+			,  RERN_IMPL_DT
+			,  SCHD_DTLS_TYP_CD
+			,  EXMN_APNT_NO
+			,  DAT_NO
+			,  PACS_ACCS_NO
+			,  GE_PACS_ORDR_TRNM_YN
+			,  INTG_PACS_RSLT_TRNM_YN
+			,  PHYL_MDCT_PACS_TRDV_CD
+			,  EXMN_CNRE_CD
+			,  CNRE_CTN
+		    ,  MDPR_STDL_PRSG_DT 
+		    ,  MDPR_STDL_PRSG_NO 
+		    ,  MDPR_STDL_PCPR_ID 
+		    ,  MDPR_STDL_PCPR_IP 
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			   )
+			   select
+					   PTNO
+					,  ORDR_YMD
+					,  ORDR_SNO
+					,  sysdate
+					,  EXCF_CD
+					,  EXMN_CD
+					,  EXMN_STTS_CD
+					,  AMPR_ID
+					,  RCPS_ID
+		        	,  ENDR_ID
+			        ,  ENDR_ID2
+			        ,  ENDR_ID3
+			        ,  IMPT_ID
+			        ,  IMPT_ID2
+			        ,  IMPT_ID3
+					,  TRNB_ID
+					,  CNDR_ID
+					,  #{gvUserId}
+					,  EXRM_CD
+					,  ANDV_CD
+					,  APNT_DT
+					,  RPTN_DT
+					,  ENFR_DT
+					,  INTR_DT
+					,  SCND_ORDR_YN
+					,  RERN_PRRN_DT
+					,  RERN_IMPL_DT
+					,  SCHD_DTLS_TYP_CD
+					,  EXMN_APNT_NO
+					,  DAT_NO
+					,  PACS_ACCS_NO
+					,  GE_PACS_ORDR_TRNM_YN
+					,  INTG_PACS_RSLT_TRNM_YN
+					,  PHYL_MDCT_PACS_TRDV_CD
+					,  #{exmnCnreCd}
+					,  #{cnreCtn}
+		   	 		,  MDPR_STDL_PRSG_DT 
+		    		,  MDPR_STDL_PRSG_NO 
+		    		,  MDPR_STDL_PCPR_ID 
+		   			,  MDPR_STDL_PCPR_IP 
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+				 from  SWWORKMMT
+				where  PTNO     = #{ptno}
+				  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+				  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl1 (검사실시취소_SY) 
+        Description :                                           검사실시취소대상 검사의 검사분류가 알레르기체내(SY)인 경우에 대한 환자검사작업관리에서의 검사실시취소 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl1 */
+		<![CDATA[
+				   update  /*+ swd_swexcnl_u02$U01_검사실시취소_SY */
+			   SWWORKMMT
+		  set  EXMN_STTS_CD      = 'A' /*  2014.12.08 변경 A -> C / 2015.06.18 변경 C -> A */
+			,  ENDR_ID           = null
+			,  ENDR_ID2           = null
+			,  ENDR_ID3           = null
+			,  IMPT_ID           = null
+			,  IMPT_ID2           = null
+			,  IMPT_ID3          = null
+		    ,  IMPL_DPRT_CD    = null
+			,  AFTR_DATA_YN      = 'N'
+			,  RPTN_DT           = null  /*  2014.12.08 주석처리 / 2015.06.18 주석해제 */
+			,  ENFR_DT           = null
+			,  FILM_NO           = null
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO         = #{ptno}
+		  and  ORDR_YMD     = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO     = #{ordrSno}
+		  and  EXCF_CD      = #{excfCd}
+		  and  EXMN_STTS_CD = 'D'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl2 (검사실시취소) 
+        Description :                                           검사실시취소대상 검사의 검사분류가 알레르기체내(SY)가 아닌 경우에 대한 환자검사작업관리에서의 검사실시취소 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateExmnImplCncl2 */
+		<![CDATA[
+				   update  /*+ swd_swexcnl_u03$U01_검사실시취소 */
+			   SWWORKMMT
+		  set  EXMN_STTS_CD            = 'C' 
+			,  ENDR_ID           = null
+			,  ENDR_ID2           = null
+			,  ENDR_ID3           = null
+			,  IMPT_ID           = null
+			,  IMPT_ID2           = null
+			,  IMPT_ID3          = null
+			,  EQPM_CD                 = null
+			,  BRNS_ENDS_BEFR_STTS_CTN = null
+			,  BRNS_ENDS_AFSS_CTN      = null
+			,  SCND_ORDR_YN            = null
+			,  EXMN_STRT_HM            = null
+			,  NGHT_PBHL_IMPL_DVSN_CD  = null
+			,  EXMN_APNT_NO            = null
+			,  DAT_NO                  = null
+			,  AFTR_DATA_YN            = 'N'
+		    ,  IMPL_DPRT_CD       = null
+			,  ENFR_DT                 = null
+			,  FILM_NO                 = decode(FILM_NO, 'BO', 'BO', null)
+			,  ETC_PACS_ORDR_TRNM_YN   = decode(ETC_PACS_ORDR_TRNM_YN, 'T', 'Y', null)
+			,  PRTB_PRFM_YN            = null
+			,  MAC_RFA_YN              = null
+		--	,  ENRM_EDCT_FLDV_CD       = null /*실시취소시 내시경 위치 초기화 로직 삭제*/
+			,  CLAM_ENDR_ID =  null
+		    ,  GRP_IMPL_YN = null
+		    ,  GRP_IMPL_NO = null
+			,  LAST_UPDR_ID            = #{gvUserId}
+			,  LAST_UPDT_IP            = #{gvUserIp}
+			,  LAST_UPDT_DT            = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID       = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID       = #{gvSrvrPrgmId}
+		where  PTNO         = #{ptno}
+		  and  ORDR_YMD     = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO     = #{ordrSno}
+		  and  EXCF_CD      = #{excfCd}
+		  and  EXMN_STTS_CD = 'D'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteIntgExrs (통합검사결과삭제) 
+        Description :                                           검사실시취소대상 검사의 검사결과(통합) 정보 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteIntgExrs"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteIntgExrs */
+		<![CDATA[
+			  delete  /*+ szd_swexcnl_d01$D01_통합검사결과삭제 */
+		        from  SZRESULMT   
+				where  PTNO         = #{ptno}
+				  and  ORDR_YMD     = to_date(#{ordrYmd}, 'yyyyMMdd')
+				  and  ORDR_SNO     = #{ordrSno}
+				  and  EXCF_CD      = #{excfCd}
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="eqpmCd" column="EQPM_CD"/>
+		<result property="exmnSttsCd" column="EXMN_STTS_CD"/>
+		<result property="exmnDtlsSttsCd" column="EXMN_DTLS_STTS_CD"/>
+		<result property="apntDt" column="APNT_DT"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="rptnCnclDt" column="RPTN_CNCL_DT"/>
+		<result property="enfrDt" column="ENFR_DT"/>
+		<result property="rernPrrnDt" column="RERN_PRRN_DT"/>
+		<result property="rernImplDt" column="RERN_IMPL_DT"/>
+		<result property="exmnCnclDt" column="EXMN_CNCL_DT"/>
+		<result property="intrPrrnDt" column="INTR_PRRN_DT"/>
+		<result property="intrDt" column="INTR_DT"/>
+		<result property="cnfrDt" column="CNFR_DT"/>
+		<result property="apntUpdtDt" column="APNT_UPDT_DT"/>
+		<result property="exmnFalrDt" column="EXMN_FALR_DT"/>
+		<result property="exmnFalrRgsrId" column="EXMN_FALR_RGSR_ID"/>
+		<result property="exmnFalrRgstResnCtn" column="EXMN_FALR_RGST_RESN_CTN"/>
+		<result property="andvCd" column="ANDV_CD"/>
+		<result property="amprId" column="AMPR_ID"/>
+		<result property="schdDtlsTypCd" column="SCHD_DTLS_TYP_CD"/>
+		<result property="rcpsId" column="RCPS_ID"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="endrId2" column="ENDR_ID2"/>
+		<result property="endrId3" column="ENDR_ID3"/>
+		<result property="imptId" column="IMPT_ID"/>
+		<result property="imptId2" column="IMPT_ID2"/>
+		<result property="imptId3" column="IMPT_ID3"/>
+		<result property="implHsdvCd" column="IMPL_HSDV_CD"/>
+		<result property="intrYn" column="INTR_YN"/>
+		<result property="cnntIntrSno" column="CNNT_INTR_SNO"/>
+		<result property="indrId1" column="INDR_ID1"/>
+		<result property="indrId2" column="INDR_ID2"/>
+		<result property="indrId3" column="INDR_ID3"/>
+		<result property="cndrId" column="CNDR_ID"/>
+		<result property="intrPrrnDrNm" column="INTR_PRRN_DR_NM"/>
+		<result property="trnbId" column="TRNB_ID"/>
+		<result property="rernRfrcCtn" column="RERN_RFRC_CTN"/>
+		<result property="scndOrdrYn" column="SCND_ORDR_YN"/>
+		<result property="exrsPrinNtm" column="EXRS_PRIN_NTM"/>
+		<result property="brnsEndsBefrSttsCtn" column="BRNS_ENDS_BEFR_STTS_CTN"/>
+		<result property="brnsEndsAfssCtn" column="BRNS_ENDS_AFSS_CTN"/>
+		<result property="nrdrListPrinNtm" column="NRDR_LIST_PRIN_NTM"/>
+		<result property="nrdrCupQty" column="NRDR_CUP_QTY"/>
+		<result property="dcttYn" column="DCTT_YN"/>
+		<result property="cnsgHsptCd" column="CNSG_HSPT_CD"/>
+		<result property="filmNo" column="FILM_NO"/>
+		<result property="exmnApntNo" column="EXMN_APNT_NO"/>
+		<result property="datNo" column="DAT_NO"/>
+		<result property="exmnStrtHm" column="EXMN_STRT_HM"/>
+		<result property="rsrcCnfrRmrkCtn" column="RSRC_CNFR_RMRK_CTN"/>
+		<result property="nghtPbhlImplDvsnCd" column="NGHT_PBHL_IMPL_DVSN_CD"/>
+		<result property="trdvCd" column="TRDV_CD"/>
+		<result property="trspTrdvCd" column="TRSP_TRDV_CD"/>
+		<result property="prtbPrfmYn" column="PRTB_PRFM_YN"/>
+		<result property="exmnD3RqstYn" column="EXMN_D3_RQST_YN"/>
+		<result property="exmnD3ImptId" column="EXMN_D3_IMPT_ID"/>
+		<result property="exmnD3ImplDt" column="EXMN_D3_IMPL_DT"/>
+		<result property="rdtnDoseVl" column="RDTN_DOSE_VL"/>
+		<result property="hndwInptRdtnDoseVl" column="HNDW_INPT_RDTN_DOSE_VL"/>
+		<result property="imgnAcqrSpcmCnt" column="IMGN_ACQR_SPCM_CNT"/>
+		<result property="spotInptVl" column="SPOT_INPT_VL"/>
+		<result property="flurInptVl" column="FLUR_INPT_VL"/>
+		<result property="edctFileRgsrId" column="EDCT_FILE_RGSR_ID"/>
+		<result property="asapYn" column="ASAP_YN"/>
+		<result property="imgnPrrtIntrYn" column="IMGN_PRRT_INTR_YN"/>
+		<result property="imgnOrdrBefrTxCtn" column="IMGN_ORDR_BEFR_TX_CTN"/>
+		<result property="imgnOrdrAftrTxCtn" column="IMGN_ORDR_AFTR_TX_CTN"/>
+		<result property="imgnBefrTxOddrId" column="IMGN_BEFR_TX_ODDR_ID"/>
+		<result property="imgnAftrTxOddrId" column="IMGN_AFTR_TX_ODDR_ID"/>
+		<result property="irgtYnVl" column="IRGT_YN_VL"/>
+		<result property="bxYnVl" column="BX_YN_VL"/>
+		<result property="tblbYnVl" column="TBLB_YN_VL"/>
+		<result property="brshYnVl" column="BRSH_YN_VL"/>
+		<result property="balYnVl" column="BAL_YN_VL"/>
+		<result property="mdteYnVl" column="MDTE_YN_VL"/>
+		<result property="slidYnVl" column="SLID_YN_VL"/>
+		<result property="videYnVl" column="VIDE_YN_VL"/>
+		<result property="phtgFileNm" column="PHTG_FILE_NM"/>
+		<result property="phylMdctPacsTrdvCd" column="PHYL_MDCT_PACS_TRDV_CD"/>
+		<result property="btbnaYn" column="BTBNA_YN"/>
+		<result property="ebtbYn" column="EBTB_YN"/>
+		<result property="rtrnPrrnDt" column="RTRN_PRRN_DT"/>
+		<result property="pursMngmPrrnYmd" column="PURS_MNGM_PRRN_YMD"/>
+		<result property="enrmEdctFldvCd" column="ENRM_EDCT_FLDV_CD"/>
+		<result property="gePacsOrdrTrnmYn" column="GE_PACS_ORDR_TRNM_YN"/>
+		<result property="gePacsCnclOrdrTrnmYn" column="GE_PACS_CNCL_ORDR_TRNM_YN"/>
+		<result property="gePacsRsltTrnmYn" column="GE_PACS_RSLT_TRNM_YN"/>
+		<result property="etcPacsOrdrTrnmYn" column="ETC_PACS_ORDR_TRNM_YN"/>
+		<result property="rsltSorcCd" column="RSLT_SORC_CD"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="cnclPacsAccsNo" column="CNCL_PACS_ACCS_NO"/>
+		<result property="pacsInqrDt" column="PACS_INQR_DT"/>
+		<result property="intgPacsRsltInqrDt" column="INTG_PACS_RSLT_INQR_DT"/>
+		<result property="intgPacsRsltTrnmYn" column="INTG_PACS_RSLT_TRNM_YN"/>
+		<result property="aftrDataYn" column="AFTR_DATA_YN"/>
+		<result property="iscnYn" column="ISCN_YN"/>
+		<result property="bdsdYn" column="BDSD_YN"/>
+		<result property="tmprUnmdRptnCnfrYn" column="TMPR_UNMD_RPTN_CNFR_YN"/>
+		<result property="intrSlctDtlsExrmCd" column="INTR_SLCT_DTLS_EXRM_CD"/>
+		<result property="intrSlctRsrcCnfmId" column="INTR_SLCT_RSRC_CNFM_ID"/>
+		<result property="ctWatrIntkDt" column="CT_WATR_INTK_DT"/>
+		<result property="smsrTrprNo" column="SMSR_TRPR_NO"/>
+		<result property="smsrTrnmDt" column="SMSR_TRNM_DT"/>
+		<result property="smsrTrrsCd" column="SMSR_TRRS_CD"/>
+		<result property="smsrTrdvCd" column="SMSR_TRDV_CD"/>
+		<result property="hlscUnsbCtn" column="HLSC_UNSB_CTN"/>
+		<result property="exrmMdfcDt" column="EXRM_MDFC_DT"/>
+		<result property="exrmMdfrId" column="EXRM_MDFR_ID"/>
+		<result property="intrSctnMdfrId" column="INTR_SCTN_MDFR_ID"/>
+		<result property="intrSctnMdfcDt" column="INTR_SCTN_MDFC_DT"/>
+		<result property="intrRqprId" column="INTR_RQPR_ID"/>
+		<result property="intrRqstDt" column="INTR_RQST_DT"/>
+		<result property="intrGrpNo" column="INTR_GRP_NO"/>
+		<result property="macRfaYn" column="MAC_RFA_YN"/>
+		<result property="clamEndrId" column="CLAM_ENDR_ID"/>
+		<result property="rsrcCnfrNo" column="RSRC_CNFR_NO"/>
+		<result property="phtrThcnVl" column="PHTR_THCN_VL"/>
+		<result property="ctWatrIntkYn" column="CT_WATR_INTK_YN"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="hslcDvsnCd" column="HSLC_DVSN_CD"/>
+		<result property="mccnCd" column="MCCN_CD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="mdpcBefrSttsCeckDt" column="MDPC_BEFR_STTS_CECK_DT"/>
+		<result property="mdpcBefrSttsCeckInprId" column="MDPC_BEFR_STTS_CECK_INPR_ID"/>
+		<result property="mdpcBefrSttsCeckStrtDt" column="MDPC_BEFR_STTS_CECK_STRT_DT"/>
+		<result property="mdpcBefrSttsCeckFnshDt" column="MDPC_BEFR_STTS_CECK_FNSH_DT"/>
+		<result property="mdpcBefrSttsCeckDrId" column="MDPC_BEFR_STTS_CECK_DR_ID"/>
+		<result property="mdpcBefrSttsCeckSiteCd" column="MDPC_BEFR_STTS_CECK_SITE_CD"/>
+		<result property="mdpcBefrSttsCeckSiteCtn" column="MDPC_BEFR_STTS_CECK_SITE_CTN"/>
+		<result property="dbmlEdctUndgCd" column="DBML_EDCT_UNDG_CD"/>
+		<result property="slpnYn" column="SLPN_YN"/>
+		<result property="dbmlEdctUndgCtn" column="DBML_EDCT_UNDG_CTN"/>
+		<result property="frwrCmntCtn" column="FRWR_CMNT_CTN"/>
+		<result property="selfLrnnTrgtYn" column="SELF_LRNN_TRGT_YN"/>
+		<result property="vrblIntrTrgtYn" column="VRBL_INTR_TRGT_YN"/>
+		<result property="vrblIndrId" column="VRBL_INDR_ID"/>
+		<result property="chldCalmYn" column="CHLD_CALM_YN"/>
+		<result property="rernImplHsdvCd" column="RERN_IMPL_HSDV_CD"/>
+		<result property="rernResnCd" column="RERN_RESN_CD"/>
+		<result property="rernAmprId" column="RERN_AMPR_ID"/>
+		<result property="rernImplNtm" column="RERN_IMPL_NTM"/>
+		<result property="bpCtn" column="BP_CTN"/>
+		<result property="exmnPrpnFinsYn" column="EXMN_PRPN_FINS_YN"/>
+		<result property="rsvrItrpId" column="RSVR_ITRP_ID"/>
+		<result property="schdTypCd" column="SCHD_TYP_CD"/>
+		<result property="exmnAndvCd" column="EXMN_ANDV_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="formRcrdNo" column="FORM_RCRD_NO"/>
+		<result property="artfInrnDevcCd" column="ARTF_INRN_DEVC_CD"/>
+		<result property="mriCnrcDvsnCd" column="MRI_CNRC_DVSN_CD"/>
+		<result property="rernImptId" column="RERN_IMPT_ID"/>
+		<result property="exmnAtmtRptnYn" column="EXMN_ATMT_RPTN_YN"/>
+		<result property="exrmArvlDt" column="EXRM_ARVL_DT"/>
+		<result property="prvsTxDgstRcepYn" column="PRVS_TX_DGST_RCEP_YN"/>
+		<result property="imlnClsfCd" column="IMLN_CLSF_CD"/>
+		<result property="hlscEndsHgrsGropYn" column="HLSC_ENDS_HGRS_GROP_YN"/>
+		<result property="cnmdSdefCnfrCtn" column="CNMD_SDEF_CNFR_CTN"/>
+		<result property="advcBaseRdqy" column="ADVC_BASE_RDQY"/>
+		<result property="advcRdqy" column="ADVC_RDQY"/>
+		<result property="bsisRdqy" column="BSIS_RDQY"/>
+		<result property="hlscEndsHgrsGropCtn" column="HLSC_ENDS_HGRS_GROP_CTN"/>
+		<result property="prvsTxDgstNnrcMdfrId" column="PRVS_TX_DGST_NNRC_MDFR_ID"/>
+		<result property="prvsTxDgstNnrcMdfcDt" column="PRVS_TX_DGST_NNRC_MDFC_DT"/>
+		<result property="prvsTxDgstRcepMdfrId" column="PRVS_TX_DGST_RCEP_MDFR_ID"/>
+		<result property="prvsTxDgstRcepMdfcDt" column="PRVS_TX_DGST_RCEP_MDFC_DT"/>
+		<result property="prvsTxDgstCtn" column="PRVS_TX_DGST_CTN"/>
+		<result property="spusIntrYn" column="SPUS_INTR_YN"/>
+		<result property="chdrNm" column="CHDR_NM"/>
+		<result property="implDprtCd" column="IMPL_DPRT_CD"/>
+		<result property="evntTypCd" column="EVNT_TYP_CD"/>
+		<result property="dadvCd" column="DADV_CD"/>
+		<result property="mriIpdvUpdtCd" column="MRI_IPDV_UPDT_CD"/>
+		<result property="vlm" column="VLM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy (selectOne SWWORKMMT) 
+        Description :                                           Table[SWWORKMMT]'s selectOne method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneDummy */
+		SELECT	PTNO		/*  */
+					,ORDR_YMD		/*  */
+					,ORDR_SNO		/*  */
+					,EXCF_CD		/*  */
+					,EXMN_CD		/*  */
+					,EXRM_CD		/*  */
+					,EQPM_CD		/*  */
+					,EXMN_STTS_CD		/*  */
+					,EXMN_DTLS_STTS_CD		/*  */
+					,APNT_DT		/*  */
+					,RPTN_DT		/*  */
+					,RPTN_CNCL_DT		/*  */
+					,ENFR_DT		/*  */
+					,RERN_PRRN_DT		/*  */
+					,RERN_IMPL_DT		/*  */
+					,EXMN_CNCL_DT		/*  */
+					,INTR_PRRN_DT		/*  */
+					,INTR_DT		/*  */
+					,CNFR_DT		/*  */
+					,APNT_UPDT_DT		/*  */
+					,EXMN_FALR_DT		/*  */
+					,EXMN_FALR_RGSR_ID		/*  */
+					,EXMN_FALR_RGST_RESN_CTN		/*  */
+					,ANDV_CD		/*  */
+					,AMPR_ID		/*  */
+					,SCHD_DTLS_TYP_CD		/*  */
+					,RCPS_ID		/*  */
+					,ENDR_ID		/*  */
+		            ,ENDR_ID2		/*  */
+		            ,ENDR_ID3		/*  */
+					,IMPT_ID		/*  */
+		            ,IMPT_ID2		/*  */
+		            ,IMPT_ID3		/*  */
+					,IMPL_HSDV_CD		/*  */
+					,INTR_YN		/*  */
+					,CNNT_INTR_SNO		/*  */
+					,INDR_ID1		/*  */
+					,INDR_ID2		/*  */
+					,INDR_ID3		/*  */
+					,CNDR_ID		/*  */
+					,INTR_PRRN_DR_NM		/*  */
+					,TRNB_ID		/*  */
+					,RERN_RFRC_CTN		/*  */
+					,SCND_ORDR_YN		/*  */
+					,EXRS_PRIN_NTM		/*  */
+					,BRNS_ENDS_BEFR_STTS_CTN		/*  */
+					,BRNS_ENDS_AFSS_CTN		/*  */
+					,NRDR_LIST_PRIN_NTM		/*  */
+					,NRDR_CUP_QTY		/*  */
+					,DCTT_YN		/*  */
+					,CNSG_HSPT_CD		/*  */
+					,FILM_NO		/*  */
+					,EXMN_APNT_NO		/*  */
+					,DAT_NO		/*  */
+					,EXMN_STRT_HM		/*  */
+					,RSRC_CNFR_RMRK_CTN		/*  */
+					,NGHT_PBHL_IMPL_DVSN_CD		/*  */
+					,TRDV_CD		/*  */
+					,TRSP_TRDV_CD		/*  */
+					,PRTB_PRFM_YN		/*  */
+					,EXMN_D3_RQST_YN		/*  */
+					,EXMN_D3_IMPT_ID		/*  */
+					,EXMN_D3_IMPL_DT		/*  */
+					,RDTN_DOSE_VL		/*  */
+					,HNDW_INPT_RDTN_DOSE_VL		/*  */
+					,IMGN_ACQR_SPCM_CNT		/*  */
+					,SPOT_INPT_VL		/*  */
+					,FLUR_INPT_VL		/*  */
+					,EDCT_FILE_RGSR_ID		/*  */
+					,ASAP_YN		/*  */
+					,IMGN_PRRT_INTR_YN		/*  */
+					,IMGN_ORDR_BEFR_TX_CTN		/*  */
+					,IMGN_ORDR_AFTR_TX_CTN		/*  */
+					,IMGN_BEFR_TX_ODDR_ID		/*  */
+					,IMGN_AFTR_TX_ODDR_ID		/*  */
+					,IRGT_YN_VL		/*  */
+					,BX_YN_VL		/*  */
+					,TBLB_YN_VL		/*  */
+					,BRSH_YN_VL		/*  */
+					,BAL_YN_VL		/*  */
+					,MDTE_YN_VL		/*  */
+					,SLID_YN_VL		/*  */
+					,VIDE_YN_VL		/*  */
+					,PHTG_FILE_NM		/*  */
+					,PHYL_MDCT_PACS_TRDV_CD		/*  */
+					,BTBNA_YN		/*  */
+					,EBTB_YN		/*  */
+					,RTRN_PRRN_DT		/*  */
+					,PURS_MNGM_PRRN_YMD		/*  */
+					,ENRM_EDCT_FLDV_CD		/*  */
+					,GE_PACS_ORDR_TRNM_YN		/*  */
+					,GE_PACS_CNCL_ORDR_TRNM_YN		/*  */
+					,GE_PACS_RSLT_TRNM_YN		/*  */
+					,ETC_PACS_ORDR_TRNM_YN		/*  */
+					,RSLT_SORC_CD		/*  */
+					,PACS_ACCS_NO		/*  */
+					,CNCL_PACS_ACCS_NO		/*  */
+					,PACS_INQR_DT		/*  */
+					,INTG_PACS_RSLT_INQR_DT		/*  */
+					,INTG_PACS_RSLT_TRNM_YN		/*  */
+					,AFTR_DATA_YN		/*  */
+					,ISCN_YN		/*  */
+					,BDSD_YN		/*  */
+					,TMPR_UNMD_RPTN_CNFR_YN		/*  */
+					,INTR_SLCT_DTLS_EXRM_CD		/*  */
+					,INTR_SLCT_RSRC_CNFM_ID		/*  */
+					,CT_WATR_INTK_DT		/*  */
+					,SMSR_TRPR_NO		/*  */
+					,SMSR_TRNM_DT		/*  */
+					,SMSR_TRRS_CD		/*  */
+					,SMSR_TRDV_CD		/*  */
+					,HLSC_UNSB_CTN		/*  */
+					,EXRM_MDFC_DT		/*  */
+					,EXRM_MDFR_ID		/*  */
+					,INTR_SCTN_MDFR_ID		/*  */
+					,INTR_SCTN_MDFC_DT		/*  */
+					,INTR_RQPR_ID		/*  */
+					,INTR_RQST_DT		/*  */
+					,INTR_GRP_NO		/*  */
+					,MAC_RFA_YN		/*  */
+					,CLAM_ENDR_ID		/*  */
+					,RSRC_CNFR_NO		/*  */
+					,PHTR_THCN_VL		/*  */
+					,CT_WATR_INTK_YN		/*  */
+					,MCDP_CD		/*  */
+					,WARD_CD		/*  */
+					,HSLC_DVSN_CD		/*  */
+					,MCCN_CD		/*  */
+					,CODV_CD		/*  */
+					,MDRP_NO		/*  */
+					,MDPC_BEFR_STTS_CECK_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_INPR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_STRT_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_FNSH_DT		/*  */
+					,MDPC_BEFR_STTS_CECK_DR_ID		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CD		/*  */
+					,MDPC_BEFR_STTS_CECK_SITE_CTN		/*  */
+					,DBML_EDCT_UNDG_CD		/*  */
+					,SLPN_YN		/*  */
+					,DBML_EDCT_UNDG_CTN		/*  */
+					,FRWR_CMNT_CTN		/*  */
+					,SELF_LRNN_TRGT_YN		/*  */
+					,VRBL_INTR_TRGT_YN		/*  */
+					,VRBL_INDR_ID		/*  */
+					,CHLD_CALM_YN		/*  */
+					,RERN_IMPL_HSDV_CD		/*  */
+					,RERN_RESN_CD		/*  */
+					,RERN_AMPR_ID		/*  */
+					,RERN_IMPL_NTM		/*  */
+					,BP_CTN		/*  */
+					,EXMN_PRPN_FINS_YN		/*  */
+					,RSVR_ITRP_ID		/*  */
+					,SCHD_TYP_CD		/*  */
+					,EXMN_ANDV_CD		/*  */
+					,ABRV_DPRT_CD		/*  */
+					,FORM_RCRD_NO		/*  */
+					,ARTF_INRN_DEVC_CD		/*  */
+					,MRI_CNRC_DVSN_CD		/*  */
+					,RERN_IMPT_ID		/*  */
+					,EXMN_ATMT_RPTN_YN		/*  */
+					,EXRM_ARVL_DT		/*  */
+					,PRVS_TX_DGST_RCEP_YN		/*  */
+					,IMLN_CLSF_CD		/*  */
+					,HLSC_ENDS_HGRS_GROP_YN		/*  */
+					,CNMD_SDEF_CNFR_CTN		/*  */
+					,ADVC_BASE_RDQY		/*  */
+					,ADVC_RDQY		/*  */
+					,BSIS_RDQY		/*  */
+					,HLSC_ENDS_HGRS_GROP_CTN		/*  */
+					,PRVS_TX_DGST_NNRC_MDFR_ID		/*  */
+					,PRVS_TX_DGST_NNRC_MDFC_DT		/*  */
+					,PRVS_TX_DGST_RCEP_MDFR_ID		/*  */
+					,PRVS_TX_DGST_RCEP_MDFC_DT		/*  */
+					,PRVS_TX_DGST_CTN		/*  */
+					,SPUS_INTR_YN		/*  */
+					,CHDR_NM		/*  */
+					,IMPL_DPRT_CD		/*  */
+		            , '' as EVNT_TYP_CD
+		            , '' as DADV_CD
+		            , '' as MRI_IPDV_UPDT_CD 
+		            , 0 as VLM
+		  FROM	SWWORKMMT
+		where '1' = '2'
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSwclnpmmt (내시경 세척 대상정보 등록) 
+        Description :                                           내시경 세척 대상정보 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSwclnpmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSwclnpmmt */
+		INSERT INTO SWCLNRMMT 
+		(
+		   EQPM_CD
+		,  PTNO
+		,  ORDR_YMD
+		,  ORDR_SNO
+		,  EQPM_NM
+		,  EXMN_DT
+		,  EXMN_CD
+		,  EXMN_NM
+		,  FRST_RGSR_ID
+		,  FRST_RGST_IP
+		,  FRST_RGST_DT
+		,  FRST_RGST_CLNT_PRGM_ID
+		,  FRST_RGST_SRVR_PRGM_ID
+		,  LAST_UPDR_ID
+		,  LAST_UPDT_IP
+		,  LAST_UPDT_DT
+		,  LAST_UPDT_CLNT_PRGM_ID
+		,  LAST_UPDT_SRVR_PRGM_ID
+		)
+		VALUES
+		(
+		   #{eqpmCd}
+		,  #{ptno}
+		,  to_date(#{ordrYmd}, 'yyyyMMdd')
+		,  #{ordrSno}
+		,  #{eqpmNm}
+		,   to_date(#{exmnDt}, 'yyyyMMddhh24miss')
+		,  #{exmnCd}
+		,  #{exmnNm}
+		,  #{gvUserId}
+		,  #{gvUserIp}
+		,  sysdate
+		,  #{gvClntPrgmId}
+		,  #{gvSrvrPrgmId}
+		,  #{gvUserId}
+		,  #{gvUserIp}
+		,  sysdate
+		,  #{gvClntPrgmId}
+		,  #{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSwclnpmmt (내시경 세척 대상정보 삭제) 
+        Description :                                           내시경 세척 대상정보 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSwclnpmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSwclnpmmt */
+		delete from SWCLNRMMT
+		where PTNO = #{ptno}
+		and ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		and ORDR_SNO =  #{ordrSno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="afiAllCot" column="AFI_ALL_COT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt (내시경 세척 대상정보 존재 확인) 
+        Description :                                           내시경 세척 대상정보 존재 확인
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSwclnpmmt */
+		 select count(*) as AFI_ALL_COT
+		  from SWCLNRMMT
+		where PTNO = #{ptno}
+		   and ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		   and ORDR_SNO =  #{ordrSno}
+		   and nvl(IRGT_YN,'N') = 'Y'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="psblYn" column="PSBL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn (실시가능여부조회) 
+        Description :                                           실시가능여부조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImplPsblYn */
+		<![CDATA[
+				   select  /*+ swd_srerxim_s01$S01_실시가능여부조회 */  case
+				   when count(*) > 0 then 'Y'
+				   else                   'N'
+			   end                              as PSBL_YN
+		 from  MDEXMORDT a
+		   ,   APRCRPTNT b
+		where  a.PTNO         = #{ptno}
+		  and  a.ORDR_YMD     = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  a.ORDR_SNO     = #{ordrSno}
+		  and  b.MDRP_NO      = a.MDRP_NO
+		  and  b.PTNO         = a.PTNO
+		  and  (
+			   nvl(b.DSCH_DT, to_date('29991231', 'yyyyMMdd')) /*  확인해 봐야함 외래의 경우는 null이 들어가는것 같음 */
+							  > nvl(to_date(#{enfrDt}, 'yyyyMMddhh24miss'), sysdate)
+		   or  b.ERRM_ARVL_DT between trunc(sysdate)
+								  and trunc(sysdate) + 1
+			   )
+		  and  b.CNCL_DT      is null
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="exorPrssCd" column="EXOR_PRSS_CD"/>
+		<result property="exrmRptnDt" column="EXRM_RPTN_DT"/>
+		<result property="rernYn" column="RERN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn (Repeat검사여부조회) 
+        Description :                                           Repeat검사여부조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneRernExmnYn */
+		<![CDATA[
+		select  /*+ swd_srerxim_s03$S01_Repeat검사여부조회 */
+		            a.EXOR_PRSS_CD as EXOR_PRSS_CD 	
+		         ,  a.EXRM_RPTN_DT as EXRM_RPTN_DT  
+		         ,  case
+				       when  b.RERN_PRRN_DT is null then 'N'
+				       else                           'Y'
+			       end                                      as RERN_YN
+		 from  MDEXMORDT a
+		      ,  SWWORKMMT b
+		where  a.PTNO     = #{ptno}
+		  and  a.ORDR_YMD = to_date(#{ordrYmd},'yyyyMMdd')
+		  and  a.ORDR_SNO = #{ordrSno}
+		  and  a.EXCF_CD  = #{excfCd}
+		  and  a.PTNO = b.PTNO(+)
+		  and a.ORDR_YMD = b.ORDR_YMD(+)
+		  and a.ORDR_SNO = b.ORDR_SNO(+) 
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmRernImplDt (환자검사관리_재검실시일시_수정) 
+        Description :                                           환자검사관리_재검실시일시_수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmRernImplDt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmRernImplDt */
+		<![CDATA[
+				   update  /*+ swd_srerxim_u02$U01_환자검사관리_재검실시일시_수정 */
+			   SWWORKMMT
+		  set  RERN_IMPL_DT      = to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		  and  EXCF_CD  = #{excfCd}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmErExim (환자검사관리_응급검사실시_수정) 
+        Description :                                           환자검사관리_응급검사실시_수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmErExim"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updatePtntExmnMngmErExim */
+		 update  /*+ swd_srerxim_u03$U01_환자검사관리_응급검사실시_수정 */
+			   SWWORKMMT
+		  set  EXMN_STTS_CD      = 'D'
+			,  EXRM_CD           = #{exrmCd}
+			,  INTR_YN           = 'N'
+			,  EQPM_CD           = #{eqpmCd}
+			,  AFTR_DATA_YN      = 'Y'
+			,  RCPS_ID           = nvl(RCPS_ID, #{gvUserId})
+			,  IMPT_ID           = nvl(#{imptId}, nvl(IMPT_ID, #{gvUserId}))
+			,  IMPT_ID2          = #{imptId2}
+		    ,  IMPT_ID3          = #{imptId3}
+			,  RPTN_DT           = nvl(RPTN_DT, to_date(#{enfrDt}, 'yyyyMMddhh24miss'))
+			,  ENFR_DT           = to_date(#{enfrDt}, 'yyyyMMddhh24miss')
+			,  IMPL_HSDV_CD      = (
+								   select EXRM_HSDV_CD
+									 from SZROOMCMT
+									where EXRM_CD = #{exrmCd}
+									  and EXCF_CD = #{excfCd}
+								   )
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		  and  EXCF_CD  = #{excfCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCISExim (CIS 장비연동 후 실시처리) 
+        Description :                                           CIS 장비연동 후 실시처리
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCISExim"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateCISExim */
+		 update  				
+			   SWWORKMMT						
+		  set  EXMN_STTS_CD      =  'D'						
+			,  INTR_YN                  = decode( #{exmnSttsCd},'G','Y','N')						
+			,  EQPM_CD               = #{eqpmCd}						
+			,  RCPS_ID           = nvl(RCPS_ID, #{rcpsId})						
+			,  IMPT_ID           = #{imptId}	
+		    ,  IMPT_ID2           = #{imptId2}		
+		    ,  IMPT_ID3           = #{imptId3}							
+			,  RPTN_DT           = nvl(RPTN_DT, to_date(#{enfrDt}, 'yyyyMMddhh24miss'))						
+			,  ENFR_DT           = to_date(#{enfrDt}, 'yyyyMMddhh24miss')						
+			,  LAST_UPDR_ID      = #{gvUserId}						
+			,  LAST_UPDT_IP      = #{gvUserIp}						
+			,  LAST_UPDT_DT      = sysdate						
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}						
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}						
+		where  PTNO     = #{ptno}							
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')							
+		  and  ORDR_SNO = #{ordrSno}			 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnSpsbSR () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnSpsbSR"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertExmnSpsbSR */
+		 <![CDATA[
+		 insert 
+		      into  SZEXMCMMT
+		            (
+		            PTNO
+		         ,  ORDR_YMD
+		         ,  ORDR_SNO
+		         ,  EXMN_CD
+		         ,  SPCM_NO
+		         ,  EXMN_CMNT_SNO
+		         ,  EXCF_CD
+		         ,  EXMN_SPSB_CTN
+		         ,  EXMN_PRSS_CD
+		         ,  EXTL_PUBL_YN
+		, FRST_RGSR_ID	 
+		, FRST_RGST_IP
+		, FRST_RGST_DT
+		, FRST_RGST_CLNT_PRGM_ID
+		, FRST_RGST_SRVR_PRGM_ID
+		, LAST_UPDR_ID
+		, LAST_UPDT_IP
+		, LAST_UPDT_DT
+		, LAST_UPDT_CLNT_PRGM_ID
+		, LAST_UPDT_SRVR_PRGM_ID	
+		            )
+		    values  (
+		            #{ptno}
+		         ,  to_date(#{ordrYmd}, 'yyyyMMdd')
+		         ,  #{ordrSno}
+		         ,  #{exmnCd}
+		         ,  #{spcmNo}
+		         ,  (
+		            select  nvl(max(EXMN_CMNT_SNO) + 1, 1)
+		              from  SZEXMCMMT
+		             where  PTNO     = #{ptno}
+		               and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		            )
+		         ,  #{excfCd}
+		         ,  #{exmnSpsbCtn}
+		         ,  nvl(#{exmnPrssCd},
+		                 (
+		                 select  EXOR_PRSS_CD
+		                   from  MDEXMORDT
+		                  where  PTNO     = #{ptno}
+		                    and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		                    and  ORDR_SNO = #{ordrSno}
+		                 )
+		            )
+		         ,  #{extlPublYn}
+		    ,  #{gvLginId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvLginId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		            )
+		 ]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="memo" column="MEMO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneImptNm2 */
+		 select 
+		'Op.'||
+		 (select USER_NM
+		                   from CCUSRDPHT
+		                  where USER_ID =#{imptId}) 
+		 ||', Ed.'||
+		(select USER_NM
+		                   from CCUSRDPHT
+		                  where USER_ID =#{imptId2}) as memo
+		from dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateEximInfo (검사실시정보 수정) 
+        Description :                                           검사실시정보 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateEximInfo"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateEximInfo */
+		<![CDATA[
+		  update  /*+ swd_swexexm_u05$U01_실시정보 수정 */
+			   SWWORKMMT
+		  set   
+			   ENDR_ID                 = nvl(#{endrId}, ENDR_ID)
+		    ,  ENDR_ID2                 = #{endrId2}
+		    ,  ENDR_ID3                 = #{endrId3}
+			,  IMPT_ID                 = nvl(#{imptId}, nvl(IMPT_ID, #{gvUserId}))
+		    ,  IMPT_ID2                 = #{imptId2}
+		    ,  IMPT_ID3                 = #{imptId3}
+		    ,  IMPL_DPRT_CD        = nvl(#{implDprtCd},IMPL_DPRT_CD )
+			,  ENFR_DT                 = to_date(#{enfrDt}, 'yyyymmddhh24miss') 
+			,  LAST_UPDR_ID                = #{gvUserId}
+			,  LAST_UPDT_IP                 = #{gvUserIp}
+			,  LAST_UPDT_DT                = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID           = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID           = #{gvSrvrPrgmId}
+		where  PTNO     = #{ptno}
+		  and  ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateRcpcRefnRqst2 */
+				   update  /*+ swd_swexcnl_u01$U01_수납환불요청 */
+			   SWSNDMAMT
+		  set  RTRN_STTS_CD      = 'Y'
+		     ,  RTRN_RQPR_ID = #{gvUserId}
+		     , RTRN_RQST_DT = sysdate
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO              = #{ptno}
+		  and  ORDR_YMD          = to_date(#{ordrYmd}, 'yyyyMMdd')
+		  and  ORDR_SNO          = #{ordrSno}
+		  and  EXCF_CD           = #{excfCd}
+		  and  MTER_CD          = #{mterCd}
+		  and  MTER_TXOR_SNO =#{mterTxorSno}
+		  and  nvl(RCST_CD, 'N') = 'Y'
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="afiErrMesgCtn" column="AFI_ERR_MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneExmnOrdrPsblYn */
+		select   
+				          fn_ac_get_ordr_psbl_yn ( #{mdrpNo}) as AFI_ERR_MESG_CTN
+				 from  dual 
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="grpImplNo" column="GRP_IMPL_NO"/>
+		<result property="grpImplYn" column="GRP_IMPL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo (그룹실시번호 채번) 
+        Description :                                           그룹실시번호 채번
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneGrpImplNo */
+		<![CDATA[
+		  select  to_char( #{excfCd} || to_char(sysdate,'yyyymmdd') || lpad( nvl(max(to_number(substr(grp_impl_no,11,5))),0)+1 , 5,0))  as GRP_IMPL_NO 
+		     , 'Y' as GRP_IMPL_YN
+		   from swworkmmt 
+		 where excf_cd=#{excfCd}
+		   and enfr_dt between trunc(sysdate) and trunc(sysdate)+0.99999   /* 튜닝적용  */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="mterCd" column="MTER_CD"/>
+		<result property="exmnClbyMterSno" column="EXMN_CLBY_MTER_SNO"/>
+		<result property="mterNm" column="MTER_NM"/>
+		<result property="unitNm" column="UNIT_NM"/>
+		<result property="chldYn" column="CHLD_YN"/>
+		<result property="mterQty" column="MTER_QTY"/>
+		<result property="ipdvCd" column="IPDV_CD"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="cnmdRltdYn" column="CNMD_RLTD_YN"/>
+		<result property="invnMngmDprtCd" column="INVN_MNGM_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd (조영제 처방 조회) 
+        Description :                                           조영제 처방 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listScndMterCd */
+		 select  
+					   a.MTER_CD as MTER_CD                               /*  재료코드             */
+					,  a.EXMN_CLBY_MTER_SNO as EXMN_CLBY_MTER_SNO                    /*  검사별재료일련번호 */
+					,  b.MTER_NM as MTER_NM                               /*  재료명               */
+					,  b.UNIT_NM as UNIT_NM                                  /*  단위                 */
+					,  a.CHLD_YN as CHLD_YN                               /*  소아구분             */
+					,  round(a.MTER_QTY, 2) as MTER_QTY   /*  재료량 */
+					,  a.IPDV_CD as IPDV_CD                                /*  급여구분             */
+					,  a.LAST_UPDR_ID as LAST_UPDR_ID                                /*  수정자               */
+					,  a.LAST_UPDT_IP as LAST_UPDT_IP                                /*  수정IP               */
+					,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss') as LAST_UPDT_DT  /*  수정일시             */
+					,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss') as FRST_RGST_DT  /*  등록일시             */
+					,  a.EXMN_CD as EXMN_CD                              /*  검사코드             */
+					,  a.EXCF_CD as EXCF_CD                               /*  검사분류             */
+					,  a.DTLS_EXCF_CD as DTLS_EXCF_CD
+		           ,   b.CNMD_RLTD_YN as CNMD_RLTD_YN    /*  조영제관련여부                     */
+		           ,   d.EXMN_CTRL_CHRC_VL1 as INVN_MNGM_DPRT_CD   /* 재고관리부서코드 */
+				 from
+					   SWEXMATCT a                              /*  검사별 2차ORDER(재료)코드 */
+					,  SWMATCCCT b                              /*  2차 ORDER(재료) 코드 */
+					,  MDORDRCMT c                              /*  처방코드마스터       */
+					,  SZCTRLMMT d 
+				where  a.EXCF_CD = #{excfCd}                    /*  검사분류             */
+				  and  a.EXMN_CD = #{exmnCd}                    /*  검사코드             */
+				  and  b.EXCF_CD = a.EXCF_CD                    /*  검사분류             */
+				  and  b.MTER_CD = a.MTER_CD                    /*  재료코드             */
+				  and  c.ORDR_CD(+) = a.MTER_CD                 /*  처방코드             */		   
+		          and  b.CNMD_RLTD_YN = 'Y'                     /*  조영제관련여부                     */
+		          and  nvl(a.CHLD_YN,'N') = #{chldYn}              /* 소아여부 */
+		          and  d.EXMN_CTRL_CD ='SRV_001'  
+		          and  d.EXMN_DTLS_CTRL_CD = #{exrmCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSrcmsmtnt (insert SRCMSMTNT) 
+        Description :                                           Table[SRCMSMTNT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSrcmsmtnt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-insertSrcmsmtnt */
+		INSERT INTO SRCMSMTNT 
+		(
+		  IMPL_YMD		/* 실시일자 */
+		 ,INVN_MNGM_DPRT_CD		/* 재고관리부서코드 */
+		 ,SMTN_SNO		/* 집계일련번호 */
+		 ,MTER_CD		/* 재료코드 */
+		 ,PTNO		/* 환자번호 */
+		 ,ORDR_YMD		/* 처방일자 */
+		 ,ORDR_SNO		/* 처방일련번호 */
+		 ,MTER_TXOR_SNO		/* 재료처치처방일련번호 */
+		 ,EXCF_CD		/* 검사분류코드 */
+		 ,NRML_USE_QTY		/* 사용량 */
+		 ,USE_TYPE_CD		/* 사용유형코드(1:그룹, 2:2차오더) */
+		 ,FRST_RGSR_ID		/* 최초등록자ID */
+		 ,FRST_RGST_IP		/* 최초등록IP */
+		 ,FRST_RGST_DT		/* 최초등록일시 */
+		 ,FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+		 ,FRST_RGST_SRVR_PRGM_ID		/* 최초등록서버프로그램ID */
+		 ,LAST_UPDR_ID		/* 최종수정자ID */
+		 ,LAST_UPDT_IP		/* 최종수정IP */
+		 ,LAST_UPDT_DT		/* 최종수정일시 */
+		 ,LAST_UPDT_CLNT_PRGM_ID		/* 최종수정클라이언트프로그램ID */
+		 ,LAST_UPDT_SRVR_PRGM_ID		/* 최종수정서버프로그램ID */
+		)
+		VALUES
+		(
+		  to_date(#{implYmd},'yyyymmddhh24miss')
+		 , #{invnMngmDprtCd}
+		, ( select nvl(MAX(SMTN_SNO),0) +1 as SMTN_SNO		
+		      from SRCMSMTNT 
+		    where trunc(IMPL_YMD) = trunc( to_date(#{implYmd},'yyyymmddhh24miss') )
+		       and INVN_MNGM_DPRT_CD= #{invnMngmDprtCd})
+		 ,#{mterCd}
+		 ,#{ptno}
+		 ,to_date(#{ordrYmd}, 'yyyymmdd')
+		 ,#{ordrSno}
+		 ,#{mterTxorSno}
+		 ,#{excfCd}
+		 , nvl(#{nrmlUseQty}, 1)
+		 ,#{useTypeCd}
+		, #{gvLginId}                /*  최종등록자ID                  */
+		, #{gvUserIp}                /*  최초등록IP                    */
+		, sysdate                    /*  최초등록일시                     */
+		, #{gvClntPrgmId}         /*  최초등록 클라이언트프로그램ID */
+		, #{gvSrvrPrgmId}         /*  최초등록 서버프로그램ID      */
+		, #{gvLginId}                /*  최종수정자ID                  */
+		, #{gvUserIp}                /*  최종수정IP                    */
+		, sysdate                    /*  최종수정일시                     */
+		, #{gvClntPrgmId}         /*  최종등록 클라이언트프로그램ID */
+		, #{gvSrvrPrgmId}         /*  최종등록 서버프로그램ID      */
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSrcmsmtnt (delete SRCMSMTNT) 
+        Description :                                           Table[SRCMSMTNT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSrcmsmtnt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-deleteSrcmsmtnt */
+		DELETE  FROM SRCMSMTNT
+		where PTNO = #{ptno}
+		and ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		and ORDR_SNO = #{ordrSno}
+		and ( (#{useTypeCd} is null)  or (#{useTypeCd} is not null and USE_TYPE_CD = #{useTypeCd})) /*사용유형코드(1:그룹, 2:2차오더)*/
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="implYmd" column="IMPL_YMD"/>
+		<result property="invnMngmDprtCd" column="INVN_MNGM_DPRT_CD"/>
+		<result property="smtnSno" column="SMTN_SNO"/>
+		<result property="mterCd" column="MTER_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="mterTxorSno" column="MTER_TXOR_SNO"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="nrmlUseQty" column="NRML_USE_QTY"/>
+		<result property="useTypeCd" column="USE_TYPE_CD"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="frstRgstClntPrgmId" column="FRST_RGST_CLNT_PRGM_ID"/>
+		<result property="frstRgstSrvrPrgmId" column="FRST_RGST_SRVR_PRGM_ID"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdtClntPrgmId" column="LAST_UPDT_CLNT_PRGM_ID"/>
+		<result property="lastUpdtSrvrPrgmId" column="LAST_UPDT_SRVR_PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt (selectOne SRCMSMTNT) 
+        Description :                                           Table[SRCMSMTNT]'s selectOne method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-selectOneSrcmsmtnt */
+		SELECT	IMPL_YMD		/* 실시일자 */
+					,INVN_MNGM_DPRT_CD		/* 재고관리부서코드 */
+					,SMTN_SNO		/* 집계일련번호 */
+					,MTER_CD		/* 재료코드 */
+					,PTNO		/* 환자번호 */
+					,ORDR_YMD		/* 처방일자 */
+					,ORDR_SNO		/* 처방일련번호 */
+					,MTER_TXOR_SNO		/* 재료처치처방일련번호 */
+					,EXCF_CD		/* 검사분류코드 */
+					,NRML_USE_QTY		/* 사용량 */
+					,USE_TYPE_CD		/* 사용유형코드(1:그룹, 2:2차오더) */
+					,FRST_RGSR_ID		/* 최초등록자ID */
+					,FRST_RGST_IP		/* 최초등록IP */
+					,FRST_RGST_DT		/* 최초등록일시 */
+					,FRST_RGST_CLNT_PRGM_ID		/* 최초등록클라이언트프로그램ID */
+					,FRST_RGST_SRVR_PRGM_ID		/* 최초등록서버프로그램ID */
+					,LAST_UPDR_ID		/* 최종수정자ID */
+					,LAST_UPDT_IP		/* 최종수정IP */
+					,LAST_UPDT_DT		/* 최종수정일시 */
+					,LAST_UPDT_CLNT_PRGM_ID		/* 최종수정클라이언트프로그램ID */
+					,LAST_UPDT_SRVR_PRGM_ID		/* 최종수정서버프로그램ID */
+		  FROM	SRCMSMTNT
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr1 (예약정보 삭제 [SWWORKMMT]) 
+        Description :                                           비일정 아닌경우 예약일자가 미래인경우 예약취소
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr1"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr1 */
+		<![CDATA[
+		update  
+		       SWWORKMMT                                                   
+		  set  ANDV_CD            = null             /*  예약구분              */
+		    ,  APNT_DT            = null             /*  예약일시              */ 
+		    ,  SCHD_TYP_CD        = null             /*  예약타입코드          */
+		    ,  AMPR_ID            = null             /*  예약자                  */
+		    ,  SCHD_DTLS_TYP_CD   = null             /*  스케쥴 SUB TYPE */
+		    ,  APNT_UPDT_DT       = sysdate          /*  예약수정시간         */
+		    ,  LAST_UPDR_ID       = #{gvUserId}
+		    ,  LAST_UPDT_IP       = #{gvUserIp}
+		    ,  LAST_UPDT_DT       = sysdate
+		    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO               = #{ptno}                               /*  환자번호             */
+		  and  ORDR_YMD           = to_date(#{ordrYmd}, 'yyyymmdd')       /*  처방일자             */
+		  and  ORDR_SNO           = #{ordrSno}                            /*  처방순번             */ 
+		]]>   
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr2 (예약정보 삭제 [MDEXMORDT]) 
+        Description :                                           비일정 아닌경우 예약일자가 미래인경우 예약취소
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr2"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateApntClr2 */
+		<![CDATA[
+		    update  
+					MDEXMORDT
+			   set
+					APNT_DT  = null   
+				 ,  LAST_UPDR_ID = #{gvLginId}
+				 ,  LAST_UPDT_IP = #{gvUserIp}
+				 ,  LAST_UPDT_DT = sysdate
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 	
+			 where  PTNO    = #{ptno}
+			   and  ORDR_YMD  = to_date(#{ordrYmd}, 'yyyymmdd')
+			   and  ORDR_SNO = to_number(#{ordrSno})
+			   and  nvl(DC_DVSN_CD, '1') <> 'X'
+		]]> 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateMdcrInfo (내시경 검사실시시 진료여부 수정) 
+        Description :                                           내시경 검사실시시 진료여부 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateMdcrInfo"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-updateMdcrInfo */
+		<![CDATA[
+		update APRCRPTNT
+		   set MDCR_YN = 'Y'
+			 , LAST_UPDR_ID = #{gvLginId}
+			 , LAST_UPDT_IP = #{gvUserIp}
+			 , LAST_UPDT_DT = sysdate
+			 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 	
+		 where MDRP_NO = #{mdrpNo}
+		   and CNCL_DT is null
+		   and CODV_CD = 'O'
+		   and nvl(MDCR_YN,'N') <> 'Y' 
+		]]> 
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpExmnImplDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpExmnImplDAO-listGrpImpExmn */
+		<![CDATA[
+		with GRP as (
+				select nvl(GRP_IMPL_NO,'X2') as GRP_IMPL_NO , ENFR_DT  
+					from SWWORKMMT 
+					where ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+					and   ORDR_SNO = #{ordrSno}
+					and   PTNO 	   = #{ptno} 
+		)
+			select a.ptno as PTNO
+				   ,to_char(a.ordr_ymd,'yyyymmdd') as ORDR_YMD
+				   ,a.ordr_sno as ORDR_SNO
+				   ,a.exmn_cd  as EXMN_CD
+			from SWWORKMMT a 
+				 , GRP  grp  
+		  where 1=1
+		    and a.PTNO =#{ptno}
+			and a.EXCF_CD =#{excfCd}
+		    and nvl(a.GRP_IMPL_YN,'N') = 'Y'  
+			and nvl(a.GRP_IMPL_NO,'X1') = grp.GRP_IMPL_NO
+			and a.ENFR_DT between trunc(grp.ENFR_DT) and trunc(grp.ENFR_DT) + 1
+		]]>
+	</select>
+
+
+
+</mapper>

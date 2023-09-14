@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SlpSpcmUrinVolumeDAO_sql.xml 
+    Description : -->
+<mapper namespace="SlpSpcmUrinVolumeDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo-result" type="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpSpcmUrinVolumeDVO">
+	
+		<result property="spcmNo1" column="SPCM_NO1"/>
+		<result property="spcmNo2" column="SPCM_NO2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpSpcmUrinVolumeDVO
+		resultMap : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpSpcmUrinVolumeDVO"  resultMap="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-selectOneUrinOrdrInfo */
+		select ord.SPCM_NO1
+		     , ord.SPCM_NO2
+		  from MDEXMORDT ord
+		 where 1= 1
+		   and ord.PTNO     = #{ptno}
+		   and ord.ORDR_YMD = #{ordrYmd}
+		   and ord.ORDR_SNO = #{ordrSno}
+		   and ord.SPCM_NO1 is not null
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-updateSpcmUrinVolume () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sl.slp.vo.SlpSpcmUrinVolumeDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-updateSpcmUrinVolume"  parameterType="com.sds.healthcare.ehr.sup.sl.slp.vo.SlpSpcmUrinVolumeDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sl-slp-dao-SlpSpcmUrinVolumeDAO-updateSpcmUrinVolume */
+		update SFASPCMDT
+		   set ONDY_URIN_QTY_CTN = decode(SCEX_PRSS_CD, 'B', #{ondyUrinQtyCtn}, ONDY_URIN_QTY_CTN)
+		     , LAST_UPDR_ID = #{gvUserId}
+		     , LAST_UPDT_IP = #{gvUserIp}
+		     , LAST_UPDT_DT = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where 1 = 1
+		       /* 다중검체일 경우 모든 검체 URIN값 수정 */
+		   and SPCM_NO between #{spcmNo1}
+		                   and nvl(#{spcmNo2}, #{spcmNo1})
+	</update>
+
+</mapper>

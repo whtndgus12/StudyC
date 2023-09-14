@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzMdOrdrViewDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzMdOrdrViewDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr-result" type="com.sds.healthcare.ehr.adm.az.vo.AzMdOrdrViewDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzMdOrdrViewDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzMdOrdrViewDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzMdOrdrViewDAO-listHlscOrdr */
+		       ORDR_CD
+		  from MDORDDATV
+		 where 1=1
+		   and PTNO = (select PTNO
+		                 from APRCRPTNT
+		                where MDRP_NO = #{mdrpNo}
+		                  and rownum = 1)
+		   and MDRP_NO = #{mdrpNo}
+		   and CODV_CD in ('G','U') 
+		   and DC_DVSN_CD not in ('X','Y');
+	</select>
+
+
+
+</mapper>

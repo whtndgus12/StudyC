@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpAntcTermPtntRcrdComnDAO_sql.xml 
+    Description :                                      SdpAntcTermPtntRcrdComnDAO 클래스
+                  -->
+<mapper namespace="SdpAntcTermPtntRcrdComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-insertAntcTermPtntRcrd (02C 환자기록관리) 
+        Description :                                           02C 환자기록관리
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-insertAntcTermPtntRcrd"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-insertAntcTermPtntRcrd*/
+				<![CDATA[
+				   insert  /*+ sdd_ohemomt_i01$I01_ 02C 환자기록관리 입력 */
+		 into  SDOHEMOMT        /*  02C 환자기록관리     */
+			(
+			   PTNO                  /*  환자번호             */
+			,  MDRP_NO
+			,  ORDR_YMD              /*  처방일               */
+			,  RGMN_PHRC_CNFR_DVSN_CD
+			,  RGMN_NM               /*  Regimen              */
+			/* ,  HGHT_VL               /*  Ht                   */
+			/* ,  BDWG_VL               /*  Weight               */
+			,  ETME_02C_CTN          /*  기타                 */
+			,  MDTN_NO_DVSN_CD
+			,  MDTN_NO
+			,  MDTN_LCDV_CD          /*  투약위치             */
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			)
+				   values
+			(
+			   #{ptno}                                     /*  환자번호             */
+			,  #{mdrpNo}
+			,  to_date(#{ordrYmd}, 'YYYYMMDD')            /*  처방일               */
+			,  #{dvsnCd}
+			,  #{rgmnNm}                                  /*  Regimen              */
+			/* ,  :sds_ohemomt_101[0].hght_vl                                  /*  BSA                  */
+			/* ,  :sds_ohemomt_101[0].bdwg_vl                                  /*  Weight               */
+			,  #{etme02cCtn}                             /*  기타                 */
+			,  #{mdtnNoDvsnCd}
+			,  #{mdtnNo}
+			,  #{mdtnLcdvCd}                             /*  투약위치             */
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			)
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO">
+	
+		<result property="inqrCct" column="INQR_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneAntcTermPtntRcrdPrvlCnfrCct */
+		<![CDATA[
+				   select  /*+ sdd_ohemomt_l02$S01_02C 환자기록관리 가확인 건수조회 */
+			   count(1) as INQR_CCT
+		 from  SDOHEMOMT a
+		where  a.PTNO    = #{ptno}
+		  and  a.MDRP_NO = #{mdrpNo}
+		  and  a.ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  a.MDTN_NO_DVSN_CD = 'X'
+		  and  a.MDTN_NO    = 9999
+		  and  a.RGMN_PHRC_CNFR_DVSN_CD = 'F'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO">
+	
+		<result property="mdcrDt" column="MDCR_DT"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="rgmnNm" column="RGMN_NM"/>
+		<result property="hghtVl" column="HGHT_VL"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="etme02cCtn" column="ETME_02C_CTN"/>
+		<result property="rgmnPhrcCnfrDvsnCd" column="RGMN_PHRC_CNFR_DVSN_CD"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="scinClncDxNm" column="SCIN_CLNC_DX_NM"/>
+		<result property="mdtnNoDvsnCd" column="MDTN_NO_DVSN_CD"/>
+		<result property="mdtnNo" column="MDTN_NO"/>
+		<result property="mdtnLcdvCd" column="MDTN_LCDV_CD"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd (02C 환자기록관리) 
+        Description :                                           02C 환자기록관리
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd-result" useCache="true" flushCache="false">
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-listAntcTermPtntRcrd*/
+				<![CDATA[
+				   select  /*+ index (a SDOHEMOMT_PK)  sdd_ohemomt_l01$S01_ 02C 환자기록관리 조회 */
+			   to_char(d.MDCR_DT, 'YYYYMMDDhh24mi')  as MDCR_DT              /* 입원일시             */
+			,  to_char(a.ORDR_YMD, 'YYYYMMDD')       as ORDR_YMD             /* 처방일               */
+			,  a.RGMN_NM as RGMN_NM                                                  /* Regimen              */
+			,  a.HGHT_VL as HGHT_VL                                                  /* Ht                   */
+			,  a.BDWG_VL as BDWG_VL                                                  /* Weight               */
+			,  a.ETME_02C_CTN as ETME_02C_CTN                                             /* 기타                 */
+			,  a.RGMN_PHRC_CNFR_DVSN_CD as RGMN_PHRC_CNFR_DVSN_CD                                   /* 구분                 */
+			,  a.LAST_UPDR_ID as LAST_UPDR_ID                                             /* 수정자               */
+			,  c.USER_NM as USER_NM                                                  /* 사용자명             */
+			,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDHH24MISS')  as LAST_UPDT_DT  /* 수정시간             */
+			,  b.SCIN_NM as SCIN_CLNC_DX_NM                                          /* 주진단명             */
+			,  a.MDTN_NO_DVSN_CD as MDTN_NO_DVSN_CD
+			,  a.MDTN_NO as MDTN_NO
+			,  a.MDTN_LCDV_CD as MDTN_LCDV_CD                                             /* 투약위치             */
+			,  a.MDRP_NO as MDRP_NO
+		 from
+			   SDOHEMOMT a                             /* 02C 환자기록관리     */
+			,  MDPADIAGT b                             /* 환자상병내역         */
+			,  CCUSRDPHT c                             /* 사용자 MASTER TABLE  */
+			,  APRCRPTNT d                            /*진료접수 */
+		where  a.PTNO = #{ptno}                                 /* 환자번호             */
+		  and  (
+				   ( (#{inqrDvsnCd} is not null) and (a.ORDR_YMD >= add_months(sysdate, -6)) )
+				or ( (#{inqrDvsnCd} is null) and (a.ORDR_YMD between to_date(#{ordrYmd}, 'YYYYMMDD')
+																		 and to_date(#{ordrYmd1}, 'YYYYMMDD'))
+						   )
+			   )
+		  and  nvl(a.MDTN_LCDV_CD, 'M') = nvl(#{mdtnLcdvCd}, nvl(a.MDTN_LCDV_CD, 'M'))    /* 투약위치             */
+		  and  b.MDRP_NO(+) = a.MDRP_NO
+		  and  b.CODV_CD(+) = 'I'                                                         /* 환자구분             */
+		  and  b.MAIN_SCIN_YN(+) = 'Y'                                                    /* 주상병여부           */
+		  and  c.USER_ID(+) = a.LAST_UPDR_ID
+		  and  a.MDRP_NO = d.MDRP_NO   /* 진료접수번호 */
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd1 (02C 환자기록관리1) 
+        Description :                                           02C 환자기록관리1
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd1"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd1*/
+				<![CDATA[
+				   update  /*+ sdd_ohemomt_u01$U01_ 02C 환자기록관리 수정 */
+			   SDOHEMOMT
+		  set
+			   RGMN_NM     = #{rgmnNm}
+			/* ,  HGHT_VL    = :sds_ohemomt_101[0].hght_vl */
+			/* ,  BDWG_VL    = :sds_ohemomt_101[0].bdwg_vl */
+			,  ETME_02C_CTN     = #{etme02cCtn}
+			,  LAST_UPDR_ID = #{gvUserId}
+			,  LAST_UPDT_IP = #{gvUserIp}
+			,  LAST_UPDT_DT = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO    = #{ptno}                         /*  환자번호             */
+		  and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		  and  MDTN_NO    = #{mdtnNo}
+		  and  MDTN_LCDV_CD = #{mdtnLcdvCd}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd2 (02C 환자기록관리2) 
+        Description :                                           02C 환자기록관리2
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd2"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd2*/
+				<![CDATA[
+				   update  /*+ sdd_ohemomt_u02$U01_02C 환자기록관리 수정2 */
+				   SDOHEMOMT
+			  set
+				   MDTN_NO_DVSN_CD   = #{mdtnNoDvsnCd}
+				,  MDTN_NO           = #{mdtnNo}
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO              = #{ptno}
+			  and  ORDR_YMD          = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  MDTN_NO_DVSN_CD   = 'X'
+			  and  MDTN_NO           = 9999
+			  and  MDTN_LCDV_CD      = #{mdtnLcdvCd}
+			  and  exists (
+						   select 1  /*  항암제약이 있을경우에만 변경한다.(SDD921F1화면에서 조회되는약) */
+							 from MDMEDORDT m
+							where m.PTNO = #{ptno}
+							  and m.ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+							  and m.MDTN_LCDV_CD = #{mdtnLcdvCd}
+							  and m.MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+							  and m.MDTN_NO = #{mdtnNo}
+							  and m.ANTC_INJC_AHED_CMMD_YN = 'Y'
+						   )
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd3 (02C 환자기록관리3) 
+        Description :                                           02C 환자기록관리3
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd3"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrd3*/
+				<![CDATA[
+				   update  /*+ sdd_ohemomt_u03$U01_02C 환자기록관리 수정3 */
+			   SDOHEMOMT
+		  set
+			   RGMN_PHRC_CNFR_DVSN_CD = decode(#{dvsnCd},'U',null,#{dvsnCd})
+		   ,   ETME_02C_CTN          =#{etme02cCtn}
+		   ,   LAST_UPDR_ID           = #{gvUserId}
+		   ,   LAST_UPDT_IP           = #{gvUserIp}
+		   ,   LAST_UPDT_DT           = sysdate
+		   ,   LAST_UPDT_CLNT_PRGM_ID      = #{gvClntPrgmId}
+		   ,   LAST_UPDT_SRVR_PRGM_ID      = #{gvSrvrPrgmId}
+		where  PTNO                   = #{ptno}
+		  and  ORDR_YMD               = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  MDTN_NO_DVSN_CD        = #{mdtnNoDvsnCd}
+		  and  MDTN_NO                = #{mdtnNo}
+		  and  MDTN_LCDV_CD           = #{mdtnLcdvCd}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrdPrvlCnfrAft (02C 환자기록관리 가확인후) 
+        Description :                                           02C 환자기록관리 가확인후
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrdPrvlCnfrAft"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  >
+		      /*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-updateAntcTermPtntRcrdPrvlCnfrAft*/
+				<![CDATA[
+				   update  /*+ sdd_ohemomt_u04$I01_02C 환자기록관리 가확인후 수정 */
+			   SDOHEMOMT
+		  set
+			   HGHT_VL    = #{hghtVl}      /*  처방수정여부를 신장값 999로 인식함*/
+			,  LAST_UPDR_ID = #{gvUserId}
+			,  LAST_UPDT_IP = #{gvUserIp}
+			,  LAST_UPDT_DT = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO    = #{ptno}
+		  and  MDRP_NO = #{mdrpNo}
+		  and  ORDR_YMD  = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and  MDTN_NO_DVSN_CD = 'X'
+		  and  MDTN_NO    = 9999
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneMxMdrpNo */
+		<![CDATA[
+						   select  /*+ sdd_mdmedor_s06$S01_진료접수번호 조회 */
+					   max(a.MDRP_NO) as MDRP_NO
+				 from  MDMEDORDT a
+				where  a.PTNO = #{ptno}
+				  and  a.ORDR_YMD = to_date(#{ordrYmd},'YYYYMMDD')
+				  and  a.ORDR_SNO = #{ordrSno}
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="mdtnLcdvCd" column="MDTN_LCDV_CD"/>
+		<result property="mdtnNoDvsnCd" column="MDTN_NO_DVSN_CD"/>
+		<result property="mdtnNo" column="MDTN_NO"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="rgmnNm" column="RGMN_NM"/>
+		<result property="hghtVl" column="HGHT_VL"/>
+		<result property="bdwgVl" column="BDWG_VL"/>
+		<result property="etme02cCtn" column="ETME_02C_CTN"/>
+		<result property="rgmnPhrcCnfrDvsnCd" column="RGMN_PHRC_CNFR_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAntcTermPtntRcrdComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAntcTermPtntRcrdComnDAO-selectOneTablPkSdohemomt */
+		select 
+		       MDRP_NO as MDRP_NO
+		     , to_char(ORDR_YMD, 'yyyymmdd') as ORDR_YMD
+		     , MDTN_LCDV_CD as MDTN_LCDV_CD
+		     , MDTN_NO_DVSN_CD as MDTN_NO_DVSN_CD
+		     , MDTN_NO as MDTN_NO
+		     , PTNO as PTNO
+		     , RGMN_NM as RGMN_NM
+		     , HGHT_VL as HGHT_VL
+		     , BDWG_VL as BDWG_VL
+		     , ETME_02C_CTN as ETME_02C_CTN
+		     , RGMN_PHRC_CNFR_DVSN_CD as RGMN_PHRC_CNFR_DVSN_CD
+		  from sdohemomt
+		 where MDRP_NO = #{mdrpNo}
+		   and ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')
+		   and MDTN_LCDV_CD = #{mdtnLcdvCd}
+		   and MDTN_NO_DVSN_CD = #{mdtnNoDvsnCd}
+		   and MDTN_NO = #{mdtnNo}
+	</select>
+
+
+
+</mapper>

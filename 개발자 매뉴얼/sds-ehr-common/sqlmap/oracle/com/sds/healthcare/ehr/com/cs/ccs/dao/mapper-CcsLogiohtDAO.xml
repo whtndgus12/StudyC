@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsLogiohtDAO_sql.xml 
+    Description :                                      로그인
+                  -->
+<mapper namespace="CcsLogiohtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-insertLogioht () 
+        Description :                                           CsdLogiohtI01DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-insertLogioht"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-insertLogioht */
+		<![CDATA[
+				   insert  /*+ csd_logioht_i01$I01_시스템접속이력 입력 DAM */
+					 into
+						   CSLOGIOHT
+						   (
+							LGIN_ID,
+							USER_LOG_DT,
+							LOG_DVSN_CD,
+							LOG_SNO,
+							CNCT_IP,
+							SESN_ID,
+							FRST_RGSR_ID,
+							FRST_RGST_IP,
+							FRST_RGST_DT,
+							FRST_RGST_CLNT_PRGM_ID,
+							FRST_RGST_SRVR_PRGM_ID,
+							LAST_UPDR_ID,
+							LAST_UPDT_IP,
+							LAST_UPDT_DT,
+							LAST_UPDT_CLNT_PRGM_ID,
+							LAST_UPDT_SRVR_PRGM_ID )
+				   select
+			   			nvl(max(A.LGIN_ID),#{gvUserIp}),
+			   			sysdate,
+			   			#{logDvsnCd},
+			   			nvl(max(TO_NUMBER(B.LOG_SNO)), 0) + 1,
+			   			nvl(#{gvUserIp},'0.0.0.0'),
+			   			#{sesnId},
+			   			nvl(#{gvLginId}, ''),
+			   			nvl(#{gvUserIp},'0.0.0.0'),
+			   			sysdate,
+			   			#{gvClntPrgmId},
+			   			#{gvSrvrPrgmId},
+			   			nvl(#{gvLginId}, ''),
+			   			nvl(#{gvUserIp},'0.0.0.0'),
+			   			sysdate,
+			   			#{gvClntPrgmId},
+			   			#{gvSrvrPrgmId}
+					 from
+						   CCUSRDPHT A,
+						   CSLOGIOHT B
+					where
+						   /* A.USER_ID = :afc_src_user_id */
+			   			  A.USER_ID = #{gvLginId} /*  시스템 헤더 유저ID */
+					  and  B.LGIN_ID(+) = A.LGIN_ID
+					  and  trunc(B.USER_LOG_DT(+)) = trunc(sysdate)
+					  and  B.LOG_DVSN_CD(+) = #{logDvsnCd}
+					]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userLogDt" column="USER_LOG_DT"/>
+		<result property="logDvsnCd" column="LOG_DVSN_CD"/>
+		<result property="logSno" column="LOG_SNO"/>
+		<result property="cnctIp" column="CNCT_IP"/>
+		<result property="lginWayCd" column="LGIN_WAY_CD"/>
+		<result property="smisCnctOprnSystNm" column="SMIS_CNCT_OPRN_SYST_NM"/>
+		<result property="smisCnctVrsnNo" column="SMIS_CNCT_VRSN_NO"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx (로그인로그아웃이력) 
+        Description :                                           csd_logioht_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listLginLgotHx_로그인 로그아웃 이력 조회 */
+				   LGIN_ID as LGIN_ID,
+				   to_char(USER_LOG_DT,'yyyymmddhh24miss') as USER_LOG_DT,
+				   LOG_DVSN_CD as LOG_DVSN_CD,
+				   LOG_SNO as LOG_SNO,
+				   CNCT_IP as CNCT_IP,
+				   LGIN_WAY_CD as LGIN_WAY_CD,
+				   SMIS_CNCT_OPRN_SYST_NM as SMIS_CNCT_OPRN_SYST_NM,
+				   SMIS_CNCT_VRSN_NO as SMIS_CNCT_VRSN_NO,
+				   (select DETL_CD_NM from CCCMCDDMT where COMN_GRP_CD = 'CSX_004' and COMN_DTLS_CD = LOG_DVSN_CD)  as RTUR_VL_1,
+				   '' as RTUR_VL_2,
+				   '' as RTUR_VL_3
+		from		CSLOGIOHT
+		where	LGIN_ID     = #{lginId}
+		and		USER_LOG_DT >= to_date( #{rturVl1}, 'yyyymmddhh24miss' )
+		and		USER_LOG_DT <= to_date( #{rturVl2}, 'yyyymmddhh24miss' )
+		and		LOG_DVSN_CD like #{logDvsnCd}
+		and		nvl(CNCT_IP,'*') like '%'||nvl(#{cnctIp}, nvl(CNCT_IP,'*'))||'%'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userLogYmd" column="USER_LOG_YMD"/>
+		<result property="loginCount" column="LOGIN_COUNT"/>
+		<result property="loginUserInfo" column="LOGIN_USER_INFO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt (로그인 통계) 
+        Description :                                           로그인 통계
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-pagingLoginSt */
+		<![CDATA[
+		SELECT *
+		  FROM (SELECT ROWNUM as RNUM
+				     , A.*
+				  FROM (SELECT LGIN_ID
+						     , USER_LOG_YMD
+						     , COUNT(LGIN_ID) AS "LOGIN_COUNT"
+		                     , LOGIN_USER_INFO
+						  FROM (
+						select  A.LGIN_ID as LGIN_ID,
+		                          A.LGIN_ID || '(' || B.USER_NM || ')' AS "LOGIN_USER_INFO",
+								   to_char(A.USER_LOG_DT,'yyyymmdd') as USER_LOG_YMD
+						from		CSLOGIOHT A
+		                         ,  CCUSERAMT B
+						where	A.LGIN_ID = B.LGIN_ID
+		                and       USER_LOG_DT >= to_date(#{rturVl1} || '000000', 'yyyymmddhh24miss' )
+						and		USER_LOG_DT <= to_date(#{rturVl2} || '235959', 'yyyymmddhh24miss' )
+						and		LOG_DVSN_CD like 'I')
+						GROUP BY LGIN_ID, LOGIN_USER_INFO, USER_LOG_YMD
+						ORDER BY LGIN_ID, LOGIN_USER_INFO, USER_LOG_YMD) A)
+		where RNUM >  cast(coalesce(#{nextKeyValue}, '0') as number)
+		 and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-selectOneLoginSt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO">
+	
+		<result property="count" column="COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-selectOneLoginSt (로그인 통계 건수) 
+        Description :                                           로그인 통계 건수
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-selectOneLoginSt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-selectOneLoginSt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-selectOneLoginSt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT COUNT(LGIN_ID) AS "COUNT"
+		  FROM (   SELECT LGIN_ID
+						            , USER_LOG_YMD
+						           , COUNT(LGIN_ID) AS "LOGIN_COUNT"
+						  FROM (select  LGIN_ID as LGIN_ID,
+										      to_char(USER_LOG_DT,'yyyymmdd') as USER_LOG_YMD
+								     from CSLOGIOHT
+			  			            where USER_LOG_DT >= to_date(#{rturVl1} || '000000', 'yyyymmddhh24miss' )
+						and		USER_LOG_DT <= to_date(#{rturVl2} || '235959', 'yyyymmddhh24miss' )
+						and		LOG_DVSN_CD like 'I')
+		               GROUP BY LGIN_ID, USER_LOG_YMD
+						ORDER BY LGIN_ID, USER_LOG_YMD)
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="loginTime" column="LOGIN_TIME"/>
+		<result property="logoutTime" column="LOGOUT_TIME"/>
+		<result property="usingTime" column="USING_TIME"/>
+		<result property="cnctIp" column="CNCT_IP"/>
+		<result property="loginUserInfo" column="LOGIN_USER_INFO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo (날짜별 로그인 정보) 
+        Description :                                           날짜별 로그인 정보
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsLogiohtDAO-listDayLoginInfo */
+		SELECT LGIN_ID
+		     , TO_CHAR(LOGIN_TIME, 'yyyy-mm-dd hh24:mi:ss') AS "LOGIN_TIME"
+		     , TO_CHAR(LOGOUT_TIME, 'yyyy-mm-dd hh24:mi:ss') AS "LOGOUT_TIME"
+		     , TO_CHAR(TO_DATE('1970-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')+USING_TIME,'hh24:mi:ss') AS "USING_TIME"
+		     , CNCT_IP
+		     , LOGIN_USER_INFO
+		  FROM (SELECT LGIN_ID
+						     , LOGIN_TIME
+						     , LOGOUT_TIME
+						     , CASE LOGOUT_TIME
+						           WHEN NULL THEN 0
+						           ELSE LOGOUT_TIME - LOGIN_TIME
+						       END AS "USING_TIME"
+						     , CNCT_IP
+		                     , LOGIN_USER_INFO
+				  FROM (SELECT A.LGIN_ID
+						     , A.USER_LOG_DT AS "LOGIN_TIME"
+						     , (SELECT MAX(USER_LOG_DT)
+						          FROM CSLOGIOHT
+						         WHERE SESN_ID = A.SESN_ID
+						           AND LOG_DVSN_CD = 'O') AS "LOGOUT_TIME"
+						     , A.CNCT_IP
+		                     , A.LGIN_ID || '(' || B.USER_NM || ')' AS "LOGIN_USER_INFO"
+						  FROM CSLOGIOHT A
+		                          , CCUSERAMT B
+						 WHERE A.LGIN_ID = B.LGIN_ID 
+		                   AND A.LGIN_ID = #{lginId}
+						   AND A.LOG_DVSN_CD = 'I'
+						   AND TO_CHAR(A.USER_LOG_DT, 'YYYYMMDD') = #{rturVl1}
+				       )
+		       )	
+	</select>
+
+
+
+</mapper>

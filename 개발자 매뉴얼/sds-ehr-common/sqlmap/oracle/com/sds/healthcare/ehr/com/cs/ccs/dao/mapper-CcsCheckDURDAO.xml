@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsCheckDURDAO_sql.xml 
+    Description :                                      Dur 체크
+                  -->
+<mapper namespace="CcsCheckDURDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsCheckDURDVO">
+	
+		<result property="chkDt" column="CHK_DT"/>
+		<result property="rsrn" column="RSRN"/>
+		<result property="durCndtVl" column="DUR_CNDT_VL"/>
+		<result property="durFltxWodvCd" column="DUR_FLTX_WODV_CD"/>
+		<result property="durFltxCtn" column="DUR_FLTX_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR (질병체크여부) 
+        Description :                                           질병체크여부
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsCheckDURDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsCheckDURDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-selectOneCheckDUR */
+		SELECT CHK_DT
+		     , RSRN
+		     , DUR_CNDT_VL
+		     , DUR_FLTX_WODV_CD
+		     , DUR_FLTX_CTN
+		  FROM CCCCDRMMT
+		 WHERE CHK_DT  = TRUNC(CURRENT_DATE)
+		   AND RSRN = #{rsrn}
+		   AND DUR_CNDT_VL = #{durCndtVl}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-insertCheckDUR () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsCheckDURDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-insertCheckDUR"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsCheckDURDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsCheckDURDAO-insertCheckDUR */
+		INSERT 
+		  INTO CCCCDRMMT(CHK_DT
+		               , RSRN
+		               , DUR_CNDT_VL
+		               , DUR_FLTX_WODV_CD
+		               , DUR_FLTX_CTN
+		               , FRST_RGSR_ID
+				       , FRST_RGST_IP
+		               , FRST_RGST_DT
+		               , FRST_RGST_CLNT_PRGM_ID
+					   , FRST_RGST_SRVR_PRGM_ID
+					   , LAST_UPDR_ID
+					   , LAST_UPDT_IP
+					   , LAST_UPDT_DT
+					   , LAST_UPDT_CLNT_PRGM_ID
+					   , LAST_UPDT_SRVR_PRGM_ID)
+		         VALUES (TRUNC(CURRENT_DATE)
+				       , #{rsrn}
+					   , #{durCndtVl}
+					   , #{durFltxWodvCd}
+					   , #{durFltxCtn}
+		               , #{gvUserId}
+					   , #{gvUserIp}
+					   , sysdate
+					   , #{gvClntPrgmId}
+					   , #{gvSrvrPrgmId}
+					   , #{gvUserId}
+					   , #{gvUserIp}
+					   , sysdate
+					   , #{gvClntPrgmId}
+					   , #{gvSrvrPrgmId})
+	</insert>
+
+</mapper>

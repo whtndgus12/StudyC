@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MedMdcrRcrdWrtgYnInqrDAO_sql.xml 
+    Description :                                      진료기록작성여부 조회
+                  -->
+<mapper namespace="MedMdcrRcrdWrtgYnInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr-result" type="com.sds.healthcare.ehr.med.me.med.vo.MedMdcrRcrdWrtgYnInqrDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.me.med.vo.MedMdcrRcrdWrtgYnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr"  parameterType="com.sds.healthcare.ehr.med.me.med.vo.MedMdcrRcrdWrtgYnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-me-med-dao-MedMdcrRcrdWrtgYnInqrDAO-selectOneMdcrRcrdWrtgYnInqr */
+		<![CDATA[
+			select
+				   decode(count(*), 0, 'N', 'Y') as YN /*  존재여부 Y: 있음, N: 없음 */
+			  from
+				   MEDOCMBST a
+				 , MEDOCMDTT b
+			 where 1=1
+			   and a.PTNO         = #{ptno}
+			   and a.MDRP_NO      = #{mdrpNo}
+			   and a.DLTN_YN      = 'N'
+			   and a.RCRD_TYPE_CD = '1'
+			   and a.RCKI_CD      = nvl(#{rckiCd},a.RCKI_CD)      
+			   and a.RCRD_SAVE_DVSN_CD = nvl(#{rcrdSaveDvsnCd},a.RCRD_SAVE_DVSN_CD)         
+			   and a.CHRT_OTAM_DVSN_CD = nvl(#{chrtOtamDvsnCd},a.CHRT_OTAM_DVSN_CD)            
+			   and b.RCRD_NO      = a.RCRD_NO
+			   and b.RCAM_NO      = a.RCAM_NO
+			]]>	   
+			<if test='rcrdDt != null and rcrdDt != ""'>
+			  and a.RCRD_DT <![CDATA[>=]]> to_date(#{rcrdDt},'YYYYMMDD')
+			</if>  
+			<if test = 'mdcrCtrlCd != null and mdcrCtrlCd != ""'>
+			   and substr(b.FORM_NO, 1, 7) in (select substr(zz.MDCR_CTRL_CHRC_VL1, 1, 7)
+												 from MZCTRLMMT zz
+												where zz.MDCR_CTRL_CD = #{mdcrCtrlCd} )
+			</if>   
+			   and ROWNUM = 1 
+	</select>
+
+
+
+</mapper>

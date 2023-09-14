@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AifLncnpptDAO_sql.xml 
+    Description :                                      폐암 적정성평가 팝업대상관리 DAO
+                  -->
+<mapper namespace="AifLncnpptDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aif-dao-AifLncnpptDAO-insertAilncnppt (폐암 적정성평가 팝업대상 등록) 
+        Description :                                           폐암 적정성평가 팝업대상을 등록한다. (aid_lncnppt_i01)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aif.vo.AifLncnpptDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ai-aif-dao-AifLncnpptDAO-insertAilncnppt"  parameterType="com.sds.healthcare.ehr.adm.ai.aif.vo.AifLncnpptDVO"  >
+		<![CDATA[
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aif-dao-AifLncnpptDAO-insertAilncnppt */
+		  into  AILNCNPPT
+		     (
+		        PTNO                   /*  환자번호 */
+		     ,  LNCN_PRPR_INPT_PATH_CD /*  폐암적정성입력경로코드(1. 수술, 2. 항암기록지, 3x. RT) */
+		     ,  SNO                    /*  일련번호 */
+		     ,  MCDP_CD                /*  진료과 */
+		     ,  PRRN_YMD               /*  수술예정일 또는 항암예정일 또는 RT simulation CT/MRI 예정일 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		     )
+		values
+		     (
+		        #{ptno}
+		     ,  #{lncnPrprInptPathCd}
+		     ,  (
+		        select  nvl(max(sno), 0) + 1
+		          from  AILNCNPPT
+		         where  PTNO = #{ptno}
+		           and  LNCN_PRPR_INPT_PATH_CD = #{lncnPrprInptPathCd}
+		        )
+		     ,  #{mcdpCd}
+		     ,  to_date(#{prrnYmd}, 'yyyymmdd')
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     )
+		]]>
+	</insert>
+
+</mapper>

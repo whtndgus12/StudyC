@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MriIncmCeckDAO_sql.xml
+    Description : -->
+<mapper namespace="MriIncmCeckDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO">
+
+		<result property="rsltVl" column="RSLT_VL"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct (퇴실사유기록 작성건수 주회)
+        Description :                                           퇴실사유기록 작성건수 주회
+
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-selectOnechdtResnRcrdWrtgCct */
+		SELECT COUNT(*) AS RSLT_VL
+		FROM
+		  MEDOCMBST Sa ,
+		  MEDOCMDTT Sb ,
+		  (
+		    SELECT a.MDRP_NO ,
+		      CASE
+		        WHEN 0 = (  SELECT COUNT(*)
+		                    FROM MNWMOVEMT x
+		                    WHERE x.mdrp_no   = a.mdrp_no
+		                    AND MVIN_CNFR_DT IS NOT NULL )
+		        THEN TO_CHAR(a.MDCR_YMD,'YYYYMMDD')
+		        ELSE
+		          ( SELECT TO_CHAR(MAX(MVIN_CNFR_DT),'YYYYMMDD')
+		            FROM MNWMOVEMT x
+		            WHERE x.mdrp_no   = a.mdrp_no
+		            AND MVIN_CNFR_DT IS NOT NULL
+		          )
+		      END AS MDCR_YMD
+		    FROM APRCRPTNT a
+		    WHERE 1        = 1
+		    AND a.MDRP_NO  = #{mdrpNo}
+		    AND a.CNCL_DT IS NULL
+		  ) Sc
+		WHERE NVL(Sa.DLTN_YN, 'N') = 'N'
+		AND Sa.MDRP_NO             = #{mdrpNo}
+		AND Sa.RCRD_SAVE_DVSN_CD   = '1'
+		AND Sa.RCRD_NO             = Sb.RCRD_NO
+		AND Sa.RCKI_CD             = FN_CC_GET_CNST_VL('MED_002', 'S_CHDT_RESN_RCRD')
+		AND Sa.MDRP_NO             = Sc.MDRP_NO
+		AND TRUNC(Sa.RCRD_DT) BETWEEN TRUNC(to_date(Sc.MDCR_YMD, 'yyyymmdd')) AND TRUNC(to_date(#{dschYmd}, 'yyyymmdd'))
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO">
+
+		<result property="ptno" column="PTNO"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="rcrdNo" column="RCRD_NO"/>
+		<result property="rcrdDt" column="RCRD_DT"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm (전출미비 조회)
+        Description :
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriIncmCeckDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriIncmCeckDAO-listMvotIncm */
+		select PTNO
+		     , MCDP_CD
+		     , FN_MR_GET_ABRV_DPRT_CD(a.MCDP_CD) as ABRV_DPRT_CD
+		     , RCRD_NO
+		     , to_char(a.RCRD_DT,'YYYYMMDD') as RCRD_DT
+		     , RCKI_CD
+		  from MEDOCMBST a
+		 where a.MDRP_NO = #{mdrpNo}
+		   and a.MCDP_CD = #{mcdpCd}
+		   and a.RCRD_DT = to_date(#{rcrdDt},'YYYYMMDD')
+		   and a.RCKI_CD = FN_CC_GET_CNST_VL('MED_002', 'S_MVOT_RCRD') -- 전출기록
+		   and a.CRTF_DT is not null
+		   and nvl(a.DLTN_YN, 'N') = 'N'
+		   and a.MCDP_CD  = ( select zz.CRNT_MCDP_CD
+								from MNWMOVEMT zz
+							   where 1 = 1
+								 and zz.MDRP_NO = a.MDRP_NO
+								 and zz.RQST_CNCL_DT is null
+								 and zz.CRNT_MCDP_CD <> zz.WNTD_MCDP_CD
+		--						 and zz.CRNT_MCDP_CD <> fn_cc_get_cnst_vl('CCD_001','DPRT_EM')
+								 and zz.MVMN_RQST_PRSS_CD  = 'R'
+								 and rownum = 1 )
+					]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_QdpMdpadiagtTrigDAO_sql.xml 
+    Description :                                      환자상병내역테이블 트리거 DAO - 감염관리
+                  -->
+<mapper namespace="QdpMdpadiagtTrigDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd-result" type="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO">
+	
+		<result property="mdcrYmd" column="MDCR_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd (진료일자 조회) 
+        Description :                                           접수번호로 진료일자를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+		resultMap : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd-result
+    -->
+	<select id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  resultMap="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ index(a APRCRPTNT_PK) _SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneMdcrYmd */
+		          to_char(a.MDCR_YMD,'YYYYMMDD') as MDCR_YMD
+		  from  APRCRPTNT a
+		 where  a.MDRP_NO = #{mdrpNo}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck-result" type="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO">
+	
+		<result property="infdCd" column="INFD_CD"/>
+		<result property="cmdsKindCd" column="CMDS_KIND_CD"/>
+		<result property="dvsnCd" column="DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck (감염병 상병 체크 조회) 
+        Description :                                           해당 상병이 감염병대상인지 확인(감염관리제어상세내역) 상병에 매핑한 감염병코드
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+		resultMap : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  resultMap="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ index(a QDCTRLMMT_PK)  _SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneInfcScksScinCeck */
+		           IFMN_CTRL_CHRC_VL1 as INFD_CD
+		        ,  IFMN_CTRL_CHRC_VL2    as CMDS_KIND_CD
+		        ,  '' as DVSN_CD
+		  from  QDCTRLMMT a
+		 where  a.IFMN_CTRL_CD = 'QD_SCIN_CD'
+		   and  a.IFMN_DETL_CTRL_VL = #{scinCd}
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinfcdt (환자코션징후 신규등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinfcdt"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  >
+		Insert  /* SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinfcdt */
+		  into  QDSINFCDT
+		     (
+		        PTNO                          /* 환자번호                       */
+		     ,  INFD_CD                       /* 감염성질병코드                 */
+		     ,  CUTN_SGN_RGST_SNO             /* CAUTION징후등록일련번호        */
+		     ,  CUTN_SGN_RGST_DT              /* CAUTION징후등록일시            */
+		     ,  CUTN_SGN_INPT_PATH_CD         /* CAUTION징후입력경로코드        */
+		     ,  MDRP_NO                       /* 진료접수번호                   */
+		     ,  CODV_CD                       /* 내원구분코드                   */
+		     ,  MCDP_CD                       /* 진료과코드                     */
+		     ,  PTNT_CLNC_DX_SNO              /* 환자임상진단일련번호           */
+		     ,  SCIN_SNO                      /* 상병일련번호                   */
+		     ,  SCIN_CD                       /* 상병코드                       */
+		     ,  FRST_RGSR_ID             /* 최초등록자ID                    */
+		     ,  FRST_RGST_IP             /* 최초등록IP                      */
+		     ,  FRST_RGST_DT             /* 최초등록일시                    */
+		     ,  FRST_RGST_CLNT_PRGM_ID        /* 최초등록SMC클라이언트프로그램ID */
+		     ,  FRST_RGST_SRVR_PRGM_ID        /* 최초등록SMC서버프로그램ID       */
+		     ,  LAST_UPDR_ID             /* 최종수정자ID                    */
+		     ,  LAST_UPDT_IP             /* 최종수정IP                      */
+		     ,  LAST_UPDT_DT             /* 최종수정일시                    */
+		     ,  LAST_UPDT_CLNT_PRGM_ID        /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID        /* 최종수정SMC서버프로그램ID       */
+		     )
+		values
+		     (
+		        #{ptno}                       /* 환자번호                       */
+		     ,  #{infdCd}                      /* 감염성질병코드                 */
+		     ,  (select  /*+ index(a QDSINFCDT_PK)  */
+		                 nvl(max(CUTN_SGN_RGST_SNO),0)+1
+		           from  QDSINFCDT a
+		          where  a.PTNO    = #{ptno}
+		            and  a.INFD_CD = #{infdCd}) /* CAUTION징후등록일련번호        */
+		     ,  sysdate                        /* CAUTION징후등록일시 - 진단등록일시 */
+		     ,  '2'                            /* CAUTION징후입력경로코드        */
+		     ,  #{mdrpNo}                      /* 진료접수번호                   */
+		     ,  #{codvCd}                      /* 내원구분코드                   */
+		     ,  #{mcdpCd}                      /* 진료과코드                     */
+		     ,  #{ptntClncDxSno}               /* 환자임상진단일련번호           */
+		     ,  #{ptntScinSno}                 /* 상병일련번호                   */
+		     ,  #{scinCd}                      /* 상병코드                       */
+		     ,  #{frstRgsrId}                  /* 최초등록자ID                   */
+		     ,  #{frstRgstIp}                  /* 최초등록IP                     */
+		     ,  sysdate                        /* 최초등록일시                   */
+		     ,  'TR_DIAGT'                     /* 최초등록SMC클라이언트프로그램ID*/
+		     ,  'TR_DIAGT'                     /* 최초등록SMC서버프로그램ID      */
+		     ,  #{frstRgsrId}                  /* 최종수정자ID                   */
+		     ,  #{frstRgstIp}                  /* 최종수정IP                     */
+		     ,  sysdate                        /* 최종수정일시                   */
+		     ,  'TR_DIAGT'                     /* 최종수정SMC클라이언트프로그램ID*/
+		     ,  'TR_DIAGT'                     /* 최종수정SMC서버프로그램ID      */
+		     )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd-result" type="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO">
+	
+		<result property="cmdsKindCd" column="CMDS_KIND_CD"/>
+		<result property="infdCd" column="INFD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd (외래 상병 코드 조회) 
+        Description :                                           외래인 경우 상병코드 조회 기준을 진료일자를 기준으로 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+		resultMap : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  resultMap="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ index(a MRBSSCINT_PK) _SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptScinCd */
+		          to_char(to_number(a.STCM_CLSF_GROP_CD)) as CMDS_KIND_CD
+		       ,  a.INFD_CD as INFD_CD
+		  from  MRBSSCINT a
+		 where  a.SCIN_CD = #{scinCd}
+		    and  nvl(a.STCM_YN,'N') = 'Y'
+		    and  a.APLY_YMD <= to_date(#{mdcrYmd},'yyyymmdd')
+		    and  a.FNSH_YMD >= to_date(#{mdcrYmd},'yyyymmdd')
+		    and  a.SCIN_OBLG_USE_YN ='Y'
+		    and  (
+				  (a.STCM_CLSF_GROP_CD  <> '04' ) or
+				  (a.STCM_CLSF_GROP_CD  = '04' and nvl(a.CUTN_SGN_RGST_YN,'N')  = 'Y') 
+				 )
+		    and  rownum<=1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd-result" type="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO">
+	
+		<result property="cmdsKindCd" column="CMDS_KIND_CD"/>
+		<result property="infdCd" column="INFD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd (외래 제외 상병 코드 조회) 
+        Description :                                           외래를 제외한 나머지 상병기록 코드 조회 기준을 작성일자로 한다
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+		resultMap : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  resultMap="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ index(a MRBSSCINT_PK) _SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneOtptExclScinCd */
+		          to_char(to_number(a.STCM_CLSF_GROP_CD)) as CMDS_KIND_CD
+		       ,  a.INFD_CD
+		  from  MRBSSCINT a
+		 where  a.SCIN_CD = #{scinCd}
+		    and  nvl(a.STCM_YN,'N') = 'Y'
+		    and  a.APLY_YMD <= to_date(#{frstRgstDt},'yyyymmddhh24miss')
+		    and  a.FNSH_YMD >= to_date(#{frstRgstDt},'yyyymmddhh24miss')
+		    and  a.SCIN_OBLG_USE_YN ='Y'
+		    and  (
+				  (a.STCM_CLSF_GROP_CD  <> '04' ) or
+				  (a.STCM_CLSF_GROP_CD  = '04' and nvl(a.CUTN_SGN_RGST_YN,'N')  = 'Y') 
+				 )
+		    and  rownum<=1
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinflmt (법정감염병 신고 대상 신규등록) 
+        Description :                                           법정감염병 신고 대상 신규등록
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinflmt"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  >
+		<![CDATA[
+		insert  /* SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-insertQdsinflmt_법정감염병신고대상신규등록 */
+		  into  QDSINFLMT
+		     (
+		        PTNO                     /* 환자번호                        */
+		     ,  CMDS_KIND_CD             /* 법정감염병종류코드              */
+		     ,  STTT_INFC_SCKS_DCLR_SNO  /* 법정감염병신고일련번호          */
+		     ,  STID_DCLR_INPT_PATH_CD   /* 법정감염병신고입력경로코드      */
+		     ,  DX_YMD                   /* 진단일자                        */
+		     ,  SCIN_INPT_YMD            /* 상병입력일자                    */
+		     ,  MCDP_CD                  /* 진료과코드                      */
+		     ,  SCIN_CD                  /* 상병코드                        */
+		     ,  PTAD_CODV_CD             /* 원무내원구분코드                */
+		     ,  MDRP_NO                  /* 진료접수번호                    */
+		     ,  PTNT_CLNC_DX_SNO            /*환자임상진단일련번호             */
+		     ,  PTNT_SCIN_SNO            /* 환자상병일련번호                */
+		     ,  INFD_CD                  /* 감염성질병코드                  */
+		     ,  SCIN_RGST_DR_ID          /* 상병등록의사                    */
+		     ,  FRST_RGSR_ID             /* 최초등록자ID                    */
+		     ,  FRST_RGST_IP             /* 최초등록IP                      */
+		     ,  FRST_RGST_DT             /* 최초등록일시                    */
+		     ,  FRST_RGST_CLNT_PRGM_ID        /* 최초등록SMC클라이언트프로그램ID */
+		     ,  FRST_RGST_SRVR_PRGM_ID        /* 최초등록SMC서버프로그램ID       */
+		     ,  LAST_UPDR_ID             /* 최종수정자ID                    */
+		     ,  LAST_UPDT_IP             /* 최종수정IP                      */
+		     ,  LAST_UPDT_DT             /* 최종수정일시                    */
+		     ,  LAST_UPDT_CLNT_PRGM_ID        /* 최종수정SMC클라이언트프로그램ID */
+		     ,  LAST_UPDT_SRVR_PRGM_ID        /* 최종수정SMC서버프로그램ID       */
+		     ,  WARD_CD                  /* 병동코드 */
+		     )
+		values
+		     (
+		        #{ptno}                             /* 환자번호                     */
+		     ,  #{cmdsKindCd}                       /* 법정감염병종류코드              */
+		     ,  (
+		         select  /*+ index(a QDSINFLMT_PK)  */
+		                 nvl(max(STTT_INFC_SCKS_DCLR_SNO),0)+1
+		           from  QDSINFLMT a
+		          where  a.PTNO = #{ptno}
+		            and  a.CMDS_KIND_CD = #{cmdsKindCd}
+		        )                                               /* 법정감염병신고일련번호     */
+		     ,  '2'                                             /* 법정감염병신고입력경로코드  */
+		     ,  to_date(#{mdcrYmd},'yyyymmdd')                  /* 진단일자               */
+		     ,  trunc(to_date(#{frstRgstDt},'yyyymmddhh24miss'))  /* 상병입력일자            */
+		     ,  #{mcdpCd}                                       /* 진료과코드                   */
+		     ,  #{scinCd}                                       /* 상병코드                     */
+		     ,  #{codvCd}                                       /* 원무내원구분코드               */
+		     ,  #{mdrpNo}                                       /* 진료접수번호                  */
+		     ,  #{ptntClncDxSno}                                /* 환자임상진단일련번호            */
+		     ,  #{ptntScinSno}                                  /* 상병일련번호                  */
+		     ,  #{infdCd}                                       /* 감염성질병코드                */
+		     ,  #{gvUserId}                                     /* 상병등록의사                  */
+		     ,  #{gvUserId}                                     /* 최초등록자ID                 */
+		     ,  #{gvUserIp}                                     /* 최초등록IP                  */
+		     ,  sysdate                                         /* 최초등록일시                 */
+		     ,  'TR_DIAGT'                                      /* 최초등록SMC클라이언트프로그램ID  */
+		     ,  'TR_DIAGT'                                      /* 최초등록SMC서버프로그램ID      */
+		     ,  #{gvUserId}                                     /* 최종수정자ID                */
+		     ,  #{gvUserIp}                                     /* 최종수정IP                 */
+		     ,  sysdate                                         /* 최종수정일시                */
+		     ,  'TR_DIAGT'                                      /* 최종수정SMC클라이언트프로그램ID */
+		     ,  'TR_DIAGT'                                      /* 최종수정SMC서버프로그램ID     */
+		     ,  (
+		         select  
+		                 b.WARD_CD
+		           from  APRCRPTNT b
+		          where  b.MDRP_NO = #{mdrpNo}
+		        )
+		     )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-deleteQdsinflmt (법정감염병 신고 대상 삭제) 
+        Description :                                           법정감염병 신고 대상 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-deleteQdsinflmt"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  >
+		<![CDATA[
+		delete  /*+ index(QDSINFLMT QDSINFLMT_PK) _SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-deleteQdsinflmt_법정감염병신고대상삭제 */
+		  from  QDSINFLMT
+		 where  PTNO     = #{ptno}                 /* 환자번호         */
+		   and  DX_YMD   = to_date(#{mdcrYmd},'yyyymmdd')                       /* 진단일자         */
+		   and  MCDP_CD  = #{mcdpCd}                    /* 진료과코드       */
+		   and  SCIN_CD  = #{scinCd}                    /* 상병코드         */
+		   and  SCIN_INPT_YMD  = trunc(to_date(#{frstRgstDt},'yyyymmddhh24miss'))  /* 상병입력일자     */
+		   and  PTAD_CODV_CD   = #{codvCd}             /* 원무내원구분코드 */
+		]]>
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl-result" type="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO">
+	
+		<result property="cmdsKindCd" column="CMDS_KIND_CD"/>
+		<result property="infdCd" column="INFD_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl (특정 감염 병 상세 제어코드 조회) 
+        Description :                                           특정 감염 병 상세 제어코드 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO
+		resultMap : com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl"  parameterType="com.sds.healthcare.ehr.qim.qd.qdp.vo.QdpMdpadiagtTrigDVO"  resultMap="com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ SQL_ID: com-sds-healthcare-ehr-qim-qd-qdp-dao-QdpMdpadiagtTrigDAO-selectOneSpccInfcScksDetl_식중독_상세제어값 조회 dam */
+		        a.IFMN_CTRL_CHRC_VL2    as CMDS_KIND_CD
+		     ,  a.IFMN_CTRL_CHRC_VL1    as INFD_CD
+		  from  QDCTRLMMT a
+		     ,  QDCTRLCMT b
+		 where  1=1
+		   and  a.IFMN_CTRL_CD = b.IFMN_CTRL_CD
+		   and  a.IFMN_CTRL_CD = 'FOOD_SCIN_CD'
+		   and  a.IFMN_DETL_CTRL_VL = #{scinCd}
+		   and  rownum<=1
+		]]>
+	</select>
+
+
+
+</mapper>

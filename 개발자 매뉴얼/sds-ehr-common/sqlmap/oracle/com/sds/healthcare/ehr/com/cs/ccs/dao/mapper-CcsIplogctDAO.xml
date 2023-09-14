@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsIplogctDAO_sql.xml 
+    Description :                                      IP다윈사용자권한여부 
+                  -->
+<mapper namespace="CcsIplogctDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIplogctDVO">
+	
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+		<result property="afiRturVl2" column="AFI_RTUR_VL_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct () 
+        Description :                                           CsdIplogctS02DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIplogctDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsIplogctDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsIplogctS02DAO-selectOneIplogct */
+		<![CDATA[ select /*+ csd_iplogct_s02$S01_IP다윈사용자권한여부 */
+						   nvl(max(ACCESSDENYIP),'N') as AFI_RTUR_VL_1,
+						   nvl(max(ACCESSDENYUSER),'N') as AFI_RTUR_VL_2
+					 from
+						  (
+						   select
+								   'Y' as ACCESSDENYIP,
+								   'N' as ACCESSDENYUSER
+							 from
+								   CSIPLOGCT
+							where
+								   CNCT_IP = #{gvUserIp}
+							  and  DLTN_YN <> 'Y'
+						union all
+						   select
+								   'Y' as ACCESSDENYIP,
+								   'Y' as ACCESSDENYUSER
+							 from
+								   CSIPLOGCT
+							where
+								   CNCT_IP = #{gvUserIp}
+							  and  LGIN_ID = #{gvLginId}
+							  and  DLTN_YN <> 'Y'
+						  )]]>
+			
+			
+			
+			
+	</select>
+
+
+
+</mapper>

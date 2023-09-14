@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoPjtisdtDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoPjtisdtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO">
+	
+		<result property="issNo" column="ISS_NO"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="fnctId" column="FNCT_ID"/>
+		<result property="fnctNm" column="FNCT_NM"/>
+		<result property="prjtTissCd" column="PRJT_TISS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="rgsrId" column="RGSR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01 (cod_pjtisdt_l01 이슈요청 조회) 
+        Description :                                           cod_pjtisdt_l01 이슈요청 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-listPjtisdt01 */
+		    select  /*+ cod_pjtisdt_l01$S01_이슈요청 조회 */ 
+		            a.ISS_NO
+		          , a.PRGM_ID
+		          , b.PRGM_NM
+		          , a.FNCT_ID
+		          , c.FNCT_NM
+		          , c.PRJT_TISS_CD
+		          , d.DETL_CD_NM
+		          , a.RGSR_ID
+		          , e.USER_NM
+		          , to_char(a.FRST_RGST_DT , 'yyyymmdd') as FRST_RGST_DT
+		          , a.DLTN_YN
+		          , a.RMRK_CTN
+		    from    COPJTISDT a
+		          , COTBPRMMT b
+		          , COTBPRMDT c
+		          , CCCMCDDMT d
+		          , CCUSRDPHT e
+		    where   a.PRGM_ID = b.PRGM_ID
+		      and   a.PRGM_ID = c.PRGM_ID
+		      and   a.FNCT_ID = c.FNCT_ID
+		      and   c.PRJT_TISS_CD   = d.COMN_DTLS_CD(+)
+		      and   d.COMN_GRP_CD(+) = 'COR_025'
+		      and   a.RGSR_ID        = e.USER_ID(+)
+		      and   ((nvl( #{issNo} , '*') = '*') or (a.ISS_NO =  #{issNo} ))
+		    order by a.FRST_RGST_DT
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-insertPjtisdt01 (cod_pjtisdt_i01 프로그램의 기능 이슈 상세 저장) 
+        Description :                                           cod_pjtisdt_i01 프로그램의 기능 이슈 상세 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-insertPjtisdt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO"  >
+		    insert  /*+ cod_pjtisdt_i01$I01_to-be 프로그램의 기능 이슈 상세 저장 */ 
+		    into COPJTISDT( ISS_NO
+		                         , PRGM_ID
+		                         , FNCT_ID
+		                         , RGSR_ID
+		                         , RMRK_CTN
+		                         , DLTN_YN
+		                         , FRST_RGSR_ID
+		                         , FRST_RGST_IP
+		                         , FRST_RGST_DT
+		                         , FRST_RGST_CLNT_PRGM_ID
+		                         , FRST_RGST_SRVR_PRGM_ID
+		                         , LAST_UPDR_ID
+		                         , LAST_UPDT_IP
+		                         , LAST_UPDT_DT
+		                         , LAST_UPDT_CLNT_PRGM_ID
+		                         , LAST_UPDT_SRVR_PRGM_ID
+		                         )
+		                   values(  #{issNo} 
+		                         ,  #{prgmId} 
+		                         ,  #{fnctId} 
+		                         ,  #{rgsrId} 
+		                         ,  #{rmrkCtn} 
+		                         ,  #{dltnYn} 
+		                         ,  #{gvUserId} 
+		                         ,  #{gvUserIp} 
+		                         , sysdate
+		                         ,  #{gvClntPrgmId} 
+		                         ,  #{gvSrvrPrgmId} 
+		                         ,  #{gvUserId} 
+		                         ,  #{gvUserIp} 
+		                         , sysdate
+		                         ,  #{gvClntPrgmId} 
+		                         ,  #{gvSrvrPrgmId} 
+		                         )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-updatePjtisdt01 (cod_pjtisdt_u01 이슈요청 변경) 
+        Description :                                           cod_pjtisdt_u01 이슈요청 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-updatePjtisdt01"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-updatePjtisdt01 */
+		    update  /*+ cod_pjtisdt_u01$I01_이슈요청 변경 */
+		             COPJTISDT
+		    set
+		             RGSR_ID            =  #{rgsrId} 
+		           , RMRK_CTN           =  #{rmrkCtn} 
+		           , DLTN_YN            =  #{dltnYn} 
+		           , LAST_UPDR_ID       =  #{gvUserId} 
+		           , LAST_UPDT_IP       =  #{gvUserIp} 
+		           , LAST_UPDT_DT       = sysdate
+		           , LAST_UPDT_CLNT_PRGM_ID  =  #{gvClntPrgmId} 
+		           , LAST_UPDT_SRVR_PRGM_ID  =  #{gvSrvrPrgmId} 
+		     where   ISS_NO             =  #{issNo} 
+		       and   PRGM_ID            =  #{prgmId} 
+		       and   FNCT_ID            =  #{fnctId} 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-updateDeletePjtisdt (cod_pjtisdt_u02 이슈삭제) 
+        Description :                                           cod_pjtisdt_u02 이슈삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-updateDeletePjtisdt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO"  >
+		    update  /*+ cod_pjtisdt_u02$I01_이슈삭제 */
+		             COPJTISDT
+		    set
+		             DLTN_YN            = 'Y'
+		           , LAST_UPDR_ID       =  #{gvUserId} 
+		           , LAST_UPDT_IP       =  #{gvUserIp} 
+		           , LAST_UPDT_DT       = sysdate
+		           , LAST_UPDT_CLNT_PRGM_ID  =  #{gvClntPrgmId} 
+		           , LAST_UPDT_SRVR_PRGM_ID  =  #{gvSrvrPrgmId} 
+		     where   ISS_NO             =  #{issNo} 
+		       and   nvl(DLTN_YN, 'N')  = 'N'
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-deletePjtisdt (cod_pjtisdt_d01 이슈삭제) 
+        Description :                                           cod_pjtisdt_d01 이슈삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-deletePjtisdt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoPjtisdtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoPjtisdtDAO-deletePjtisdt */
+		    delete  /*+ cod_pjtisdt_d01$I01_이슈삭제 */
+		    from    COPJTISDT
+		    where   ISS_NO   =  #{issNo} 
+	</delete>
+
+</mapper>

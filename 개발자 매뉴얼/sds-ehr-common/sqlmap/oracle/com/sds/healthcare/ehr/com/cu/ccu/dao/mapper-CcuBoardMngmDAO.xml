@@ -1,0 +1,1255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuBoardMngmDAO_sql.xml 
+    Description :                                      게시판관련 내용 및 분류를 조회, 등록, 수정, 삭제 처리를 수행한다.
+                  -->
+<mapper namespace="CcuBoardMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="bultClsfId" column="BULT_CLSF_ID"/>
+		<result property="afiSrchDvsnVl" column="AFI_SRCH_DVSN_VL"/>
+		<result property="afiFolwExcfNm" column="AFI_FOLW_EXCF_NM"/>
+		<result property="partPbntYn" column="PART_PBNT_YN"/>
+		<result property="dprtFoclId" column="DPRT_FOCL_ID"/>
+		<result property="updtYn" column="UPDT_YN"/>
+		<result property="wrtgAthrYn" column="WRTG_ATHR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno (게시판관리_게시분류별 채번조회처리) 
+        Description :                                           게시판관리_게시분류별(대, 중, 소분류) 채번을 조회처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfNornSno */
+		<![CDATA[
+		SELECT #{bultClsfDvsnVl} || LPAD(TO_NUMBER(SUBSTR(NVL(MAX(BULT_CLSF_ID), '000000000'), 2, 9)) +1, 9, '0') AS BULT_CLSF_ID
+		     , '' AS AFI_SRCH_DVSN_VL
+		     , '' AS AFI_FOLW_EXCF_NM
+		     , '' AS PART_PBNT_YN
+		     , '' AS DPRT_FOCL_ID
+		     , '' AS UPDT_YN
+		     , '' AS WRTG_ATHR_YN
+		 FROM CUBLBRCMT /* 게시판분류관리_T */
+		WHERE SUBSTR(BULT_CLSF_ID, 1, 1) = #{bultClsfDvsnVl}
+		   AND BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="bultClsfId" column="BULT_CLSF_ID"/>
+		<result property="hgrnBultClsfId" column="HGRN_BULT_CLSF_ID"/>
+		<result property="bultClsfNm" column="BULT_CLSF_NM"/>
+		<result property="bultClsfDvsnVl" column="BULT_CLSF_DVSN_VL"/>
+		<result property="smclTypVl" column="SMCL_TYP_VL"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="bultScrnId" column="BULT_SCRN_ID"/>
+		<result property="bultImagNm" column="BULT_IMAG_NM"/>
+		<result property="bultUrlNm" column="BULT_URL_NM"/>
+		<result property="bultSrvcId" column="BULT_SRVC_ID"/>
+		<result property="bultAllPbntYn" column="BULT_ALL_PBNT_YN"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="prmtTartNm" column="PRMT_TART_NM"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="mmBsisBultPerd" column="MM_BSIS_BULT_PERD"/>
+		<result property="mmMxmmBultPerd" column="MM_MXMM_BULT_PERD"/>
+		<result property="multHsptPsblYn" column="MULT_HSPT_PSBL_YN"/>
+		<result property="bsisBultClsfCd" column="BSIS_BULT_CLSF_CD"/>
+		<result property="rgstYn" column="RGST_YN"/>
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect (게시판관리_게시분류항목조회) 
+        Description :                                           게시판관리_게시내용의 대, 중, 소분류를 조회처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSelect */
+		<![CDATA[
+		    select
+		            cmt.bult_clsf_id                                as  bult_clsf_id            --  게시분류ID
+		        ,   cmt.hgrn_bult_clsf_id                           as  hgrn_bult_clsf_id       --  상위게시분류ID
+		        ,   cmt.bult_clsf_nm                                as  bult_clsf_nm            --  게시분류명
+		        ,   cmt.bult_clsf_dvsn_vl                           as  bult_clsf_dvsn_vl       --  게시분류구분값
+		        ,   cmt.smcl_typ_vl                                 as  smcl_typ_vl             --  소분류타입값
+		        ,   cmt.dltn_yn                                     as  dltn_yn                 --  삭제여부
+		        ,   cmt.bult_scrn_id                                as  bult_scrn_id            --  게시화면ID
+		        ,   cmt.bult_imag_nm                                as  bult_imag_nm            --  게시이미지명
+		        ,   cmt.bult_url_nm                                 as  bult_url_nm             --  게시URL명
+		        ,   cmt.bult_srvc_id                                as  bult_srvc_id            --  게시서비스ID
+		        ,   cmt.bult_all_pbnt_yn                            as  bult_all_pbnt_yn        --  게시전체공지여부
+		        ,   nvl (   cmt.scrn_dspl_sqnc  ,   0   )           as  scrn_dspl_sqnc          --  화면표시순서
+		        ,   cmt.prmt_tart_nm                                as  prmt_tart_nm            --  파라미터Target명
+		        ,   fmt.file_id                                     as  file_id                 --  파일ID
+		        ,   decode  (   nvl (   cmt.mm_bsis_bult_perd   ,   0   )
+		                    ,   0   ,   1
+		                            ,   cmt.mm_bsis_bult_perd
+		                    )                                       as  mm_bsis_bult_perd       --  월기본게시기간
+		        ,   decode  (   nvl (   cmt.mm_mxmm_bult_perd   ,   0   )
+		                    ,   0   ,   999
+		                            ,   cmt.mm_mxmm_bult_perd
+		                    )                                       as  mm_mxmm_bult_perd       --  월최대게시기간
+		        ,   nvl (   cmt.mult_hspt_psbl_yn   ,   'N' )       as  mult_hspt_psbl_yn       --  멀티병원가능여부
+		        ,   cmt.bsis_bult_clsf_cd                           as  bsis_bult_clsf_cd       --  기본게시분류코드
+		        ,   fn_cu_bult_get_wrtg_athr
+		                (
+		                    cmt.bult_clsf_id
+		                ,   cmt.bult_clsf_dvsn_vl
+		                ,   #{lginId}
+		                ,   #{hsptCd}
+		                ,   #{hgrnClsfCdNm}
+		                )                                           as  rgst_yn                 --  [ 게시분류별 작성권한 여부 ] 등록여부
+		        ,   fn_cu_bult_get_atfl_size
+		                (
+		                    cmt.bult_clsf_id
+		                ,   cmt.bult_clsf_dvsn_vl
+		                ,   #{lginId}
+		                ,   #{hsptCd}
+		                ,   #{vlmVl}
+		                )                                           as  rtur_vl                 --  [ 게시분류별 첨부파일 제한용량 ] 첨부파일용량
+		from
+		        cublbrcmt   cmt         --  게시판분류관리_T
+		    ,   cublbrfmt   fmt         --  게시판첨부파일_T
+		where
+		        cmt.dltn_yn                 =   'N'                 --  삭제가 않된 항목
+		and     cmt.bult_clsf_dvsn_vl       in  (   'L'             --  대분류
+		                                        ,   'M'             --  중분류
+		                                        )
+		and     fn_cu_bult_get_list_athr
+		            (
+		                cmt.bult_clsf_id
+		            ,   cmt.bult_clsf_dvsn_vl
+		            ,   #{lginId}
+		            ,   #{hsptCd}
+		            )                       =   'Y'                 --  게시분류 목록 조회여부Func
+		and     fmt.bult_id             (+) =   cmt.bult_clsf_id
+		and     fmt.dltn_yn             (+) =   'N'
+		and     fmt.atfl_typ_cd         (+) =   'MDCS_IMAGE'        --  게시판관리용 이미지
+		order   by
+		        cmt.hgrn_bult_clsf_id
+		    ,   nvl (   cmt.scrn_dspl_sqnc  ,   0   )   --  정렬순서_상위게시분류ID_화면표시순서
+		    ,   cmt.bult_clsf_id
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardBultClsf (게시판관리_게시분류등록처리) 
+        Description :                                           게시판관리_게시분류등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardBultClsf"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardBultClsf */
+		<![CDATA[
+		    insert
+		    into
+		        cublbrcmt   --  게시판분류관리_T
+		            (
+		                bult_clsf_id                                --  게시분류ID
+		            ,   hgrn_bult_clsf_id                           --  상위게시분류ID
+		            ,   bult_clsf_nm                                --  게시분류명
+		            ,   bult_clsf_dvsn_vl                           --  게시분류구분값
+		            ,   smcl_typ_vl                                 --  소분류타입값
+		            ,   dltn_yn                                     --  삭제여부
+		            ,   bult_scrn_id                                --  게시화면ID
+		            ,   bult_imag_nm                                --  게시이미지명
+		            ,   bult_url_nm                                 --  게시URL명
+		            ,   bult_srvc_id                                --  게시서비스ID
+		            ,   bult_all_pbnt_yn                            --  게시전체공지여부
+		            ,   scrn_dspl_sqnc                              --  화면표시순서
+		            ,   prmt_tart_nm                                --  파라미터Target명
+		            ,   frst_rgsr_id
+		            ,   frst_rgst_ip
+		            ,   frst_rgst_dt
+		            ,   frst_rgst_clnt_prgm_id
+		            ,   frst_rgst_srvr_prgm_id
+		            ,   last_updr_id
+		            ,   last_updt_ip
+		            ,   last_updt_dt
+		            ,   last_updt_clnt_prgm_id
+		            ,   last_updt_srvr_prgm_id
+		            ,   mm_bsis_bult_perd
+		            ,   mm_mxmm_bult_perd
+		            ,   mult_hspt_psbl_yn
+		            ,   bsis_bult_clsf_cd
+		            )
+		        values
+		            (
+		                #{bultClsfId}                               --  게시분류ID
+		            ,   #{hgrnBultClsfId}                           --  상위게시분류ID
+		            ,   #{bultClsfNm}                               --  게시분류명
+		            ,   #{bultClsfDvsnVl}                           --  게시분류구분값
+		            ,   #{smclTypVl}                                --  소분류타입값
+		            ,   #{dltnYn}                                   --  삭제여부
+		            ,   #{bultScrnId}                               --  게시화면ID
+		            ,   #{bultImagNm}                               --  게시이미지명
+		            ,   #{bultUrlNm}                                --  게시URL명
+		            ,   #{bultSrvcId}                               --  게시서비스ID
+		            ,   #{bultAllPbntYn}                            --  게시전체공지여부
+		            ,   #{scrnDsplSqnc}                             --  화면표시순서
+		            ,   #{prmtTartNm}                               --  파라미터Target명
+		            ,   #{gvUserId}
+		            ,   #{gvUserIp}
+		            ,   sysdate
+		            ,   #{gvClntPrgmId}
+		            ,   #{gvSrvrPrgmId}
+		            ,   #{gvUserId}
+		            ,   #{gvUserIp}
+		            ,   sysdate
+		            ,   #{gvClntPrgmId}
+		            ,   #{gvSrvrPrgmId}
+		            ,   decode  (   nvl (   #{mmBsisBultPerd}   ,   0   )
+		                        ,   0   ,   1
+		                                ,   #{mmBsisBultPerd}
+		                        )
+		            ,   decode  (   nvl (   #{mmMxmmBultPerd}   ,   0   )
+		                        ,   0   ,   999
+		                                ,   #{mmMxmmBultPerd}
+		                        )
+		            ,   nvl (   #{multHsptPsblYn}   ,   'N' )
+		            ,   nvl (   #{bsisBultClsfCd}   ,   'GNR'   )
+		            )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultClsf (게시판관리_게시분류수정처리) 
+        Description :                                           게시판관리_게시분류등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultClsf"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultClsf */
+		<![CDATA[
+		    update
+		            cublbrcmt       --  게시판분류관리_T
+		    set
+		            bult_clsf_nm            =   #{bultClsfNm}               --  게시분류명
+		        ,   bult_clsf_dvsn_vl       =   #{bultClsfDvsnVl}           --  게시분류구분값
+		        ,   smcl_typ_vl             =   #{smclTypVl}                --  소분류타입값
+		        ,   dltn_yn                 =   #{dltnYn}                   --  삭제여부
+		        ,   bult_scrn_id            =   #{bultScrnId}               --  게시화면ID
+		        ,   bult_imag_nm            =   #{bultImagNm}               --  게시이미지명
+		        ,   bult_url_nm             =   #{bultUrlNm}                --  게시URL명
+		        ,   bult_srvc_id            =   #{bultSrvcId}               --  게시서비스ID
+		        ,   bult_all_pbnt_yn        =   #{bultAllPbntYn}            --  게시전체공지여부
+		        ,   prmt_tart_nm            =   #{prmtTartNm}               --  파라미터Target명
+		        ,   last_updr_id            =   #{gvUserId}
+		        ,   last_updt_ip            =   #{gvUserIp}
+		        ,   last_updt_dt            =   sysdate
+		        ,   last_updt_clnt_prgm_id  =   #{gvClntPrgmId}
+		        ,   last_updt_srvr_prgm_id  =   #{gvSrvrPrgmId}
+		        ,   mm_bsis_bult_perd       =   decode  (   nvl (   #{mmBsisBultPerd}   ,   0   )
+		                                                ,   0   ,   mm_bsis_bult_perd
+		                                                        ,   #{mmBsisBultPerd}
+		                                                )
+		        ,   mm_mxmm_bult_perd       =   decode  (   nvl (   #{mmMxmmBultPerd}   ,   0   )
+		                                                ,   0   ,   mm_mxmm_bult_perd
+		                                                        ,   #{mmMxmmBultPerd}
+		                                                )
+		        ,   mult_hspt_psbl_yn       =   nvl (   #{multHsptPsblYn}   ,   mult_hspt_psbl_yn   )
+		        ,   bsis_bult_clsf_cd       =   nvl (   #{bsisBultClsfCd}   ,   bsis_bult_clsf_cd   )
+		    where
+		            bult_clsf_id    =   #{bultClsfId}                 --  게시분류ID
+		    and     dltn_yn         =   #{dltnYn}                     --  삭제여부
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sdeleteBoardBultClsfs-healthcare-ehr-com-cu-ccu-deleteBoardBultClsfao-CcuBoardeleteBoardBultClsfMngmDAO-deleteBoardBultClsf (게시판관리_게시분류삭제처리) 
+        Description :                                           게시판관리_게시분류삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+    -->	
+	<delete id="com-sdeleteBoardBultClsfs-healthcare-ehr-com-cu-ccu-deleteBoardBultClsfao-CcuBoardeleteBoardBultClsfMngmDAO-deleteBoardBultClsf"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardBultClsf */
+		<![CDATA[
+		UPDATE 
+		      			CUBLBRCMT  /* 게시판분류관리_T */
+			  SET  	DLTN_YN								= #{dltnYn}						/* 삭제여부   */
+		         	  , LAST_UPDR_ID							= #{gvUserId}                    
+		         	  , LAST_UPDT_IP							= #{gvUserIp}                    
+		         	  , LAST_UPDT_DT						= sysdate                        
+		         	  , LAST_UPDT_CLNT_PRGM_ID		= #{gvClntPrgmId}                
+		         	  , LAST_UPDT_SRVR_PRGM_ID		= #{gvSrvrPrgmId}                
+		WHERE 		BULT_CLSF_ID							= #{bultClsfId}                 /* 게시분류ID   */
+		]]>		 
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="bultClsfId" column="BULT_CLSF_ID"/>
+		<result property="hgrnBultClsfId" column="HGRN_BULT_CLSF_ID"/>
+		<result property="bultClsfNm" column="BULT_CLSF_NM"/>
+		<result property="bultClsfDvsnVl" column="BULT_CLSF_DVSN_VL"/>
+		<result property="smclTypVl" column="SMCL_TYP_VL"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="bultScrnId" column="BULT_SCRN_ID"/>
+		<result property="bultImagNm" column="BULT_IMAG_NM"/>
+		<result property="bultUrlNm" column="BULT_URL_NM"/>
+		<result property="bultSrvcId" column="BULT_SRVC_ID"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="bultAllPbntYn" column="BULT_ALL_PBNT_YN"/>
+		<result property="mmBsisBultPerd" column="MM_BSIS_BULT_PERD"/>
+		<result property="mmMxmmBultPerd" column="MM_MXMM_BULT_PERD"/>
+		<result property="multHsptPsblYn" column="MULT_HSPT_PSBL_YN"/>
+		<result property="bsisBultClsfCd" column="BSIS_BULT_CLSF_CD"/>
+		<result property="rgstYn" column="RGST_YN"/>
+		<result property="rturVl" column="RTUR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect (게시판관리_소분류상세조회처리) 
+        Description :                                           소분류의 상세내용을 조회처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listBoardBultClsfSmclDetlSelect */
+		<![CDATA[
+		    select
+		            a.bult_clsf_id                                  as  bult_clsf_id                --  게시분류ID
+		        ,   a.hgrn_bult_clsf_id                             as  hgrn_bult_clsf_id           --  상위게시분류ID
+		        ,   a.bult_clsf_nm                                  as  bult_clsf_nm                --  게시분류명
+		        ,   a.bult_clsf_dvsn_vl                             as  bult_clsf_dvsn_vl           --  게시분류구분값
+		        ,   a.smcl_typ_vl                                   as  smcl_typ_vl                 --  소분류타입값
+		        ,   a.dltn_yn                                       as  dltn_yn                     --  삭제여부
+		        ,   a.bult_scrn_id                                  as  bult_scrn_id                --  게시화면ID
+		        ,   a.bult_imag_nm                                  as  bult_imag_nm                --  게시이미지명
+		        ,   a.bult_url_nm                                   as  bult_url_nm                 --  게시URL명
+		        ,   a.bult_srvc_id                                  as  bult_srvc_id                --  게시서비스ID
+		        ,   a.scrn_dspl_sqnc                                as  scrn_dspl_sqnc              --  화면표시순서
+		        ,   a.bult_all_pbnt_yn                              as  bult_all_pbnt_yn            --  게시전체공지여부
+		        ,   decode  (   nvl (   a.mm_bsis_bult_perd ,   0   )
+		                    ,   0   ,   1
+		                            ,   a.mm_bsis_bult_perd
+		                    )                                       as  mm_bsis_bult_perd           --  월기본게시기간
+		        ,   decode  (   nvl (   a.mm_mxmm_bult_perd   ,   0   )
+		                    ,   0   ,   999
+		                            ,   a.mm_mxmm_bult_perd
+		                    )                                       as  mm_mxmm_bult_perd           --  월최대게시기간
+		        ,   nvl (   a.mult_hspt_psbl_yn   ,   'N' )         as  mult_hspt_psbl_yn           --  멀티병원가능여부
+		        ,   a.bsis_bult_clsf_cd                             as  bsis_bult_clsf_cd           --  기본게시분류코드
+		        ,   fn_cu_bult_get_wrtg_athr
+		                (
+		                    a.bult_clsf_id
+		                ,   a.bult_clsf_dvsn_vl
+		                ,   #{lginId}
+		                ,   #{hsptCd}
+		                ,   #{hgrnClsfCdNm}
+		                )                                           as  rgst_yn                     --  [ 게시분류별 작성권한 여부 ] 등록여부(소분류일 경우에는 중분류의 등록여부가 온다.)
+		        ,   fn_cu_bult_get_atfl_size
+		                (
+		                    a.bult_clsf_id
+		                ,   a.bult_clsf_dvsn_vl
+		                ,   #{lginId}
+		                ,   #{hsptCd}
+		                ,   #{vlmVl}
+		                )                                           as  rtur_vl                     --  [ 게시분류별 첨부파일 제한용량 ] 첨부파일용량(소분류일 경우 중분류의 용량이 온다.)
+		    from
+		            cublbrcmt   a       --  게시판분류관리
+		        ,   ccenstimt   b       --  공통환경설정항목
+		    where
+		            a.hgrn_bult_clsf_id                 =   nvl (   #{hgrnBultClsfId}   ,   a.hgrn_bult_clsf_id )   --  상위게시분류ID
+		    and     a.bult_clsf_dvsn_vl                 =   nvl (   #{bultClsfDvsnVl}   ,   a.bult_clsf_dvsn_vl )   --  개시분류구분값
+		    and     a.smcl_typ_vl                       =   nvl (   #{smclTypVl}        ,   a.smcl_typ_vl       )   --  소분류타입값
+		    and     a.dltn_yn                           =   'N'                     --  삭제여부
+		    and     fn_cu_bult_get_list_athr
+		                (
+		                    a.bult_clsf_id
+		                ,   a.bult_clsf_dvsn_vl
+		                ,   #{lginId}
+		                ,   #{hsptCd}
+		                )               =   'Y'                         --  게시분류 목록 조회여부Func
+		    and     b.comn_envr_stup_grp_cd         (+) =   'CUB_BOARD_DVSN'
+		    and     b.comn_envr_stup_item_chrc_vl   (+) =   a.hgrn_bult_clsf_id
+		    order   by
+		            decode  (   b.comn_envr_stup_item_cd
+		                    ,   '0005'  ,   a.bult_clsf_nm
+		                                ,   ''
+		                    )
+		        ,   a.scrn_dspl_sqnc
+		        ,   a.bult_clsf_id
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="bultClsfId" column="BULT_CLSF_ID"/>
+		<result property="hgrnBultClsfId" column="HGRN_BULT_CLSF_ID"/>
+		<result property="bultClsfNm" column="BULT_CLSF_NM"/>
+		<result property="bultClsfDvsnVl" column="BULT_CLSF_DVSN_VL"/>
+		<result property="smclTypVl" column="SMCL_TYP_VL"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="bultScrnId" column="BULT_SCRN_ID"/>
+		<result property="bultImagNm" column="BULT_IMAG_NM"/>
+		<result property="bultUrlNm" column="BULT_URL_NM"/>
+		<result property="bultSrvcId" column="BULT_SRVC_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs (게시판관리_게시분류 중분류 조회처리) 
+        Description :                                           게시판관리_게시분류 중분류 조회처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfMdcs */
+		<![CDATA[
+		SELECT 
+						A.BULT_CLSF_ID					/* 게시분류ID   */
+					,	A.HGRN_BULT_CLSF_ID			/* 상위게시분류ID   */
+					,	A.BULT_CLSF_NM					/* 게시분류명   */
+					,	A.BULT_CLSF_DVSN_VL			/* 게시분류구분값   */
+					,	A.SMCL_TYP_VL					/* 소분류타입값   */					
+					,	A.DLTN_YN							/* 삭제여부   */
+					,	A.BULT_SCRN_ID					/* 게시화면ID   */
+					,	A.BULT_IMAG_NM				/* 게시이미지명   */
+					,	A.BULT_URL_NM					/* 게시URL명   */
+					,	A.BULT_SRVC_ID					/* 게시서비스ID   */
+			FROM CUBLBRCMT A						/* 게시판분류관리_T */
+		  WHERE A.DLTN_YN = 'N'
+		]]>
+				<if test="bultClsfId != null and !bultClsfId.equals('') ">
+					AND A.BULT_CLSF_ID = #{bultClsfId}  /* 게시분류ID */
+				</if>
+				<if test="hgrnBultClsfId != null and !hgrnBultClsfId.equals('') ">
+					AND A.HGRN_BULT_CLSF_ID = #{hgrnBultClsfId}  /* 상위게시분류ID */
+				</if>
+				<if test="bultClsfDvsnVl != null and !bultClsfDvsnVl.equals('') ">
+					AND A.BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}	/* 게시분류구분값 */
+				</if>
+				<if test="smclTypVl != null and !smclTypVl.equals('') ">
+					AND A.SMCL_TYP_VL = #{smclTypVl}					/* 소분류타입값 */
+				</if>
+		<![CDATA[
+		ORDER BY HGRN_BULT_CLSF_ID, BULT_CLSF_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn (게시판관리 분류삭제시 게시분류별 삭제가능판변 수행) 
+        Description :                                           게시판관리 분류삭제시 게시분류별 삭제가능판변 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfUseExistYn */
+		<![CDATA[
+		   SELECT DECODE(COUNT(BULT_CLSF_ID), 0, 'N', 'Y') AS DLTN_YN  -- N : 대상없음, Y : 대상있음.
+			FROM CUBLBRCMT /* 게시판분류관리_T */
+		   WHERE DLTN_YN = 'N'
+			  AND HGRN_BULT_CLSF_ID = #{hgrnBultClsfId}  /* 상위분류코드ID */
+			  AND BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl} /* 게시분류구분값(L:대분류, M:중분류, S:소분류) */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn (게시판관리 분류 중 게시물 사용존재여부 판별) 
+        Description :                                           게시판관리 분류 중 게시물 사용존재여부 판별을 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMngUseExistYn */
+		<![CDATA[
+		SELECT DECODE(COUNT(BULT_ID), 0, 'N', 'Y') AS DLTN_YN  /* 게시물사용여부판별(N:사용않함, Y:사용함) */ 
+		 FROM CUBLBRMMT /* 공통게시판_T */
+		WHERE DLTN_YN = 'N'  /* 삭제여부 */
+		  AND BULT_CLSF_ID = #{bultClsfId} /* 게시분류ID */
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAttachImageDVO">
+	
+		<result property="atflSno" column="ATFL_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId (게시판관리 이미지첨부파일일련번호 채번) 
+        Description :                                           게시판관리 이미지첨부파일일련번호 채번수행처리.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAttachImageDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAttachImageDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardMaxAttachImgId */
+		<![CDATA[
+		SELECT TO_NUMBER(NVL(MAX(ATFL_SNO), '0') +1) AS ATFL_SNO  /* 첨부파일일련번호 */
+		 FROM CUBLBRFMT /* 게시판첨부파일_T */
+		WHERE BULT_ID = #{bultId}  /* 게시ID(중분류ID) */
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultAttachImgMerge (게시판관리 이미지첨부파일 등록/ 수정(Merge) 처리.) 
+        Description :                                           게시판관리 이미지첨부파일 등록/ 수정(Merge) 처리를 수행.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAttachImageDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultAttachImgMerge"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAttachImageDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardBultAttachImgMerge */
+		<![CDATA[
+		MERGE 
+		   INTO CUBLBRFMT  /* 게시판첨부파일 */
+		  USING DUAL
+			  ON (    	   BULT_ID					= #{bultId}						/* 게시ID   */
+		         		and ATFL_SNO				= #{atflSno}                    /* 첨부파일일련번호   */
+		        	) 
+		  WHEN MATCHED THEN 
+		 UPDATE
+		    SET
+		           ATFL_TYP_CD						= #{atflTypCd}					/* 첨부유형코드   */
+		         , FILE_ID								= #{fileId}						/* 파일ID   */
+		         , FILE_NM								= #{fileNm}						/* 파일명   */
+		         , ATCH_FLDV_VL						= #{atchFldvVl}				/* 첨부파일구분값   */
+		         , UUID						        = #{uuid}				/* UUID 고유값   */
+		         , FILE_SIZE_VL							= #{fileSizeVl}					/* 파일크기값   */
+		         , LAST_UPDR_ID						= #{gvUserId}                    
+		         , LAST_UPDT_IP						= #{gvUserIp}                    
+		         , LAST_UPDT_DT						= sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID	= #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID	= #{gvSrvrPrgmId}                
+		 WHERE  BULT_ID							= #{bultId}						/* 게시ID   */
+		     AND ATFL_SNO							= #{atflSno}					/* 첨부파일일련번호   */
+		  WHEN NOT MATCHED THEN 
+		   INSERT
+		        (
+		           BULT_ID									/* 게시ID   */
+		         , ATFL_SNO								/* 첨부파일일련번호   */
+		         , ATFL_TYP_CD							/* 첨부유형코드   */
+		         , FILE_ID									/* 파일ID   */
+		         , FILE_NM									/* 파일명   */
+		         , ATCH_FLDV_VL							/* 첨부파일구분값   */
+		         , FILE_SIZE_VL								/* 파일크기값   */
+		         , UUID								/* UUID 고유값   */
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		  VALUES
+		        (
+		           #{bultId}								/* 게시ID   */ 
+		         , #{atflSno}							/* 첨부파일일련번호   */ 
+		         , #{atflTypCd}							/* 첨부유형코드   */ 
+		         , #{fileId}								/* 파일ID   */ 
+		         , #{fileNm}								/* 파일명   */ 
+		         , #{atchFldvVl}						/* 첨부파일구분값   */ 
+		         , #{fileSizeVl}							/* 파일크기값   */ 
+		         , #{uuid}								/* UUID 고유값   */
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		        )
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="bultClsfId" column="BULT_CLSF_ID"/>
+		<result property="hgrnBultClsfId" column="HGRN_BULT_CLSF_ID"/>
+		<result property="bultClsfNm" column="BULT_CLSF_NM"/>
+		<result property="bultClsfDvsnVl" column="BULT_CLSF_DVSN_VL"/>
+		<result property="smclTypVl" column="SMCL_TYP_VL"/>
+		<result property="bultScrnId" column="BULT_SCRN_ID"/>
+		<result property="bultImagNm" column="BULT_IMAG_NM"/>
+		<result property="bultUrlNm" column="BULT_URL_NM"/>
+		<result property="bultSrvcId" column="BULT_SRVC_ID"/>
+		<result property="bultId" column="BULT_ID"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="atflTypCd" column="ATFL_TYP_CD"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="atchFldvVl" column="ATCH_FLDV_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl (게시판관리 이미지첨부파일 상세정보 조회처리) 
+        Description :                                           게시판관리 이미지첨부파일 상세정보 조회처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardBultClsfAtchFlImgDtl */
+		<![CDATA[
+		SELECT 
+					A.BULT_CLSF_ID				AS BULT_CLSF_ID					/* 게시분류ID */
+				  , A.HGRN_BULT_CLSF_ID		AS HGRN_BULT_CLSF_ID		/* 상위게시분류ID */
+				  , A.BULT_CLSF_NM				AS BULT_CLSF_NM				/* 게시분류명 */
+				  , A.BULT_CLSF_DVSN_VL		AS BULT_CLSF_DVSN_VL		/* 게시분류구분값 */
+				  , A.SMCL_TYP_VL				AS SMCL_TYP_VL					/* 소분류타입값 */
+				  , A.BULT_SCRN_ID				AS BULT_SCRN_ID				/* 게시화면ID */
+				  , A.BULT_IMAG_NM			AS BULT_IMAG_NM				/* 게시이미지명 */
+				  , A.BULT_URL_NM				AS BULT_URL_NM				/* 게시URL명 */
+				  , A.BULT_SRVC_ID				AS BULT_SRVC_ID				/* 게시서비스ID */
+				  , B.BULT_ID						AS BULT_ID							/* 첨부파일게시ID */
+				  , B.ATFL_SNO					AS ATFL_SNO						/* 첨부파일일련번호 */
+				  , B.ATFL_TYP_CD				AS ATFL_TYP_CD					/* 첨부유형코드 */
+				  , B.FILE_ID							AS FILE_ID							/* 파일ID */
+				  , B.FILE_NM						AS FILE_NM						/* 파일명 */
+				  , B.ATCH_FLDV_VL				AS ATCH_FLDV_VL				/* 첨부파일구분값 */
+		 FROM  CUBLBRCMT A /* 게시판분류관리_T */
+		   		  , CUBLBRFMT B /* 게시판첨부파일_T */
+		WHERE A.DLTN_YN = 'N'
+		]]>
+				<if test="bultClsfId != null and !bultClsfId.equals('') ">
+					AND A.BULT_CLSF_ID = #{bultClsfId}
+					AND A.BULT_CLSF_ID = B.BULT_ID(+)
+					AND A.BULT_IMAG_NM = B.FILE_ID(+)
+				</if>
+				<if test="hgrnBultClsfId != null and !hgrnBultClsfId.equals('') ">
+					AND 	  A.HGRN_BULT_CLSF_ID = #{hgrnBultClsfId}
+				</if>
+				<if test="bultClsfDvsnVl != null and !bultClsfDvsnVl.equals('') ">
+					AND 	  A.BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}
+				</if>
+				<if test="smclTypVl != null and !smclTypVl.equals('') ">
+					AND 	  A.SMCL_TYP_VL = #{smclTypVl}
+				</if>
+		<![CDATA[
+			ORDER BY 	 A.HGRN_BULT_CLSF_ID,  A.BULT_CLSF_ID  
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardBultAttachImg (게시판관리 이미지첨부파일 삭제처리) 
+        Description :                                           게시판관리 이미지첨부파일 삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardBultAttachImg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardBultAttachImg */
+		<![CDATA[
+		DELETE 
+		 FROM CUBLBRFMT /* 게시판첨부파일_T */  						
+		WHERE BULT_ID				= #{bultId}			/* 게시ID */
+		]]>
+		<if test="atflSno != null and !atflSno.equals('')">
+			AND ATFL_SNO			= #{atflSno}		/* 첨부파일일련번호 */
+		</if>
+		<if test="atflTypCd != null and !atflTypCd.equals('')">
+			AND ATFL_TYP_CD		= #{atflTypCd}	/* 첨부유형코드 */	
+		</if>
+		<if test="fileId != null and !fileId.equals('')">
+			AND FILE_ID				= #{fileId}			/* 파일ID */
+		</if>
+		<if test="atchFldvVl != null and !atchFldvVl.equals('')">
+			AND ATCH_FLDV_VL		= #{atchFldvVl}	/* 첨부파일구분값 */	
+		</if>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthGrpWrtg (게시판관리 작성권한 조건그룹 삭제처리) 
+        Description :                                           게시판관리 작성권한 조건그룹 삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthGrpWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		DELETE  /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthGrpWrtg */
+		 FROM 	CUBLBRGMT  					 /* 게시판작성권한조건그룹_T */
+		WHERE 	BULT_CLSF_ID = #{bultClsfId} /* 게시구분ID */
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchGrpWrtg (게시판관리 조회 작성권한 조건그룹 삭제처리) 
+        Description :                                           게시판관리 조회 작성권한 조건그룹 삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchGrpWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		DELETE  /*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchGrpWrtg */
+		 FROM 	CUBLBRSMT  					 /* 게시판작성조회권한조건그룹_T */
+		WHERE 	BULT_CLSF_ID = #{bultClsfId} /* 게시구분ID */
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthGrpWrtg (게시판관리 작성권한 조건그룹 등록처리) 
+        Description :                                           게시판관리 작성권한 조건그룹 등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthGrpWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		INSERT	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthGrpWrtg */
+		  INTO	CUBLBRGMT	/* 게시판작성권한조건그룹_T */
+		        (
+		           	BULT_CLSF_ID				/* 게시분류ID  */
+		         , 	ATHR_CNDT_GRP_ID			/* 권한조건그룹ID   */
+		         , 	APST_DT						/* 적용시작일시   */
+		         , 	APFN_DT						/* 적용종료일시   */
+		         , 	ATHR_CNDT_GRP_APLY_SQNC		/* 권한조건그룹적용순서   */
+		         , 	ATHR_CNDT_GRP_NM			/* 권한조건그룹명   */
+		         , 	ITEM_DVSN_CD				/* 항목구분코드   */
+		         , 	FRST_RGSR_ID                    
+		         , 	FRST_RGST_IP                    
+		         , 	FRST_RGST_DT                    
+		         , 	FRST_RGST_CLNT_PRGM_ID          
+		         , 	FRST_RGST_SRVR_PRGM_ID          
+		         , 	LAST_UPDR_ID                    
+		         , 	LAST_UPDT_IP                    
+		         , 	LAST_UPDT_DT                    
+		         , 	LAST_UPDT_CLNT_PRGM_ID          
+		         , 	LAST_UPDT_SRVR_PRGM_ID          
+		        )
+		VALUES
+		        (
+		           	#{bultClsfId}						/* 게시ID   */ 
+		         , 	#{athrCndtGrpId}					/* 권한조건그룹ID   */ 
+		         , 	sysdate								/* 적용시작일시   */ 
+		         , 	to_date('2999-12-31', 'yyyy-MM-dd')	/* 적용종료일시   */ 
+		         , 	#{athrCndtGrpAplySqnc}				/* 권한조건그룹적용순서   */ 
+		         , 	#{athrCndtGrpNm}					/* 권한조건그룹명   */ 
+		         , 	#{itemDvsnCd}						/* 항목구분코드 : AT : ENABLED, BT : VISIBLED : default : BT   */ 
+		         , 	#{gvUserId}                      
+		         , 	#{gvUserIp}                      
+		         , 	sysdate                          
+		         , 	#{gvClntPrgmId}                  
+		         , 	#{gvSrvrPrgmId}                  
+		         , 	#{gvUserId}                      
+		         , 	#{gvUserIp}                      
+		         , 	sysdate                          
+		         , 	#{gvClntPrgmId}                  
+		         , 	#{gvSrvrPrgmId}                  
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchGrpWrtg (게시판관리 조회 작성권한 조건그룹 등록처리) 
+        Description :                                           게시판관리 조회 작성권한 조건그룹 등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchGrpWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		INSERT	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchGrpWrtg */
+		  INTO	CUBLBRSMT	/* 게시판작성조회권한조건그룹_T */
+		        (
+		           	BULT_CLSF_ID				/* 게시분류ID  */
+		         , 	ATHR_CNDT_GRP_ID			/* 권한조건그룹ID   */
+		         , 	APST_DT						/* 적용시작일시   */
+		         , 	APFN_DT						/* 적용종료일시   */
+		         , 	ATHR_CNDT_GRP_APLY_SQNC		/* 권한조건그룹적용순서   */
+		         , 	ATHR_CNDT_GRP_NM			/* 권한조건그룹명   */
+		         , 	ITEM_DVSN_CD				/* 항목구분코드   */
+		         , 	FRST_RGSR_ID                    
+		         , 	FRST_RGST_IP                    
+		         , 	FRST_RGST_DT                    
+		         , 	FRST_RGST_CLNT_PRGM_ID          
+		         , 	FRST_RGST_SRVR_PRGM_ID          
+		         , 	LAST_UPDR_ID                    
+		         , 	LAST_UPDT_IP                    
+		         , 	LAST_UPDT_DT                    
+		         , 	LAST_UPDT_CLNT_PRGM_ID          
+		         , 	LAST_UPDT_SRVR_PRGM_ID          
+		        )
+		VALUES
+		        (
+		           	#{bultClsfId}						/* 게시ID   */ 
+		         , 	#{athrCndtGrpId}					/* 권한조건그룹ID   */ 
+		         , 	sysdate								/* 적용시작일시   */ 
+		         , 	to_date('2999-12-31', 'yyyy-MM-dd')	/* 적용종료일시   */ 
+		         , 	#{athrCndtGrpAplySqnc}				/* 권한조건그룹적용순서   */ 
+		         , 	#{athrCndtGrpNm}					/* 권한조건그룹명   */ 
+		         , 	#{itemDvsnCd}						/* 항목구분코드 : AT : ENABLED, BT : VISIBLED : default : BT   */ 
+		         , 	#{gvUserId}                      
+		         , 	#{gvUserIp}                      
+		         , 	sysdate                          
+		         , 	#{gvClntPrgmId}                  
+		         , 	#{gvSrvrPrgmId}                  
+		         , 	#{gvUserId}                      
+		         , 	#{gvUserIp}                      
+		         , 	sysdate                          
+		         , 	#{gvClntPrgmId}                  
+		         , 	#{gvSrvrPrgmId}                  
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthItemWrtg (게시판관리 작성권한 조건항목 삭제처리) 
+        Description :                                           게시판관리 작성권한 조건항목 삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthItemWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		DELETE	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthItemWrtg */
+		 FROM 	CUBLBRIMT  						/* 게시판작성권한조건항목 */
+		WHERE 	BULT_CLSF_ID = #{bultClsfId}	/* 게시분류ID   */
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchItemWrtg (게시판관리 조회 작성권한 조건항목 삭제처리) 
+        Description :                                           게시판관리 조회 작성권한 조건항목 삭제처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchItemWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  >
+		<![CDATA[
+		DELETE	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-deleteBoardMngmAuthSrchItemWrtg */
+		 FROM 	CUBLBRSIT  						/* 게시판작성조회권한조건항목 */
+		WHERE 	BULT_CLSF_ID = #{bultClsfId}	/* 게시분류ID   */
+		]]>
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthItemWrtg (게시판관리 작성권한 조건항목 등록처리) 
+        Description :                                           게시판관리 작성권한 조건항목 등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthItemWrtgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthItemWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthItemWrtgDVO"  >
+		<![CDATA[
+		INSERT	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthItemWrtg */
+		  INTO	CUBLBRIMT						/* 게시판작성권한조건항목_T */
+		        (
+		           	BULT_CLSF_ID				/* 게시ID   */
+		         , 	ATHR_CNDT_GRP_ID			/* 권한조건그룹ID   */
+		         , 	ATHR_CNDT_ITEM_ID			/* 권한조건항목ID   */
+		         , 	APST_DT						/* 적용시작일시   */
+		         , 	APFN_DT						/* 적용종료일시   */
+		         , 	ATHR_CNDT_ITEM_SQNC			/* 권한조건항목순서   */
+		         , 	ATHR_CNDT_ITEM_NM			/* 권한조건항목명   */
+		         , 	CNDT_OPRR_CD				/* 조건연산자코드   */
+		         , 	CNDT_TRGT_ITEM_VL			/* 조건대상항목값   */
+		         , 	CNDT_TRGT_ITEM_NM			/* 조건대상항목명   */
+		         , 	CNDT_TRGT_ITEM_CD			/* 조건대상항목코드   */
+		         , 	FRST_RGSR_ID                   
+		         , 	FRST_RGST_IP                   
+		         , 	FRST_RGST_DT                   
+		         , 	FRST_RGST_CLNT_PRGM_ID         
+		         , 	FRST_RGST_SRVR_PRGM_ID         
+		         , 	LAST_UPDR_ID                   
+		         , 	LAST_UPDT_IP                   
+		         , 	LAST_UPDT_DT                   
+		         , 	LAST_UPDT_CLNT_PRGM_ID         
+		         , 	LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		VALUES
+		        (
+		           	#{bultClsfId}						/* 게시ID   */ 
+		         , 	#{athrCndtGrpId}					/* 권한조건그룹ID   */ 
+		         , 	#{athrCndtItemId}					/* 권한조건항목ID   */ 
+		         , 	sysdate								/* 적용시작일시   */ 
+		         , 	to_date('2999-12-31', 'yyyy-MM-dd')	/* 적용종료일시   */ 
+		         , 	#{athrCndtItemSqnc}					/* 권한조건항목순서   */ 
+		         , 	#{athrCndtItemNm}					/* 권한조건항목명   */ 
+		         , 	#{cndtOprrCd}						/* 조건연산자코드   */ 
+		         , 	#{cndtTrgtItemVl}					/* 조건대상항목값   */ 
+		         , 	#{cndtTrgtItemNm}					/* 조건대상항목명   */ 
+		         , 	#{cndtTrgtItemCd}					/* 조건대상항목코드   */ 
+		         , 	#{gvUserId}                     
+		         , 	#{gvUserIp}                     
+		         , 	sysdate                         
+		         , 	#{gvClntPrgmId}                 
+		         , 	#{gvSrvrPrgmId}                 
+		         , 	#{gvUserId}                     
+		         , 	#{gvUserIp}                     
+		         , 	sysdate                         
+		         , 	#{gvClntPrgmId}                 
+		         , 	#{gvSrvrPrgmId}                 
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchItemWrtg (게시판관리 조회 작성권한 조건항목 등록처리) 
+        Description :                                           게시판관리 조회 작성권한 조건항목 등록처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthItemWrtgDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchItemWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthItemWrtgDVO"  >
+		<![CDATA[
+		INSERT	/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-insertBoardMngmAuthSrchItemWrtg */
+		  INTO	CUBLBRSIT						/* 게시판작성조회권한조건항목_T */
+		        (
+		           	BULT_CLSF_ID				/* 게시ID   */
+		         , 	ATHR_CNDT_GRP_ID			/* 권한조건그룹ID   */
+		         , 	ATHR_CNDT_ITEM_ID			/* 권한조건항목ID   */
+		         , 	APST_DT						/* 적용시작일시   */
+		         , 	APFN_DT						/* 적용종료일시   */
+		         , 	ATHR_CNDT_ITEM_SQNC			/* 권한조건항목순서   */
+		         , 	ATHR_CNDT_ITEM_NM			/* 권한조건항목명   */
+		         , 	CNDT_OPRR_CD				/* 조건연산자코드   */
+		         , 	CNDT_TRGT_ITEM_VL			/* 조건대상항목값   */
+		         , 	CNDT_TRGT_ITEM_NM			/* 조건대상항목명   */
+		         , 	CNDT_TRGT_ITEM_CD			/* 조건대상항목코드   */
+		         , 	FRST_RGSR_ID                   
+		         , 	FRST_RGST_IP                   
+		         , 	FRST_RGST_DT                   
+		         , 	FRST_RGST_CLNT_PRGM_ID         
+		         , 	FRST_RGST_SRVR_PRGM_ID         
+		         , 	LAST_UPDR_ID                   
+		         , 	LAST_UPDT_IP                   
+		         , 	LAST_UPDT_DT                   
+		         , 	LAST_UPDT_CLNT_PRGM_ID         
+		         , 	LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		VALUES
+		        (
+		           	#{bultClsfId}						/* 게시ID   */ 
+		         , 	#{athrCndtGrpId}					/* 권한조건그룹ID   */ 
+		         , 	#{athrCndtItemId}					/* 권한조건항목ID   */ 
+		         , 	sysdate								/* 적용시작일시   */ 
+		         , 	to_date('2999-12-31', 'yyyy-MM-dd')	/* 적용종료일시   */ 
+		         , 	#{athrCndtItemSqnc}					/* 권한조건항목순서   */ 
+		         , 	#{athrCndtItemNm}					/* 권한조건항목명   */ 
+		         , 	#{cndtOprrCd}						/* 조건연산자코드   */ 
+		         , 	#{cndtTrgtItemVl}					/* 조건대상항목값   */ 
+		         , 	#{cndtTrgtItemNm}					/* 조건대상항목명   */ 
+		         , 	#{cndtTrgtItemCd}					/* 조건대상항목코드   */ 
+		         , 	#{gvUserId}                     
+		         , 	#{gvUserIp}                     
+		         , 	sysdate                         
+		         , 	#{gvClntPrgmId}                 
+		         , 	#{gvSrvrPrgmId}                 
+		         , 	#{gvUserId}                     
+		         , 	#{gvUserIp}                     
+		         , 	sysdate                         
+		         , 	#{gvClntPrgmId}                 
+		         , 	#{gvSrvrPrgmId}                 
+		        )
+		]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO">
+	
+		<result property="menuAthrId" column="MENU_ATHR_ID"/>
+		<result property="athrCndtGrpId" column="ATHR_CNDT_GRP_ID"/>
+		<result property="athrCndtGrpNm" column="ATHR_CNDT_GRP_NM"/>
+		<result property="athrCndtItemId" column="ATHR_CNDT_ITEM_ID"/>
+		<result property="athrCndtItemNm" column="ATHR_CNDT_ITEM_NM"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemNm" column="CNDT_TRGT_ITEM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg (게시판관리 작성권한 조건그룹항목 조회처리) 
+        Description :                                           게시판관리 작성권한 조건그룹항목 조회처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpWrtg */
+		<![CDATA[
+		SELECT	  MAIN.BULT_CLSF_ID			AS MENU_ATHR_ID				/* 게시분류ID */
+				, MAIN.ATHR_CNDT_GRP_ID		AS ATHR_CNDT_GRP_ID			/* 조건그룹ID */
+				, MAIN.ATHR_CNDT_GRP_NM		AS ATHR_CNDT_GRP_NM			/* 조건그룹명 */
+				, MAIN.ATHR_CNDT_ITEM_ID	AS ATHR_CNDT_ITEM_ID		/* 조건항목ID */
+				, MAIN.ATHR_CNDT_ITEM_NM	AS ATHR_CNDT_ITEM_NM		/* 조건항목명 */
+				, MAIN.CNDT_OPRR_CD			AS CNDT_OPRR_CD				/* 조건연산자코드  */
+				, MAIN.DETL_CD_NM			AS COMN_CD_NM				/* 조건연산자코드명 */
+				, MAIN.CNDT_TRGT_ITEM_CD	AS CNDT_TRGT_ITEM_CD		/* 조건대상항목코드 */
+				, MAIN.CNDT_TRGT_ITEM_VL	AS CNDT_TRGT_ITEM_VL		/* 조건대상항목값 */
+				, MAIN.CNDT_TRGT_ITEM_NM	AS CNDT_TRGT_ITEM_NM		/* 조건대상항목명 */
+				, MAIN.LV					AS RTUR_VL					/* 조건그룹, 조건항목 구분값 */
+				, MAIN.INQR_SQNC			AS INQR_SQNC				/* 표출순서 */
+		  FROM	(
+					SELECT	ITEM.BULT_CLSF_ID			AS BULT_CLSF_ID 
+						  ,	ITEM.ATHR_CNDT_GRP_ID 		AS ATHR_CNDT_GRP_ID
+						  , ''							AS ATHR_CNDT_GRP_NM
+						  , ITEM.ATHR_CNDT_ITEM_ID		AS ATHR_CNDT_ITEM_ID
+						  , CSM003.DETL_CD_NM			AS ATHR_CNDT_ITEM_NM
+						  , ITEM.CNDT_OPRR_CD			AS CNDT_OPRR_CD
+						  , CSM002.DETL_CD_NM			AS DETL_CD_NM					  
+						  , ITEM.CNDT_TRGT_ITEM_CD		AS CNDT_TRGT_ITEM_CD
+						  , ITEM.CNDT_TRGT_ITEM_VL		AS CNDT_TRGT_ITEM_VL
+						  , ITEM.CNDT_TRGT_ITEM_NM		AS CNDT_TRGT_ITEM_NM
+						  , '1'							AS LV
+						  , ITEM.ATHR_CNDT_ITEM_SQNC	AS INQR_SQNC
+					  FROM  CUBLBRIMT	ITEM		/* 게시판작성권한조건항목_T */
+					      , CCCMCDDMT	CSM003		/* 조건대상항목코드_T */
+					      , CCCMCDDMT	CSM002		/* 조건연산자코드_T */
+					 WHERE	ITEM.BULT_CLSF_ID		= #{bultClsfId}
+					   AND	CSM003.COMN_GRP_CD(+)	= 'CSM_003'  				/*  조건대상항목코드 */
+					   AND	CSM003.COMN_DTLS_CD(+)	= ITEM.CNDT_TRGT_ITEM_CD
+					   AND  CSM002.COMN_GRP_CD(+)	= 'CSM_002'  				/*  조건연산자코드 */
+					   AND	CSM002.COMN_DTLS_CD(+)	= ITEM.CNDT_OPRR_CD
+					UNION ALL
+					SELECT	GRP.BULT_CLSF_ID		AS BULT_CLSF_ID 
+					      , GRP.ATHR_CNDT_GRP_ID 	AS ATHR_CNDT_GRP_ID
+					      , GRP.ATHR_CNDT_GRP_NM 	AS ATHR_CNDT_GRP_NM
+					      , GRP.ATHR_CNDT_GRP_ID 	AS ATHR_CNDT_ITEM_ID
+					      , GRP.ATHR_CNDT_GRP_NM	AS ATHR_CNDT_ITEM_NM
+					      , ''					 	AS CNDT_OPRR_CD
+					      , ''                   	AS DETL_CD_NM			      			      
+					      , ''					 	AS CNDT_TRGT_ITEM_CD
+					      , ''                   	AS CNDT_TRGT_ITEM_VL
+					      , ''                   	AS CNDT_TRGT_ITEM_NM
+					      , '0'                  	AS LV
+					      , GRP.ATHR_CNDT_GRP_APLY_SQNC AS INQR_SQNC 
+					   FROM	CUBLBRGMT GRP	/*  게시판작성권한조건그룹_T */
+				      WHERE	'G'					= substr(GRP.ATHR_CNDT_GRP_ID, 1, 1)
+					    AND	GRP.BULT_CLSF_ID	= #{bultClsfId}
+				) MAIN
+		ORDER BY MAIN.LV, MAIN.INQR_SQNC	
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO">
+	
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc (게시판관리_화면표시순서 분류별 최대값 조회처리.) 
+        Description :                                           게시판관리_화면표시순서 분류별(대, 중, 소분류) 최대값을 조회처리한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-selectOneBoardClsfScrnDsplSqnc */
+		<![CDATA[
+			SELECT (NVL(MAX(CMT.SCRN_DSPL_SQNC), 0) +1) AS SCRN_DSPL_SQNC
+			  FROM CUBLBRCMT CMT /* 게시판분류관리_T */
+			 WHERE 1=1 
+		]]>
+		<if test='bultClsfDvsnVl != null and bultClsfDvsnVl != ""'>
+			<if test='bultClsfDvsnVl.equals("L")'>
+				<![CDATA[
+					AND CMT.BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}
+				]]>  
+			</if>
+			<if test='bultClsfDvsnVl.equals("M")'>
+				<![CDATA[
+					AND CMT.BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}
+					AND CMT.HGRN_BULT_CLSF_ID = #{hgrnBultClsfId} 
+				]]>  
+			</if>
+			<if test='bultClsfDvsnVl.equals("S")'>
+				<![CDATA[
+					AND CMT.BULT_CLSF_DVSN_VL = #{bultClsfDvsnVl}
+					AND CMT.HGRN_BULT_CLSF_ID = #{hgrnBultClsfId} 
+				]]>  
+			</if>
+		</if>	
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardClsfScrnDsplSqnc (게시판관리_게시분류 화면순서 저장처리를 수행한다.) 
+        Description :                                           게시판관리_게시분류 화면순서 저장처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardClsfScrnDsplSqnc"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-updateBoardClsfScrnDsplSqnc */
+		<![CDATA[
+		UPDATE 
+		      			CUBLBRCMT  /* 게시판분류관리_T */
+			  SET
+					    SCRN_DSPL_SQNC              = DECODE(#{scrnDsplSqnc}, 0, SCRN_DSPL_SQNC, #{scrnDsplSqnc})	 
+		         	  , LAST_UPDR_ID				= #{gvUserId}                    
+		         	  , LAST_UPDT_IP				= #{gvUserIp}                    
+		         	  , LAST_UPDT_DT				= sysdate                        
+		         	  , LAST_UPDT_CLNT_PRGM_ID		= #{gvClntPrgmId}                
+		         	  , LAST_UPDT_SRVR_PRGM_ID		= #{gvSrvrPrgmId}                
+		WHERE 		BULT_CLSF_ID					= #{bultClsfId}             /* 게시분류ID   */
+		]]>		 
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO">
+	
+		<result property="menuAthrId" column="MENU_ATHR_ID"/>
+		<result property="athrCndtGrpId" column="ATHR_CNDT_GRP_ID"/>
+		<result property="athrCndtGrpNm" column="ATHR_CNDT_GRP_NM"/>
+		<result property="athrCndtItemId" column="ATHR_CNDT_ITEM_ID"/>
+		<result property="athrCndtItemNm" column="ATHR_CNDT_ITEM_NM"/>
+		<result property="cndtOprrCd" column="CNDT_OPRR_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="cndtTrgtItemCd" column="CNDT_TRGT_ITEM_CD"/>
+		<result property="cndtTrgtItemVl" column="CNDT_TRGT_ITEM_VL"/>
+		<result property="cndtTrgtItemNm" column="CNDT_TRGT_ITEM_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg (게시판관리 조회 작성권한 조건그룹항목 조회처리) 
+        Description :                                           게시판관리 조회 작성권한 조건그룹항목 조회처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuBoardMngmAuthGrpWrtgDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuBoardMngmDAO-listSelBoardMngmAuthGrpSrchWrtg */
+		<![CDATA[
+		SELECT	  MAIN.BULT_CLSF_ID			AS MENU_ATHR_ID				/* 게시분류ID */
+				, MAIN.ATHR_CNDT_GRP_ID		AS ATHR_CNDT_GRP_ID			/* 조건그룹ID */
+				, MAIN.ATHR_CNDT_GRP_NM		AS ATHR_CNDT_GRP_NM			/* 조건그룹명 */
+				, MAIN.ATHR_CNDT_ITEM_ID	AS ATHR_CNDT_ITEM_ID		/* 조건항목ID */
+				, MAIN.ATHR_CNDT_ITEM_NM	AS ATHR_CNDT_ITEM_NM		/* 조건항목명 */
+				, MAIN.CNDT_OPRR_CD			AS CNDT_OPRR_CD				/* 조건연산자코드  */
+				, MAIN.DETL_CD_NM			AS COMN_CD_NM				/* 조건연산자코드명 */
+				, MAIN.CNDT_TRGT_ITEM_CD	AS CNDT_TRGT_ITEM_CD		/* 조건대상항목코드 */
+				, MAIN.CNDT_TRGT_ITEM_VL	AS CNDT_TRGT_ITEM_VL		/* 조건대상항목값 */
+				, MAIN.CNDT_TRGT_ITEM_NM	AS CNDT_TRGT_ITEM_NM		/* 조건대상항목명 */
+				, MAIN.LV					AS RTUR_VL					/* 조건그룹, 조건항목 구분값 */
+				, MAIN.INQR_SQNC			AS INQR_SQNC				/* 표출순서 */
+		  FROM	(
+					SELECT	ITEM.BULT_CLSF_ID			AS BULT_CLSF_ID 
+						  ,	ITEM.ATHR_CNDT_GRP_ID 		AS ATHR_CNDT_GRP_ID
+						  , ''							AS ATHR_CNDT_GRP_NM
+						  , ITEM.ATHR_CNDT_ITEM_ID		AS ATHR_CNDT_ITEM_ID
+						  , CSM003.DETL_CD_NM			AS ATHR_CNDT_ITEM_NM
+						  , ITEM.CNDT_OPRR_CD			AS CNDT_OPRR_CD
+						  , CSM002.DETL_CD_NM			AS DETL_CD_NM					  
+						  , ITEM.CNDT_TRGT_ITEM_CD		AS CNDT_TRGT_ITEM_CD
+						  , ITEM.CNDT_TRGT_ITEM_VL		AS CNDT_TRGT_ITEM_VL
+						  , ITEM.CNDT_TRGT_ITEM_NM		AS CNDT_TRGT_ITEM_NM
+						  , '1'							AS LV
+						  , ITEM.ATHR_CNDT_ITEM_SQNC	AS INQR_SQNC
+					  FROM  CUBLBRSIT	ITEM		/* 게시판작성조회권한조건항목_T */
+					      , CCCMCDDMT	CSM003		/* 조건대상항목코드_T */
+					      , CCCMCDDMT	CSM002		/* 조건연산자코드_T */
+					 WHERE	ITEM.BULT_CLSF_ID		= #{bultClsfId}
+					   AND	CSM003.COMN_GRP_CD(+)	= 'CSM_003'  				/*  조건대상항목코드 */
+					   AND	CSM003.COMN_DTLS_CD(+)	= ITEM.CNDT_TRGT_ITEM_CD
+					   AND  CSM002.COMN_GRP_CD(+)	= 'CSM_002'  				/*  조건연산자코드 */
+					   AND	CSM002.COMN_DTLS_CD(+)	= ITEM.CNDT_OPRR_CD
+					UNION ALL
+					SELECT	GRP.BULT_CLSF_ID		AS BULT_CLSF_ID 
+					      , GRP.ATHR_CNDT_GRP_ID 	AS ATHR_CNDT_GRP_ID
+					      , GRP.ATHR_CNDT_GRP_NM 	AS ATHR_CNDT_GRP_NM
+					      , GRP.ATHR_CNDT_GRP_ID 	AS ATHR_CNDT_ITEM_ID
+					      , GRP.ATHR_CNDT_GRP_NM	AS ATHR_CNDT_ITEM_NM
+					      , ''					 	AS CNDT_OPRR_CD
+					      , ''                   	AS DETL_CD_NM			      			      
+					      , ''					 	AS CNDT_TRGT_ITEM_CD
+					      , ''                   	AS CNDT_TRGT_ITEM_VL
+					      , ''                   	AS CNDT_TRGT_ITEM_NM
+					      , '0'                  	AS LV
+					      , GRP.ATHR_CNDT_GRP_APLY_SQNC AS INQR_SQNC 
+					   FROM	CUBLBRSMT GRP	/*  게시판작성조회권한조건그룹_T */
+				      WHERE	'G'					= substr(GRP.ATHR_CNDT_GRP_ID, 1, 1)
+					    AND	GRP.BULT_CLSF_ID	= #{bultClsfId}
+				) MAIN
+		ORDER BY MAIN.LV, MAIN.INQR_SQNC	
+		]]>
+	</select>
+
+
+
+</mapper>

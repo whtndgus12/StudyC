@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDrgPtntDAO_sql.xml 
+    Description :                                      DRG환자DAO
+                  -->
+<mapper namespace="MdpDrgPtntDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-insertDrgPtnt (DRG환자등록) 
+        Description :                                           DRG환자등록 mdd_drgptmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-insertDrgPtnt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-insertDrgPtnt */
+		  into  MDDRGPTMT
+		        (
+		        PTNO                       /* 환자번호 */
+		     ,  CODV_CD
+		     ,  DRG_PTNT_SNO               /* DRG환자일련번호 */
+		     ,  MDRP_NO                    /* 진료접수번호 */
+		     ,  DRG_CD                     /* DRG코드 */
+		     ,  APST_YMD                   /* 적용시작일자 */
+		     ,  RGSR_ID                    /* 등록자ID */
+		     ,  APFN_YMD                   /* 적용종료일자 */
+		     ,  FNSR_ID                    /* 종료자ID */
+		     ,  DRG_FNRE_CD                /* DRG종료사유코드 */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values  (
+		        #{ptno}
+		     ,  #{codvCd}
+		     ,  (
+				select  nvl(max(DRG_PTNT_SNO) +1, 1)
+				  from  MDDRGPTMT
+		         where  PTNO = #{ptno}
+		           and  CODV_CD = #{codvCd}
+				)
+		     ,  #{mdrpNo}
+		     ,  #{drgCd}
+		     ,  to_date(#{apstYmd}, 'yyyymmddhh24miss')
+		     ,  #{gvUserId}
+		     ,  to_date(#{apfnYmd}, 'yyyymmddhh24miss')
+		     ,  #{fnsrId}
+		     ,  #{drgFnreCd}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+			    )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateApfnYmd (DRG종료정보 수정) 
+        Description :                                           DRG종료정보 수정 mdd_drgptmt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateApfnYmd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateApfnYmd */
+		        MDDRGPTMT a
+		   set  APFN_YMD               = to_date(#{apfnYmd}, 'yyyymmddhh24miss')            /* 적용종료일자 */
+		     ,  DRG_FNRE_CD            = #{drgFnreCd}
+		     ,  FNSR_ID                = #{gvUserId}     /* 종료자ID */
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        MDRP_NO      = #{mdrpNo}
+		   and  PTNO         = #{ptno}
+		   and  CODV_CD      = #{codvCd}
+		   and  DRG_PTNT_SNO = ( select max(DRG_PTNT_SNO) from MDDRGPTMT
+				                         where MDRP_NO = a.MDRP_NO
+				                           and PTNO    = a.PTNO
+				                           and CODV_CD = a.CODV_CD  )
+		   and  APFN_YMD is null
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateDrgFnreCd (DRG종료사유 수정) 
+        Description :                                           DRG종료사유 수정 mdd_drgptmt_u03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateDrgFnreCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-updateDrgFnreCd */
+		        MDDRGPTMT
+		   set  DRG_FNRE_CD            = #{drgFnreCd}
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        MDRP_NO           = #{mdrpNo}
+		   and  PTNO              = #{ptno}
+		   and  CODV_CD           = #{codvCd}
+		   and  APFN_YMD  is null
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO">
+	
+		<result property="drgCd" column="DRG_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd (활성화중인 DRG번호 조회) 
+        Description :                                           활정화중인 DRG번호 조회 mdd_drgptmt_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntDAO-selectOneActvDrgCd */
+		        DRG_CD
+		  from  MDDRGPTMT
+		 where
+		        MDRP_NO  = #{mdrpNo}
+		   and  PTNO     = #{ptno}
+		   and  CODV_CD  = #{codvCd}
+		   and  APFN_YMD   is null
+		   and  rownum = 1
+	</select>
+
+
+
+</mapper>

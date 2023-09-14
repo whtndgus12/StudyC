@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsUseramtDAO_sql.xml 
+    Description :                                      사용자 정보
+                  -->
+<mapper namespace="CcsUseramtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="crtfAthrUseYn" column="CRTF_ATHR_USE_YN"/>
+		<result property="afiSrchCndtCtn" column="AFI_SRCH_CNDT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt () 
+        Description :                                           ASIS : CsdUseramtL03DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-listUseramt */
+		 select  /*+ csd_useramt_l03$S01_실행권한 및 기능권한 대상자 조건 조회 */
+						   a.LGIN_ID as LGIN_ID,
+						   a.USER_ID as USER_ID,
+						   a.USER_NM as USER_NM,
+						   nvl(a.MDCR_DPRT_CD, 'NONE') as MDCR_DPRT_CD,
+						   c.KORN_DPRT_NM as KORN_DPRT_NM,
+						   nvl(b.OCFM_CD, 'NONE') as OCFM_CD,
+						   nvl(a.EXCF_CD, 'NONE') as EXCF_CD,
+						   nvl(b.CRTF_ATHR_USE_YN, 'N') as CRTF_ATHR_USE_YN,
+						   #{afiSrchCndtCtn} as AFI_SRCH_CNDT_CTN
+					 from  CCUSRDPHT a,
+						   CCUSERAMT b,
+						   HZDEPTMMT c
+					where  a.LGIN_ID      = #{gvLginId}
+					  and  b.LGIN_ID      = a.LGIN_ID
+					  and  c.DPRT_CD      = a.MDCR_DPRT_CD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001 (기간계_U and S_로그인 DAM) 
+        Description :                                           기간계_U and S_로그인 DAM (CccGetUseramt001CSID)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsUseramtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsUseramtDAO-selectOneUseramt001 */
+						   B.USER_ID as USER_ID,
+						   B.USER_NM as USER_NM,
+						   B.MDCR_DPRT_CD as MDCR_DPRT_CD,
+						   C.KORN_DPRT_NM as KORN_DPRT_NM,
+						   replace(A.CLNO, '-', '') as CLNO,
+						   A.EXTS_TLNO as EXTS_TLNO
+					 from
+						   CCUSERAMT A,
+						   CCUSRDPHT B,
+						   HZDEPTMMT C
+					where
+						   A.LGIN_ID = #{lginId}
+					  and  B.LGIN_ID = A.LGIN_ID
+					  and  B.MDCR_DPRT_CD = nvl(#{mdcrDprtCd}, B.MDCR_DPRT_CD)
+					  and  nvl(B.MNSB_YN, '*') = nvl2(#{mdcrDprtCd}, nvl(B.MNSB_YN, '*'), 'Y')
+					  and  C.DPRT_CD = B.MDCR_DPRT_CD
+		]]>
+	</select>
+
+
+
+</mapper>

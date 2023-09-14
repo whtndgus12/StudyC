@@ -1,0 +1,1883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HhdDayWorkMgmtDAO_sql.xml 
+    Description :                                      일근태관리 DAO
+                  -->
+<mapper namespace="HhdDayWorkMgmtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateAprlSno (결재일련번호 수정) 
+        Description :                                           결재일련번호를 현행화 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateAprlSno"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateAprlSno */
+		update 
+		       HHWKDAYMT  /* 일근태관리 */
+		   set
+		       APRL_SNO                    = #{aprlSno}                      /* 결재번호 */
+		     , LAST_UPDR_ID                    = #{gvUserId}                    
+		     , LAST_UPDT_IP                    = #{gvUserIp}                    
+		     , LAST_UPDT_DT                    = sysdate                        
+		     , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		     , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where 1=1
+		   and EMNO                            = #{emno}                        /* 사원번호   */
+		   and DLLZ_STRT_YMD                   = to_date(#{dllzStrtYmd},'YYYYMMDD') /* 근태시작일자   */
+		   and DLLZ_DVSN_CD                    = #{dllzDvsnCd}                  /* 근태구분코드   */
+		   and SQNC                            = #{sqnc}                        /* 순서   */
+		]]> 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhwkdaymt (insert HHWKDAYMT) 
+        Description :                                           Table[HHWKDAYMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		INSERT INTO /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhwkdaymt */
+		  HHWKDAYMT 
+		(
+		  EMNO		/* 사원번호 */
+		 ,DLLZ_STRT_YMD		/* 근태시작일자 */
+		 ,DLLZ_DVSN_CD		/* 근태구분코드(GP115) */
+		 ,SQNC		/* 순서 */
+		 ,DLLZ_FNSH_YMD		/* 근태종료일자 */
+		 ,BASE_YY		/* 기준년도 */
+		 ,DLLZ_APLC_YN		/* 근태신청여부 */
+		 ,DPRT_CD		/* 부서코드 */
+		 ,WKDY_WRKN_HH		/* 주간근무시간 */
+		 ,NGHT_WRKN_HH		/* 야간근무시간 */
+		 ,STRT_AMPM_DVSN_CD		/* 시작오전오후구분코드 */
+		 ,FNSH_AMPM_DVSN_CD		/* 종료오전오후구분코드 */
+		 ,DLLZ_DDCN		/* 근태일수 */
+		 ,CRDM_YN		/* 간호부여부 */
+		 ,APRL_SNO		/* 결재관리번호 */
+		 ,APRL_STTS_CD		/* 결재상태코드 */
+		 ,FINS_YN		/* 완료여부 */
+		 ,FINS_YMD		/* 완료일자 */
+		 ,CLSN_YN		/* 마감여부 */
+		 ,RMRK_CTN		/* 비고내용 */
+		 ,ATFL_RFRN_NO		/* 첨부파일참조번호 */
+		 ,DLLZ_STRT_HH		/* 근태시작시간 */
+		 ,DLLZ_FNSH_HH		/* 근태종료시간 */
+		 ,APLC_RESN_CTN		/* 신청사유내용 */
+		 ,WEEK_CNT		/* 주수 */
+		 ,BSWR_HH		/* 업무시간 */
+		 ,STRT_YMD		/* 시작일자 */
+		 ,FNSH_YMD		/* 종료일자 */
+		 ,DX_HSPT_NM		/* 진단병원명 */
+		 ,PLAC_NM		/* 장소명 */
+		 ,TRFC_MENS_NM		/* 교통수단명 */
+		 ,EXPN_DVSN_CD		/* 비용구분코드 */
+		 ,EXPN_AMT		/* 비용금액 */
+		 ,RPPR_NM		/* 대표자명 */
+		 ,CNPN_TLNO		/* 연락처전화번호 */
+		 ,CLSN_YMD		/* 마감일자 */
+		 ,SMIS_LNKG_YN		/* SMIS연동여부 */
+		 ,PTNO                  /* 환자번호                             */
+		 ,DPRR_PLAC_NM          /* 출발장소명                           */
+		 ,ARVL_PLAC_NM          /* 도착장소명                           */
+		 ,OWHS_DSTC_VL          /* 자택거리값(KM)                       */
+		 ,SHTL_YN               /* 왕복여부                             */
+		 ,L1SC_CD               /* 1단상병코드                          */
+		 ,L2SC_CD               /* 2단상병코드                          */
+		 ,L3SC_CD               /* 3단상병코드                          */
+		 ,L4SC_CD               /* 4단상병코드                          */
+		 ,L5SC_CD               /* 5단상병코드                          */
+		 ,SCKS_HOLY_DVSN_CD     /* 병휴가구분코드(입원/수술/자가(통원)) */
+		 ,SBSN_EMNO             /* 대체사원번호                         */
+		 ,CGCD_DVSN_CD          /* 경조구분코드                         */
+		 ,BSPL_CD   		    /* 사업장코드 */
+		 , ATFL_BD              /* 첨부파일자료   */
+		 , ATFL_NM              /* 첨부파일명   */
+		 , ATFL_BD2             /* 첨부파일자료2   */
+		 , ATFL_NM2             /* 첨부파일명2   */
+		 , ATFL_BD3             /* 첨부파일자료3   */
+		 , ATFL_NM3             /* 첨부파일명3   */
+		 , ATFL_BD4             /* 첨부파일자료4   */
+		 , ATFL_NM4             /* 첨부파일명4   */
+		 , ATFL_BD5             /* 첨부파일자료5   */
+		 , ATFL_NM5             /* 첨부파일명5   */
+		 ,FRST_RGSR_ID		/*  */
+		 ,FRST_RGST_IP		/*  */
+		 ,FRST_RGST_DT		/*  */
+		 ,FRST_RGST_CLNT_PRGM_ID		/*  */
+		 ,FRST_RGST_SRVR_PRGM_ID		/*  */
+		 ,LAST_UPDR_ID		/*  */
+		 ,LAST_UPDT_IP		/*  */
+		 ,LAST_UPDT_DT		/*  */
+		 ,LAST_UPDT_CLNT_PRGM_ID		/*  */
+		 ,LAST_UPDT_SRVR_PRGM_ID		/*  */
+		)
+		VALUES
+		(
+		  #{emno}
+		 ,to_date(#{dllzStrtYmd},'YYYYMMDD')
+		 ,#{dllzDvsnCd}
+		 ,(select nvl(max(sqnc),0) + 1 from HHWKDAYMT 
+		   where emno = #{emno} 
+		       and DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD') 
+		       and DLLZ_DVSN_CD = #{dllzDvsnCd})
+		 ,to_date(#{dllzFnshYmd},'YYYYMMDD')
+		 ,#{baseYy}
+		 ,#{dllzAplcYn}
+		 ,#{dprtCd}
+		 ,#{wkdyWrknHh}
+		 ,#{nghtWrknHh}
+		 ,#{strtAmpmDvsnCd}
+		 ,#{fnshAmpmDvsnCd}
+		 ,#{dllzDdcn}
+		 ,#{crdmYn}
+		 ,#{aprlMngmNo}
+		 ,#{aprlSttsCd}
+		 ,'N'
+		 ,to_date(#{finsYmd},'YYYYMMDD')
+		 ,#{clsnYn}
+		 ,#{rmrkCtn}
+		 ,#{atflRfrnNo}
+		 ,#{dllzStrtHh}
+		 ,#{dllzFnshHh}
+		 ,#{aplcResnCtn}
+		 ,#{weekCnt}
+		 ,#{bswrHh}
+		 ,to_date(#{strtYmd},'YYYYMMDD')
+		 ,to_date(#{fnshYmd},'YYYYMMDD')
+		 ,#{dxHsptNm}
+		 ,#{placNm}
+		 ,#{trfcMensNm}
+		 ,#{expnDvsnCd}
+		 ,#{expnAmt}
+		 ,#{rpprNm}
+		 ,#{cnpnTlno}
+		 ,#{clsnYmd}
+		 ,#{smisLnkgYn}
+		 ,#{ptno}                /* 환자번호                             */
+		 ,#{dprrPlacNm}          /* 출발장소명                           */
+		 ,#{arvlPlacNm}          /* 도착장소명                           */
+		 ,#{owhsDstcVl}          /* 자택거리값(KM)                       */
+		 ,#{shtlYn}              /* 왕복여부                             */
+		 ,#{l1scCd}              /* 1단상병코드                          */
+		 ,#{l2scCd}              /* 2단상병코드                          */
+		 ,#{l3scCd}              /* 3단상병코드                          */
+		 ,#{l4scCd}              /* 4단상병코드                          */
+		 ,#{l5scCd}              /* 5단상병코드                          */
+		 ,#{scksHolyDvsnCd}      /* 병휴가구분코드(입원/수술/자가(통원)) */
+		 ,#{sbsnEmno}            /* 대체사원번호                         */
+		 ,#{cgcdDvsnCd}          /* 경조구분코드                         */
+		 ,#{bsplCd}
+		 , #{atflBdByte}                    /* 첨부파일자료 */
+		 , #{atflNm}                       /* 첨부파일명 */
+		 , #{atflBd2Byte}                   /* 첨부파일자료2 */
+		 , #{atflNm2}                       /* 첨부파일명2 */
+		 , #{atflBd3Byte}                   /* 첨부파일자료3 */
+		 , #{atflNm3}                       /* 첨부파일명3 */
+		 , #{atflBd4Byte}                   /* 첨부파일자료4 */
+		 , #{atflNm4}                       /* 첨부파일명4 */
+		 , #{atflBd5Byte}                   /* 첨부파일자료5 */     
+		 , #{atflNm5}                       /* 첨부파일명5 */ 
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,sysdate
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		 ,#{gvUserId}
+		 ,#{gvUserIp}
+		 ,sysdate
+		 ,#{gvClntPrgmId}
+		 ,#{gvSrvrPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymt (update HHWKDAYMT) 
+        Description :                                           Table[HHWKDAYMT]'s update method
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		UPDATE /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymt */
+		       HHWKDAYMT 
+		       SET DLLZ_FNSH_YMD = to_date(#{dllzFnshYmd} ,'YYYYMMDD')    /* 근태종료일자 */
+		      ,BASE_YY           = #{baseYy}            /* 기준년도 */
+		      ,DLLZ_APLC_YN      = #{dllzAplcYn}        /* 근태신청여부 */
+		      ,DPRT_CD           = #{dprtCd}            /* 부서코드 */
+		      ,WKDY_WRKN_HH      = #{wkdyWrknHh}        /* 주간근무시간 */
+		      ,NGHT_WRKN_HH      = #{nghtWrknHh}        /* 야간근무시간 */
+		      ,STRT_AMPM_DVSN_CD = #{strtAmpmDvsnCd}    /* 시작오전오후구분코드 */
+		      ,FNSH_AMPM_DVSN_CD = #{fnshAmpmDvsnCd}    /* 종료오전오후구분코드 */
+		      ,DLLZ_DDCN         = #{dllzDdcn}          /* 근태일수 */
+		      ,CRDM_YN           = #{crdmYn}            /* 간호부여부 */
+		      ,APRL_SNO          = #{aprlMngmNo}        /* 결재관리번호 */
+		      ,APRL_STTS_CD      = #{aprlSttsCd}        /* 결재상태코드 */
+		      ,FINS_YN           = #{finsYn}            /* 부서결재 완료여부 */
+		      ,FINS_YMD          = case when #{finsYn}  = 'Y' then sysdate else null end /* 완료일자 */
+		      ,CLSN_YN           = #{clsnYn}            /* 총무파트 마감여부 */
+		      ,RMRK_CTN          = #{rmrkCtn}           /* 비고내용 */
+		      ,ATFL_RFRN_NO      = #{atflRfrnNo}        /* 첨부파일참조번호 */
+		      ,DLLZ_STRT_HH      = #{dllzStrtHh}        /* 근태시작시간 */
+		      ,DLLZ_FNSH_HH      = #{dllzFnshHh}        /* 근태종료시간 */
+		      ,APLC_RESN_CTN     = #{aplcResnCtn}       /* 신청사유내용 */
+		      ,WEEK_CNT          = #{weekCnt}           /* 주수 */
+		      ,BSWR_HH           = #{bswrHh}            /* 업무시간 */
+		      ,STRT_YMD          = to_date(#{strtYmd} ,'YYYYMMDD')    /* 시작일자 */
+		      ,FNSH_YMD          = to_date(#{fnshYmd} ,'YYYYMMDD')    /* 종료일자 */
+		      ,DX_HSPT_NM        = #{dxHsptNm}          /* 진단병원명 */
+		      ,PLAC_NM           = #{placNm}            /* 장소명 */
+		      ,TRFC_MENS_NM      = #{trfcMensNm}        /* 교통수단명 */
+		      ,EXPN_DVSN_CD      = #{expnDvsnCd}        /* 비용구분코드 */
+		      ,EXPN_AMT          = #{expnAmt}           /* 비용금액 */
+		      ,RPPR_NM           = #{rpprNm}            /* 대표자명 */
+		      ,CNPN_TLNO         = #{cnpnTlno}          /* 연락처전화번호 */
+		      ,CLSN_YMD          = case when #{clsnYn}  = 'Y' then sysdate else null end  /* 마감일자 */
+		      ,SMIS_LNKG_YN      = #{smisLnkgYn}        /* SMIS연동여부 */
+		      ,PTNO              = #{ptno}              /* 환자번호                             */
+		      ,DPRR_PLAC_NM      = #{dprrPlacNm}      /* 출발장소명                           */
+		      ,ARVL_PLAC_NM      = #{arvlPlacNm}      /* 도착장소명                           */
+		      ,OWHS_DSTC_VL      = #{owhsDstcVl}      /* 자택거리값(KM)                       */
+		      ,SHTL_YN                = #{shtlYn}           /* 왕복여부                             */
+		      ,L1SC_CD                = #{l1scCd}           /* 1단상병코드                          */
+		      ,L2SC_CD                = #{l2scCd}           /* 2단상병코드                          */
+		      ,L3SC_CD                = #{l3scCd}           /* 3단상병코드                          */
+		      ,L4SC_CD                = #{l4scCd}           /* 4단상병코드                          */
+		      ,L5SC_CD                = #{l5scCd}           /* 5단상병코드                          */
+		      ,SCKS_HOLY_DVSN_CD = #{scksHolyDvsnCd} /* 병휴가구분코드(입원/수술/자가(통원)) */
+		      ,SBSN_EMNO         = #{sbsn_emno}         /* 대체사원번호                         */
+		      ,CGCD_DVSN_CD      = #{cgcdDvsnCd}      /* 경조구분코드                         */
+		      ,BSPL_CD           = #{bsplCd}            /* 사업장코드 */
+		     , ATFL_BD                  = #{atflBdByte}                    /* 첨부파일자료 */
+		     , ATFL_NM                  = #{atflNm}                       /* 첨부파일명 */
+		     , ATFL_BD2                 = #{atflBd2Byte}                   /* 첨부파일자료2 */
+		     , ATFL_NM2                 = #{atflNm2}                       /* 첨부파일명2 */
+		     , ATFL_BD3                 = #{atflBd3Byte}                   /* 첨부파일자료3 */
+		     , ATFL_NM3                 = #{atflNm3}                       /* 첨부파일명3 */
+		     , ATFL_BD4                 = #{atflBd4Byte}                   /* 첨부파일자료4 */
+		     , ATFL_NM4                 = #{atflNm4}                       /* 첨부파일명4 */
+		     , ATFL_BD5                 = #{atflBd5Byte}                   /* 첨부파일자료5 */     
+		     , ATFL_NM5                 = #{atflNm5}                       /* 첨부파일명5 */    
+		      ,LAST_UPDR_ID      = #{gvUserId}
+		      ,LAST_UPDT_IP      = #{gvUserIp}
+		      ,LAST_UPDT_DT      = sysdate
+		      ,LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		      ,LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 WHERE EMNO = #{emno}
+		  AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+		  AND DLLZ_DVSN_CD  = #{dllzDvsnCd}
+		  AND SQNC          = #{sqnc}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymt (delete HHWKDAYMT) 
+        Description :                                           Table[HHWKDAYMT]'s delete method
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		DELETE  /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymt */
+		  FROM HHWKDAYMT
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND DLLZ_DVSN_CD = #{dllzDvsnCd}
+			AND SQNC = #{sqnc}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="dllzAplcYn" column="DLLZ_APLC_YN"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="wkdyWrknHh" column="WKDY_WRKN_HH"/>
+		<result property="nghtWrknHh" column="NGHT_WRKN_HH"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="crdmYn" column="CRDM_YN"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="finsYn" column="FINS_YN"/>
+		<result property="finsYmd" column="FINS_YMD"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="atflRfrnNo" column="ATFL_RFRN_NO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt (selectOne HHWKDAYMT) 
+        Description :                                           Table[HHWKDAYMT]'s selectOne method
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt-result" useCache="true" flushCache="false">
+		SELECT	/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt */
+		            to_char(DLLZ_FNSH_YMD,'YYYYMMDD')	DLLZ_FNSH_YMD	/*  */
+					,BASE_YY		/*  */
+					,DLLZ_APLC_YN		/*  */
+					,DPRT_CD		/*  */
+					,WKDY_WRKN_HH		/*  */
+					,NGHT_WRKN_HH		/*  */
+					,STRT_AMPM_DVSN_CD		/*  */
+					,FNSH_AMPM_DVSN_CD		/*  */
+					,DLLZ_DDCN		/*  */
+					,CRDM_YN		/*  */
+					,APRL_SNO		/*  */
+					,APRL_STTS_CD		/*  */
+					,FINS_YN		/*  */
+					,to_char(FINS_YMD,'YYYYMMDD')	FINS_YMD	/*  */
+					,CLSN_YN		/*  */
+					,RMRK_CTN		/*  */
+					,ATFL_RFRN_NO		/*  */
+					,BSPL_CD		/* 1A */
+		  FROM	HHWKDAYMT
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND DLLZ_DVSN_CD = #{dllzDvsnCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="dllzAplcYn" column="DLLZ_APLC_YN"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="wkdyWrknHh" column="WKDY_WRKN_HH"/>
+		<result property="nghtWrknHh" column="NGHT_WRKN_HH"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="crdmYn" column="CRDM_YN"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="finsYn" column="FINS_YN"/>
+		<result property="finsYmd" column="FINS_YMD"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="atflRfrnNo" column="ATFL_RFRN_NO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt (휴가내역 존재여부체크) 
+        Description :                                           휴가내역 존재여부체크
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDupHhwkdaymt */
+		SELECT	/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymt */
+		        to_char(DLLZ_FNSH_YMD,'YYYYMMDD') as DLLZ_FNSH_YMD	/*  */
+		     ,  BASE_YY		/*  */
+		     ,  DLLZ_APLC_YN		/*  */
+		     ,  DPRT_CD		/*  */
+		     ,  WKDY_WRKN_HH		/*  */
+		     ,  NGHT_WRKN_HH		/*  */
+		     ,  STRT_AMPM_DVSN_CD		/*  */
+		     ,  FNSH_AMPM_DVSN_CD		/*  */
+		     ,  DLLZ_DDCN		/*  */
+		     ,  CRDM_YN		/*  */
+		     ,  APRL_SNO		/*  */
+		     ,  APRL_STTS_CD		/*  */
+		     ,  FINS_YN		/*  */
+		     ,  to_char(FINS_YMD,'YYYYMMDD')   as FINS_YMD	/*  */
+		     ,  CLSN_YN		/*  */
+		     ,  RMRK_CTN		/*  */
+		     ,  ATFL_RFRN_NO		/*  */
+		     ,  BSPL_CD		/* 1A */
+		  FROM	HHWKDAYMT
+		 WHERE  EMNO          = #{emno}
+		   AND  DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+		   AND  DLLZ_DVSN_CD  = #{dllzDvsnCd}
+		   AND  SQNC          = #{sqnc}   
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt (휴가신청 오전오후판별) 
+        Description :                                           휴가신청 오전오후판별
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhwkdaymt */
+		SELECT
+		       EMNO
+		     , DLLZ_STRT_YMD
+		     , STRT_AMPM_DVSN_CD		/*  */
+		     , FNSH_AMPM_DVSN_CD		/*  */
+		     , SUM(DLLZ_DDCN) AS DLLZ_DDCN
+		     , CLSN_YN		/*  */
+		  FROM	HHWKDAYMT
+		 WHERE EMNO = #{emno}
+		   AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+		 GROUP 
+		    BY EMNO
+		     , DLLZ_STRT_YMD
+		     , STRT_AMPM_DVSN_CD		/*  */
+		     , FNSH_AMPM_DVSN_CD		/*  */
+		     , CLSN_YN  
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="dllzAplcYn" column="DLLZ_APLC_YN"/>
+		<result property="dllzDvsnCd" column="DLLZ_DVSN_CD"/>
+		<result property="dllzDvsnNm" column="DLLZ_DVSN_NM"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="aprlSttsNm" column="APRL_STTS_NM"/>
+		<result property="updateYn" column="UPDATE_YN"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocrnOryrCnt" column="OCRN_ORYR_CNT"/>
+		<result property="useDdcn" column="USE_DDCN"/>
+		<result property="adtnCmnsDdcn" column="ADTN_CMNS_DDCN"/>
+		<result property="chk" column="CHK"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp (개인별 근태내역 조회) 
+        Description :                                           개인별 근태내역 조회 서비스 전북대 GP_WKDAY_L3 서비스
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkForEmp */
+		select 
+		       a.EMNO
+		     , b.EMPY_NM 
+		     , a.DPRT_CD
+		     , c.KORN_DPRT_NM
+		     , a.BASE_YY
+		     , nvl(a.CLSN_YN,'N') CLSN_YN
+		     , a.DLLZ_APLC_YN
+		     , a.DLLZ_DVSN_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP115' and MIS_COMN_CD = a.DLLZ_DVSN_CD),'') DLLZ_DVSN_NM
+		     , to_char(a.DLLZ_STRT_YMD,'YYYYMMDD') DLLZ_STRT_YMD
+		     , a.STRT_AMPM_DVSN_CD
+		     , to_char(a.DLLZ_FNSH_YMD,'YYYYMMDD') DLLZ_FNSH_YMD
+		     , a.FNSH_AMPM_DVSN_CD
+		     , a.DLLZ_DDCN
+		     , a.RMRK_CTN
+		     , a.SQNC
+		     , a.APRL_SNO
+		--     , a.APRL_STTS_C
+		--     , nvl(d.COMN_CD_NM,'저장') APRL_STTS_NM
+		--     , case when nvl(d.CHRC_CD_VL01,'1') = '1' then 'N' else 'Y' end UPDATE_YN
+		     , a.FINS_YN  APRL_STTS_CD
+		     , case when a.FINS_YN = 'Y' then '결재' else '미결' end APRL_STTS_NM
+		     , nvl(a.FINS_YN,'N') UPDATE_YN
+		     , b.OCFM_CD
+		     , e.OCRN_ORYR_CNT + e.OCRN_YOS_HOLY_CNT + e.ADJS_DDCN OCRN_ORYR_CNT
+		--     , e.USE_DDCN 
+			 , (select sum(x.DLLZ_DDCN) 
+			      from HHWKDAYMT  x,
+			           HHYYVACMT  y 
+				 where y.BASE_YY = to_char(a.DLLZ_STRT_YMD,'YYYY') 
+				   and x.EMNO    = a.EMNO
+				   and x.BASE_YY = y.BASE_YY
+				   and x.EMNO    = y.EMNO
+				   and x.DLLZ_STRT_YMD BETWEEN y.BASE_STRT_YMD AND y.BASE_FNSH_YMD)  USE_DDCN
+		     , e.ADTN_CMNS_DDCN
+		     , case when nvl(a.CLSN_YN,'N') = 'Y' then '1' else '0' end CHK 
+		  from HHWKDAYMT a
+		     , HZUSERMMT b
+		     , HZDEPTMMT c
+		--     , HZMICOCDT d 
+		     , HHYYVACMT e 
+		 where 1 = 1
+		   and a.DPRT_CD like #{dprtCd} || '%'
+		   and a.EMNO    like #{emno} || '%'
+		   and a.FINS_YN like #{aprlSttsCd} || '%'
+		   and a.CLSN_YN like #{clsnYn} || '%'
+		   and a.DLLZ_DVSN_CD like #{dllzDvsnCd} || '%'
+		--   and (      (a.DLLZ_STRT_YMD between to_date({inqrStrtYmd},'YYYYMMDD') and to_date({inqrFnshYmd},'YYYYMMDD'))
+		--           or  (a.DLLZ_FNSH_YMD between to_date({inqrStrtYmd},'YYYYMMDD') and to_date({inqrFnshYmd},'YYYYMMDD')))
+		   and a.BASE_YY     = to_char(to_date(#{inqrStrtYmd},'YYYYMMDD'),'YYYY')
+		   and a.DLLZ_STRT_YMD BETWEEN e.BASE_STRT_YMD AND e.BASE_FNSH_YMD
+		   and b.EMNO        = a.EMNO  
+		   and c.DPRT_CD     = a.DPRT_CD
+		--   and d.BSPL_CD     (+)= a.BSPL_CD
+		--   and d.COMN_GRP_CD = 'GP217' /**/
+		--   and d.MIS_COMN_CD (+)= a.APRL_STTS_CD 
+		   and e.BASE_YY     = a.BASE_YY
+		   and e.EMNO        = a.EMNO
+		   and (    
+		          ( #{gvUserId} = (SELECT MIS_COMN_CD FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId}) and 
+		             b.WRKN_PART_CD IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId})
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          ) 
+		          or 
+		          ( #{gvUserId} IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId})
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          )
+		          or 
+		          ( #{gvUserId} = #{emno} 
+		          )
+		          or 
+		          ( #{gvUserId} = (SELECT MIS_COMN_CD FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId}) and 
+		             b.DPRT_CD IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId})
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          )
+		       )
+		 order by a.DLLZ_STRT_YMD  
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForFinsYn (완료여부 수정) 
+        Description :                                           일근태 테이블 완료여부 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForFinsYn"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		UPDATE /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForFinsYn */
+		             HHWKDAYMT
+		       SET CLSN_YN = #{clsnYn} 		/* 마감여부 */
+					,CLSN_YMD = sysdate		/* 마감일자 */
+				    ,LAST_UPDR_ID       = #{gvUserId}
+					,LAST_UPDT_IP       = #{gvUserIp}
+					,LAST_UPDT_DT       = sysdate
+					,LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+					,LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND DLLZ_DVSN_CD = #{dllzDvsnCd}
+			AND SQNC = #{sqnc}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="dprtNm" column="DPRT_NM"/>
+		<result property="wrknPartCd" column="WRKN_PART_CD"/>
+		<result property="wrknPartNm" column="WRKN_PART_NM"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="lastEncmDd" column="LAST_ENCM_DD"/>
+		<result property="rtrmPrapDd" column="RTRM_PRAP_DD"/>
+		<result property="ocrnOryrCnt" column="OCRN_ORYR_CNT"/>
+		<result property="useDdcn1" column="USE_DDCN1"/>
+		<result property="useDdcn" column="USE_DDCN"/>
+		<result property="dllzDdcn1" column="DLLZ_DDCN1"/>
+		<result property="dllzDdcn2" column="DLLZ_DDCN2"/>
+		<result property="dllzDdcn3" column="DLLZ_DDCN3"/>
+		<result property="dllzDdcn4" column="DLLZ_DDCN4"/>
+		<result property="dllzDdcn5" column="DLLZ_DDCN5"/>
+		<result property="dllzDdcn6" column="DLLZ_DDCN6"/>
+		<result property="dllzDdcn7" column="DLLZ_DDCN7"/>
+		<result property="dllzDdcn8" column="DLLZ_DDCN8"/>
+		<result property="dllzDdcn9" column="DLLZ_DDCN9"/>
+		<result property="dllzDdcn10" column="DLLZ_DDCN10"/>
+		<result property="dllzDdcn11" column="DLLZ_DDCN11"/>
+		<result property="dllzDdcn12" column="DLLZ_DDCN12"/>
+		<result property="dllzDdcn13" column="DLLZ_DDCN13"/>
+		<result property="dllzDdcn14" column="DLLZ_DDCN14"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear (년도별 근태현황) 
+        Description :                                           년도별 근태현황
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDayWorkByYear */
+		select 
+		       A.BASE_YY        as BASE_YY
+		     , A.EMNO           as EMNO
+		     , C.EMPY_NM        as EMPY_NM
+		     , C.DPRT_CD        as DPRT_CD
+		     , D.KORN_DPRT_NM   as DPRT_NM
+		     , C.WRKN_PART_CD   as WRKN_PART_CD
+		     , E.KORN_DPRT_NM   as WRKN_PART_NM
+		     , C.OCPS_CD        as OCPS_CD    --+ 직위
+		     , nvl((select COMN_CD_NM from HZMICOCDT where  COMN_GRP_CD = 'GP008' and MIS_COMN_CD = C.OCPS_CD),'') as OCPS_NM --+ 직위명
+		     , C.OCCL_CD        as OCCL_CD     --+ 직급
+		     , nvl((select COMN_CD_NM from HZMICOCDT where  COMN_GRP_CD = 'GP005' and MIS_COMN_CD = C.OCCL_CD),'') as OCCL_NM --+ 직급명 
+		     /*, to_char(C.LAST_ENCM_DD,'YYYYMMDD') LAST_ENCM_DD --+ 최종입사일 */
+		     , to_char(C.ENCM_YMD,'YYYYMMDD') LAST_ENCM_DD --+ 재단입사일
+		     , to_char(C.RTRM_PRAP_DD,'YYYYMMDD') RTRM_PRAP_DD --+ 퇴직발령일
+		     , nvl(A.OCRN_ORYR_CNT,0) + nvl(A.OCRN_YOS_HOLY_CNT,0) + nvl(A.ADJS_DDCN,0) as OCRN_ORYR_CNT /* 연차발생일수 */
+		     , nvl(B.USE_DDCN1,0)                                                         as USE_DDCN1     /* 대휴         */
+		     , nvl(B.USE_DDCN,0)                                                          as USE_DDCN      /* 연월차       */
+			 , nvl(B.DLLZ_DDCN1,0)                                                        as DLLZ_DDCN1    /* 경조         */	
+			 , nvl(B.DLLZ_DDCN2,0)                                                        as DLLZ_DDCN2    /* 병가     */	
+			 , nvl(B.DLLZ_DDCN3,0)                                                        as DLLZ_DDCN3    /* 출산휴가         */	
+			 , nvl(B.DLLZ_DDCN4,0)                                                        as DLLZ_DDCN4    /* 휴일     */	
+			 , nvl(B.DLLZ_DDCN5,0)                                                        as DLLZ_DDCN5    /* 결근         */	
+			 , nvl(B.DLLZ_DDCN6,0)                                                        as DLLZ_DDCN6    /* 보상휴가     */	
+			 , nvl(B.DLLZ_DDCN7,0)                                                        as DLLZ_DDCN7    /* 오전반휴         */	
+			 , nvl(B.DLLZ_DDCN8,0)                                                        as DLLZ_DDCN8    /* 오후반휴         */	
+			 , nvl(B.DLLZ_DDCN9,0)                                                        as DLLZ_DDCN9    /* 보건휴가        */	
+			 , nvl(B.DLLZ_DDCN10,0)                                                       as DLLZ_DDCN10   /* 학회 */	
+			 , nvl(B.DLLZ_DDCN11,0)                                                       as DLLZ_DDCN11   /* 공가   */	
+			 , nvl(B.DLLZ_DDCN12,0)                                                       as DLLZ_DDCN12   /* 배우자출산휴가   */
+		     , nvl(B.DLLZ_DDCN13,0)                                                       as DLLZ_DDCN13   /* 위로(2주)    */
+		     , nvl(B.DLLZ_DDCN14,0)                                                       as DLLZ_DDCN14   /* 노조공가     */
+		  from HHYYVACMT A
+		     , HZUSERMMT C
+		     , HZDEPTMMT D
+		     , HZDEPTMMT E
+		     , (SELECT X.EMNO    as EMNO
+		             , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('PH','PA','PP') THEN X.DLLZ_DDCN ELSE 0 END),0) as USE_DDCN1
+		             , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN (SELECT MIS_COMN_CD from HZMICOCDT where COMN_GRP_CD = 'GP115' and nvl(CHRC_CD_VL01,'N') = 'Y') THEN X.DLLZ_DDCN ELSE 0 END),0) as USE_DDCN 
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('경')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN1	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('병')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN2	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('출')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN3	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('휴')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN4	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('결')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN5	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('보')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN6	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('H1')          THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN7	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('H2')          THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN8	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('생')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN9	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('학')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN10	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('공')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN11	
+				     , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('배')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN12	
+		             , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('26')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN13
+		             , NVL(SUM(CASE WHEN X.DLLZ_DVSN_CD IN ('97')           THEN X.DLLZ_DDCN ELSE 0 END),0) as DLLZ_DDCN14
+		          from HHWKDAYMT  x
+		             , HHYYVACMT  y
+		         where y.BASE_YY = #{baseYy}
+		           and y.EMNO    LIKE #{emno} || '%'
+		--		   and x.BASE_YY = y.BASE_YY
+				   and x.EMNO    = y.EMNO
+				   and x.DLLZ_STRT_YMD BETWEEN y.BASE_STRT_YMD AND y.BASE_FNSH_YMD
+		--           and(   (x.APRL_SNO is null) 
+		--               or ((x.APRL_SNO is not null) and not exists (select 1 from HZEAPLMMT where APRL_SNO = x.APRL_SNO and APRL_STTS_CD = '3'))
+		--              )
+		           and ((x.APRL_SNO is not null) and exists (select 1 from HZEAPLMMT where APRL_SNO = x.APRL_SNO and APRL_STTS_CD = '2'))
+		         GROUP BY X.EMNO  ) B
+		 where A.BASE_YY = #{baseYy}
+		   AND A.EMNO    LIKE #{emno} || '%'
+		   AND C.EMNO    = A.EMNO
+		   AND C.DPRT_CD LIKE #{dprtCd} ||'%'
+		   AND D.DPRT_CD(+) = C.DPRT_CD
+		   AND E.DPRT_CD(+) = C.WRKN_PART_CD
+		   AND B.EMNO(+)    = A.EMNO
+		   AND (    
+		          ( #{gvUserId} = (SELECT MIS_COMN_CD FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId}) and 
+		             C.WRKN_PART_CD IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId})
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          ) 
+		          or 
+		          ( #{gvUserId} IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD='000000')
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          )
+		          or 
+		          ( #{gvUserId} = #{emno}
+		          )
+		          or 
+		          ( #{gvUserId} = (SELECT MIS_COMN_CD FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId}) and 
+		             C.DPRT_CD IN (SELECT PART FROM (SELECT * FROM HZMICOCDT WHERE COMN_GRP_CD='HHD_002' AND MIS_COMN_CD=#{gvUserId})
+		                          UNPIVOT (PART FOR 필드명 IN (CHRC_CD_VL01, CHRC_CD_VL02, CHRC_CD_VL03, CHRC_CD_VL04, CHRC_CD_VL05, CHRC_CD_VL06, CHRC_CD_VL07, CHRC_CD_VL08, CHRC_CD_VL09))) 
+		          )
+		       )
+		 ORDER BY A.EMNO  
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="dllzStrtHh" column="DLLZ_STRT_HH"/>
+		<result property="dllzFnshHh" column="DLLZ_FNSH_HH"/>
+		<result property="aplcResnCtn" column="APLC_RESN_CTN"/>
+		<result property="weekCnt" column="WEEK_CNT"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="bswrHh" column="BSWR_HH"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="dxHsptNm" column="DX_HSPT_NM"/>
+		<result property="placNm" column="PLAC_NM"/>
+		<result property="trfcMensNm" column="TRFC_MENS_NM"/>
+		<result property="expnDvsnCd" column="EXPN_DVSN_CD"/>
+		<result property="expnAmt" column="EXPN_AMT"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+		<result property="cnpnTlno" column="CNPN_TLNO"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="aprlSttsNm" column="APRL_STTS_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="dllzDvsnCd" column="DLLZ_DVSN_CD"/>
+		<result property="dllzDvsnNm" column="DLLZ_DVSN_NM"/>
+		<result property="ocdtGropCd" column="OCDT_GROP_CD"/>
+		<result property="ocdtGropNm" column="OCDT_GROP_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="ocrsNm" column="OCRS_NM"/>
+		<result property="empyClno" column="EMPY_CLNO"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="misId" column="MIS_ID"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="dprrPlacNm" column="DPRR_PLAC_NM"/>
+		<result property="arvlPlacNm" column="ARVL_PLAC_NM"/>
+		<result property="owhsDstcVl" column="OWHS_DSTC_VL"/>
+		<result property="shtlYn" column="SHTL_YN"/>
+		<result property="l1scCd" column="L1SC_CD"/>
+		<result property="l2scCd" column="L2SC_CD"/>
+		<result property="l3scCd" column="L3SC_CD"/>
+		<result property="l4scCd" column="L4SC_CD"/>
+		<result property="l5scCd" column="L5SC_CD"/>
+		<result property="l1scNm" column="L1SC_NM"/>
+		<result property="l2scNm" column="L2SC_NM"/>
+		<result property="l3scNm" column="L3SC_NM"/>
+		<result property="l4scNm" column="L4SC_NM"/>
+		<result property="l5scNm" column="L5SC_NM"/>
+		<result property="scksHolyDvsnCd" column="SCKS_HOLY_DVSN_CD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="finsYn" column="FINS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc (콜근무신청내역) 
+        Description :                                           일근태 콜근무신청내역
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfCallDllzAplc */ 
+		       a.EMNO
+		     , b.EMPY_NM 
+		     , c.KORN_DPRT_NM
+		     , to_char(a.DLLZ_STRT_YMD,'YYYYMMDD') DLLZ_STRT_YMD
+		     , to_char(a.DLLZ_FNSH_YMD,'YYYYMMDD') DLLZ_FNSH_YMD
+		     , a.DLLZ_STRT_HH
+		     , a.DLLZ_FNSH_HH
+		     , a.APLC_RESN_CTN  /* 신청사유 */
+		     , a.WEEK_CNT
+		     , a.DLLZ_DDCN
+		     , a.BSWR_HH
+		     , to_char(a.STRT_YMD,'YYYYMMDD') STRT_YMD
+		     , to_char(a.FNSH_YMD,'YYYYMMDD') FNSH_YMD
+		     , a.RMRK_CTN     /* 비고 */
+		     , a.DX_HSPT_NM   /* 진단병원명 */
+		     , a.PLAC_NM      /* 장소명  */
+		     , a.TRFC_MENS_NM /* 교통수단명*/
+		     , a.EXPN_DVSN_CD /* 비용구분코드 */
+		     , a.EXPN_AMT     /* 비용금액*/
+		     , a.RPPR_NM
+		     , a.CNPN_TLNO
+		     , a.CLSN_YN
+		     , a.SQNC
+		     , a.APRL_SNO
+		     , d.APRL_STTS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHB_001' and MIS_COMN_CD = d.APRL_STTS_CD),'미상신') APRL_STTS_NM		          
+		     , b.DPRT_CD
+		     , b.OCCL_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP005' and MIS_COMN_CD = b.OCCL_CD),'') OCCL_NM /* 직급명*/
+		     , a.BASE_YY
+		     , b.OCPS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP008' and MIS_COMN_CD = b.OCPS_CD),'') OCPS_NM /* 직위명 */
+		     , a.DLLZ_DVSN_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP115' and MIS_COMN_CD = a.DLLZ_DVSN_CD),'') DLLZ_DVSN_NM /* 근태명*/
+		     , b.OCDT_GROP_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHP_003' and MIS_COMN_CD = b.OCDT_GROP_CD),'') OCDT_GROP_NM /* 직군명 */
+		     , b.OCFM_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP006' and MIS_COMN_CD = b.OCFM_CD),'') OCFM_NM /* 직종명 */
+		     , b.OCRS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP007' and MIS_COMN_CD = b.OCRS_CD),'') OCRS_NM /* 직책명 */
+		     , b.EMPY_CLNO
+		     , d.SYST_ID /* 상신정보*/
+		     , d.MIS_ID  /* 상신정보	*/
+		     , a.PTNO    /* 환자번호*/
+		     , nvl((select PTNT_NM from APPTPTNTT where PTNO = a.PTNO),'') PTNT_NM  /* 환자명*/
+		     , a.DPRR_PLAC_NM /* 출발장소명*/
+		     , a.ARVL_PLAC_NM /* 도착장소명*/
+		     , a.OWHS_DSTC_VL /* 자택거리값*/
+		     , a.SHTL_YN      /* 왕복여부*/
+		     , a.L1SC_CD      /* 상병코드 1*/
+		     , a.L2SC_CD      /* 상병코드 2*/
+		     , a.L3SC_CD      /* 상병코드 3*/
+		     , a.L4SC_CD      /* 상병코드 4*/
+		     , a.L5SC_CD      /* 상병코드 5*/
+		     , nvl((select SCIN_KORN_NM from MRBSSCINT where SCIN_CD = a.L1SC_CD AND a.DLLZ_STRT_YMD between APLY_YMD and FNSH_YMD),'') L1SC_NM
+		     , nvl((select SCIN_KORN_NM from MRBSSCINT where SCIN_CD = a.L2SC_CD AND a.DLLZ_STRT_YMD between APLY_YMD and FNSH_YMD),'') L2SC_NM
+		     , nvl((select SCIN_KORN_NM from MRBSSCINT where SCIN_CD = a.L3SC_CD AND a.DLLZ_STRT_YMD between APLY_YMD and FNSH_YMD),'') L3SC_NM
+		     , nvl((select SCIN_KORN_NM from MRBSSCINT where SCIN_CD = a.L4SC_CD AND a.DLLZ_STRT_YMD between APLY_YMD and FNSH_YMD),'') L4SC_NM
+		     , nvl((select SCIN_KORN_NM from MRBSSCINT where SCIN_CD = a.L5SC_CD AND a.DLLZ_STRT_YMD between APLY_YMD and FNSH_YMD),'') L5SC_NM
+		     , a.SCKS_HOLY_DVSN_CD /* 병휴가구분코드(입원/수술/자가(통원))*/
+		     , a.BSPL_CD
+		     , a.FINS_YN
+		  from HHWKDAYMT a  /* 일근태 */
+		     , HZUSERMMT b
+		     , HZDEPTMMT c
+		     , HZEAPLMMT d
+		 where 1 = 1
+		   and a.DLLZ_DVSN_CD  like #{dllzDvsnCd} || '%'
+		   and a.EMNO          like #{emno} || '%'
+		   and ( (a.DLLZ_STRT_YMD                    between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD'))
+		      or (a.DLLZ_FNSH_YMD                    between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD'))
+		      or (to_date(#{inqrStrtYmd},'YYYYMMDD') between a.DLLZ_STRT_YMD and a.DLLZ_FNSH_YMD)
+		      or (to_date(#{inqrFnshYmd},'YYYYMMDD') between a.DLLZ_STRT_YMD and a.DLLZ_FNSH_YMD))
+		   and b.EMNO           = a.EMNO  
+		   and b.DPRT_CD       like #{dprtCd} || '%'
+		   and c.DPRT_CD(+)        = b.DPRT_CD
+		   and d.APRL_SNO   (+) = a.APRL_SNO
+		]]>
+		   and nvl(#{clsnYn},'Y') = nvl(#{clsnYn},'Y')
+		<if test='clsnYn != null and clsnYn == "Y"'>
+		   and a.APRL_SNO is not null
+		   and d.APRL_STTS_CD in ('2','5','6')
+		</if>
+		<if test='clsnYn != null and clsnYn == "N"'>
+		   and (a.APRL_SNO is null or (a.APRL_SNO is not null and d.APRL_STTS_CD not in ('2','5','6')))
+		</if>
+		 order by c.KORN_DPRT_NM 
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="wrknPartNm" column="WRKN_PART_NM"/>
+		<result property="dllzAplcYn" column="DLLZ_APLC_YN"/>
+		<result property="dllzDvsnCd" column="DLLZ_DVSN_CD"/>
+		<result property="dllzDvsnNm" column="DLLZ_DVSN_NM"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="aprlSttsNm" column="APRL_STTS_NM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="totDdcn" column="TOT_DDCN"/>
+		<result property="useDdcn" column="USE_DDCN"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="clsnYmd" column="CLSN_YMD"/>
+		<result property="finsYn" column="FINS_YN"/>
+		<result property="placNm" column="PLAC_NM"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ocdtGropCd" column="OCDT_GROP_CD"/>
+		<result property="ocdtGropNm" column="OCDT_GROP_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="ocrsNm" column="OCRS_NM"/>
+		<result property="empyClno" column="EMPY_CLNO"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="misId" column="MIS_ID"/>
+		<result property="sbsnEmno" column="SBSN_EMNO"/>
+		<result property="sbsnEmpyNm" column="SBSN_EMPY_NM"/>
+		<result property="sbsnEmpyClno" column="SBSN_EMPY_CLNO"/>
+		<result property="cgcdDvsnCd" column="CGCD_DVSN_CD"/>
+		<result property="cgcdDvsnNm" column="CGCD_DVSN_NM"/>
+		<result property="crdmYn" column="CRDM_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc (휴가신청내역조회) 
+        Description :                                           휴가신청내역조회 GP_WKDAY_L6(휴가신청관리)
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: DOM_EHR_COM com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfHolydayAplc */ 
+		select 
+		       a.EMNO
+		     , b.EMPY_NM 
+		     , a.DPRT_CD
+		     ,(select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD= a.DPRT_CD) as KORN_DPRT_NM
+		     ,(select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD= b.WRKN_PART_CD) as WRKN_PART_NM  --2023.06.Add.근무지명
+		     , a.DLLZ_APLC_YN
+		     , a.DLLZ_DVSN_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP115' and MIS_COMN_CD = a.DLLZ_DVSN_CD),'') DLLZ_DVSN_NM --+ 근태명  
+		     , to_char(a.DLLZ_STRT_YMD,'YYYYMMDD') DLLZ_STRT_YMD
+		     , a.STRT_AMPM_DVSN_CD
+		     , to_char(a.DLLZ_FNSH_YMD,'YYYYMMDD') DLLZ_FNSH_YMD
+		     , a.FNSH_AMPM_DVSN_CD
+		     , a.DLLZ_DDCN
+		     , a.RMRK_CTN
+		     , nvl(d.APRL_STTS_CD,'X') APRL_STTS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHB_001' and MIS_COMN_CD = d.APRL_STTS_CD),'미상신') APRL_STTS_NM
+		     , a.SQNC
+		     , a.BSPL_CD
+		     , nvl((select nvl(OCRN_ORYR_CNT,0) + nvl(OCRN_YOS_HOLY_CNT,0) + nvl(ADJS_DDCN,0)
+		              from HHYYVACMT
+		             where BASE_YY = a.BASE_YY
+		               and EMNO    = a.EMNO
+		           ) , 0)                     as TOT_DDCN
+		     , nvl((select sum(x.DLLZ_DDCN) 
+		              from HHWKDAYMT x,
+		                   HHYYVACMT y
+		             where y.BASE_YY = a.BASE_YY 
+		               and x.EMNO    = a.EMNO 
+		               and x.EMNO    = y.EMNO 
+		               and x.DLLZ_STRT_YMD BETWEEN y.BASE_STRT_YMD AND y.BASE_FNSH_YMD
+		           /*    and x.CLSN_YN = 'Y'   */ /*  사용여부 체크필요 */
+		               and x.DLLZ_DVSN_CD in (SELECT MIS_COMN_CD from HZMICOCDT where COMN_GRP_CD = 'GP115' and nvl(CHRC_CD_VL01,'N') = 'Y')
+		               and (  (x.APRL_SNO is null) 
+		                  or ((x.APRL_SNO is not null) and not exists (select 1 from HZEAPLMMT where APRL_SNO = x.APRL_SNO and APRL_STTS_CD = '3'))
+		                   )
+		           ) ,0)                      as USE_DDCN
+		     , a.CLSN_YN
+		     , to_char(a.CLSN_YMD,'YYYYMMDD') CLSN_YMD
+		     , a.FINS_YN
+		     , a.PLAC_NM
+		     , a.APRL_SNO
+		     , b.GEND_CD
+		     , b.OCDT_GROP_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHP_003' and MIS_COMN_CD = b.OCDT_GROP_CD),'') OCDT_GROP_NM --+ 직군명        
+		     , b.OCFM_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP006' and MIS_COMN_CD = b.OCFM_CD),'') OCFM_NM --+ 직종명 
+		     , b.OCCL_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP005' and MIS_COMN_CD = b.OCCL_CD),'') OCCL_NM --+ 직급명 
+		     , b.OCPS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP008' and MIS_COMN_CD = b.OCPS_CD),'') OCPS_NM --+ 직위명 
+		     , b.OCRS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP007' and MIS_COMN_CD = b.OCRS_CD),'') OCRS_NM --+ 직책명        
+		     , b.EMPY_CLNO
+		     , d.SYST_ID --+ 상신정보
+		     , d.MIS_ID  --+ 상신정보
+		     , a.SBSN_EMNO as SBSN_EMNO --+ 대체사원번호
+		     ,(Select EMPY_NM From HZUSERMMT where EMNO = a.SBSN_EMNO) as SBSN_EMPY_NM --+ 대체사원명
+		     ,(Select EMPY_CLNO From HZUSERMMT where EMNO = a.SBSN_EMNO) as SBSN_EMPY_CLNO --+ 대체사원 휴대전화번호(SMS발송용) 
+		     , a.CGCD_DVSN_CD as CGCD_DVSN_CD --+ 경조구분코드
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'BV100' and MIS_COMN_CD = a.CGCD_DVSN_CD),'') as CGCD_DVSN_NM --+ 경조구분명
+		     , a.CRDM_YN
+		     /* 2023.05. 미사용필드 - 일부 PC에서 'Out of Memory' Error 발생하여 주석
+		     , a.ATFL_NM  , a.ATFL_BD 
+		     , a.ATFL_NM2 , a.ATFL_BD2 
+		     , a.ATFL_NM3 , a.ATFL_BD3 
+		     , a.ATFL_NM4 , a.ATFL_BD4 
+		     , a.ATFL_NM5 , a.ATFL_BD5 */
+		  from HHWKDAYMT a  --+ 일근태
+		     , HZUSERMMT b
+		     , HZEAPLMMT d
+		 where 1 = 1
+		   and b.EMNO = a.EMNO
+		   and d.APRL_SNO(+) = a.APRL_SNO
+		   and a.DLLZ_DVSN_CD like #{dllzDvsnCd} || '%'
+		   and a.DLLZ_DVSN_CD in 
+		         ( SELECT MIS_COMN_CD from HZMICOCDT where COMN_GRP_CD = 'GP115' and (nvl(CHRC_CD_VL02,'N') = 'Y' or nvl(CHRC_CD_VL03,'N') = 'Y') )  /* 구분이 휴가인 건만 */
+		 ]]>
+		<if test='crdmYn != null  and crdmYn =="Y"'>
+		   and #{crdmYn}  = #{crdmYn} 
+		   and exists ( SELECT 1 from HZMICOCDT where  COMN_GRP_CD = 'GP115' and  mis_comn_cd = a.DLLZ_DVSN_CD  and  nvl(CHRC_CD_VL02,'N') = 'Y')
+		</if>
+		<if test='emno != null and emno != ""'>
+		   and a.EMNO     like #{emno}
+		</if>
+		   and #{inqrYmdDvsnCd}  = #{inqrYmdDvsnCd} 
+		<if test='inqrYmdDvsnCd != null  and inqrYmdDvsnCd =="1"'>
+		   and a.FRST_RGST_DT between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD') + 1
+		</if>
+		<if test='inqrYmdDvsnCd != null  and inqrYmdDvsnCd =="2"'>
+		<![CDATA[
+		   and (   a.DLLZ_STRT_YMD between to_date(#{inqrStrtYmd},'YYYYMMDD')  and to_date(#{inqrFnshYmd},'YYYYMMDD') 
+		        or  to_date(#{inqrStrtYmd},'YYYYMMDD')  between a.DLLZ_STRT_YMD and nvl(a.DLLZ_FNSH_YMD,a.DLLZ_STRT_YMD)
+		        or to_date(#{inqrFnshYmd},'YYYYMMDD')  between a.DLLZ_STRT_YMD and nvl(a.DLLZ_FNSH_YMD,a.DLLZ_STRT_YMD)
+		        or (to_date(#{inqrStrtYmd},'YYYYMMDD') > a.DLLZ_STRT_YMD and to_date(#{inqrFnshYmd},'YYYYMMDD') < nvl(a.DLLZ_FNSH_YMD,a.DLLZ_STRT_YMD))
+		       )
+		 ]]>
+		</if>
+		<if test='dprtCd != null and dprtCd != ""'>
+		   and (b.DPRT_CD like #{dprtCd} || '%' or
+		        b.DPRT_CD in (select b.DPRT_CD
+		                        from HZDEPTMMT a
+		                           , HZDEPTMMT b
+		                       where a.DPRT_CD = #{dprtCd}
+		                         and b.HRAF_HGRN_DPRT_CD = a.DPRT_CD )
+		       )
+		</if>
+		<if test='dvsnVl != null and dvsnVl != ""'>
+		<![CDATA[
+		    and ((  #{dvsnVl}  = 'H'  and b.HRAF_OCFM_CD = 'HAA' ) or (#{dvsnVl}  = 'A' and b.HRAF_OCFM_CD <> 'HAA' ))  
+		 ]]>
+		</if>
+		 order by 4, b.EMPY_NM, a.DLLZ_STRT_YMD 
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="dllzStrtHh" column="DLLZ_STRT_HH"/>
+		<result property="dllzFnshHh" column="DLLZ_FNSH_HH"/>
+		<result property="aplcResnCtn" column="APLC_RESN_CTN"/>
+		<result property="weekCnt" column="WEEK_CNT"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="bswrHh" column="BSWR_HH"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="dxHsptNm" column="DX_HSPT_NM"/>
+		<result property="placNm" column="PLAC_NM"/>
+		<result property="trfcMensNm" column="TRFC_MENS_NM"/>
+		<result property="expnDvsnCd" column="EXPN_DVSN_CD"/>
+		<result property="expnAmt" column="EXPN_AMT"/>
+		<result property="rpprNm" column="RPPR_NM"/>
+		<result property="cnpnTlno" column="CNPN_TLNO"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="aprlSttsNm" column="APRL_STTS_NM"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="aplcResnNm" column="APLC_RESN_NM"/>
+		<result property="trfcCdNm" column="TRFC_CD_NM"/>
+		<result property="expnDvsnNm" column="EXPN_DVSN_NM"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="dllzDvsnCd" column="DLLZ_DVSN_CD"/>
+		<result property="dllzDvsnNm" column="DLLZ_DVSN_NM"/>
+		<result property="empyClno" column="EMPY_CLNO"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="misId" column="MIS_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc (국내출장(무비용)신청내역) 
+        Description :                                           국내출장(무비용)신청내역 GP_WKDAY_L9(출장신청관리) gp_wkday_l9.pc
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listOfDmscBstrAplc */ 
+		       a.EMNO
+		     , b.EMPY_NM 
+		     , b.DPRT_CD
+		     , c.KORN_DPRT_NM
+		     , to_char(a.DLLZ_STRT_YMD,'YYYYMMDD') DLLZ_STRT_YMD
+		     , to_char(a.DLLZ_FNSH_YMD,'YYYYMMDD') DLLZ_FNSH_YMD
+		     , a.DLLZ_STRT_HH
+		     , a.DLLZ_FNSH_HH
+		     , a.APLC_RESN_CTN
+		     , a.WEEK_CNT
+		     , a.DLLZ_DDCN
+		     , a.BSWR_HH
+		     , to_char(a.STRT_YMD,'YYYYMMDD') STRT_YMD
+		     , to_char(a.FNSH_YMD,'YYYYMMDD') FNSH_YMD
+		     , a.RMRK_CTN
+		     , a.DX_HSPT_NM
+		     , a.PLAC_NM
+		     , a.TRFC_MENS_NM
+		     , a.EXPN_DVSN_CD
+		     , a.EXPN_AMT
+		     , a.RPPR_NM
+		     , a.CNPN_TLNO
+		     , a.CLSN_YN
+		     , a.SQNC
+		     , a.APRL_SNO
+		     , d.APRL_STTS_CD
+		--     , decode(a.APRL_STTS_CD, '0', '접수', '3', '결재', '5', '반려') APRL_STTS_NM
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHB_001' and MIS_COMN_CD = d.APRL_STTS_CD),'') APRL_STTS_NM
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP005' and MIS_COMN_CD = b.OCCL_CD),'') OCCL_NM -- 직급명
+		     , a.BASE_YY
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP851' and MIS_COMN_CD = a.APLC_RESN_CTN),'') APLC_RESN_NM
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP853' and MIS_COMN_CD = a.TRFC_MENS_NM),'') TRFC_CD_NM
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP852' and MIS_COMN_CD = a.EXPN_DVSN_CD),'') EXPN_DVSN_NM
+		     , a.BSPL_CD
+		     , b.OCPS_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP008' and MIS_COMN_CD = b.OCPS_CD),'') OCPS_NM --+ 직위명 
+		     , a.DLLZ_DVSN_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP115' and MIS_COMN_CD = a.DLLZ_DVSN_CD),'') DLLZ_DVSN_NM --+ 근태명
+		     , b.EMPY_CLNO
+		     , d.SYST_ID --+ 상신정보
+		     , d.MIS_ID  --+ 상신정보	     
+		  from HHWKDAYMT a  /* 일근태 */
+		     , HZUSERMMT b
+		     , HZDEPTMMT c
+		     , HZEAPLMMT d     
+		 where 1 = 1
+		   and a.DLLZ_DVSN_CD  like #{dllzDvsnCd} || '%'
+		   and a.EMNO          like #{emno} || '%'
+		   and ( (a.DLLZ_STRT_YMD                    between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD'))
+		      or (a.DLLZ_FNSH_YMD                    between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD'))
+		      or (to_date(#{inqrStrtYmd},'YYYYMMDD') between a.DLLZ_STRT_YMD and a.DLLZ_FNSH_YMD)
+		      or (to_date(#{inqrFnshYmd},'YYYYMMDD') between a.DLLZ_STRT_YMD and a.DLLZ_FNSH_YMD))
+		   and a.CLSN_YN like #{clsnYn} || '%'
+		   and b.EMNO           = a.EMNO  
+		   and b.DPRT_CD       like #{dprtCd} || '%'
+		   and c.DPRT_CD        = b.DPRT_CD
+		   and d.APRL_SNO   (+) = A.APRL_SNO   
+		 order by c.KORN_DPRT_NM 
+		 ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt (휴가일자계산) 
+        Description :                                           공휴일 및 토요일,일요일을 제외한 휴가일수 계산
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyDayCnt */
+		select 
+		       to_date(#{inqrFnshYmd},'YYYYMMDD') - to_date(#{inqrStrtYmd},'YYYYMMDD') + 1 - sum(cnt) DLLZ_DDCN
+		from (
+		--select sum(case when to_char(to_date({inqrStrtYmd},'YYYYMMDD') + rownum -1,'d') in ('1','7') then 1 else 0 end) cnt
+		select sum(case when to_char(to_date(#{inqrStrtYmd},'YYYYMMDD') + rownum -1,'d') in ('1') then 1 else 0 end) cnt
+		  from HZUSERMMT 
+		 where rownum <= to_date(#{inqrFnshYmd},'YYYYMMDD') - to_date(#{inqrStrtYmd},'YYYYMMDD') + 1 
+		union 
+		select count(*) cnt
+		  from APDSPBHLT
+		 where HLDY_YMD between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD')
+		--   and to_char(HLDY_YMD,'d') not in ('1','7') --휴일중 일요일, 토요일은 제외해야 최종 합계에서 중복차감되지 않는다.
+		   and to_char(HLDY_YMD,'d') not in ('1') --휴일중 일요일은 제외해야 최종 합계에서 중복차감되지 않는다.
+		)
+		]]>	
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="cnt" column="CNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck (휴가신청중복체크) 
+        Description :                                           휴가일기준 휴가신청 중복체크
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneAplcDupCheck */
+		           count(*) CNT
+		  FROM HHWKDAYMT A
+		 WHERE EMNO like #{emno} || '%'
+		   and DLLZ_FNSH_YMD >= to_date(#{inqrStrtYmd},'YYYYMMDD')  /* 변수 시작일 */
+		   and DLLZ_STRT_YMD <= to_date(#{inqrFnshYmd},'YYYYMMDD')  /* 변수 종료일 */
+		--   and DLLZ_DVSN_CD not in ('CW','출') /*21.11.03 이상현 추가 */
+		--   and( (APRL_SNO is not null) and not exists (select 1 from HZEAPLMMT P where APRL_SNO = P.APRL_SNO and P.APRL_STTS_CD = '3'))
+		   and( (APRL_SNO is not null) and not exists (select 1 from HZEAPLMMT P where APRL_SNO = A.APRL_SNO and P.APRL_STTS_CD in ('3','4') ) ) --2023.06.
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dvsnVl" column="DVSN_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneDummy */
+		select cast('' as varchar2(1)) as DVSN_VL /*구분값*/
+		  from dual
+		]]>  
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymtForNurse (간호근태 삭제) 
+        Description :                                           간호근태 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymtForNurse"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		DELETE  /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-deleteHhwkdaymtForNurse */
+		  FROM HHWKDAYMT
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND CRDM_YN  =  'Y'
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForNurse (간호근태 수정) 
+        Description :                                           간호근태 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForNurse"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		UPDATE /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtForNurse */
+		             HHWKDAYMT
+		       SET DLLZ_FNSH_YMD = to_date(#{dllzFnshYmd} ,'YYYYMMDD')		/* 근태종료일자 */
+		            ,DLLZ_DVSN_CD = #{dllzDvsnCd} 	/* 근태구분코드 */
+					,BASE_YY = #{baseYy} 		/* 기준년도 */
+					,DLLZ_APLC_YN = #{dllzAplcYn} 		/* 근태신청여부 */
+					,DPRT_CD = #{dprtCd} 		/* 부서코드 */
+					,WKDY_WRKN_HH = #{wkdyWrknHh} 		/* 주간근무시간 */
+					,NGHT_WRKN_HH = #{nghtWrknHh} 		/* 야간근무시간 */
+					,STRT_AMPM_DVSN_CD = #{strtAmpmDvsnCd} 		/* 시작오전오후구분코드 */
+					,FNSH_AMPM_DVSN_CD = #{fnshAmpmDvsnCd} 		/* 종료오전오후구분코드 */
+					,DLLZ_DDCN = #{dllzDdcn} 		/* 근태일수 */
+					,CRDM_YN = #{crdmYn} 		/* 간호부여부 */
+					,APRL_SNO = #{aprlMngmNo} 		/* 결재관리번호 */
+					,APRL_STTS_CD = #{aprlSttsCd} 		/* 결재상태코드 */
+					,FINS_YN = #{finsYn} 		/* 부서결재 완료여부 */
+					,FINS_YMD = case when #{finsYn}  = 'Y' then sysdate else null end /* 완료일자 */
+					,CLSN_YN = #{clsnYn} 		/* 총무파트 마감여부 */
+					,RMRK_CTN = #{rmrkCtn} 		/* 비고내용 */
+					,ATFL_RFRN_NO = #{atflRfrnNo} 		/* 첨부파일참조번호 */
+					,DLLZ_STRT_HH = #{dllzStrtHh} 		/* 근태시작시간 */
+					,DLLZ_FNSH_HH = #{dllzFnshHh} 		/* 근태종료시간 */
+					,APLC_RESN_CTN = #{aplcResnCtn} 		/* 신청사유내용 */
+					,WEEK_CNT = #{weekCnt} 		/* 주수 */
+					,BSWR_HH = #{bswrHh} 		/* 업무시간 */
+					,STRT_YMD = to_date(#{strtYmd} ,'YYYYMMDD')		/* 시작일자 */
+					,FNSH_YMD = to_date(#{fnshYmd} ,'YYYYMMDD')		/* 종료일자 */
+					,DX_HSPT_NM = #{dxHsptNm} 		/* 진단병원명 */
+					,PLAC_NM = #{placNm} 		/* 장소명 */
+					,TRFC_MENS_NM = #{trfcMensNm} 		/* 교통수단명 */
+					,EXPN_DVSN_CD = #{expnDvsnCd} 		/* 비용구분코드 */
+					,EXPN_AMT = #{expnAmt} 		/* 비용금액 */
+					,RPPR_NM = #{rpprNm} 		/* 대표자명 */
+					,CNPN_TLNO = #{cnpnTlno} 		/* 연락처전화번호 */
+					,CLSN_YMD = case when #{clsnYn}  = 'Y' then sysdate else null end  /* 마감일자 */
+					,SMIS_LNKG_YN = #{smisLnkgYn} 		/* SMIS연동여부 */
+					,BSPL_CD = #{bsplCd} 		/* 사업장코드 */
+				    ,LAST_UPDR_ID       = #{gvUserId}
+					,LAST_UPDT_IP       = #{gvUserIp}
+					,LAST_UPDT_DT       = sysdate
+					,LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+					,LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND CRDM_YN  =  'Y'
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="baseYy" column="BASE_YY"/>
+		<result property="dllzAplcYn" column="DLLZ_APLC_YN"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="wkdyWrknHh" column="WKDY_WRKN_HH"/>
+		<result property="nghtWrknHh" column="NGHT_WRKN_HH"/>
+		<result property="strtAmpmDvsnCd" column="STRT_AMPM_DVSN_CD"/>
+		<result property="fnshAmpmDvsnCd" column="FNSH_AMPM_DVSN_CD"/>
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+		<result property="crdmYn" column="CRDM_YN"/>
+		<result property="aprlSno" column="APRL_SNO"/>
+		<result property="aprlSttsCd" column="APRL_STTS_CD"/>
+		<result property="finsYn" column="FINS_YN"/>
+		<result property="finsYmd" column="FINS_YMD"/>
+		<result property="clsnYn" column="CLSN_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="atflRfrnNo" column="ATFL_RFRN_NO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse (간호근태 정보 조회) 
+        Description :                                           간호근태 정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT	/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHhwkdaymtForNurse */
+		            to_char(DLLZ_FNSH_YMD,'YYYYMMDD')	DLLZ_FNSH_YMD	/*  */
+					,BASE_YY		/*  */
+					,DLLZ_APLC_YN		/*  */
+					,DPRT_CD		/*  */
+					,nvl(WKDY_WRKN_HH,0) as WKDY_WRKN_HH		/*  */
+					,nvl(NGHT_WRKN_HH,0) as NGHT_WRKN_HH		/*  */
+					,STRT_AMPM_DVSN_CD		/*  */
+					,FNSH_AMPM_DVSN_CD		/*  */
+					,nvl(DLLZ_DDCN,0) as DLLZ_DDCN		/*  */
+					,CRDM_YN		/*  */
+					,APRL_SNO		/*  */
+					,APRL_STTS_CD		/*  */
+					,FINS_YN		/*  */
+					,to_char(FINS_YMD,'YYYYMMDD')	FINS_YMD	/*  */
+					,CLSN_YN		/*  */
+					,RMRK_CTN		/*  */
+					,ATFL_RFRN_NO		/*  */
+					,BSPL_CD		/* 1A */
+		  FROM	HHWKDAYMT
+		 WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND CRDM_YN  =  'Y'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="dllzDdcn" column="DLLZ_DDCN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn (기간별 휴가사용일수 조회) 
+        Description :                                           기간별 휴가사용일수 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyUseDdcn */
+		select nvl(sum(DLLZ_DDCN),0) as DLLZ_DDCN
+		  from (
+		       select 
+		              wkd.EMNO                               as EMNO                        /* 사원번호   */
+		            , to_char(wkd.DLLZ_STRT_YMD, 'YYYYMMDD') as DLLZ_STRT_YMD               /* 근태시작일자   */
+		            , wkd.DLLZ_DVSN_CD                       as DLLZ_DVSN_CD                /* 근태구분코드   */
+		            , wkd.SQNC                               as SQNC                        /* 순서   */
+		            , to_char(wkd.DLLZ_FNSH_YMD, 'YYYYMMDD') as DLLZ_FNSH_YMD               /* 근태종료일자   */
+		            , wkd.BASE_YY                            as BASE_YY                     /* 기준년도   */
+		            , wkd.DLLZ_APLC_YN                       as DLLZ_APLC_YN                /* 근태신청여부   */
+		            , wkd.DPRT_CD                            as DPRT_CD                     /* 부서코드   */
+		            , wkd.WKDY_WRKN_HH                       as WKDY_WRKN_HH                /* 주간근무시간   */
+		            , wkd.NGHT_WRKN_HH                       as NGHT_WRKN_HH                /* 야간근무시간   */
+		            , wkd.STRT_AMPM_DVSN_CD                  as STRT_AMPM_DVSN_CD           /* 시작오전오후구분코드   */
+		            , wkd.FNSH_AMPM_DVSN_CD                  as FNSH_AMPM_DVSN_CD           /* 종료오전오후구분코드   */
+		            , wkd.DLLZ_DDCN                          as DLLZ_DDCN                   /* 근태일수   */
+		--            , wkd.CRDM_YN                            as CRDM_YN                     /* 간호부여부   */
+		--            , wkd.APRL_SNO                           as APRL_SNO                    /* 결재관리번호   */
+		--            , wkd.APRL_STTS_CD                       as APRL_STTS_CD                /* 결재상태코드   */
+		--            , wkd.FINS_YN                            as FINS_YN                     /* 완료여부   */
+		--            , to_char(wkd.FINS_YMD, 'YYYYMMDD')      as FINS_YMD                    /* 완료일자   */
+		--            , wkd.CLSN_YN                            as CLSN_YN                     /* 마감여부   */
+		--            , wkd.RMRK_CTN                           as RMRK_CTN                    /* 비고내용   */
+		--            , wkd.ATFL_RFRN_NO                       as ATFL_RFRN_NO                /* 첨부파일참조번호   */
+		--            , wkd.DLLZ_STRT_HH                       as DLLZ_STRT_HH                /* 근태시작시간   */
+		--            , wkd.DLLZ_FNSH_HH                       as DLLZ_FNSH_HH                /* 근태종료시간   */
+		--            , wkd.APLC_RESN_CTN                      as APLC_RESN_CTN               /* 신청사유내용   */
+		--            , wkd.WEEK_CNT                           as WEEK_CNT                    /* 주수   */
+		--            , wkd.BSWR_HH                            as BSWR_HH                     /* 업무시간   */
+		--            , to_char(wkd.STRT_YMD, 'YYYYMMDD')      as STRT_YMD                    /* 시작일자   */
+		--            , to_char(wkd.FNSH_YMD, 'YYYYMMDD')      as FNSH_YMD                    /* 종료일자   */
+		--            , wkd.DX_HSPT_NM                         as DX_HSPT_NM                  /* 진단병원명   */
+		--            , wkd.PLAC_NM                            as PLAC_NM                     /* 장소명   */
+		--            , wkd.TRFC_MENS_NM                       as TRFC_MENS_NM                /* 교통수단명   */
+		--            , wkd.EXPN_DVSN_CD                       as EXPN_DVSN_CD                /* 비용구분코드   */
+		--            , wkd.EXPN_AMT                           as EXPN_AMT                    /* 비용금액   */
+		--            , wkd.RPPR_NM                            as RPPR_NM                     /* 대표자명   */
+		--            , wkd.CNPN_TLNO                          as CNPN_TLNO                   /* 연락처전화번호   */
+		--            , to_char(wkd.CLSN_YMD, 'YYYYMMDD')      as CLSN_YMD                    /* 마감일자   */
+		--            , wkd.SMIS_LNKG_YN                       as SMIS_LNKG_YN                /* SMIS연동여부   */
+		--            , wkd.PTNO                               as PTNO                        /* 환자번호   */
+		--            , wkd.DPRR_PLAC_NM                       as DPRR_PLAC_NM                /* 출발장소명   */
+		--            , wkd.ARVL_PLAC_NM                       as ARVL_PLAC_NM                /* 도착장소명   */
+		--            , wkd.OWHS_DSTC_VL                       as OWHS_DSTC_VL                /* 자택거리값   */
+		--            , wkd.SHTL_YN                            as SHTL_YN                     /* 왕복여부   */
+		--            , wkd.L1SC_CD                            as L1SC_CD                     /* 1단상병코드   */
+		--            , wkd.L2SC_CD                            as L2SC_CD                     /* 2단상병코드   */
+		--            , wkd.L3SC_CD                            as L3SC_CD                     /* 3단상병코드   */
+		--            , wkd.L4SC_CD                            as L4SC_CD                     /* 4단상병코드   */
+		--            , wkd.L5SC_CD                            as L5SC_CD                     /* 5단상병코드   */
+		--            , wkd.SCKS_HOLY_DVSN_CD                  as SCKS_HOLY_DVSN_CD           /* 병휴가구분코드   */
+		--            , wkd.SBSN_EMNO                          as SBSN_EMNO                   /* 대체사원번호   */
+		--            , wkd.CGCD_DVSN_CD                       as CGCD_DVSN_CD                /* 경조구분코드   */
+		--            , wkd.BSPL_CD                            as BSPL_CD                     /* 사업장코드   */
+		         from HHWKDAYMT wkd  /* 일근태관리 */
+		        where wkd.EMNO          = #{emno}
+		          and wkd.DLLZ_DVSN_CD  = #{dllzDvsnCd}
+		          and wkd.DLLZ_STRT_YMD between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD')
+		       )
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="ymd" column="YMD"/>
+		<result property="dywkCd" column="DYWK_CD"/>
+		<result property="pbhlYn" column="PBHL_YN"/>
+		<result property="baseYmd" column="BASE_YMD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="aplyYmd" column="APLY_YMD"/>
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="strtDtTot" column="STRT_DT_TOT"/>
+		<result property="fnshDtTot" column="FNSH_DT_TOT"/>
+		<result property="dvsnCd" column="DVSN_CD"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+		<result property="strtDt" column="STRT_DT"/>
+		<result property="fnshDt" column="FNSH_DT"/>
+		<result property="dvsnCd2" column="DVSN_CD2"/>
+		<result property="dvsnNm2" column="DVSN_NM2"/>
+		<result property="strtDt2" column="STRT_DT2"/>
+		<result property="fnshDt2" column="FNSH_DT2"/>
+		<result property="dvsnCd3" column="DVSN_CD3"/>
+		<result property="dvsnNm3" column="DVSN_NM3"/>
+		<result property="strtDt3" column="STRT_DT3"/>
+		<result property="fnshDt3" column="FNSH_DT3"/>
+		<result property="extnWrknHh" column="EXTN_WRKN_HH"/>
+		<result property="nghtWrknHh" column="NGHT_WRKN_HH"/>
+		<result property="dllzResnCtn" column="DLLZ_RESN_CTN"/>
+		<result property="sbsnMnpwCtn" column="SBSN_MNPW_CTN"/>
+		<result property="dllzDvsnCtn" column="DLLZ_DVSN_CTN"/>
+		<result property="nursWrknCd" column="NURS_WRKN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew (개인별 근태현황 조회) 
+        Description :                                           개인별 근태현황 조회(New)
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listDayWorkForEmpNew */
+		select DISTINCT
+		       to_char(crd.YMD, 'YYYYMMDD')                  as YMD
+		     , crd.DYWK_CD                                   as DYWK_CD 
+		     , crd.PBHL_YN                                   as PBHL_YN
+		     , #{baseYmd}                                    as BASE_YMD         /* 기준일자 */
+		     , com.BSPL_CD                                   as BSPL_CD          /* 사업장코드   */
+		     , to_char(crd.YMD, 'YYYYMMDD')                  as APLY_YMD         /* 적용일자   */
+		     , crd.EMNO                                      as EMNO             /* 사원번호   */
+		     , usr.EMPY_NM                                   as EMPY_NM          /* 사원명     */
+		     , case when com.STRT_DT  is not null then to_char(com.STRT_DT,  'YYYYMMDDHH24MISS')
+		            when com.STRT_DT2 is not null then to_char(com.STRT_DT2,  'YYYYMMDDHH24MISS')
+		            else to_char(com.STRT_DT3,  'YYYYMMDDHH24MISS')  
+		       end                                           as STRT_DT_TOT      /* 최종시작일시   */
+		     , case when com.FNSH_DT3 is not null then to_char(com.FNSH_DT3,  'YYYYMMDDHH24MISS')
+		            when com.FNSH_DT2 is not null then to_char(com.FNSH_DT2,  'YYYYMMDDHH24MISS')
+		            else to_char(com.FNSH_DT,  'YYYYMMDDHH24MISS')  
+		       end                                           as FNSH_DT_TOT      /* 최종시작일시   */       
+		     , com.DVSN_CD                                   as DVSN_CD          /* 구분코드(출퇴근유형)  */
+		     , nvl((select COMN_CD_NM from HZMICOCDT 
+		             where COMN_GRP_CD = 'GP028' 
+		               and MIS_COMN_CD = com.DVSN_CD),'')    as DVSN_NM          /* 구분명(출퇴근유형) */
+		     , to_char(com.STRT_DT,  'YYYYMMDDHH24MISS')     as STRT_DT          /* 시작일시   */
+		     , to_char(com.FNSH_DT,  'YYYYMMDDHH24MISS')     as FNSH_DT          /* 종료일시   */
+		     , com.DVSN_CD2                                  as DVSN_CD2          /* 구분코드(출퇴근유형)  */
+		     , nvl((select COMN_CD_NM from HZMICOCDT 
+		             where COMN_GRP_CD = 'GP028' 
+		               and MIS_COMN_CD = com.DVSN_CD2),'')   as DVSN_NM2          /* 구분명(출퇴근유형) */     
+		     , to_char(com.STRT_DT2, 'YYYYMMDDHH24MISS')     as STRT_DT2         /* 시작일시2   */
+		     , to_char(com.FNSH_DT2, 'YYYYMMDDHH24MISS')     as FNSH_DT2         /* 종료일시2   */
+		     , com.DVSN_CD3                                  as DVSN_CD3          /* 구분코드(출퇴근유형)  */
+		     , nvl((select COMN_CD_NM from HZMICOCDT 
+		             where COMN_GRP_CD = 'GP028' 
+		               and MIS_COMN_CD = com.DVSN_CD3),'')   as DVSN_NM3          /* 구분명(출퇴근유형) */     
+		     , to_char(com.STRT_DT3, 'YYYYMMDDHH24MISS')     as STRT_DT3         /* 시작일시3   */
+		     , to_char(com.FNSH_DT3, 'YYYYMMDDHH24MISS')     as FNSH_DT3         /* 종료일시3   */
+		     , ovr.EXTN_WRKN_HH                              as EXTN_WRKN_HH     /* 연장근무시간   */
+		     , ovr.NGHT_WRKN_HH                              as NGHT_WRKN_HH     /* 야간근무시간(연장근무2) */
+		     , com.DLLZ_RESN_CTN                             as DLLZ_RESN_CTN    /* 근태사유내용   */
+		     , com.SBSN_MNPW_CTN                             as SBSN_MNPW_CTN    /* 대체인력내용   */
+		     , Case When
+			             (select MIN(FINS_YN)
+				            from HHWKDAYMT P 
+				           where P.EMNO          = #{emno}
+				             and crd.YMD  between P.DLLZ_STRT_YMD and nvl(P.DLLZ_FNSH_YMD,P.DLLZ_STRT_YMD)
+				             and P.DLLZ_DVSN_CD in (SELECT MIS_COMN_CD from HZMICOCDT where COMN_GRP_CD = 'GP115' and nvl(CHRC_CD_VL01,'N') = 'Y')
+							 AND NOT EXISTS (
+									SELECT 1 
+									  FROM HZEAPLMMT
+									 WHERE APRL_SNO = P.APRL_SNO
+									   AND APRL_STTS_CD IN ('3','4')
+									)
+		--		          )  = 'N' and (crd.DYWK_CD = '1' or crd.PBHL_YN = 'Y')   then Null  -- 휴일포함이 아니고 일요일이거나 공휴일이면 
+				          )  = 'Y' and (crd.DYWK_CD = '1' or crd.PBHL_YN = 'Y')   then Null  -- 휴일포함이 아니고 일요일이거나 공휴일이면 
+				    Else 
+				         nvl((select LISTAGG(P.DLLZ_DVSN_CD,',') within group(order by  P.DLLZ_DVSN_CD) as DLLZ_DVSN_CTN
+				                from HHWKDAYMT P 
+				               where P.EMNO          = #{emno}
+				                 and crd.YMD  between P.DLLZ_STRT_YMD and nvl(P.DLLZ_FNSH_YMD,P.DLLZ_STRT_YMD)
+				                 and P.DLLZ_DVSN_CD in (SELECT MIS_COMN_CD from HZMICOCDT where COMN_GRP_CD = 'GP115' and nvl(CHRC_CD_VL01,'N') = 'Y')
+				                 and ((P.APRL_SNO is not null) and exists (select 1 from HZEAPLMMT  where APRL_SNO = P.APRL_SNO and APRL_STTS_CD = '2'))   
+				           ),'') 
+		            End            as DLLZ_DVSN_CTN    /* 근태구분내용 */
+		     , nvl(mna.NURS_WRKN_CD,'')  as NURS_WRKN_CD  /* 간호근태코드 */  
+		  from (
+		        select dmy.EMNO             as EMNO
+		             , dmy.YMD              as YMD
+		             , to_char(dmy.YMD,'d') as DYWK_CD --+요일코드
+		             , case when hlt.HLDY_YMD is not null then 'Y'
+		                    else 'N'
+		                end                 as PBHL_YN --+공휴일여부
+		          from (
+		                select #{emno} as EMNO
+		                     , (to_date(substr(#{baseYmd}, 1, 8), 'yyyymmdd') - 1) + rownum as YMD --+달력일자
+		                  from CCDUMMYMT
+		                 where rownum <= last_day(to_date(#{baseYmd},'yyyymmdd')) - to_date(#{baseYmd},'yyyymmdd') + 1
+		               ) dmy
+		             , APDSPBHLT hlt
+		         where hlt.HLDY_YMD (+) = dmy.YMD
+		       ) crd --+달력
+		     , HHCOMMUMT com --+출퇴근관리
+		     , HZUSERMMT usr
+		     , (select EMNO
+		             , WRKN_YMD
+		             , sum(EXTN_WRKN_HH) EXTN_WRKN_HH
+		             , sum(NGHT_WRKN_HH) NGHT_WRKN_HH
+		          from HHOVERTMT
+		         where WRKN_YMD between to_date(#{baseYmd},'yyyymmdd') and last_day(to_date(#{baseYmd},'yyyymmdd'))
+		           and EMNO     = #{emno}
+		         group by EMNO, WRKN_YMD  
+		       )      ovr 
+		     , MNANDUTDT mna 
+		 where 1=1
+		   and crd.YMD between to_date(#{baseYmd},'yyyymmdd') and last_day(to_date(#{baseYmd},'yyyymmdd'))
+		   and com.APLY_YMD (+) = crd.YMD
+		   and com.EMNO     (+) = #{emno}
+		   and usr.DPRT_CD   = #{dprtCd}
+		   and usr.EMNO     (+) = crd.EMNO
+		   and ovr.EMNO     (+) = crd.EMNO
+		   and ovr.WRKN_YMD (+) = crd.YMD
+		   and mna.WRKN_YMD (+) = crd.YMD
+		   and mna.WRKN_NURS_ID(+) = crd.EMNO   
+		 order
+		     by YMD, EMNO, STRT_DT, STRT_DT2, STRT_DT3
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtByConfirm (총무확인여부 update) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtByConfirm"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		UPDATE  /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-updateHhwkdaymtByConfirm */
+		        HHWKDAYMT
+		   SET  FINS_YN  = #{finsYn}  /* 완료여부 */
+		       ,FINS_YMD = decode(#{finsYn}, 'N', null, sysdate)
+		       ,LAST_UPDR_ID       = #{gvUserId}
+			   ,LAST_UPDT_IP       = #{gvUserIp}
+			   ,LAST_UPDT_DT       = sysdate
+			   ,LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+			   ,LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		  WHERE EMNO = #{emno}
+			AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+			AND DLLZ_DVSN_CD = #{dllzDvsnCd}
+			AND SQNC = #{sqnc}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhdltnmmt (일근태 및 시간외 삭제이력 생성) 
+        Description :                                           일근태 및 시간외 삭제이력 생성
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhdltnmmt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  >
+		INSERT INTO /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-insertHhdltnmmt */
+		       HHDLTNMMT
+		SELECT 
+		       a.EMNO
+		     , a.DLLZ_STRT_YMD
+		     , a.DLLZ_DVSN_CD
+		     ,(select nvl(max(sqnc),0) + 1 from HHDLTNMMT 
+		    	where emno = #{emno})
+		     , a.DLLZ_FNSH_YMD
+		     , a.DPRT_CD
+		     , ''
+		     , a.RMRK_CTN
+		     , #{gvUserId}
+		     , #{gvUserIp}
+		     , sysdate
+		     , #{gvClntPrgmId}
+		     , #{gvSrvrPrgmId}
+		     , #{gvUserId}
+		     , #{gvUserIp}
+		     , sysdate
+		     , #{gvClntPrgmId}
+		     , #{gvSrvrPrgmId}		  
+		  FROM HHWKDAYMT a  --+ 일근태
+		 WHERE EMNO = #{emno}
+		   AND DLLZ_STRT_YMD = to_date(#{dllzStrtYmd},'YYYYMMDD')
+		   AND DLLZ_DVSN_CD = #{dllzDvsnCd}
+		   AND SQNC = #{sqnc}
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="dllzDvsnCd" column="DLLZ_DVSN_CD"/>
+		<result property="dllzDvsnNm" column="DLLZ_DVSN_NM"/>
+		<result property="dllzStrtYmd" column="DLLZ_STRT_YMD"/>
+		<result property="dllzFnshYmd" column="DLLZ_FNSH_YMD"/>
+		<result property="aplcResnCtn" column="APLC_RESN_CTN"/>
+		<result property="ocdtGropNm" column="OCDT_GROP_NM"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+		<result property="occlNm" column="OCCL_NM"/>
+		<result property="ocpsNm" column="OCPS_NM"/>
+		<result property="ocrsNm" column="OCRS_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt (근태신청 삭제내역 조회) 
+        Description :                                           근태신청 삭제내역 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-listHhdltnmmt */
+		       a.EMNO
+		     , b.EMPY_NM 
+		     , a.DPRT_CD
+		     , c.KORN_DPRT_NM
+		     , a.DLLZ_DVSN_CD
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP115' and MIS_COMN_CD = a.DLLZ_DVSN_CD),'시간외근무신청') DLLZ_DVSN_NM --+ 근태명  
+		     , to_char(a.STRT_YMD,'YYYYMMDDHH24MISS') DLLZ_STRT_YMD
+		     , to_char(a.FNSH_YMD,'YYYYMMDDHH24MISS') DLLZ_FNSH_YMD
+		     , a.APLC_RESN_CTN
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'HHP_003' and MIS_COMN_CD = b.OCDT_GROP_CD),'') OCDT_GROP_NM --+ 직군명 		     
+			 , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP006' and MIS_COMN_CD = b.OCFM_CD),'') OCFM_NM --+ 직종명 
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP005' and MIS_COMN_CD = b.OCCL_CD),'') OCCL_NM --+ 직급명 
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP008' and MIS_COMN_CD = b.OCPS_CD),'') OCPS_NM --+ 직위명 
+		     , nvl((select COMN_CD_NM from HZMICOCDT where COMN_GRP_CD = 'GP007' and MIS_COMN_CD = b.OCRS_CD),'') OCRS_NM --+ 직책명
+		  from HHDLTNMMT a  --+ 일근태
+		     , HZUSERMMT b
+		     , HZDEPTMMT c
+		 where 1 = 1
+		   and a.DLLZ_DVSN_CD like #{dllzDvsnCd} || '%'
+		 ]]>
+		<if test='emno != null and emno != ""'>
+		   and a.EMNO     like #{emno}
+		</if>
+		<if test='inqrYmdDvsnCd != null  and inqrYmdDvsnCd =="1"'>
+		   and a.FRST_RGST_DT between to_date(#{inqrStrtYmd},'YYYYMMDD') and to_date(#{inqrFnshYmd},'YYYYMMDD') + 1
+		</if>
+		<if test='inqrYmdDvsnCd != null  and inqrYmdDvsnCd =="2"'>
+		<![CDATA[
+		   and (   a.STRT_YMD between to_date(#{inqrStrtYmd},'YYYYMMDD')  and to_date(#{inqrFnshYmd},'YYYYMMDD') 
+		        or  to_date(#{inqrStrtYmd},'YYYYMMDD')  between a.STRT_YMD and nvl(a.FNSH_YMD,a.STRT_YMD)
+		        or to_date(#{inqrFnshYmd},'YYYYMMDD')  between a.STRT_YMD and nvl(a.FNSH_YMD,a.STRT_YMD)
+		        or (to_date(#{inqrStrtYmd},'YYYYMMDD') > a.STRT_YMD and to_date(#{inqrFnshYmd},'YYYYMMDD') < nvl(a.FNSH_YMD,a.STRT_YMD))
+		       )
+		 ]]>
+		</if>
+		   and b.EMNO        = a.EMNO  
+		<if test='dprtCd != null and dprtCd != ""'>
+		   and (b.DPRT_CD like #{dprtCd} || '%' or
+		        b.DPRT_CD in ( select b.DPRT_CD
+		                       from HZDEPTMMT a
+		                          , HZDEPTMMT b
+		                       where a.DPRT_CD = #{dprtCd}
+		                       and b.HRAF_HGRN_DPRT_CD = a.DPRT_CD
+		                              )
+		               )
+		</if>
+		   and c.DPRT_CD  (+)= nvl(a.DPRT_CD,b.DPRT_CD)
+		 order by c.KORN_DPRT_NM ,b.EMPY_NM , a.STRT_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="atflBdByte" column="ATFL_BD_BYTE"/>
+		<result property="atflBd" column="ATFL_BD"/>
+		<result property="atflNm" column="ATFL_NM"/>
+		<result property="atflBd2Byte" column="ATFL_BD2_BYTE"/>
+		<result property="atflBd2" column="ATFL_BD2"/>
+		<result property="atflNm2" column="ATFL_NM2"/>
+		<result property="atflBd3Byte" column="ATFL_BD3_BYTE"/>
+		<result property="atflBd3" column="ATFL_BD3"/>
+		<result property="atflNm3" column="ATFL_NM3"/>
+		<result property="atflBd4Byte" column="ATFL_BD4_BYTE"/>
+		<result property="atflBd4" column="ATFL_BD4"/>
+		<result property="atflNm4" column="ATFL_NM4"/>
+		<result property="atflBd5Byte" column="ATFL_BD5_BYTE"/>
+		<result property="atflBd5" column="ATFL_BD5"/>
+		<result property="atflNm5" column="ATFL_NM5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneHolyAtfl */
+		select
+		       ATFL_BD  as ATFL_BD_BYTE
+		     , ''       as ATFL_BD
+		     , ATFL_NM  as ATFL_NM
+		     , ATFL_BD2 as ATFL_BD2_BYTE
+		     , ''       as ATFL_BD2
+		     , ATFL_NM2 as ATFL_NM2
+		     , ATFL_BD3 as ATFL_BD3_BYTE
+		     , ''       as ATFL_BD3
+		     , ATFL_NM3 as ATFL_NM3
+		     , ATFL_BD4 as ATFL_BD4_BYTE
+		     , ''       as ATFL_BD4
+		     , ATFL_NM4 as ATFL_NM4
+		     , ATFL_BD5 as ATFL_BD5_BYTE
+		     , ''       as ATFL_BD5
+		     , ATFL_NM5 as ATFL_NM5
+		  from 
+		       HHWKDAYMT  /* 휴가신청내역 */
+		 where DLLZ_STRT_YMD                 = to_date(#{dllzStrtYmd}, 'YYYYMMDD')  /* 신청일자   */
+		   and EMNO                          = #{emno}                       /* 사원번호   */
+		   and DLLZ_DVSN_CD                  = #{dllzDvsnCd}                 /* 근태구분코드 */
+		   and SQNC                          = #{sqnc}                        /* 순서   */      
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager-result" type="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO">
+	
+		<result property="emno" column="EMNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager (근태담당자 체크(Table관리)) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager"  parameterType="com.sds.healthcare.ehr.mis.hh.hhd.vo.HhdDayWorkMgmtDVO"  resultMap="com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hh-hhd-dao-HhdDayWorkMgmtDAO-selectOneChkManager */
+		select MIS_COMN_CD as EMNO
+		  from HZMICOCDT
+		 where COMN_GRP_CD = 'GPZ02' --근태담당자
+		   and MIS_COMN_CD = #{gvUserId}
+		]]>
+	</select>
+
+
+
+</mapper>

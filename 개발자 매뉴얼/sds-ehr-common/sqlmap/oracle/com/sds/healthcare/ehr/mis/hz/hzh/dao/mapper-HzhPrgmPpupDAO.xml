@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhPrgmPpupDAO_sql.xml 
+    Description : -->
+<mapper namespace="HzhPrgmPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrgmPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup (프로그램 목록 조회) 
+        Description :                                           hzd_proxmmt_l01$S01_프로그램_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrgmPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrgmPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup-result" useCache="true" flushCache="false">
+		    select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrgmPpupDAO-listPrgmPpup */
+		            rownum    as SQNC    -- 순서
+		         ,  x.PRGM_ID as  PRGM_ID -- 프로그램ID
+		         ,  x.PRGM_NM as PRGM_NM -- 프로그램명
+		      from
+		           (select
+		                    m.PRGM_ID PRGM_ID -- 프로그램ID
+		                 ,  m.PRGM_NM PRGM_NM -- 프로그램명
+		              from
+		                   (select
+		                            a.PRGM_ID PRGM_ID -- 프로그램ID
+		                         ,  a.PRGM_NM PRGM_NM -- 프로그램명
+		                      from
+		                            CSPRMLTMT a -- (CS)신규프로그램목록
+		                     where
+		                            a.PRGM_ID                like 'HM%'                                        -- 프로그램ID[HM:경영관리]
+		                       and  a.PRGM_ID                like '%' || #{srchCdNm} || '%' -- 프로그램ID
+		                       and  #{srchCd} = 'C'                                          -- 검색코드[C:프로그램ID]
+		                     union  all
+		                    select
+		                            a.PRGM_ID PRGM_ID -- 프로그램ID
+		                         ,  a.PRGM_NM PRGM_NM -- 프로그램명
+		                      from
+		                            CSPRMLTMT a -- (CS)신규프로그램목록
+		                     where
+		                            a.PRGM_ID                like 'HZ%'                                        -- 프로그램ID[HZ:MIS공통]
+		                       and  a.PRGM_ID                like '%' || #{srchCdNm} || '%' -- 프로그램ID
+		                       and  #{srchCd} = 'C'                                          -- 검색코드[C:프로그램ID]
+		                     union  all
+		                    select
+		                            a.PRGM_ID PRGM_ID -- 프로그램ID
+		                         ,  a.PRGM_NM PRGM_NM -- 프로그램명
+		                      from
+		                            CSPRMLTMT a -- (CS)신규프로그램목록
+		                     where
+		                            a.PRGM_ID                like 'HM%'                                        -- 프로그램ID[HM:경영관리]
+		                       and  a.PRGM_NM                like '%' || #{srchCdNm} || '%' -- 프로그램명
+		                       and  #{srchCd} = 'N'                                          -- 검색코드[N:프로그램명]
+		                     union  all
+		                    select
+		                            a.PRGM_ID PRGM_ID -- 프로그램ID
+		                         ,  a.PRGM_NM PRGM_NM -- 프로그램명
+		                      from
+		                            CSPRMLTMT a -- (CS)신규프로그램목록
+		                     where
+		                            a.PRGM_ID                like 'HZ%'                                        -- 프로그램ID[HZ:MIS공통]
+		                       and  a.PRGM_NM                like '%' || #{srchCdNm} || '%' -- 프로그램명
+		                       and  #{srchCd} = 'N'                                          -- 검색코드[N:프로그램명]
+		                   ) m
+		             order  by  case #{srchCd} when 'C' then m.PRGM_ID else m.PRGM_NM end  asc
+		                     ,  case #{srchCd} when 'C' then m.PRGM_NM else m.PRGM_ID end  asc
+		           ) x
+	</select>
+
+
+
+</mapper>

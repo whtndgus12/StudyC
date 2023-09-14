@@ -1,0 +1,1375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SzpPacsEqpmInrfDAO_sql.xml 
+    Description :                                      PACS 인터페이스 조회
+                  -->
+<mapper namespace="SzpPacsEqpmInrfDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="exmnSpsbCtn" column="EXMN_SPSB_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneSVmemo */
+		  select  
+				              'Op.'||( select  USER_NM from CCUSRDPHT where   USER_ID = b.IMPT_ID )            /* 실시자                      */
+				              ||', '||
+				              'In.'||( select  USER_NM from CCUSRDPHT where   USER_ID = a.IJPR_ID )  
+				              ||', '||
+				              to_char(a.INJC_DT, 'HH24:MI')         /* 주사시간                    */  
+							  ||', '||
+							  to_char(a.EXMN_ENFR_DT, 'HH24:MI')                                           /* 검사시간                    */
+							  ||', '||
+							   a.INJC_KIND_NM     /* 주사종류                    */
+							  ||', '||
+							  a.VLM||'mCi'                                                                                    /* 용량                        */
+							  ||', '|| 
+							  (select  z.EXMN_CTRL_NM from SZCTRLMMT z where z.exmn_ctrl_Cd='SV008' and z.EXMN_DTLS_CTRL_CD = a.MDSI_CD and z.APLY_PART_CD ='SV')    /* 치료부위코드                */
+							 ||
+		                     decode(d.dtls_excf_cd,'SVP', ', BST: '|| a.BLSG_NCVL_VL ,'')/*혈당*/    
+		                     ||', '||
+							  a.UNSL_CTN                                                                       /* 특이사항                    */ 
+				              ||', '||
+				              c.EXOR_UNSL_CTN                    /* 임상소견                    */ 
+				              as EXMN_SPSB_CTN
+				 from  SVWORKDMT a                                                                          /* 핵의학체내 WORK 관리 DETAIL */
+					,  SWWORKMMT b                                                                          /* 검사 WORK 관리 (계속)       */
+					,  MDEXMORDT c                                                                          /* 처방 뷰                     */
+					 , MDORDRCMT d 
+				where  a.PTNO     =  #{ptno}                                                    /* 환자번호                    */
+				  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyyMMdd')                              /* 처방일자                    */
+				  and  a.ORDR_SNO = #{ordrSno}                                                  /* 처방순번                    */
+				  and  b.PTNO     = a.PTNO                                                                         /* 환자번호                    */
+				  and  b.ORDR_YMD = a.ORDR_YMD                                                                     /* 처방일자                    */
+				  and  b.ORDR_SNO = a.ORDR_SNO                                                                     /* 처방순번                    */
+				  and  c.PTNO     = a.PTNO                                                                         /* 환자번호                    */
+				  and  c.ORDR_YMD = a.ORDR_YMD                                                                     /* 처방일자                    */
+				  and  c.ORDR_SNO = a.ORDR_SNO 
+			     and  d.ORDR_CD  = b.EXMN_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsInrfYn" column="PACS_INRF_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsYn */
+		select  nvl(b.PACS_INRF_YN,'N') as PACS_INRF_YN 
+		from 	
+		<choose>
+			<when test='tablId == "MDEXMORDT"'>
+				MDEXMORDT a
+			</when>	
+			<when test='tablId == "MDTRTORDT"'>
+				MDTRTORDT a
+			</when>	
+			<when test='tablId == "STCURORMT"'>
+				STCURORMT a
+			</when>	
+			<otherwise>
+				(select '' as PTNO, sysdate as ORDR_YMD, 0 as ORDR_SNO, '' as ORDR_CD from dual) a
+			</otherwise>
+		</choose>
+			, 	MDORDRCMT b
+		where 	a.PTNO = #{ptno}
+		and 	a.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		and 	a.ORDR_SNO = #{ordrSno}
+		and 	a.ORDR_CD = b.ORDR_CD
+		and 	rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsSno" column="PACS_SNO"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="pacsWodvCd" column="PACS_WODV_CD"/>
+		<result property="pacsPhtrDprtClsfCd" column="PACS_PHTR_DPRT_CLSF_CD"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="pacsEqpmClsfCd" column="PACS_EQPM_CLSF_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrNmCtn" column="ORDR_NM_CTN"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="exmnSpsbCtn" column="EXMN_SPSB_CTN"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="oddrNm" column="ODDR_NM"/>
+		<result property="cpdrId" column="CPDR_ID"/>
+		<result property="cpdrNm" column="CPDR_NM"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="exorUnslCtn" column="EXOR_UNSL_CTN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="refrOrtaNm" column="REFR_ORTA_NM"/>
+		<result property="evntTypCd" column="EVNT_TYP_CD"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="wardAbrvCd" column="WARD_ABRV_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="rsrn" column="RSRN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ststExmnCct" column="STST_EXMN_CCT"/>
+		<result property="ordrIpdvCd" column="ORDR_IPDV_CD"/>
+		<result property="admsYmd" column="ADMS_YMD"/>
+		<result property="orfrCd" column="ORFR_CD"/>
+		<result property="exorPrssCd" column="EXOR_PRSS_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="nextMdcrDt" column="NEXT_MDCR_DT"/>
+		<result property="extlIntrDvsnCd" column="EXTL_INTR_DVSN_CD"/>
+		<result property="cisLnkgNo" column="CIS_LNKG_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo (pacs 검사특기 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo */
+		select
+		    to_char(trunc(sysdate), 'yyyymmdd') || lpad(SWWORKMMTQ.nextval, 8, 0) as PACS_SNO,
+		    a.PACS_ACCS_NO as PACS_ACCS_NO,                           /*PACS 장비 I/F NOT NULL 컬럼(없으면 biz에서 신규 채번)*/
+		    'A' as PACS_WODV_CD,
+		    nvl(b.PACS_PHTR_DPRT_CLSF_CD, '**') as PACS_PHTR_DPRT_CLSF_CD,            /*PACS 장비 I/F NOT NULL 컬럼*/
+		    to_char(nvl(a.EXRM_RPTN_DT, sysdate), 'yyyymmddhh24miss') as RPTN_DT,       /*PACS 장비 I/F NOT NULL 컬럼*/
+		    nvl(b.PACS_EQPM_CLSF_CD, '**') as PACS_EQPM_CLSF_CD,                /*PACS 장비 I/F NOT NULL 컬럼*/
+		    case when a.EXCF_CD = 'SM' 
+		         then nvl(b.PACS_PHTR_DPRT_CLSF_CD, nvl(g.EXRM_CD, b.OTPT_EXRM_CD))
+		         else nvl(g.EXRM_CD, b.OTPT_EXRM_CD)
+		    end as EXRM_CD,
+		    case when (h.RCPR_INSY_ID = '11100494') and  /* 구로 검진 환자 타부서 검사 */
+		              (a.CODV_CD in ('G','U')) and
+		              (a.MCDP_CD = '101720') and /* 건진센터(HC)일 경우, 채용검진(FM) 제외 */
+		              (b.excf_cd != 'SM')
+		         then b.ORDR_CD||'_HC'
+		         else b.ORDR_CD
+		    end  as ORDR_CD,
+		    b.ORDR_NM as ORDR_NM,
+		    b.ORDR_CD || ':KOREA:' || b.ORDR_NM as ORDR_NM_CTN,
+		    nvl(c.SLIP_CD, '**') as SLIP_CD,                          /*PACS 장비 I/F NOT NULL 컬럼*/
+		    c.SLIP_NM as SLIP_NM,
+		    (
+		        select
+		            AGGR_CONCAT(x.EXMN_SPSB_CTN, ',')
+		        from
+		            SZEXMCMMT x
+		       where 1=1
+		         and x.PTNO = a.PTNO
+		         and x.ORDR_YMD = a.ORDR_YMD
+		         and x.ORDR_SNO = a.ORDR_SNO
+		         and rownum <100
+		    ) as EXMN_SPSB_CTN,
+		    case when h.RCPR_INSY_ID = '31100252' then a.CHDR_ID else a.GNDR_ID end as GNDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = case when h.RCPR_INSY_ID = '31100252' then a.CHDR_ID else a.GNDR_ID end
+		    ) as GNDR_NM,
+		    a.ODDR_ID as ODDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.ODDR_ID
+		    ) as ODDR_NM,
+		    case when h.RCPR_INSY_ID  ='11100117' or  h.RCPR_INSY_ID  = '31100252'/* 안암 안산*/
+		                        then a.ENDR_ID  /* 시행의 ID */
+		                        else a.CHDR_ID  /* 담당교수 */
+		    end  as CPDR_ID,
+		    case when h.RCPR_INSY_ID  ='11100117' or  h.RCPR_INSY_ID  = '31100252'/* 안암 안산*/
+		                        then substrb(nvl((select USER_NM from CCUSRDPHT where USER_ID = a.ENDR_ID), '') || '/'||
+		                                     nvl((select USER_NM from CCUSRDPHT where USER_ID = g.IMPT_ID), ''), 1 ,30)
+		                        else (select USER_NM from CCUSRDPHT where USER_ID = a.CHDR_ID)
+		    end  as CPDR_NM,
+		    (select ABRV_DPRT_CD
+		       from HZDEPTMMT
+		      where DPRT_CD = case when (nvl(f.MCCN_CD,'201387') = '201387') then nvl(f.MCDP_CD,a.MCDP_CD) else f.MCCN_CD end
+		    ) as MCDP_ABRV_CD,
+		    a.EXOR_UNSL_CTN as EXOR_UNSL_CTN,
+		    a.PTNO as PTNO,                                   /*PACS 장비 I/F NOT NULL 컬럼*/     
+		    to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		    a.ORDR_SNO as ORDR_SNO,
+		    #{tablId} as REFR_ORTA_NM,
+		    #{evntTypCd} as EVNT_TYP_CD,
+		    f.CODV_CD as PTAD_CODV_CD,
+		    (select ABRV_DPRT_CD
+		       from HZDEPTMMT
+		      where DPRT_CD = f.CARE_WARD_CD
+		    ) as WARD_ABRV_CD,
+		    f.CARE_PTRM_NO as PTRM_NO,
+		    e.PTNT_NM as PTNT_NM,
+		    e.FRRN || substr(e.BRRN, 1, 1) || '******' as RSRN,
+		    to_char(e.BTDT, 'yyyymmdd') as BTDT,
+		    e.GEND_CD as GEND_CD,
+		    b.STST_EXMN_CCT as STST_EXMN_CCT,
+		    a.ORDR_IPDV_CD as ORDR_IPDV_CD,
+		    case
+		        f.CODV_CD
+		        when 'I' then to_char(f.MDCR_YMD, 'yyyymmdd')
+		        else NULL
+		    end as ADMS_YMD,
+		    a.ORFR_CD,
+		    a.EXOR_PRSS_CD,
+		    g.EXCF_CD,
+		    (   
+		        select min(to_char(MDCR_DT,'yyyymmddhh24mi'))
+		          from APRCRPTNT r
+		         where r.PTNO = f.PTNO
+		           and r.MCDP_CD = f.MCDP_CD
+		           and r.MDRP_NO <> f.MDRP_NO
+		           and r.CODV_CD = 'O'
+		           and r.MDCR_ANDV_CD not in ('3','8','9','A','G','S','U')
+		           and r.MDCR_DT > sysdate
+		           and nvl(r.CNCL_DT,to_date('29991231','yyyymmdd')) = to_date('29991231','yyyymmdd')
+		    ) as NEXT_MDCR_DT,
+		    (select case when trunc(sysdate) - e.BTDT <= 6939 and nvl(r.CHLD_YN, 'N') != 'Y' then NULL /*소아는 CHLD_YN가 Y인건만 'Y'*/                 
+		                 else 'Y'
+		            end
+		       from SROUTODCT r
+		      where 1=1
+		        and r.ORDR_CD = a.ORDR_CD
+		        and r.CODV_CD = f.CODV_CD
+		        and r.MCDP_CD = case when (nvl(f.MCCN_CD,'201387') = '201387') then nvl(f.MCDP_CD,a.MCDP_CD) else f.MCCN_CD end
+		        and sysdate between APST_YMD and APFN_YMD
+		        and rownum = 1
+		    )  as EXTL_INTR_DVSN_CD,
+		    a.cis_lnkg_no
+		from
+		    MDEXMORDT a,
+		    MDORDRCMT b,
+		    MDBSLIPCT c,
+		    SZEXMCMMT d,
+		    APPTPTNTT e,
+		    APRCRPTNT f,
+		    SWWORKMMT g,
+			CCCHOSPMT h
+		where
+		    1 = 1
+		    and a.PTNO = #{ptno}
+		    and a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		    and a.ORDR_SNO = #{ordrSno}
+		    and a.ORDR_CD = b.ORDR_CD(+)
+		    and b.SLIP_CD = c.SLIP_CD(+)
+		    and a.PTNO = d.PTNO(+)
+		    and a.ORDR_YMD = d.ORDR_YMD(+)
+		    and a.ORDR_SNO = d.ORDR_SNO(+)
+		    and a.PTNO     = e.PTNO(+)
+		    and a.PTAD_MDRP_NO = f.MDRP_NO(+)
+		    and a.PTNO     = g.PTNO(+)
+		    and a.ORDR_YMD = g.ORDR_YMD(+)
+		    and a.ORDR_SNO = g.ORDR_SNO(+)
+		    and trunc(sysdate) between trunc(h.APST_YMD) and trunc(h.APFN_YMD)
+		    --and h.APFN_YMD > sysdate
+		    and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsSno" column="PACS_SNO"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="pacsWodvCd" column="PACS_WODV_CD"/>
+		<result property="pacsPhtrDprtClsfCd" column="PACS_PHTR_DPRT_CLSF_CD"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="pacsEqpmClsfCd" column="PACS_EQPM_CLSF_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrNmCtn" column="ORDR_NM_CTN"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="exmnSpsbCtn" column="EXMN_SPSB_CTN"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="oddrNm" column="ODDR_NM"/>
+		<result property="cpdrId" column="CPDR_ID"/>
+		<result property="cpdrNm" column="CPDR_NM"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="exorUnslCtn" column="EXOR_UNSL_CTN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="refrOrtaNm" column="REFR_ORTA_NM"/>
+		<result property="evntTypCd" column="EVNT_TYP_CD"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="wardAbrvCd" column="WARD_ABRV_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="rsrn" column="RSRN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ststExmnCct" column="STST_EXMN_CCT"/>
+		<result property="ordrIpdvCd" column="ORDR_IPDV_CD"/>
+		<result property="admsYmd" column="ADMS_YMD"/>
+		<result property="nextMdcrDt" column="NEXT_MDCR_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneTrtInfo */
+		select
+		    to_char(trunc(sysdate), 'yyyymmdd') || lpad(SWWORKMMTQ.nextval, 8, 0) as PACS_SNO,
+			a.PACS_ACCS_NO as PACS_ACCS_NO,														/*PACS 장비 I/F NOT NULL 컬럼(없으면 biz에서 신규 채번)*/
+		    'A' as PACS_WODV_CD,
+		    nvl(b.PACS_PHTR_DPRT_CLSF_CD, '**') as PACS_PHTR_DPRT_CLSF_CD,						/*PACS 장비 I/F NOT NULL 컬럼*/							
+		    to_char(nvl(a.EXRM_RPTN_DT, sysdate), 'yyyymmddhh24miss') as RPTN_DT,				/*PACS 장비 I/F NOT NULL 컬럼*/
+		    nvl(b.PACS_EQPM_CLSF_CD, '**') as PACS_EQPM_CLSF_CD,								/*PACS 장비 I/F NOT NULL 컬럼*/
+		    nvl(b.OTPT_EXRM_CD, '**') as EXRM_CD,
+		    b.ORDR_CD as ORDR_CD,
+		    b.ORDR_NM as ORDR_NM,
+		    b.ORDR_CD || ':KOREA:' || b.ORDR_NM as ORDR_NM_CTN,
+		    nvl(c.SLIP_CD, '**') as SLIP_CD,													/*PACS 장비 I/F NOT NULL 컬럼*/
+		    c.SLIP_NM as SLIP_NM,
+		    '' as EXMN_SPSB_CTN,
+		    a.GNDR_ID as GNDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.GNDR_ID
+		    ) as GNDR_NM,
+		    a.ODDR_ID as ODDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.ODDR_ID
+		    ) as ODDR_NM,
+		    a.CHDR_ID as CPDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.CHDR_ID
+		    ) as CPDR_NM,
+		    (
+		        select
+		            ABRV_DPRT_CD
+		        from
+		            HZDEPTMMT
+		        where
+		            DPRT_CD = a.MCDP_CD
+		    ) as MCDP_ABRV_CD,
+		    trim(decode(substr(trim(a.UPRG_RWTT_VL), 1,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),1,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 2,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),2,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 3,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),3,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 4,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),4,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 5,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),5,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 6,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),6,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 7,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),7,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 8,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),8,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL), 9,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),9,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL),10,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),10,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL),11,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),11,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL),12,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),12,1))
+		       ||decode(substr(trim(a.UPRG_RWTT_VL),13,1),null,null,'1'||substr(trim(a.UPRG_RWTT_VL),13,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 1,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),1,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 2,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),2,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 3,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),3,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 4,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),4,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 5,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),5,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 6,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),6,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 7,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),7,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 8,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),8,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL), 9,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),9,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL),10,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),10,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL),11,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),11,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL),12,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),12,1))
+		       ||decode(substr(trim(a.UPLT_RWTT_VL),13,1),null,null,'2'||substr(trim(a.UPLT_RWTT_VL),13,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 1,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),1,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 2,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),2,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 3,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),3,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 4,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),4,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 5,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),5,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 6,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),6,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 7,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),7,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 8,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),8,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL), 9,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),9,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL),10,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),10,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL),11,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),11,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL),12,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),12,1))
+		       ||decode(substr(trim(a.LWLF_RWTT_VL),13,1),null,null,'3'||substr(trim(a.LWLF_RWTT_VL),13,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 1,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),1,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 2,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),2,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 3,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),3,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 4,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),4,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 5,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),5,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 6,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),6,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 7,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),7,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 8,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),8,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL), 9,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),9,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL),10,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),10,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL),11,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),11,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL),12,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),12,1))
+		       ||decode(substr(trim(a.LWRG_RWTT_VL),13,1),null,null,'4'||substr(trim(a.LWRG_RWTT_VL),13,1))) as EXOR_UNSL_CTN,
+		    a.PTNO as PTNO,																		/*PACS 장비 I/F NOT NULL 컬럼*/	
+		    to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		    a.ORDR_SNO as ORDR_SNO,
+		    #{tablId} as REFR_ORTA_NM,
+			#{evntTypCd} as EVNT_TYP_CD,
+		    a.PTAD_CODV_CD as PTAD_CODV_CD,
+		    (
+		        select
+		            ABRV_DPRT_CD
+		        from
+		            HZDEPTMMT
+		        where
+		            DPRT_CD = a .WARD_CD
+		    ) as WARD_ABRV_CD,
+		    f.PTRM_NO as PTRM_NO,
+		    e.PTNT_NM as PTNT_NM,	
+		    e.FRRN || substr(e.BRRN, 1, 1) || '******' as RSRN,
+		    to_char(e.BTDT, 'yyyymmdd') as BTDT,
+		    e.GEND_CD as GEND_CD,
+		    a.ORDR_NTM_QTY  as STST_EXMN_CCT,
+		    a.ORDR_IPDV_CD as ORDR_IPDV_CD,
+		    case
+		        f.CODV_CD
+		        when 'I' then to_char(f.MDCR_YMD, 'yyyymmdd')
+		        else NULL
+		    end as ADMS_YMD,
+		    (select min(to_char(MDCR_DT,'yyyymmddhh24mi'))
+		       from APRCRPTNT r
+		      where r.PTNO = f.PTNO
+		        and r.MCDP_CD = f.MCDP_CD
+		        and r.MDRP_NO != f.MDRP_NO
+		        and r.CODV_CD = 'O'
+		        and r.MDCR_ANDV_CD not in ('3','8','9','A','G','S','U')
+		        and r.MDCR_DT &gt; sysdate
+		        and nvl(r.CNCL_DT,to_date('29991231','yyyymmdd')) = to_date('29991231','yyyymmdd')
+		    ) as NEXT_MDCR_DT
+		from
+		    MDTRTORDT a,
+		    MDORDRCMT b,
+		    MDBSLIPCT c,
+		    SZEXMCMMT d,
+		    APPTPTNTT e,
+		    APRCRPTNT f
+		where
+		    1 = 1
+		    and a.PTNO = #{ptno}
+		    and a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		    and a.ORDR_SNO = #{ordrSno}
+		    and a.ORDR_CD = b.ORDR_CD(+)
+		    and b.SLIP_CD = c.SLIP_CD(+)
+		    and a.PTNO = d.PTNO(+)
+		    and a.ORDR_YMD = d.ORDR_YMD(+)
+		    and a.ORDR_SNO = d.ORDR_SNO(+)
+		    and a.PTNO = e.PTNO(+)
+		    and a.MDRP_NO = f.MDRP_NO(+)
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsSno" column="PACS_SNO"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="pacsWodvCd" column="PACS_WODV_CD"/>
+		<result property="pacsPhtrDprtClsfCd" column="PACS_PHTR_DPRT_CLSF_CD"/>
+		<result property="rptnDt" column="RPTN_DT"/>
+		<result property="pacsEqpmClsfCd" column="PACS_EQPM_CLSF_CD"/>
+		<result property="exrmCd" column="EXRM_CD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="ordrNmCtn" column="ORDR_NM_CTN"/>
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+		<result property="exmnSpsbCtn" column="EXMN_SPSB_CTN"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="gndrNm" column="GNDR_NM"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="oddrNm" column="ODDR_NM"/>
+		<result property="cpdrId" column="CPDR_ID"/>
+		<result property="cpdrNm" column="CPDR_NM"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="exorUnslCtn" column="EXOR_UNSL_CTN"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="refrOrtaNm" column="REFR_ORTA_NM"/>
+		<result property="evntTypCd" column="EVNT_TYP_CD"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="wardAbrvCd" column="WARD_ABRV_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="rsrn" column="RSRN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="ststExmnCct" column="STST_EXMN_CCT"/>
+		<result property="ordrIpdvCd" column="ORDR_IPDV_CD"/>
+		<result property="admsYmd" column="ADMS_YMD"/>
+		<result property="nextMdcrDt" column="NEXT_MDCR_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneRtInfo */
+		select
+		    to_char(trunc(sysdate), 'yyyymmdd') || lpad(SWWORKMMTQ.nextval, 8, 0) as PACS_SNO,
+			a.PCAC_NO as PACS_ACCS_NO,															/*PACS 장비 I/F NOT NULL 컬럼(없으면 biz에서 신규 채번)*/
+		    'A' as PACS_WODV_CD,
+		    nvl(b.PACS_PHTR_DPRT_CLSF_CD, '**') as PACS_PHTR_DPRT_CLSF_CD,						/*PACS 장비 I/F NOT NULL 컬럼*/
+		    to_char(sysdate, 'yyyymmddhh24miss') as RPTN_DT,																	/*PACS 장비 I/F NOT NULL 컬럼*/
+		    nvl(b.PACS_EQPM_CLSF_CD, '**') as PACS_EQPM_CLSF_CD,								/*PACS 장비 I/F NOT NULL 컬럼*/
+		    (
+		    select  RTX_CTRL_NM
+		      from  STMCTRLMT 
+		     where  RTX_CTRL_CD = 'STZ_240'  
+		       and  RTX_DTLS_CTRL_CD = 'EXRM_CD'
+		    ) as EXRM_CD,
+		    b.ORDR_CD as ORDR_CD,
+		    b.ORDR_NM as ORDR_NM,
+		    b.ORDR_CD || ':KOREA:' || b.ORDR_NM as ORDR_NM_CTN,
+		    nvl(c.SLIP_CD, '**') as SLIP_CD,													/*PACS 장비 I/F NOT NULL 컬럼*/
+		    c.SLIP_NM as SLIP_NM,
+		    '' as EXMN_SPSB_CTN,
+		    a.GNDR_ID as GNDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.GNDR_ID
+		    ) as GNDR_NM,
+		    a.ODDR_ID as ODDR_ID,
+		    (
+		        select
+		            USER_NM
+		        from
+		            CCUSRDPHT
+		        where
+		            USER_ID = a.ODDR_ID
+		    ) as ODDR_NM,
+		    '' as CPDR_ID,
+		    '' as CPDR_NM,
+		    (
+		        select
+		            ABRV_DPRT_CD
+		        from
+		            HZDEPTMMT
+		        where
+		            DPRT_CD = a.MCDP_CD
+		    ) as MCDP_ABRV_CD,
+		    '' as EXOR_UNSL_CTN,
+		    a.PTNO as PTNO,																		/*PACS 장비 I/F NOT NULL 컬럼*/	
+		    to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		    a.ORDR_SNO as ORDR_SNO,
+		    #{tablId} as REFR_ORTA_NM,
+			#{evntTypCd} as EVNT_TYP_CD,
+		    a.PTAD_CODV_CD as PTAD_CODV_CD,
+		    (
+		        select
+		            ABRV_DPRT_CD
+		        from
+		            HZDEPTMMT
+		        where
+		            DPRT_CD = a .WARD_CD
+		    ) as WARD_ABRV_CD,
+		    f.PTRM_NO as PTRM_NO,
+		    e.PTNT_NM as PTNT_NM,	
+		    e.FRRN || substr(e.BRRN, 1, 1) || '******' as RSRN,
+		    to_char(e.BTDT, 'yyyymmdd') as BTDT,
+		    e.GEND_CD as GEND_CD,
+		    b.STST_EXMN_CCT as STST_EXMN_CCT,
+		    a.ORDR_IPDV_CD as ORDR_IPDV_CD,
+		    case
+		        f.CODV_CD
+		        when 'I' then to_char(f.MDCR_YMD, 'yyyymmdd')
+		        else NULL
+		    end as ADMS_YMD,
+		    (select min(to_char(MDCR_DT,'yyyymmddhh24mi'))
+		       from APRCRPTNT r
+		      where r.PTNO = f.PTNO
+		        and r.MCDP_CD = f.MCDP_CD
+		        and r.MDRP_NO != f.MDRP_NO
+		        and r.CODV_CD = 'O'
+		        and r.MDCR_ANDV_CD not in ('3','8','9','A','G','S','U')
+		        and r.MDCR_DT &gt; sysdate
+		        and nvl(r.CNCL_DT,to_date('29991231','yyyymmdd')) = to_date('29991231','yyyymmdd')
+		    ) as NEXT_MDCR_DT
+		from
+		    STCURORMT a,
+		    MDORDRCMT b,
+		    MDBSLIPCT c,
+		    SZEXMCMMT d,
+		    APPTPTNTT e,
+		    APRCRPTNT f
+		where
+		    1 = 1
+		    and a.PTNO = #{ptno}
+		    and a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		    and a.ORDR_SNO = #{ordrSno}
+		    and a.ORDR_CD = b.ORDR_CD(+)
+		    and b.SLIP_CD = c.SLIP_CD(+)
+		    and a.PTNO = d.PTNO(+)
+		    and a.ORDR_YMD = d.ORDR_YMD(+)
+		    and a.ORDR_SNO = d.ORDR_SNO(+)
+		    and a.PTNO = e.PTNO(+)
+		    and a.MDRP_NO = f.MDRP_NO(+)
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzpacsodt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzpacsodt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzpacsodt */
+		insert into
+		    SZPACSODT(
+		        PACS_SNO,
+		        CRTN_DT,
+		        PACS_INQR_DT,
+		        PACS_WODV_CD,
+		        PACS_PHTR_DPRT_CLSF_CD,
+		        RPTN_DT,
+		        PACS_EQPM_CLSF_CD,
+		        EXRM_CD,
+		        ORDR_CD,
+		        ORDR_NM,
+		        ORDR_NM_CTN,
+		        EXMN_DTLS_STTS_CD,
+		        SLIP_CD,
+		        SLIP_NM,
+		        RPRS_SCIN_NM,
+		        EXMN_SPSB_CTN,
+		        PACS_ACCS_NO,
+		        GNDR_ID,
+		        GNDR_NM,
+		        ODDR_ID,
+		        ODDR_NM,
+		        CPDR_ID,
+		        CPDR_NM,
+		        MCDP_ABRV_CD,
+		        SCIN_NM,
+		        EXOR_UNSL_CTN,
+		        ORDR_YMD,
+		        ORDR_SNO,
+		        REFR_ORTA_NM,
+		        PTAD_CODV_CD,
+		        WARD_ABRV_CD,
+		        PTRM_NO,
+		        PTNT_NM,
+		        PTNO,
+		        RSRN,
+		        BTDT,
+		        GEND_CD,
+		        STST_EXMN_CCT,
+		        ORDR_IPDV_CD,
+		        ADMS_YMD,
+		        NEXT_MDCR_DT,
+		        EXTL_INTR_DVSN_CD,
+		        FRST_RGSR_ID,
+		        FRST_RGST_IP,
+		        FRST_RGST_DT,
+		        FRST_RGST_CLNT_PRGM_ID,
+		        FRST_RGST_SRVR_PRGM_ID,
+		        LAST_UPDR_ID,
+		        LAST_UPDT_IP,
+		        LAST_UPDT_DT,
+		        LAST_UPDT_CLNT_PRGM_ID,
+		        LAST_UPDT_SRVR_PRGM_ID,
+		        CIS_LNKG_NO
+		    )
+		VALUES
+		    (
+		        #{pacsSno},
+		        sysdate,
+		        null,
+		        #{pacsWodvCd},
+		        #{pacsPhtrDprtClsfCd},
+		        to_date(#{rptnDt}, 'yyyymmddhh24miss'),
+		        #{pacsEqpmClsfCd},
+		        #{exrmCd},
+		        #{ordrCd},
+		        #{ordrNm},
+		        #{ordrNmCtn},
+		        #{exmnDtlsSttsCd},
+		        #{slipCd},
+		        #{slipNm},
+		        #{rprsScinNm},
+		        #{exmnSpsbCtn},
+		        #{pacsAccsNo},
+		        #{gndrId},
+		        #{gndrNm},
+		        #{oddrId},
+		        #{oddrNm},
+		        #{cpdrId},
+		        #{cpdrNm},
+		        #{mcdpAbrvCd},
+		        #{scinNm},
+		        #{exorUnslCtn},
+		        to_date(#{ordrYmd}, 'yyyymmdd'),
+		        #{ordrSno},
+		        #{refrOrtaNm},
+		        #{ptadCodvCd},
+		        #{wardAbrvCd},
+		        #{ptrmNo},
+		        #{ptntNm},
+		        #{ptno},
+		        #{rsrn},
+		        to_date(#{btdt}, 'yyyymmdd'),
+		        #{gendCd},
+		        #{ststExmnCct},
+		        #{ordrIpdvCd},
+		        to_date(#{admsYmd}, 'yyyymmdd'),
+		        to_date(#{nextMdcrDt}, 'yyyymmddhh24miss'),
+		        #{extlIntrDvsnCd},
+		        nvl(#{gvUserId}, 'PACS'),
+		        nvl(#{gvUserIp}, 'PACS'),
+		        sysdate,
+		        nvl(#{gvClntPrgmId}, 'PACS'),
+		        nvl(#{gvSrvrPrgmId}, 'PACS'),
+		        nvl(#{gvUserId}, 'PACS'),
+		        nvl(#{gvUserIp}, 'PACS'),
+		        sysdate,
+		        nvl(#{gvClntPrgmId}, 'PACS'),
+		        nvl(#{gvSrvrPrgmId}, 'PACS'),
+		        #{cislnkgno}
+		    )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOnePacsAccsNo */
+		select
+		    to_char(sysdate, 'yymmdd') || lpad(SZPACSNOQ.nextval, 4, 0) as PACS_ACCS_NO
+		from
+		    dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="scinNm" column="SCIN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneScinNm */
+		select  /*+ mdd_szfrinf_l01$S01_검사상병내역조회 */
+				            nvl(d.SCIN_NM,
+				                (
+				                select  SCIN_ENSN_NM
+				                  from  MRBSSCINT
+				                 where  SCIN_CD = d.SCIN_CD
+				                   and  trunc(nvl(b.MDCR_DT, sysdate)) between APLY_YMD  and nvl(FNSH_YMD, sysdate) + 0.99999
+				                   and  MDCR_USE_YN = 'Y'
+				                   and  rownum      = 1
+				                )
+				            ) as SCIN_NM
+				      from  MDEXMORDT a
+				         ,  APRCRPTNT b
+				         ,  MDPACLNCT c
+				         ,  MDPADIAGT d
+				     where  a.PTNO             = #{ptno}
+				       and  a.ORDR_YMD         = to_date(#{ordrYmd}, 'yyyyMMdd')
+				       and  a.ORDR_SNO         = #{ordrSno}
+				       and  b.MDRP_NO          = a.MDRP_NO
+				       and  c.MDRP_NO          = a.MDRP_NO
+				       and  d.MDRP_NO          = c.MDRP_NO
+				       and  d.PTNT_CLNC_DX_SNO = c.PTNT_CLNC_DX_SNO
+				       and  d.MAIN_SCIN_YN      ='Y'
+				       and rownum =1 
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoSwworkmmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoSwworkmmt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoSwworkmmt */
+		update
+		    SWWORKMMT
+		set
+		    PACS_ACCS_NO = #{pacsAccsNo},
+		    LAST_UPDR_ID = nvl(#{gvUserId}, 'PACS'),
+		    LAST_UPDT_IP = nvl(#{gvUserIp}, 'PACS'),
+		    LAST_UPDT_DT = sysdate,
+		    LAST_UPDT_CLNT_PRGM_ID = nvl(#{gvClntPrgmId}, 'PACS'),
+		    LAST_UPDT_SRVR_PRGM_ID = nvl(#{gvSrvrPrgmId}, 'PACS')
+		where
+		    PTNO = #{ptno}
+		    and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		    and ORDR_SNO = #{ordrSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoMdtrtordt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoMdtrtordt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoMdtrtordt */
+		update
+		    MDTRTORDT
+		set
+		    PACS_ACCS_NO = #{pacsAccsNo},
+		    LAST_UPDR_ID = nvl(#{gvUserId}, 'PACS'),
+		    LAST_UPDT_IP = nvl(#{gvUserIp}, 'PACS'),
+		    LAST_UPDT_DT = sysdate,
+		    LAST_UPDT_CLNT_PRGM_ID = nvl(#{gvClntPrgmId}, 'PACS'),
+		    LAST_UPDT_SRVR_PRGM_ID = nvl(#{gvSrvrPrgmId}, 'PACS')
+		where
+		    PTNO = #{ptno}
+		    and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		    and ORDR_SNO = #{ordrSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoStcurormt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoStcurormt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsAccsNoStcurormt */
+		update
+		    STCURORMT
+		set
+		    PCAC_NO = #{pacsAccsNo},
+		    LAST_UPDR_ID = nvl(#{gvUserId}, 'PACS'),
+		    LAST_UPDT_IP = nvl(#{gvUserIp}, 'PACS'),
+		    LAST_UPDT_DT = sysdate,
+		    LAST_UPDT_CLNT_PRGM_ID = nvl(#{gvClntPrgmId}, 'PACS'),
+		    LAST_UPDT_SRVR_PRGM_ID = nvl(#{gvSrvrPrgmId}, 'PACS')
+		where
+		    PTNO = #{ptno}
+		    and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		    and ORDR_SNO = #{ordrSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsWodvCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsWodvCd"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updatePacsWodvCd */
+		UPDATE 
+		<choose>
+			<when test='tablId == "SZCPACSRT"'>
+				SZCPACSRT a
+			</when>	
+			<otherwise>
+				SZPACSRPT a
+			</otherwise>
+		</choose>
+		   SET PACS_WODV_CD = #{pacsWodvCd},
+		       LAST_UPDR_ID = #{gvUserId},
+		       LAST_UPDT_IP = #{gvUserIp},
+		       LAST_UPDT_DT = sysdate,
+		       LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+		       LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		  where PACS_SNO = #{pacsSno}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="pacsSno" column="PACS_SNO"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="pacsWodvCd" column="PACS_WODV_CD"/>
+		<result property="crtn" column="CRTN"/>
+		<result property="exmnPrssCd" column="EXMN_PRSS_CD"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="refrOrtaNm" column="REFR_ORTA_NM"/>
+		<result property="enfrDt" column="ENFR_DT"/>
+		<result property="eqpmCd" column="EQPM_CD"/>
+		<result property="eximCnfmId" column="EXIM_CNFM_ID"/>
+		<result property="eximCnfrDt" column="EXIM_CNFR_DT"/>
+		<result property="exrsCtn" column="EXRS_CTN"/>
+		<result property="exrsRmrkCtn" column="EXRS_RMRK_CTN"/>
+		<result property="intrDt" column="INTR_DT"/>
+		<result property="rprtDt" column="RPRT_DT"/>
+		<result property="indrId1" column="INDR_ID1"/>
+		<result property="indrId2" column="INDR_ID2"/>
+		<result property="indrId3" column="INDR_ID3"/>
+		<result property="cndrId" column="CNDR_ID"/>
+		<result property="trnbId" column="TRNB_ID"/>
+		<result property="intrSctnDvsnCd" column="INTR_SCTN_DVSN_CD"/>
+		<result property="adtnIntrYn" column="ADTN_INTR_YN"/>
+		<result property="tablId" column="TABL_ID"/>
+		<result property="datNo" column="DAT_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-listSzpacsrpt */
+		<![CDATA[
+		(
+		select
+		    PACS_SNO,
+		    PACS_ACCS_NO,
+		    PACS_WODV_CD,
+		    to_char(CRTN_DT, 'yyyymmddhh24miss') as CRTN,
+		    EXMN_PRSS_CD,
+		    PTNO,
+		    to_char(ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		    ORDR_SNO,
+		    REFR_ORTA_NM,
+		    to_char(ENFR_DT, 'yyyymmddhh24miss') as ENFR_DT,
+		    EQPM_CD,
+		    EXIM_CNFM_ID,
+		    to_char(EXIM_CNFR_DT, 'yyyymmddhh24miss') as EXIM_CNFR_DT,
+		    EXRS_CTN,
+		    EXRS_RMRK_CTN,
+		    to_char(INTR_DT, 'yyyymmddhh24miss') as INTR_DT,
+		    to_char(RPRT_DT, 'yyyymmddhh24miss') as RPRT_DT,
+		    INDR_ID1,
+		    INDR_ID2,
+		    INDR_ID3,
+		    CNDR_ID,
+		    TRNB_ID,
+		    INTR_SCTN_DVSN_CD,
+		    ADTN_INTR_YN,
+		    'SZPACSRPT' as TABL_ID,
+		    DAT_NO
+		from
+		    SZPACSRPT
+		where
+		    PACS_WODV_CD in ('M', 'R')
+		  and rownum <= 70
+		)
+		union all
+		(
+		select
+		    PACS_SNO,
+		    PACS_ACCS_NO,
+		    PACS_WODV_CD,
+		    to_char(CRTN_DT, 'yyyymmddhh24miss') as CRTN,
+		    EXMN_PRSS_CD,
+		    PTNO,
+		    to_char(ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		    ORDR_SNO,
+		    REFR_ORTA_NM,
+		    to_char(ENFR_DT, 'yyyymmddhh24miss') as ENFR_DT,
+		    EQPM_CD,
+		    EXIM_CNFM_ID,
+		    to_char(EXIM_CNFR_DT, 'yyyymmddhh24miss') as EXIM_CNFR_DT,
+		    EXRS_CTN,
+		    EXRS_RMRK_CTN,
+		    to_char(INTR_DT, 'yyyymmddhh24miss') as INTR_DT,
+		    to_char(RPRT_DT, 'yyyymmddhh24miss') as RPRT_DT,
+		    INDR_ID1,
+		    INDR_ID2,
+		    INDR_ID3,
+		    CNDR_ID,
+		    TRNB_ID,
+		    INTR_SCTN_DVSN_CD,
+		    ADTN_INTR_YN,
+		    'SZCPACSRT' as TABL_ID,
+		    DAT_NO
+		from
+		    SZCPACSRT
+		where
+		    PACS_WODV_CD in ('M', 'R')
+		  and rownum <= 30
+		)
+		order by PACS_SNO
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo2 */
+		<![CDATA[
+		select  a.PTNO,
+		        to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		        a.ORDR_SNO,
+		        a.ORDR_CD,
+		        a.EXCF_CD
+		  from  MDEXMORDT a
+		 where  a.PTNO     = #{ptno}
+		   and  a.PACS_ACCS_NO = #{pacsAccsNo}
+		   and  nvl(a.DC_DVSN_CD,'N') = 'N'
+		   --and  a.EXOR_PRSS_CD is not null
+		   and  ( (#{exmnPrssCd} = 'D')
+		          or
+		          (#{exmnPrssCd} != 'D' and nvl(EXOR_PRSS_CD,'A') in ('D','E','F','G'))
+		        )
+		   and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3-result" type="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="excfCd" column="EXCF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3 (PACS_ACCS_NO로 검사처방 검색) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+		resultMap : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  resultMap="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-selectOneExmnInfo3 */
+		<![CDATA[
+		select  a.PTNO,
+		        to_char(a.ORDR_YMD, 'yyyymmdd') as ORDR_YMD,
+		        a.ORDR_SNO,
+		        a.ORDR_CD,
+		        a.EXCF_CD
+		  from  MDEXMORDT a
+		where	PTNO = #{ptno}
+		and		ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		and		ORDR_SNO = #{ordrSno}
+		and  	nvl(DC_DVSN_CD,'N') = 'N'
+		--and  	EXOR_PRSS_CD is not null
+		   and  ( (#{exmnPrssCd} = 'D')
+		          or
+		          (#{exmnPrssCd} != 'D' and nvl(EXOR_PRSS_CD,'A') in ('D','E','F','G'))
+		        )
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult */
+		update SWWORKMMT
+		   set
+		    EXMN_STTS_CD = #{exmnSttsCd},
+		    INTR_DT = to_date(#{intrDt}, 'yyyymmddhh24miss'),
+		    INTR_YN = #{intrYn},
+		    CNFR_DT = to_date(#{cnfrDt}, 'yyyymmddhh24miss'),
+		    INDR_ID1 = #{indrId1},
+		    INDR_ID2 = #{indrId2},
+		    INDR_ID3 = #{indrId3},
+		    CNDR_ID = #{cndrId},
+		    TRNB_ID = #{trnbId},
+		    ENDR_ID = nvl(ENDR_ID,nvl(#{cndrId},#{indrId1})),
+		    ENFR_DT = nvl(ENFR_DT, RPTN_DT),
+		    LAST_UPDR_ID = nvl(#{gvUserId}, 'PACS'),
+		    LAST_UPDT_IP = nvl(#{gvUserIp}, 'PACS'),
+		    LAST_UPDT_DT = sysdate,
+		    LAST_UPDT_CLNT_PRGM_ID = nvl(#{gvClntPrgmId}, 'PACS'),
+		    LAST_UPDT_SRVR_PRGM_ID = nvl(#{gvSrvrPrgmId}, 'PACS')
+		where 1= 1
+		  and PTNO = #{ptno}
+		  and ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		  and ORDR_SNO = #{ordrSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult2"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateSwworkmmtResult2 */
+		<![CDATA[
+		update	SWWORKMMT
+		set		EXIM_CNFM_ID = nvl2(#{eximCnfmId}, #{eximCnfmId}, EXIM_CNFM_ID),
+				EXIM_CNFR_DT =  nvl2(#{eximCnfrDt}, to_date(#{eximCnfrDt}, 'yyyymmddhh24miss'), EXIM_CNFR_DT),
+		        DAT_NO  = #{datNo}
+		where	PTNO = #{ptno}
+		and		ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		and		ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateMdexmordtResult2 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateMdexmordtResult2"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateMdexmordtResult2 */
+		<![CDATA[
+		update	MDEXMORDT
+		set		PACS_TRDV_CD  = 'Y',
+		        LAST_UPDR_ID = nvl(#{gvUserId}, 'PACS'),
+		        LAST_UPDT_IP = nvl(#{gvUserIp}, 'PACS'),
+		        LAST_UPDT_DT = sysdate,
+		        LAST_UPDT_CLNT_PRGM_ID = nvl(#{gvClntPrgmId}, 'exePacsRsltnrf'),
+		        LAST_UPDT_SRVR_PRGM_ID = nvl(#{gvSrvrPrgmId}, 'exePacsRsltnrf')
+		where	PTNO = #{ptno}
+		and		ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		and		ORDR_SNO = #{ordrSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzcpacsot () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzcpacsot"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-insertSzcpacsot */
+		insert into
+		    SZCPACSOT(
+		        PACS_SNO,
+		        CRTN_DT,
+		        PACS_INQR_DT,
+		        PACS_WODV_CD,
+		        PACS_PHTR_DPRT_CLSF_CD,
+		        RPTN_DT,
+		        PACS_EQPM_CLSF_CD,
+		        EXRM_CD,
+		        ORDR_CD,
+		        ORDR_NM,
+		        ORDR_NM_CTN,
+		        EXMN_DTLS_STTS_CD,
+		        SLIP_CD,
+		        SLIP_NM,
+		        RPRS_SCIN_NM,
+		        EXMN_SPSB_CTN,
+		        PACS_ACCS_NO,
+		        GNDR_ID,
+		        GNDR_NM,
+		        ODDR_ID,
+		        ODDR_NM,
+		        CPDR_ID,
+		        CPDR_NM,
+		        MCDP_ABRV_CD,
+		        SCIN_NM,
+		        EXOR_UNSL_CTN,
+		        ORDR_YMD,
+		        ORDR_SNO,
+		        REFR_ORTA_NM,
+		        PTAD_CODV_CD,
+		        WARD_ABRV_CD,
+		        PTRM_NO,
+		        PTNT_NM,
+		        PTNO,
+		        RSRN,
+		        BTDT,
+		        GEND_CD,
+		        STST_EXMN_CCT,
+		        ORDR_IPDV_CD,
+		        ADMS_YMD,
+		        NEXT_MDCR_DT,
+		        FRST_RGSR_ID,
+		        FRST_RGST_IP,
+		        FRST_RGST_DT,
+		        FRST_RGST_CLNT_PRGM_ID,
+		        FRST_RGST_SRVR_PRGM_ID,
+		        LAST_UPDR_ID,
+		        LAST_UPDT_IP,
+		        LAST_UPDT_DT,
+		        LAST_UPDT_CLNT_PRGM_ID,
+		        LAST_UPDT_SRVR_PRGM_ID,
+		        CIS_LNKG_NO
+		    )
+		VALUES
+		    (
+		        #{pacsSno},
+		        sysdate,
+		        null,
+		        #{pacsWodvCd},
+		        #{pacsPhtrDprtClsfCd},
+		        to_date(#{rptnDt}, 'yyyymmddhh24miss'),
+		        #{pacsEqpmClsfCd},
+		        #{exrmCd},
+		        #{ordrCd},
+		        #{ordrNm},
+		        #{ordrNmCtn},
+		        #{exmnDtlsSttsCd},
+		        #{slipCd},
+		        #{slipNm},
+		        #{rprsScinNm},
+		        #{exmnSpsbCtn},
+		        #{pacsAccsNo},
+		        #{gndrId},
+		        #{gndrNm},
+		        #{oddrId},
+		        #{oddrNm},
+		        #{cpdrId},
+		        #{cpdrNm},
+		        #{mcdpAbrvCd},
+		        #{scinNm},
+		        #{exorUnslCtn},
+		        to_date(#{ordrYmd}, 'yyyymmdd'),
+		        #{ordrSno},
+		        #{refrOrtaNm},
+		        #{ptadCodvCd},
+		        #{wardAbrvCd},
+		        #{ptrmNo},
+		        #{ptntNm},
+		        #{ptno},
+		        #{rsrn},
+		        to_date(#{btdt}, 'yyyymmdd'),
+		        #{gendCd},
+		        #{ststExmnCct},
+		        #{ordrIpdvCd},
+		        to_date(#{admsYmd}, 'yyyymmdd'),
+		        to_date(#{nextMdcrDt}, 'yyyymmddhh24miss'),
+		        nvl(#{gvUserId}, 'CPACS'),
+		        nvl(#{gvUserIp}, 'CPACS'),
+		        sysdate,
+		        nvl(#{gvClntPrgmId}, 'CPACS'),
+		        nvl(#{gvSrvrPrgmId}, 'CPACS'),
+		        nvl(#{gvUserId}, 'CPACS'),
+		        nvl(#{gvUserIp}, 'CPACS'),
+		        sysdate,
+		        nvl(#{gvClntPrgmId}, 'CPACS'),
+		        nvl(#{gvSrvrPrgmId}, 'CPACS'),
+		        #{cisLnkgNo}
+		    )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateCPacsWodvCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateCPacsWodvCd"  parameterType="com.sds.healthcare.ehr.sup.sz.szp.vo.SzpPacsEqpmInrfDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sz-szp-dao-SzpPacsEqpmInrfDAO-updateCPacsWodvCd */
+		UPDATE SZCPACSRT
+		   SET PACS_WODV_CD = #{pacsWodvCd},
+		       LAST_UPDR_ID = #{gvUserId},
+		       LAST_UPDT_IP = #{gvUserIp},
+		       LAST_UPDT_DT = sysdate,
+		       LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+		       LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		  where PACS_SNO = #{pacsSno}
+	</update>
+
+</mapper>

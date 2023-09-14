@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoTbprmmtMtestmtDAO_sql.xml 
+    Description :                                      프로그램 테스터 관리 마스터 변경 Table : COMTESTMT
+                  -->
+<mapper namespace="CcoTbprmmtMtestmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="testStepCd" column="TEST_STEP_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="testRsltDvsnCd" column="TEST_RSLT_DVSN_CD"/>
+		<result property="testDataCtn" column="TEST_DATA_CTN"/>
+		<result property="testRfrcInfmCtn" column="TEST_RFRC_INFM_CTN"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="testPsblTrgtYn" column="TEST_PSBL_TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster (cod_mtestmt_l01$S01_프로그램 테스터 관리 마스터 조회) 
+        Description :                                           cod_mtestmt_l01$S01_프로그램 테스터 관리 마스터 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-selectOnePrgTestMmMaster */
+				    select  /*+ cod_mtestmt_l01$S01_프로그램 테스터 관리 마스터 조회 */ 
+				            a.PRGM_ID
+				          , a.TEST_STEP_CD
+				          , b.DETL_CD_NM
+				          , a.TEST_RSLT_DVSN_CD
+				          , a.TEST_DATA_CTN
+				          , a.TEST_RFRC_INFM_CTN
+				          , a.DLTN_YN
+				          , a.TEST_PSBL_TRGT_YN
+				    from    COMTESTMT a
+				          , CCCMCDDMT b
+				    where   b.COMN_GRP_CD(+) = 'COR_009'
+				      and   a.TEST_STEP_CD   = b.COMN_DTLS_CD(+)
+				      and   a.PRGM_ID =  #{prgmId} 
+				      and   ((nvl( #{testStepCd} , '*') = '*') or
+				             (a.TEST_STEP_CD =  #{testStepCd} ))
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-insertPrgTestMmMaster (cod_mtestmt_i01$I01_프로그램 테스터 관리 마스터 등록) 
+        Description :                                           cod_mtestmt_i01$I01_프로그램 테스터 관리 마스터 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-insertPrgTestMmMaster"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-insertPrgTestMmMaster */
+		insert  /*+ cod_mtestmt_i01$I01_프로그램 테스터 관리 마스터 등록 */ 
+				    into    COMTESTMT(PRGM_ID
+				                           , TEST_STEP_CD
+				                           , TEST_RSLT_DVSN_CD
+				                           , TEST_DATA_CTN
+				                           , TEST_RFRC_INFM_CTN
+				                           , DLTN_YN
+				                           , TEST_PSBL_TRGT_YN
+				                 , FRST_RGSR_ID                              -- 최초등록자ID
+				                 , FRST_RGST_IP                              -- 최초등록IP
+				                 , FRST_RGST_DT                              -- 최초등록일시
+				                 , FRST_RGST_CLNT_PRGM_ID                    -- 최초등록클라이언트프로그램ID
+				                 , FRST_RGST_SRVR_PRGM_ID                    -- 최초등록서버프로그램ID
+				                 , LAST_UPDR_ID                              -- 최종수정자ID
+				                 , LAST_UPDT_IP                              -- 최종수정IP
+				                 , LAST_UPDT_DT                              -- 최종수정일시
+				                 , LAST_UPDT_CLNT_PRGM_ID                    -- 최종수정클라이언트프로그램ID
+				                 , LAST_UPDT_SRVR_PRGM_ID                    -- 최종수정서버프로그램ID
+				                            )
+				                      values( #{prgmId} 
+				                           ,  #{testStepCd} 
+				                           ,  #{testRsltDvsnCd} 
+				                           ,  #{testDataCtn} 
+				                           ,  #{testRfrcInfmCtn} 
+				                           ,  #{dltnYn} 
+				                           ,  #{testPsblTrgtYn} 
+				                 , #{gvUserId}                               -- 최초등록자ID
+				                 , #{gvUserIp}                               -- 최초등록IP
+				                 , sysdate                                   -- 최초등록일시
+				                 , #{gvClntPrgmId}                           -- 최초등록클라이언트프로그램ID
+				                 , #{gvSrvrPrgmId}                           -- 최초등록서버프로그램ID
+				                 , #{gvUserId}                               -- 최종수정자ID
+				                 , #{gvUserIp}                               -- 최종수정IP
+				                 , sysdate                                   -- 최종수정일시
+				                 , #{gvClntPrgmId}                           -- 최종수정클라이언트프로그램ID
+				                 , #{gvSrvrPrgmId}                           -- 최종수정서버프로그램ID 
+				                            )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-updatePrgTestMmMaster (cod_mtestmt_u01$I01_프로그램 테스터 관리 마스터 변경) 
+        Description :                                           cod_mtestmt_u01$I01_프로그램 테스터 관리 마스터 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-updatePrgTestMmMaster"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoTbprmmtMtestmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoTbprmmtMtestmtDAO-updatePrgTestMmMaster */
+		update  /*+ cod_mtestmt_u01$I01_프로그램 테스터 관리 마스터 변경 */
+				            COMTESTMT
+				    set
+				            TEST_RSLT_DVSN_CD     =  #{testRsltDvsnCd} 
+				          , TEST_DATA_CTN         =  #{testDataCtn} 
+				          , TEST_RFRC_INFM_CTN    =  #{testRfrcInfmCtn} 
+				          , DLTN_YN               =  #{dltnYn} 
+				          , TEST_PSBL_TRGT_YN     =  #{testPsblTrgtYn} 
+				                 , LAST_UPDR_ID          = #{gvUserId}                            -- 최종수정자ID
+				                 , LAST_UPDT_IP          = #{gvUserIp}                            -- 최종수정IP
+				                 , LAST_UPDT_DT          = sysdate                                -- 최종수정일시
+				                 , LAST_UPDT_CLNT_PRGM_ID                    = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+				                 , LAST_UPDT_SRVR_PRGM_ID                    = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID                 
+				    where   PRGM_ID               =  #{prgmId} 
+				      and   TEST_STEP_CD          =  #{testStepCd} 
+	</update>
+
+</mapper>

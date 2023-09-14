@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpBodyMsrnDAO_sql.xml 
+    Description :                                      신체계측DAO
+                  -->
+<mapper namespace="MdpBodyMsrnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="itemSno" column="ITEM_SNO"/>
+		<result property="itemNm" column="ITEM_NM"/>
+		<result property="itemRcrdDt" column="ITEM_RCRD_DT"/>
+		<result property="itemRcrdVl" column="ITEM_RCRD_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001 () 
+        Description :                                           신체사항/활력징후 조회 mdd_mecfsdo_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-listBodyMsrn0001 */
+		<![CDATA[
+		select  /*+ mdd_mecfsdo_l01$S01_툴바_기본신체사항및활력징후 */
+		        temp.PTNO
+		    ,   temp.ITEM_SNO
+		    ,   temp.ITEM_NM
+		    ,   to_char(temp.ITEM_RCRD_DT, 'yyyymmddhh24miss') as ITEM_RCRD_DT
+		    ,   temp.ITEM_RCRD_VL
+		  from  (
+		                select 
+		                        a.PTNO
+		                      , a.ITEM_SNO
+		                      , a.ITEM_NM
+		                      , a.ITEM_RCRD_DT
+		                      , a.ITEM_RCRD_VL
+		                      , dense_rank() over(partition by a.ITEM_SNO
+		                                               order by to_char(a.ITEM_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		                   from 
+		                        (		  
+		                 select  domt.PTNO 
+		                      ,  bmmt.BODY_MSRN_ITEM_SNO as ITEM_SNO
+		                      ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		                      ,  bmmt.BODY_MSRN_RCRD_DT  as ITEM_RCRD_DT
+		                      ,  case
+		                           when (upper(bmmt.BODY_MSRN_UNIT_CD) = 'G' and              /* 단위 컬럼 추가 g으로 측정되는 경우 kg 전환 처리 */
+		                                 REGEXP_INSTR(bmmt.BODY_MSRN_RCRD_VL, '[^0-9]') = 0) then to_char(to_number(bmmt.BODY_MSRN_RCRD_VL)/1000, 'FM990.999' )
+		                                                                                     else bmmt.BODY_MSRN_RCRD_VL
+		                         end  as ITEM_RCRD_VL
+		                   from  MECFSDOMT domt
+		                      ,  MECFSBMMT bmmt
+		                      ,  MECFSDAMT damt
+		                  where  domt.PTNO          = #{ptno}
+		                    and  bmmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		                    and  ( (#{dvsnVl} = 'Y'    /* 최근 1년 조회 */
+		                            and  bmmt.BODY_MSRN_RCRD_DT >= trunc(sysdate) - 365
+		                            and  bmmt.BODY_MSRN_RCRD_DT  < trunc(sysdate) + 1
+		                           ) or
+		                           (#{dvsnVl} = 'T'    /* 당일 조회 */
+		                            and  bmmt.BODY_MSRN_RCRD_DT >= trunc(sysdate)
+		                            and  bmmt.BODY_MSRN_RCRD_DT  < trunc(sysdate) + 1
+		                           )
+		                         )
+		                    and  damt.CNOS_ITEM_SNO = bmmt.BODY_MSRN_ITEM_SNO
+		                    and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_BM'
+		                    and  damt.CNOS_ITEM_NM in ('WT', 'HT')
+		                         union all   
+		                         /* 응급간호초기평가 BWT 조회 추가 */
+		                         select  eer.PTNO                as PTNO
+		                              ,  1                       as ITEM_SNO
+		                              ,  'WT'                    as ITEM_NM
+		                              ,  eer.FRST_RGST_DT        as ITEM_RCRD_DT
+		                              ,  to_char(eer.VS_BDWG_VL) as ITEM_RCRD_VL
+		                           from 
+		                                 MNEERRPAT eer
+		                          where  
+		                                 eer.MDRP_NO = #{mdrpNo} 
+		                            and  eer.VS_BDWG_VL <> 0   		                    
+		                        ) a	
+		      union all
+		         select  /*+ leading(domt damt irmt) */    /*1년 조건에 최적화되도록 힌트 추가 (cart. merge join 후 irmt 조인하도록)*/
+		                 domt.PTNO
+		              ,  irmt.CNOS_ITEM_SNO      as ITEM_SNO
+		              ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		              ,  irmt.CNOS_ITEM_RCRD_DT  as ITEM_RCRD_DT
+		              ,  irmt.CNOS_ITEM_RCRD_VL  as ITEM_RCRD_VL
+		              ,  dense_rank() over(partition by damt.CNOS_ITEM_NM  /* MECFSDAMT(임상관찰항목DAM매핑) 테이블 에 항목 세분화(ABP, NIBP)로 항목명 기준으로 최근정보 산출 :  irmt.CNOS_ITEM_SNO  */
+		                                       order by to_char(irmt.CNOS_ITEM_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		           from  MECFSDOMT domt
+		              ,  MECFSIRMT irmt
+		              ,  MECFSDAMT damt
+		          where  domt.PTNO          = #{ptno}
+		            and  irmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		            and  #{dvsnVl} = 'Y'    /* 최근 1년 조회 */
+		            and  irmt.CNOS_ITEM_RCRD_DT >= trunc(sysdate) - 365
+		            and  irmt.CNOS_ITEM_RCRD_DT  < trunc(sysdate) + 1
+		            and  nvl(irmt.DLTN_YN, 'N') <> 'Y'
+		            and  damt.CNOS_ITEM_SNO = irmt.CNOS_ITEM_SNO
+		            and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_VS'
+		            and  damt.CNOS_ITEM_NM in ('SBP', 'DBP', 'HR', 'BT')
+		      union all                                             /* 튜닝 적용 : 1일, 1년 기간을 각각의 union all로 분리  */
+		         select  domt.PTNO
+		              ,  irmt.CNOS_ITEM_SNO      as ITEM_SNO
+		              ,  damt.CNOS_ITEM_NM       as ITEM_NM
+		              ,  irmt.CNOS_ITEM_RCRD_DT  as ITEM_RCRD_DT
+		              ,  irmt.CNOS_ITEM_RCRD_VL  as ITEM_RCRD_VL
+		              ,  dense_rank() over(partition by damt.CNOS_ITEM_NM  /* MECFSDAMT(임상관찰항목DAM매핑) 테이블 에 항목 세분화(ABP, NIBP)로 항목명 기준으로 최근정보 산출 :  irmt.CNOS_ITEM_SNO  */
+		                                       order by to_char(irmt.CNOS_ITEM_RCRD_DT, 'yyyymmddhh24miss') desc) rank
+		           from  MECFSDOMT domt
+		              ,  MECFSIRMT irmt
+		              ,  MECFSDAMT damt
+		          where  domt.PTNO          = #{ptno}
+		            and  irmt.CNOS_RCRD_NO  = domt.CNOS_RCRD_NO
+		            and  #{dvsnVl} = 'T'    /* 당일 조회 */
+		            and  irmt.CNOS_ITEM_RCRD_DT >= trunc(sysdate)
+		            and  irmt.CNOS_ITEM_RCRD_DT  < trunc(sysdate) + 1
+		            and  nvl(irmt.DLTN_YN, 'N') <> 'Y'
+		            and  damt.CNOS_ITEM_SNO = irmt.CNOS_ITEM_SNO
+		            and  damt.SMSP_ID       = 'MDD_CFSVSMT_L02_VS'
+		            and  damt.CNOS_ITEM_NM in ('SBP', 'DBP', 'HR', 'BT')
+		        )  temp
+		 where  temp.rank = 1
+		UNION ALL
+		SELECT BST.PTNO
+		     , BST.ITEM_SNO
+		     , BST.ITEM_NM
+		     , BST.ITEM_RCRD_DT
+		     , BST.ITEM_RCRD_VL
+		  FROM (SELECT A.PTNO
+		             , 99999 ITEM_SNO
+		             , 'BST' ITEM_NM
+		             , TO_CHAR(A.RCRD_DT, 'YYYYMMDDHH24MISS') ITEM_RCRD_DT /* 기록 일시*/
+		             , (A.BLSG_NCVL_VL || '^' || TO_CHAR(A.RCRD_DT, 'YYYY-MM-DD HH24:MI') || DECODE(A.BLSG_RCRD_UNSL_CTN, NULL, '', ' (' || A.BLSG_RCRD_UNSL_CTN || ')')) ITEM_RCRD_VL  /*  혈당검사결과^혈당기록특이내용 */
+		          FROM MNRBLSGDT A 
+		         WHERE A.PTNO = #{ptno}
+		           AND ((#{dvsnVl} = 'Y'    /* 최근 1년 조회 */
+		                 AND A.RCRD_DT >= TRUNC(SYSDATE) - 365
+		                 AND A.RCRD_DT < TRUNC(SYSDATE) + 1
+		                ) OR
+		                (#{dvsnVl} = 'T'    /* 당일 조회 */
+		                 AND A.RCRD_DT >= TRUNC(SYSDATE)
+		                 AND A.RCRD_DT < TRUNC(SYSDATE) + 1
+		                )
+		               )
+		           AND NVL(A.DLTN_YN, 'N') = 'N'
+		        UNION ALL    
+		        SELECT A.PTNO
+		             , 99999 ITEM_SNO
+		             , 'BST' ITEM_NM
+		             , TO_CHAR(B.ENFR_DT, 'YYYYMMDDHH24MISS') ITEM_RCRD_DT /* 검사시행일시 */
+		             , A.EXRS_NCVL_VL || '^' || TO_CHAR(B.ENFR_DT, 'YYYY-MM-DD HH24:MI') ITEM_RCRD_VL  /*  혈당검사결과 */                     
+		          FROM SZRESULMT A /*  통합검사결과 */
+		             , MDEXMORDT B  /*  검사처방   */
+		             , MDORDRCMT C /*  처방코드기본 */
+		         WHERE A.PTNO = #{ptno}
+		           AND ((#{dvsnVl} = 'Y'    /* 최근 1년 조회 */
+		                 AND B.ENFR_DT >= TRUNC(SYSDATE) - 365
+		                 AND B.ENFR_DT < TRUNC(SYSDATE) + 1
+		                ) OR
+		                (#{dvsnVl} = 'T'    /* 당일 조회 */
+		                 AND B.ENFR_DT >= TRUNC(SYSDATE)
+		                 AND B.ENFR_DT < TRUNC(SYSDATE) + 1
+		                )
+		               )
+		           AND A.PTNO = B.PTNO
+		           AND A.ORDR_YMD = B.ORDR_YMD
+		           AND A.ORDR_SNO = B.ORDR_SNO
+		           AND A.EXMN_CD  = C.ORDR_CD
+		           AND A.EXMN_CD  IN (SELECT MDCR_DTLS_CTRL_CD
+		                                FROM MZCTRLMMT 
+		                               WHERE MDCR_CTRL_CD = 'MNZ_191'
+		                                 AND MDCR_CTRL_CHRC_VL1 = 'GLU_POCT')
+		         ORDER BY 4 DESC) BST
+		 WHERE ROWNUM = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cohsDt" column="COHS_DT"/>
+		<result property="arvlDt" column="ARVL_DT"/>
+		<result property="vsMsrmYn" column="VS_MSRM_YN"/>
+		<result property="vsCnphBpVl" column="VS_CNPH_BP_VL"/>
+		<result property="vsRlpdBpVl" column="VS_RLPD_BP_VL"/>
+		<result property="vsHrVl" column="VS_HR_VL"/>
+		<result property="vsBdtmVl" column="VS_BDTM_VL"/>
+		<result property="afiVsBdtmVlStr" column="AFI_VS_BDTM_VL_STR"/>
+		<result property="vsBdtmUnslCtn" column="VS_BDTM_UNSL_CTN"/>
+		<result property="vsSao2Cd" column="VS_SAO2_CD"/>
+		<result property="afiVsSao2Nm" column="AFI_VS_SAO2_NM"/>
+		<result property="vsSao2Vl" column="VS_SAO2_VL"/>
+		<result property="vsSao2UnslCtn" column="VS_SAO2_UNSL_CTN"/>
+		<result property="vsSao2MthdCd" column="VS_SAO2_MTHD_CD"/>
+		<result property="afiVsSao2MthdNm" column="AFI_VS_SAO2_MTHD_NM"/>
+		<result property="ptntRctnCd" column="PTNT_RCTN_CD"/>
+		<result property="afiPtntRctnNm" column="AFI_PTNT_RCTN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001 () 
+        Description :                                           응급환자 활력정보 mdd_mneerrp_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneErBodyMsrn0001 */
+		<![CDATA[
+		select  /*+ mdd_mneerrp_s02$S01_툴바_응급환자 활력정보 단건조회 */
+		        eer.PTNO                       /* 환자번호 */
+		     ,  to_char(eer.COHS_DT, 'YYYYMMDDHH24MISS') as COHS_DT  /* 내원일시 */
+		     ,  to_char(eer.ARVL_DT, 'YYYYMMDDHH24MISS') as ARVL_DT  /* 도착일시 */
+		     ,  eer.VS_MSRM_YN
+		     ,  eer.VS_CNPH_BP_VL                               /*    V/S 수축기혈압'*/
+		     ,  eer.VS_RLPD_BP_VL                               /*    V/S 이완기혈압'*/
+		     ,  eer.VS_HR_VL
+		     ,  eer.VS_BDTM_VL
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'MNE_026'
+		             and F_A.COMN_DTLS_CD = eer.VS_BDTM_VL
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )              as AFI_VS_BDTM_VL_STR
+		     ,  eer.VS_BDTM_UNSL_CTN
+		     ,  eer.VS_SAO2_CD
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'MNE_027'
+		             and F_A.COMN_DTLS_CD = eer.VS_SAO2_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )              as AFI_VS_SAO2_NM
+		     ,  eer.VS_SAO2_VL
+		     ,  eer.VS_SAO2_UNSL_CTN
+		     ,  eer.VS_SAO2_MTHD_CD
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'MNE_028'
+		             and F_A.COMN_DTLS_CD = eer.VS_SAO2_MTHD_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )              as AFI_VS_SAO2_MTHD_NM
+		     ,  eer.PTNT_RCTN_CD
+		     ,  ( select nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		            from CCCMCDDMT F_A, CCCMCDDLT F_B
+		           where F_A.COMN_GRP_CD = F_B.COMN_GRP_CD(+)
+		             and F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		             and F_A.COMN_GRP_CD = 'MNE_020'
+		             and F_A.COMN_DTLS_CD = eer.PTNT_RCTN_CD
+		             and F_B.LNGG_CD(+) = nvl( '', '*') )              as AFI_PTNT_RCTN_NM
+		  from  MNEERRPAT eer
+		 where  1=1
+		   and  eer.MDRP_NO = #{mdrpNo}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="cnosValeScr" column="CNOS_VALE_SCR"/>
+		<result property="cnosItemNm" column="CNOS_ITEM_NM"/>
+		<result property="cnosItemRcrdVl" column="CNOS_ITEM_RCRD_VL"/>
+		<result property="cnosItemRcrdDt" column="CNOS_ITEM_RCRD_DT"/>
+		<result property="dvsnNm" column="DVSN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001 () 
+        Description :                                           낙상고위험 조회 mdd_mecfsdo_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpBodyMsrnDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpBodyMsrnDAO-selectOneFldwHgrs0001 */
+		       a.PTNO                                   as PTNO
+		      ,(select i.PTNT_NM
+				  from APPTPTNTT i
+				 where i.PTNO = a.PTNO)                 as PTNT_NM
+		      ,null                                     as CNOS_VALE_SCR
+		      ,a.CNOS_ITEM_NM                           as CNOS_ITEM_NM
+		      ,a.CNOS_ITEM_RCRD_VL                      as CNOS_ITEM_RCRD_VL
+		      ,to_char(a.CNOS_ITEM_RCRD_DT, 'YYYYMMDD') as CNOS_ITEM_RCRD_DT
+		      ,substr(a.CNOS_RCRD_ITEM_SYNN_NM,0,4)     as DVSN_NM
+		  FROM (
+		        select   IRMT.ptno
+		               , IRMT.CNOS_ITEM_RCRD_DT
+		               , IRMT.CNOS_RCRD_ITEM_SYNN_NM
+		                  /* 낙상고위험 -성인낙상 45점이상 또는 간호사판단위험요인 기록존재할경우
+		                           -소아낙상 2이상 또는 간호사판단위험요인 기록존재할경우*/
+		               ,  case when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLA'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then 'Y'
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then 'Y'
+		                       /* 소아인 경우
+		                          FNR은 간호사판단위험요인, 필요없을 경우 제거 */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB_12'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then 'Y'
+		                       /* 인공신장실 낙상평가 -2022.02.10 smpark */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLC'
+		                          and IRMT.CNOS_ITEM_RCRD_VL like '있음%' )
+		                       then 'Y'                      
+		                       else 'N' end  FALLYN
+		               ,  case when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLA'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_NM
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_NM
+		                       /* 소아인 경우
+		                          FNR은 간호사판단위험요인, 필요없을 경우 제거 */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB_12'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_NM
+		                       /* 인공신장실 낙상평가 -2022.02.10 smpark */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLC'
+		                          and IRMT.CNOS_ITEM_RCRD_VL like '있음%' )
+		                       then IRMT.CNOS_ITEM_NM                       
+		                       else '' end  CNOS_ITEM_NM
+		                  /* 낙상고위험 -성인낙상 45점이상 또는 간호사판단위험요인 기록존재할경우
+		                           -소아낙상 2이상 또는 간호사판단위험요인 기록존재할경우*/
+		               ,  case when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLA'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_RCRD_VL
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_RCRD_VL
+		                       /* 소아인 경우
+		                          FNR은 간호사판단위험요인, 필요없을 경우 제거 */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLB_12'
+		                          and IRMT.CNOS_VALE_SCR >= IRMT.CNOS_NRML_MXMM_VL  )
+		                       or (CNOS_RCRD_ITEM_SYNN_NM = 'FNR'
+		                          and IRMT.CNOS_ITEM_RCRD_VL is not null)
+		                       then IRMT.CNOS_ITEM_RCRD_VL
+		                       /* 인공신장실 낙상평가 -2022.02.10 smpark */
+		                       when (CNOS_RCRD_ITEM_SYNN_NM = 'FALLC'
+		                          and IRMT.CNOS_ITEM_RCRD_VL like '있음%' )
+		                       then IRMT.CNOS_ITEM_RCRD_VL                       
+		                       else '' end  CNOS_ITEM_RCRD_VL
+		            from  (select /*+ NO_EXPAND LEADING(DOMT) USE_NL(PTNT ITMT)  INDEX(ITMT MECFSITMT_PK) */
+		                        DOMT.PTNO
+		                     ,  IRMT.CNOS_ITEM_RCRD_DT
+		                     ,  IRMT.CNOS_ITEM_RCRD_VL
+		                     ,  IRMT.CNOS_VALE_SCR
+		                     ,  IRMT.CNOS_ITEM_RCRD_SNO
+		                     ,  IRMT.CNOS_RCRD_NO
+		                     ,  IRMT.CNOS_ITEM_GRP_SNO
+		                     ,  IRMT.CNOS_ITEM_SNO
+		                     ,  ITMT.CNOS_ITEM_NM
+		                     ,  DAMT.CNOS_RCRD_ITEM_SYNN_NM
+		                     ,  DAMT.CNOS_ITEM_NM CNOS_ITEM_NM_GROUP
+		                     ,  IRMT.WARD_CD
+		                     ,  ITMT.CNOS_NRML_MXMM_VL
+		                     ,  ITMT.CNOS_NRML_MNMM_VL
+		                     ,  rank() over(partition by DOMT.PTNO, DAMT.CNOS_ITEM_NM
+		                                              order by IRMT.CNOS_ITEM_RCRD_DT desc,IRMT.CNOS_ITEM_RCRD_SNO desc ) ranking
+		                   from  MECFSDOMT DOMT
+		                     ,  MECFSDAMT DAMT
+		                     ,  MECFSIRMT IRMT
+		                     ,  MECFSITMT ITMT
+		                     ,  APRCRPTNT PTNT
+		                  where  1=1
+		                    and  DOMT.PTNO = #{ptno}
+		                    and  DOMT.MDRP_NO = #{mdrpNo}
+		                    and  DOMT.MDRP_NO = PTNT.MDRP_NO
+		                    and  DOMT.CODV_CD = PTNT.CODV_CD
+		                    and  DOMT.PTNO = PTNT.PTNO
+		                    and  IRMT.CNOS_TAB_CD = '04'
+		                    and  DOMT.CNOS_RCRD_NO    = IRMT.CNOS_RCRD_NO
+		                    and  IRMT.CNOS_ITEM_GRP_SNO = DAMT.CNOS_ITEM_GRP_SNO
+		                    and  IRMT.CNOS_ITEM_SNO   = DAMT.CNOS_ITEM_SNO
+		                    and  nvl(IRMT.DLTN_YN, 'N') = 'N'
+		                    and  DAMT.SMSP_ID         = 'MNW_CFSIRMT_L01'
+		                    and  DAMT.CNOS_RCRD_ITEM_SYNN_NM in ('FALLA','FALLB','FNR','FALLC')
+		                    and  DAMT.CNOS_ITEM_SNO   =  ITMT.CNOS_ITEM_SNO
+		                    and  nvl(ITMT.DLTN_YN, 'N') = 'N'
+		                    and  PTNT.MDRP_NO =  DOMT.MDRP_NO
+		                  ) IRMT
+		               where  ranking=1
+		    ) a
+		    where FALLYN = 'Y'
+		      and rownum = 1
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SucDietCdMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="SucDietCdMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd-result" type="com.sds.healthcare.ehr.sup.su.suc.vo.SucDietCdMngmDVO">
+	
+		<result property="dietCd" column="DIET_CD"/>
+		<result property="dietNm" column="DIET_NM"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.su.suc.vo.SucDietCdMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd"  parameterType="com.sds.healthcare.ehr.sup.su.suc.vo.SucDietCdMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-su-suc-dao-SucDietCdMngmDAO-listPhrmSprtDietCd */
+		<![CDATA[
+		select /*+ sud_diecdct_l12$S01_약국지원식사코드조회 */
+			  A.DIET_CD as DIET_CD
+			 ,A.DIET_NM as DIET_NM
+			 ,to_char(A.APST_YMD, 'YYYYMMDD')     as APST_YMD
+			 ,to_char(A.APFN_YMD, 'YYYYMMDD')     as APFN_YMD
+			 ,B.DETL_CD_DSCR_CTN as DETL_CD_DSCR_CTN
+		 from SUDIECDCT A
+			 ,(select DETL_CD_DSCR_CTN
+			  from CCCMCDDMT
+			 where COMN_GRP_CD = 'SUB_930'
+			   and DETL_CD_DSCR_CTN != COMN_DTLS_CD) B
+		where A.DIET_CD like '%' || #{dietCd} || '%'
+		  and A.DIET_NM like '%' || #{dietNm} || '%'
+		  and length(A.DIET_CD) = 6
+		  and A.DIET_CD = B.DETL_CD_DSCR_CTN(+)
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccEHRCertDAO_sql.xml 
+    Description :                                      전자인증
+                  -->
+<mapper namespace="CccEHRCertDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-insertEHRCert (전자인증 입력) 
+        Description :                                           전자인증 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEHRCertDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-insertEHRCert"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEHRCertDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-insertEHRCert */
+		insert  /*+ ccd_smccert_i01$I01_전자서명 데이터 입력 테스트 DAM */ 
+		    into  CUBORDFMT
+		          (
+		            WRTR_ID
+		          , WRTG_DT
+		          , ATFL_SNO
+		          , FILE_NM
+		          , ATFL_BD
+		          , FRST_RGSR_ID
+		          , FRST_RGST_IP
+		          , FRST_RGST_DT
+		          , FRST_RGST_CLNT_PRGM_ID
+		          , FRST_RGST_SRVR_PRGM_ID
+		          , LAST_UPDR_ID
+		          , LAST_UPDT_IP
+		          , LAST_UPDT_DT
+		          , LAST_UPDT_CLNT_PRGM_ID
+		          , LAST_UPDT_SRVR_PRGM_ID)
+		    values  (
+		            #{wrtrId}
+		          , to_date(#{wrtgDt} ,'yyyymmddhh24miss')
+		          , 1
+		          , '전자서명테스트'
+		          , #{atflBdByte}
+		          , #{gvUserId}
+		          , #{gvUserIp}
+		          , sysdate
+		          , #{gvClntPrgmId}
+		          , #{gvSrvrPrgmId}
+		          , #{gvUserId}
+		          , #{gvUserIp}
+		          , sysdate
+		          , #{gvClntPrgmId}
+		          , #{gvSrvrPrgmId})
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEHRCertDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="atflBdByte" column="ATFL_BD_BYTE"/>
+		<result property="atflBd" column="ATFL_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert (전자인증 조회) 
+        Description :                                           전자인증 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccEHRCertDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccEHRCertDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccEHRCertDAO-selectOneEHRCert */
+		select  /*+ ccd_smccert_s02$S01_전자서명 데이터 조회 테스트 DAM */ 
+		           WRTR_ID
+		         , ATFL_BD AS "ATFL_BD_BYTE"
+		         , '' AS "ATFL_BD"
+		      from CUBORDFMT
+		     where WRTR_ID = #{wrtrId}
+		       and WRTG_DT = to_date(#{wrtrDt},'yyyymmddhh24miss')
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccBoardDAO_sql.xml 
+    Description : -->
+<mapper namespace="CccBoardDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO">
+	
+		<result property="wrtrId" column="WRTR_ID"/>
+		<result property="dprtNm" column="DPRT_NM"/>
+		<result property="wrtrNm" column="WRTR_NM"/>
+		<result property="wrtgDt" column="WRTG_DT"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="bultCtn" column="BULT_CTN"/>
+		<result property="inqrCnt" column="INQR_CNT"/>
+		<result property="bultStrtDt" column="BULT_STRT_DT"/>
+		<result property="bultFnshDt" column="BULT_FNSH_DT"/>
+		<result property="cdNm" column="CD_NM"/>
+		<result property="trgtDvsnCdNm" column="TRGT_DVSN_CD_NM"/>
+		<result property="en" column="EN"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="mdcrClasCd" column="MDCR_CLAS_CD"/>
+		<result property="mdcrTissDvsnCd" column="MDCR_TISS_DVSN_CD"/>
+		<result property="folderDvsnCd" column="FOLDER_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard (게시판 게시자료 조회) 
+        Description :                                           게시판 게시자료 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listBoard */
+		<![CDATA[
+			select  /*+ leading(a c b d) use_nl(c b d) index(a (BULT_FNSH_DT)) cud_bordmmt_l01$S01_게시판 게시자료 조회 DAM */
+			        A.WRTR_ID                                   /* 작성자ID     	  */
+				   ,nvl((select KORN_DPRT_NM from HZDEPTMMT where DPRT_CD = B.MDCR_DPRT_CD),'') as DPRT_NM /* 작성부서 */
+			       ,nvl(B.USER_NM, '') as WRTR_NM                          /* 작성자명     	  */
+			       ,to_char(A.WRTG_DT, 'YYYYMMDDHH24MISS') as WRTG_DT     /* 작성일시     	  */
+			       ,A.TITL_NM                                         /* 제목         	  */
+			       ,A.BULT_CTN                                 /* 게시내용     	  */
+			       ,to_char(A.INQR_CNT) as INQR_CNT                         /* 조회수       	  */
+			       ,to_char(A.BULT_STRT_DT, 'YYYYMMDDHH24MISS') as BULT_STRT_DT /* 게시시작일시 	  */
+			       ,to_char(A.BULT_FNSH_DT, 'YYYYMMDDHH24MISS') as BULT_FNSH_DT/* 게시종료일시 	  */
+				   ,decode(C.BULT_RANG_TRGT_CD,'A','전체','부서') as CD_NM            /* 게시구분     	  */
+				   ,decode(C.TRGT_DVSN_CD, 'A', '업무', 'B', '교육', 'C', '일반', '') as TRGT_DVSN_CD_NM /* 게시물 구분*/
+		       	   ,(select Case when AA.Cnt > 0 then 'Y'  
+				       	            else 'N' end
+				       	       from (
+				       	           select count(*) As Cnt
+				       	             From CUBORDFMT D 
+				       	            where D.WRTR_ID = A.WRTR_ID 
+				       	              and D.WRTG_DT = A.WRTG_DT) AA  ) as EN          /* 첨부파일 존재 유무 */
+		       	   ,B.MDCR_DPRT_CD                              /* 진료부서코드       */
+		       	   ,B.MDCR_CLAS_CD                              /* 진료Class코드      */
+		       	   ,F.MDCR_TISS_DVSN_CD                         /* 진료조직구분코드   */
+				   ,C.FOLDER_DVSN_CD								/* 메뉴 구분코드*/
+			  from
+			        CUBORDMMT A 							/* 게시판         */
+			       ,CCUSRDPHT B 							/* 사용자ID       */
+			       ,CUBORDDMT C 							/* 게시판범위     */
+			       ,HZDEPTMMT F                          /* 조직Master I/F */
+			 where
+			        TO_CHAR(A.BULT_STRT_DT, 'YYYYMMDD') <= TO_CHAR(sysdate, 'YYYYMMDD')					/* 게시시작일시 */
+			   and  TO_CHAR(A.BULT_FNSH_DT, 'YYYYMMDD') >= TO_CHAR(sysdate, 'YYYYMMDD') 					/* 게시종료일시 */
+			   and  B.USER_ID(+) = A.WRTR_ID
+			   and  nvl(A.DLTN_YN, 'N') = 'N'
+			   and  C.WRTR_ID = A.WRTR_ID
+			   and  C.WRTG_DT = A.WRTG_DT
+		]]>
+		<if test="folderDvsnCd != null and folderDvsnCd  == '02' ">
+			AND SUBSTR(B.MDCR_DPRT_CD, 0, 3) = SUBSTR(#{mdcrDprtCd}, 0, 3)
+		</if>
+		<if test="trgtDvsnCdList != null and trgtDvsnCdList.size() &gt; 0">
+			and  C.TRGT_DVSN_CD IN
+			<foreach close=")" collection="trgtDvsnCdList" item="trgtDvsnCdItem" open="(" separator=",">
+				   #{trgtDvsnCdItem}
+			</foreach>
+		</if>
+		<![CDATA[
+			   and  (
+				      	(C.BULT_RANG_TRGT_CD = 'A')
+				     or (C.BULT_RANG_TRGT_CD <> 'A' and  C.BULT_RANG_TRGT_CD =   #{mdcrDprtCd})    /* 대상코드(대상구분에 대한 코드) */
+				     or (C.BULT_RANG_TRGT_CD <> 'A' and  C.BULT_RANG_TRGT_CD in (select COMN_ENVR_STUP_ITEM_CHRC_VL
+				          		                                                  from CCENSTIMT
+				          		                                                 where COMN_ENVR_STUP_GRP_CD = 'CUB_001'
+				        		                                                   and COMN_ENVR_STUP_ITEM_CD =  #{mdcrDprtCd}) )
+				          or (A.WRTR_ID =  #{userId} )  /* 본인이 게시한 것 */
+				            )
+		       and  nvl(C.DLTN_YN, 'N') = 'N'
+			   and  F.DPRT_CD(+) =  #{mdcrDprtCd}
+			   and  C.FOLDER_DVSN_CD	= #{folderDvsnCd}
+			order by to_char(A.WRTG_DT, 'YYYYMMDDHH24MISS') DESC
+		]]>
+			
+			
+			
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateBoard (게시판 게시자료 삭제) 
+        Description :                                           게시판 게시자료 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateBoard"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateBoard */
+		    update  /*+ cud_bordmmt_u03$I01_게시판 게시자료 삭제 DAM */
+			        CUBORDMMT
+			   set
+		 	        DLTN_YN = 'Y'
+			       ,BULT_FNSH_DT = sysdate
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}
+			 where  WRTR_ID = #{wrtrId}
+			   and  WRTG_DT = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+			
+			
+			
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateUserBoard (사용자명_게시판 변경) 
+        Description :                                           사용자명_게시판 변경
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateUserBoard"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateUserBoard */
+		    update  /*+ cud_bordmmt_u02$I01_사용자명_게시판 변경 */
+		            CUBORDMMT       /* 게시판  */
+		       set
+		            INQR_CNT = INQR_CNT + 1
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}  
+		     where  WRTR_ID = #{wrtrId}                               /* 작성자ID     */
+		       and  WRTG_DT = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')  /* 작성일시     */
+			
+			
+			
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO">
+	
+		<result property="inqrCnt" column="INQR_CNT"/>
+		<result property="bultCtn" column="BULT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits (사용자명_게시판(CUBORDMMT) 조회 수) 
+        Description :                                           사용자명_게시판(CUBORDMMT) 조회 수
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-listUserBoardHits */
+		    select /*+ cud_bordmmt_s01$S01_사용자명_게시판(CUBORDMMT) 조회 수 update */
+		           INQR_CNT,
+		           BULT_CTN 
+		      from
+		      	   CUBORDMMT
+		     where
+		           WRTR_ID = #{wrtrId}
+		       and WRTG_DT = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+			
+			
+			
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCubordmmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCubordmmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCubordmmt */
+		<![CDATA[
+		insert 
+		  into CUBORDMMT
+		        (
+		           WRTR_ID                        /* 작성자ID   */
+		         , WRTG_DT                        /* 작성일시   */
+		         , BULT_STRT_DT                   /* 게시시작일시   */
+		         , BULT_FNSH_DT                   /* 게시종료일시   */
+		         , TITL_NM                        /* 제목명   */
+		         , BULT_CTN                       /* 게시내용   */
+		         , INQR_CNT                       /* 조회수   */
+		         , DLTN_YN                        /* 삭제여부   */
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		  values
+		        (
+		           #{wrtrId}                      /* 작성자ID   */ 
+		         , to_date(#{wrtgDt},'YYYYMMDDHH24MISS')                      /* 작성일시   */ 
+		         , sysdate                  /* 게시시작일시   */ 
+		         , to_date(#{bultFnshDt},'yyyymmddhh24miss')                  /* 게시종료일시   */ 
+		         , #{titlNm}                      /* 제목명   */ 
+		         , #{bultCtn}                     /* 게시내용   */ 
+		         , 0                     /* 조회수   */ 
+		         , 'N'                      /* 삭제여부   */ 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		        )
+		]]>
+			
+			
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCubordmmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCubordmmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCubordmmt */
+		<![CDATA[
+		update 
+		      CUBORDMMT  /* 공통게시판 */
+		   set
+		           BULT_STRT_DT                    =  to_date(#{bultStrtDt} , 'yyyymmddhh24miss')                  /* 게시시작일시   */
+		         , BULT_FNSH_DT                    =  to_date(#{bultFnshDt} , 'yyyymmddhh24miss')                  /* 게시종료일시   */
+		         , TITL_NM                         = #{titlNm}                      /* 제목명   */
+		         , BULT_CTN                        = #{bultCtn}                     /* 게시내용   */
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where WRTR_ID                       = #{wrtrId}                     /* 작성자ID   */
+		   and WRTG_DT                       = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')  /* 작성일시   */
+		   and nvl(DLTN_YN, 'N') = 'N'                      /* 삭제여부   */
+		]]>
+			
+			
+			
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCuborddmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCuborddmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-insertCuborddmt */
+		<![CDATA[
+		insert 
+		  into CUBORDDMT
+		        (
+		           WRTR_ID                        /* 작성자ID   */
+		         , WRTG_DT                        /* 작성일시   */
+		         , TRGT_DVSN_CD                   /* 대상구분코드   */
+		         , BULT_RANG_TRGT_CD              /* 게시범위대상코드   */
+		         , DLTN_YN                        /* 삭제여부   */
+				 , FOLDER_DVSN_CD			/* 메뉴 구분코드*/
+		         , FRST_RGSR_ID                   
+		         , FRST_RGST_IP                   
+		         , FRST_RGST_DT                   
+		         , FRST_RGST_CLNT_PRGM_ID         
+		         , FRST_RGST_SRVR_PRGM_ID         
+		         , LAST_UPDR_ID                   
+		         , LAST_UPDT_IP                   
+		         , LAST_UPDT_DT                   
+		         , LAST_UPDT_CLNT_PRGM_ID         
+		         , LAST_UPDT_SRVR_PRGM_ID         
+		        )
+		  values
+		        (
+		           #{wrtrId}                      /* 작성자ID   */ 
+		         , to_date(#{wrtgDt},'YYYYMMDDHH24MISS')                      /* 작성일시   */ 
+		         , #{trgtDvsnCd}                  /* 대상구분코드   */ 
+		         , #{bultRangTrgtCd}              /* 게시범위대상코드   */ 
+		         , 'N'                     /* 삭제여부   */
+				 , #{folderDvsnCd}  /* 메뉴 구분코드*/
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		         , #{gvUserId}                     
+		         , #{gvUserIp}                     
+		         , sysdate                         
+		         , #{gvClntPrgmId}                 
+		         , #{gvSrvrPrgmId}                 
+		        )
+		]]>
+			
+			
+			
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCuborddmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCuborddmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-updateCuborddmt */
+		<![CDATA[
+		update 
+		      CUBORDDMT  /* 게시판범위 */
+		   set
+		           DLTN_YN = 'Y'
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where WRTR_ID                       = #{wrtrId}                     /* 작성자ID   */
+		   and WRTG_DT                       = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')  /* 작성일시   */
+		]]>
+			
+			
+			
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-deleteCuborddmt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-deleteCuborddmt"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-deleteCuborddmt */
+		<![CDATA[
+		delete   CUBORDDMT  /* 게시판범위 */
+		 where WRTR_ID                       = #{wrtrId}                     /* 작성자ID   */
+		   and WRTG_DT                       = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')  /* 작성일시   */
+		   and  nvl(DLTN_YN, 'N') = 'N'
+		]]>
+			
+			
+			
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO">
+	
+		<result property="inqrCnt" column="INQR_CNT"/>
+		<result property="bultCtn" column="BULT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccBoardDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccBoardDAO-selectOneUserBoardHits */
+		    select /*+ cud_bordmmt_s01$S01_사용자명_게시판(CUBORDMMT) 조회 수 update */
+		           INQR_CNT,
+		           BULT_CTN 
+		      from
+		      	   CUBORDMMT
+		     where
+		           WRTR_ID = #{wrtrId}
+		       and WRTG_DT = to_date(#{wrtgDt}, 'YYYYMMDDHH24MISS')
+			
+			
+			
+	</select>
+
+
+
+</mapper>

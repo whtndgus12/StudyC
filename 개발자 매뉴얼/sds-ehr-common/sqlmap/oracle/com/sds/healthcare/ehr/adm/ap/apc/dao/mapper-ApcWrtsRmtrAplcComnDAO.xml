@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcWrtsRmtrAplcComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcWrtsRmtrAplcComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcWrtsRmtrAplcComnDAO-insertWrtsRmtrAplc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcWrtsRmtrAplcComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcWrtsRmtrAplcComnDAO-insertWrtsRmtrAplc"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcWrtsRmtrAplcComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcWrtsRmtrAplcComnDAO-insertWrtsRmtrAplc */
+		  into  MNWMOVEMT
+				(
+				   PTNO                                   /*  환자번호 */
+				,  MVMN_RQST_DVSN_CD                      /*  이동요청구분코드 */
+				,  MVMN_RQST_SNO                          /*  이동요청일련번호 */
+				,  MDRP_NO                                /*  진료접수번호 */
+				,  MVMN_RQST_PRSS_CD                      /*  이동요청진행상태코드 */
+				,  CRNT_MCDP_CD                           /*  현재진료과코드 */
+				,  CRNT_WARD_CD                           /*  현재병동코드 */
+				,  CRNT_PTRM_NO                           /*  현재병실번호 */
+				,  CRNT_PTRM_GRAD_CD                      /*  현재병실등급코드 */
+				,  CRNT_CHDR_ID                           /*  현재지정의사id */
+				,  WNTD_WARD_CD                           /*  희망병동코드 */
+				,  WNTD_PTRM_NO                           /*  희망병실번호 */
+				,  WNTD_PTRM_GRAD_CD1
+				,  WNTD_PTRM_GRAD_CD2
+				,  WNTD_PTRM_FRMT_CD                      /*  희망병실형태코드 */
+				,  DPRO_YN                                /*  이중방여부 */
+				,  WNTD_YMD
+				,  WNTD_MCDP_CD                           /*  희망진료과코드 */
+				,  WNTD_CHDR_ID                           /*  희망지정의사id */
+				,  RQPR_ID                                /*  요청자id */
+				,  RQST_DT                                /*  요청일시 */
+				,  ASGM_MCDP_CD                           /* // 배정진료과코드 */
+				,  ASGM_CHDR_ID                           /* // 배정지정의사ID */
+				,  ASGM_WARD_CD                           /* // 배정병동코드 */
+				,  ASGM_PTRM_NO                           /* // 배정병실번호 */
+				,  ASGM_PTRM_GRAD_CD                      /* // 배정병실등급코드 */
+				,  ASGM_PTRM_FRMT_CD                      /* // 배정병실형태코드 */
+				,  ASGM_ASGN_ID                           /* // 배정담당자ID */
+				,  ASGM_DT                                /* // 배정일시 */
+				,  RQST_SPSB_CTN                          /*  요청특기사항내용 */
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				)
+		  values 		
+		        (
+		           #{ptno}
+		        ,  #{mvmnRqstDvsnCd}
+		        ,  (select
+				   	       nvl(max(t.MVMN_RQST_SNO), 0) + 1
+					  from
+						   MNWMOVEMT t
+					 where
+						   t.MDRP_NO           = #{mdrpNo}
+				   )                                                          /*  이동요청일련번호 */
+		        ,  #{mdrpNo} 
+		        ,  #{mvmnRqstPrssCd}
+		        ,  #{crntMcdpCd}
+		        ,  #{crntWardCd}
+		        ,  #{crntPtrmNo}
+		        ,  #{crntPtrmGradCd}
+		        ,  #{crntChdrId}
+		        ,  #{wntdWardCd}                           /*  희망병동코드 */
+				,  #{wntdPtrmNo}                           /*  희망병실번호 */
+				,  #{wntdPtrmGradCd1}                           /*  희망병실번호 */
+				,  #{wntdPtrmGradCd2}                           /*  희망병실번호 */
+				,  #{wntdPtrmFrmtCd}                      /*  희망병실형태코드 */
+				,  #{dproYn}                                /*  이중방여부 */
+				,  to_date(#{wntdYmd}, 'yyyymmdd')
+				,  #{wntdMcdpCd}                           /*  희망진료과코드 */
+				,  #{wntdChdrId}                           /*  희망지정의사id */
+				,  #{rqprId}                                /*  요청자id */
+				,  to_date(#{rqstDt}, 'yyyymmddhh24miss')                             /*  요청일시 */
+				,  #{asgmMcdpCd}                           /* // 배정진료과코드 */
+				,  #{asgmChdrId}                           /* // 배정지정의사ID */
+				,  #{asgmWardCd}      /* // 배정병동코드 */
+				,  #{asgmPtrmNo}      /* // 배정병실번호 */
+				,  #{asgmPtrmGradCd}
+				,  #{asgmPtrmFrmtCd}                      /* // 배정병실형태코드 */
+				,  #{asgmAsgnId}                           /* // 배정담당자ID */
+				,  to_date(#{asgmDt}, 'yyyymmddhh24miss')                                                 /* // 배정일시 */
+				,  #{rqstSpsbCtn}                          /*  요청특기사항내용 */
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}	
+		      )
+	</insert>
+
+</mapper>

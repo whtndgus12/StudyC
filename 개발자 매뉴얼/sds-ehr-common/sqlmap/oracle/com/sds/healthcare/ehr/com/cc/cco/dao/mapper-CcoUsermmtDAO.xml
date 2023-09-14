@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoUsermmtDAO_sql.xml 
+    Description :                                      주민번호
+                  -->
+<mapper namespace="CcoUsermmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO">
+	
+		<result property="emplFrrn" column="EMPL_FRRN"/>
+		<result property="emplBrrn" column="EMPL_BRRN"/>
+		<result property="emno" column="EMNO"/>
+		<result property="empyNm" column="EMPY_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt (주민번호 조회) 
+        Description :                                           주민번호 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneusermmt */
+		select  /*+ ccd_usermmt_s02$S01_주민번호조회 */
+		           --case when :syst_envr_dvsn_cd ='D' or :syst_envr_dvsn_cd ='T' then   -- 개발/테스트
+		           --          '123456'
+		           --else   -- 운영/DR
+		                case when EMNO like 'SPJ%' or EMNO like 'TPJ%' then
+		                          '123456'
+		                else
+		                          EMPL_FRRN
+		                end AS "EMPL_FRRN"
+		           --end as EMPL_FRRN
+		         , --case when :syst_envr_dvsn_cd ='D' or :syst_envr_dvsn_cd ='T' then   -- 개발/테스트
+		           --          '7890123'
+		           --else
+		                case when EMNO like 'SPJ%' or EMNO like 'TPJ%' then
+		                          '7890123'
+		                else
+		                          EMPL_BRRN
+		                end AS "EMPL_BRRN"
+		           --end as EMPL_BRRN
+		         , EMNO
+		         , EMPY_NM
+		      from  HZUSERMMT
+		      where  EMNO = #{userId}
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="mesgCd" column="MESG_CD"/>
+		<result property="mesgDvsnCd" column="MESG_DVSN_CD"/>
+		<result property="mesgPrvcCd" column="MESG_PRVC_CD"/>
+		<result property="mesgEtcCtn" column="MESG_ETC_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg (UI 메시지 다건조회) 
+        Description :                                           UI 메시지 다건조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-pagingMesg */
+		SELECT *
+		  FROM (SELECT ROWNUM AS RNUM
+		             , S.*
+		          FROM (select /*+ ccd_message_l11$S01_UI 메시지 다건조회 */
+		                           A.MESG_CD
+		                         , A.MESG_DVSN_CD
+		                         , A.MESG_PRVC_CD
+		                         , A.MESG_ETC_CTN
+		                      from CCMESSGMT A
+		                     where A.MESG_CD like '_C%'
+		                       and A.DLTN_YN ='N'
+		                     order by A.MESG_CD)S)
+		WHERE <![CDATA[RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)]]>
+				    AND <![CDATA[RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number)+#{pageSize}]]>                       
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount (UI 메시지 건수) 
+        Description :                                           UI 메시지 건수
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoUsermmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoUsermmtDAO-selectOneMesgCount */
+		select COUNT(A.MESG_CD) AS "TOTAL_DATA_COUNT"
+		                      from CCMESSGMT A
+		                     where A.MESG_CD like '_C%'
+		                       and A.DLTN_YN ='N'
+	</select>
+
+
+
+</mapper>

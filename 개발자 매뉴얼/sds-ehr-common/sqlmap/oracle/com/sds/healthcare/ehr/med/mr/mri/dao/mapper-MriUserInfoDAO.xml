@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MriUserInfoDAO_sql.xml 
+    Description :                                      사용자정보DAO
+                  -->
+<mapper namespace="MriUserInfoDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL90-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="mnsbYn" column="MNSB_YN"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="mdcrClasCd" column="MDCR_CLAS_CD"/>
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="inftDprtCd" column="INFT_DPRT_CD"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+		<result property="oryrVl" column="ORYR_VL"/>
+		<result property="orglBlngDprtCd" column="ORGL_BLNG_DPRT_CD"/>
+		<result property="ststDprtCd" column="STST_DPRT_CD"/>
+		<result property="hrafPrapDprtCd" column="HRAF_PRAP_DPRT_CD"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="afiMdcrDprtNm" column="AFI_MDCR_DPRT_NM"/>
+		<result property="afiAbrvSbdpCd" column="AFI_ABRV_SBDP_CD"/>
+		<result property="afiSbdpNm" column="AFI_SBDP_NM"/>
+		<result property="afiAbrvStstDprtCd" column="AFI_ABRV_STST_DPRT_CD"/>
+		<result property="afiStstDprtNm" column="AFI_STST_DPRT_NM"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL90 () 
+        Description :                                           사용자 진료조직 관계내역을 다건조회한다. 진료과, 사용자ID, 사용자명 기준 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL90-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL90"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL90-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+  LEADING(a) mrd_usrdpht_l90$S01_사용자 진료조직 관계 다건조회 */
+		             a.USER_ID as USER_ID        /*  사용자ID */
+					  , a.USER_NM as USER_NM        /*  사용자명 */
+					  , a.USER_ENSN_NM as USER_ENSN_NM   /*  사용자영문명 */
+					  , a.LGIN_ID as LGIN_ID        /*  로그인ID */
+					  , a.MDCR_DPRT_CD as MDCR_DPRT_CD   /*  진료부서코드 */
+					  , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD       /*  적용종료일자 */
+					  , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD       /*  적용시작일자 */
+					  , a.MNSB_YN as MNSB_YN        /*  주부여부 */
+					  , a.EXCF_CD as EXCF_CD        /*  검사분류코드 */
+					  , a.MDCR_CLAS_CD as MDCR_CLAS_CD   /*  진료Class코드 */
+					  , a.DTLS_EXCF_CD as DTLS_EXCF_CD   /*  세부검사분류코드 */
+					  , a.RMRK_CTN as RMRK_CTN       /*  비고내용 */
+					  , a.INFT_DPRT_CD as INFT_DPRT_CD   /*  안내부서코드 */
+		           , (select sA.DR_SORT_SQNC    /* 의사정렬순서 */
+		                from MRBSDOCHT sA
+		               where sA.MDDR_ID = a.USER_ID
+		                 and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                 and rownum = 1
+		              ) as INQR_SQNC
+		           , (select sA.DR_ORYR_VL      /* 의사연차값 */
+		                   from MRBSDOCHT sA
+		                  where sA.MDDR_ID = a.USER_ID
+		                    and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                    and rownum = 1
+		              ) as ORYR_VL
+		           , d.ORGL_BLNG_DPRT_CD   /* 분과부서코드 */
+		           , a.HRAF_PRAP_DPRT_CD as STST_DPRT_CD   /*  통계부서코드 */
+				   , a.HRAF_PRAP_DPRT_CD as HRAF_PRAP_DPRT_CD	/* 인사발령부서코드 */
+		           , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) MCDP_ABRV_CD
+		           , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) AFI_MDCR_DPRT_NM
+		           , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD) AFI_ABRV_SBDP_CD
+		           , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD) AFI_SBDP_NM
+		           , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_ABRV_STST_DPRT_CD
+		           , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_STST_DPRT_NM
+		           , c.HSPT_CD /* 병원코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'APB_032' and COMN_DTLS_CD = c.HSPT_CD) as HSPT_NM  /* 병원명 */
+		           , c.OCFM_CD /* 직종코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = c.OCFM_CD) as OCFM_NM    /* 직종명 */
+		      from CCUSRDPHT a -- 사용자진료조직관계이력
+		         , HZDEPTMMT b -- 조직Master I/F(MDM연계)
+		         , CCUSERAMV c -- OCS사용자 + OCS퇴직사용자
+		         , HZUSERMMT d
+		     where #{userNm} is not null
+		       and  a.USER_NM like #{userNm} || '%'
+		       and  a.LGIN_ID = d.EMNO (+)
+		       and ( nvl(#{dprtCd}, '*') = '*' or a.MDCR_DPRT_CD = #{dprtCd} )
+		       and a.MDCR_DPRT_CD = b.DPRT_CD
+		       and a.LGIN_ID = c.LGIN_ID
+		       and ( nvl(#{abrvDprtCd}, '*') = '*' or b.ABRV_DPRT_CD like #{abrvDprtCd} || '%' )
+		       and ( nvl(#{dprtNm}, '*') = '*' or b.KORN_DPRT_NM like '%'|| #{dprtNm} || '%' )
+		       -- 조회구분코드에 값이 'L'이 입력될 경우(lgin_id 의미), 로그인 사용자만 조회함. 2016.01.20 CST.
+		       and ( nvl(#{inqrDvsnCd}, '*') <> 'L' or a.USER_ID = a.LGIN_ID)
+		       -- 퇴직여부는 퇴직자포함여부의 의미임. 값이 없을 경우 퇴직자 포함. 값이 있을 경우 퇴직자 제외 조회
+		       and ( nvl(#{rtrmYn}, '*') = '*' or c.USER_STTS_CD <> '9' )
+		       -- 직종구분 A(전체), 1(의사), 2(간호사), 3(의사 or 간호사)
+		       and ( nvl(#{ocfmCd1}, '*') = '*' or c.OCFM_CD in (#{ocfmCd1}, #{ocfmCd2}) )
+		        and ( nvl(#{hsptCd}, '*') = '*' or c.HSPT_CD = #{hsptCd} )
+		     union all
+		     select  /*+ LEADING(a) mrd_usrdpht_l90$S02_사용자 진료조직 관계 다건조회 */
+		              a.USER_ID as USER_ID        /*  사용자ID */
+					  , a.USER_NM as USER_NM        /*  사용자명 */
+					  , a.USER_ENSN_NM as USER_ENSN_NM   /*  사용자영문명 */
+					  , a.LGIN_ID as LGIN_ID        /*  로그인ID */
+					  , a.MDCR_DPRT_CD as MDCR_DPRT_CD   /*  진료부서코드 */
+					  , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD       /*  적용종료일자 */
+					  , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD       /*  적용시작일자 */
+					  , a.MNSB_YN as MNSB_YN        /*  주부여부 */
+					  , a.EXCF_CD as EXCF_CD        /*  검사분류코드 */
+					  , a.MDCR_CLAS_CD as MDCR_CLAS_CD   /*  진료Class코드 */
+					  , a.DTLS_EXCF_CD as DTLS_EXCF_CD   /*  세부검사분류코드 */
+					  , a.RMRK_CTN as RMRK_CTN       /*  비고내용 */
+					  , a.INFT_DPRT_CD as INFT_DPRT_CD   /*  안내부서코드 */
+		            , (select sA.DR_SORT_SQNC    /* 의사정렬순서 */
+		                 from MRBSDOCHT sA
+		                where sA.MDDR_ID = a.USER_ID
+		                  and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                  and rownum = 1
+		               ) as INQR_SQNC
+		            , (select sA.DR_ORYR_VL      /* 의사연차값 */
+		                    from MRBSDOCHT sA
+		                   where sA.MDDR_ID = a.USER_ID
+		                     and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                     and rownum = 1
+		               ) as ORYR_VL
+		            , d.ORGL_BLNG_DPRT_CD   /* 분과부서코드 */
+		            , a.HRAF_PRAP_DPRT_CD as STST_DPRT_CD   /*  통계부서코드 */
+					, a.HRAF_PRAP_DPRT_CD as HRAF_PRAP_DPRT_CD	/* 인사발령부서코드 */
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) MCDP_ABRV_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) AFI_MDCR_DPRT_NM
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD) AFI_ABRV_SBDP_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD) AFI_SBDP_NM
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_ABRV_STST_DPRT_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_STST_DPRT_NM
+		           , c.HSPT_CD /* 병원코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'APB_032' and COMN_DTLS_CD = c.HSPT_CD) as HSPT_NM  /* 병원명 */
+		           , c.OCFM_CD /* 직종코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = c.OCFM_CD) as OCFM_NM    /* 직종명 */
+		       from CCUSRDPHT a -- 사용자진료조직관계이력
+		          , HZDEPTMMT b -- 조직Master I/F(MDM연계)
+		          , CCUSERAMV c -- OCS사용자 + OCS퇴직사용자
+		          , HZUSERMMT d
+		      where #{userId} is not null
+		        and a.USER_ID like #{userId} || '%'
+		        and a.LGIN_ID = d.EMNO(+)
+		        and ( nvl(#{dprtCd}, '*') = '*' or a.MDCR_DPRT_CD = #{dprtCd} )
+		        and a.MDCR_DPRT_CD = b.DPRT_CD
+		        and a.LGIN_ID = c.LGIN_ID
+		        and ( nvl(#{abrvDprtCd}, '*') = '*' or b.ABRV_DPRT_CD like #{abrvDprtCd} || '%' )
+		        and ( nvl(#{dprtNm}, '*') = '*' or b.KORN_DPRT_NM like '%'|| #{dprtNm} || '%' )
+		        -- 조회구분코드에 값이 'L'이 입력될 경우(lgin_id 의미), 로그인 사용자만 조회함. 2016.01.20 CST.
+		        and ( nvl(#{inqrDvsnCd}, '*') <> 'L' or a.USER_ID = a.LGIN_ID)
+		        -- 퇴직여부는 퇴직자포함여부의 의미임. 값이 없을 경우 퇴직자 포함. 값이 있을 경우 퇴직자 제외 조회
+		        and ( nvl(#{rtrmYn}, '*') = '*' or c.USER_STTS_CD <> '9' )
+		        -- 직종구분 A(전체), 1(의사), 2(간호사), 3(의사 or 간호사)
+		        and ( nvl(#{ocfmCd1}, '*') = '*' or c.OCFM_CD in (#{ocfmCd1}, #{ocfmCd2}) )
+		        and ( nvl(#{hsptCd}, '*') = '*' or c.HSPT_CD = #{hsptCd} )
+		     union all
+		     select  /*+ LEADING(a) mrd_usrdpht_l90$S02_사용자 진료조직 관계 다건조회 */
+		              a.USER_ID as USER_ID        /*  사용자ID */
+				  , a.USER_NM as USER_NM        /*  사용자명 */
+				  , a.USER_ENSN_NM as USER_ENSN_NM   /*  사용자영문명 */
+				  , a.LGIN_ID as LGIN_ID        /*  로그인ID */
+				  , a.MDCR_DPRT_CD as MDCR_DPRT_CD   /*  진료부서코드 */
+				  , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD       /*  적용종료일자 */
+				  , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD       /*  적용시작일자 */
+				  , a.MNSB_YN as MNSB_YN        /*  주부여부 */
+				  , a.EXCF_CD as EXCF_CD        /*  검사분류코드 */
+				  , a.MDCR_CLAS_CD as MDCR_CLAS_CD   /*  진료Class코드 */
+				  , a.DTLS_EXCF_CD as DTLS_EXCF_CD   /*  세부검사분류코드 */
+				  , a.RMRK_CTN as RMRK_CTN       /*  비고내용 */
+				  , a.INFT_DPRT_CD as INFT_DPRT_CD   /*  안내부서코드 */
+		            , (select sA.DR_SORT_SQNC    /* 의사정렬순서 */
+		                 from MRBSDOCHT sA
+		                where sA.MDDR_ID = a.USER_ID
+		                  and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                  and rownum = 1
+		               ) as INQR_SQNC
+		            , (select sA.DR_ORYR_VL      /* 의사연차값 */
+		                    from MRBSDOCHT sA
+		                   where sA.MDDR_ID = a.USER_ID
+		                     and sysdate between sA.STRT_YMD and sA.FNSH_YMD
+		                     and rownum = 1
+		               ) as ORYR_VL
+		            , a.HRAF_PRAP_DPRT_CD   /* 분과부서코드 */
+		            , a.HRAF_PRAP_DPRT_CD as STST_DPRT_CD   /*  통계부서코드 */
+					, a.HRAF_PRAP_DPRT_CD as HRAF_PRAP_DPRT_CD	/* 인사발령부서코드 */
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) MCDP_ABRV_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     ) AFI_MDCR_DPRT_NM
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_ABRV_SBDP_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_SBDP_NM
+		            , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_ABRV_STST_DPRT_CD
+		            , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD) AFI_STST_DPRT_NM
+		           , c.HSPT_CD /* 병원코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'APB_032' and COMN_DTLS_CD = c.HSPT_CD) as HSPT_NM  /* 병원명 */
+		           , c.OCFM_CD /* 직종코드 */
+		           , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = c.OCFM_CD) as OCFM_NM    /* 직종명 */
+		       from CCUSRDPHT a -- 사용자진료조직관계이력
+		          , HZDEPTMMT b -- 조직Master I/F(MDM연계)
+		          , CCUSERAMV c -- OCS사용자 + OCS퇴직사용자
+		      where #{userId} is null
+		        and #{userNm} is null
+		        and ( nvl(#{dprtCd}, '*') = '*' or a.MDCR_DPRT_CD = #{dprtCd} )
+		        and a.MDCR_DPRT_CD = b.DPRT_CD
+		        and a.LGIN_ID = c.LGIN_ID
+		        and ( nvl(#{abrvDprtCd}, '*') = '*' or b.ABRV_DPRT_CD like #{abrvDprtCd} || '%' )
+		        and ( nvl(#{dprtNm}, '*') = '*' or b.KORN_DPRT_NM like '%'|| #{dprtNm} || '%' )
+		        -- 조회구분코드에 값이 'L'이 입력될 경우(lgin_id 의미), 로그인 사용자만 조회함. 2016.01.20 CST.
+		        and ( nvl(#{inqrDvsnCd}, '*') <> 'L' or a.USER_ID = a.LGIN_ID)
+		        -- 퇴직여부는 퇴직자포함여부의 의미임. 값이 없을 경우 퇴직자 포함. 값이 있을 경우 퇴직자 제외 조회
+		        and ( nvl(#{rtrmYn}, '*') = '*' or c.USER_STTS_CD <> '9' )
+		        -- 직종구분 A(전체), 1(의사), 2(간호사), 3(의사 or 간호사)
+		        and ( nvl(#{ocfmCd1}, '*') = '*' or c.OCFM_CD in (#{ocfmCd1}, #{ocfmCd2}) )
+		        and ( nvl(#{hsptCd}, '*') = '*' or c.HSPT_CD = #{hsptCd} )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="mnsbYn" column="MNSB_YN"/>
+		<result property="excfCd" column="EXCF_CD"/>
+		<result property="mdcrClasCd" column="MDCR_CLAS_CD"/>
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="inftDprtCd" column="INFT_DPRT_CD"/>
+		<result property="inqrSqnc" column="INQR_SQNC"/>
+		<result property="oryrVl" column="ORYR_VL"/>
+		<result property="sbdpDprtCd" column="SBDP_DPRT_CD"/>
+		<result property="ststDprtCd" column="STST_DPRT_CD"/>
+		<result property="hrafPrapDprtCd" column="HRAF_PRAP_DPRT_CD"/>
+		<result property="mcdpAbrvCd" column="MCDP_ABRV_CD"/>
+		<result property="afiMdcrDprtNm" column="AFI_MDCR_DPRT_NM"/>
+		<result property="afiAbrvSbdpCd" column="AFI_ABRV_SBDP_CD"/>
+		<result property="afiSbdpNm" column="AFI_SBDP_NM"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+		<result property="afiStstDprtNm" column="AFI_STST_DPRT_NM"/>
+		<result property="hsptCd" column="HSPT_CD"/>
+		<result property="hsptNm" column="HSPT_NM"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="ocfmNm" column="OCFM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91 () 
+        Description :                                           사용자 리스트 조회 재직자기준조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-listMrdUsrdphtL91_사용자 리스트 조회 부서기준 */
+				a.USER_ID as USER_ID        /*  사용자ID */
+			  , a.USER_NM as USER_NM        /*  사용자명 */
+			  , a.USER_ENSN_NM as USER_ENSN_NM   /*  사용자영문명 */
+			  , a.LGIN_ID as LGIN_ID        /*  로그인ID */
+			  , a.MDCR_DPRT_CD as MDCR_DPRT_CD   /*  진료부서코드 */
+			  , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD       /*  적용종료일자 */
+			  , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD       /*  적용시작일자 */
+			  , a.MNSB_YN as MNSB_YN        /*  주부여부 */
+			  , a.EXCF_CD as EXCF_CD        /*  검사분류코드 */
+			  , a.MDCR_CLAS_CD as MDCR_CLAS_CD   /*  진료Class코드 */
+			  , a.DTLS_EXCF_CD as DTLS_EXCF_CD   /*  세부검사분류코드 */
+			  , a.RMRK_CTN as RMRK_CTN       /*  비고내용 */
+			  , a.INFT_DPRT_CD as INFT_DPRT_CD   /*  안내부서코드 */
+			  , 0 as INQR_SQNC                /*  조회순서 */
+			  , '0' as ORYR_VL                /*  연차값 */
+			  , d.ORGL_BLNG_DPRT_CD as SBDP_DPRT_CD   /*  분과부서코드 */
+			  , a.HRAF_PRAP_DPRT_CD as STST_DPRT_CD   /*  통계부서코드 */
+		      , a.HRAF_PRAP_DPRT_CD as HRAF_PRAP_DPRT_CD	/* 인사발령부서코드 */
+			  , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     )  as MCDP_ABRV_CD
+			  , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.MDCR_DPRT_CD     )  as AFI_MDCR_DPRT_NM
+			  , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD)  as AFI_ABRV_SBDP_CD
+			  , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = d.ORGL_BLNG_DPRT_CD)  as AFI_SBDP_NM
+			  , ( select sA.ABRV_DPRT_CD from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD     )  as ABRV_DPRT_CD
+			  , ( select sA.KORN_DPRT_NM from HZDEPTMMT sA where sA.DPRT_CD = a.HRAF_PRAP_DPRT_CD     )  as AFI_STST_DPRT_NM
+			  , c.HSPT_CD /* 병원코드 */
+			  , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'APB_032' and COMN_DTLS_CD = c.HSPT_CD) as HSPT_NM  /* 병원명 */
+			  , c.OCFM_CD /* 직종코드 */
+			  , (select DETL_CD_DSCR_CTN from CCCMCDDMT where COMN_GRP_CD = 'GP170' and COMN_DTLS_CD = c.OCFM_CD) as OCFM_NM    /* 직종명 */
+		 from CCUSRDPHT a /*  사용자진료조직관계이력 */
+			, HZDEPTMMT b /*  조직Master I/F(MDM연계) */
+			, CCUSERAMT c /*  OCS사용자 */
+			, HZUSERMMT d
+		where (   (nvl(#{userNm}, '*') = '*'   and   a.USER_ID like #{userId} || '%' )
+			  or  (nvl(#{userId}, '*') = '*'   and   a.USER_NM like #{userNm} || '%' )
+			  or  (nvl(#{userId}, '*') <> '*'  and   nvl(#{userNm}, '*') <> '*'
+					  and   a.USER_ID like #{userId} || '%'   and   a.USER_NM like #{userNm} || '%' )
+			  or  (#{userId} = #{userNm}
+					  and   (a.USER_ID like #{userId} || '%'   or   a.USER_NM like #{userNm} || '%' ))
+			  )
+		  and ( nvl(#{dprtCd}, '*') = '*' or a.MDCR_DPRT_CD = #{dprtCd} )
+		  and a.MDCR_DPRT_CD = b.DPRT_CD
+		  and a.LGIN_ID = c.LGIN_ID
+		  and a.LGIN_ID = d.EMNO (+)
+		  and ( nvl(#{abrvDprtCd}, '*') = '*' or b.ABRV_DPRT_CD like #{abrvDprtCd} || '%' )
+		  and ( nvl(#{dprtNm}, '*') = '*' or b.KORN_DPRT_NM like '%'|| #{dprtNm} || '%' )
+		  /*  조회구분코드에 값이 'L'이 입력될 경우(lgin_id 의미), 로그인 사용자만 조회함. 2016.01.20 CST. */
+		  and ( nvl(#{inqrDvsnCd}, '*') <> 'L' or a.USER_ID = a.LGIN_ID)
+		  /*  직종구분 A(전체), 1(의사), 2(간호사), 3(의사 or 간호사) */
+		  and ( nvl(#{ocfmCd1}, '*') = '*' or c.OCFM_CD in (#{ocfmCd1}, #{ocfmCd2}) )
+		  /*  퇴직자에 계약종료일자가 있는 사용자도 포함 */
+		  and trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+		  /*  병원코드 */
+		  and ( nvl(#{hsptCd}, '*') = '*' or c.HSPT_CD = #{hsptCd} )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userEnsnNm" column="USER_ENSN_NM"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="userSttsCd" column="USER_STTS_CD"/>
+		<result property="cnctAtmpNtm" column="CNCT_ATMP_NTM"/>
+		<result property="lastCnctDt" column="LAST_CNCT_DT"/>
+		<result property="lastCnctIp" column="LAST_CNCT_IP"/>
+		<result property="crntCnctDt" column="CRNT_CNCT_DT"/>
+		<result property="crntCnctIp" column="CRNT_CNCT_IP"/>
+		<result property="crntPwd" column="CRNT_PWD"/>
+		<result property="pwdMdfcDt" column="PWD_MDFC_DT"/>
+		<result property="clno" column="CLNO"/>
+		<result property="extsTlno" column="EXTS_TLNO"/>
+		<result property="pdaNo" column="PDA_NO"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="userSpczDrlcAcqsYmd" column="USER_SPCZ_DRLC_ACQS_YMD"/>
+		<result property="trnnStrtYmd" column="TRNN_STRT_YMD"/>
+		<result property="trnnFnshYmd" column="TRNN_FNSH_YMD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="lnggCd" column="LNGG_CD"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90 () 
+        Description :                                           OCS사용자를 로그인ID를 기준으로 단건조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUseramtS90_OCS사용자 단건조회 */
+				a.LGIN_ID as LGIN_ID                  /*  로그인ID */
+			  , a.USER_NM as USER_NM                  /*  사용자명 */
+			  , a.USER_ENSN_NM as USER_ENSN_NM             /*  사용자영문명 */
+			  , to_char(a.BTDT, 'yyyymmdd') as BTDT                     /*  생년월일 */
+			  , a.GEND_CD as GEND_CD                  /*  성별코드 */
+			  , to_char(a.APST_YMD, 'yyyymmdd') as APST_YMD                 /*  적용시작일자 */
+			  , to_char(a.APFN_YMD, 'yyyymmdd') as APFN_YMD                 /*  적용종료일자 */
+			  , a.USER_STTS_CD as USER_STTS_CD             /*  사용자상태코드 */
+			  , a.CNCT_ATMP_NTM as CNCT_ATMP_NTM            /*  접속시도횟수 */
+			  , to_char(a.LAST_CNCT_DT, 'yyyymmddhh24miss') as LAST_CNCT_DT             /*  최종접속일시 */
+			  , a.LAST_CNCT_IP as LAST_CNCT_IP             /*  최종접속IP */
+			  , to_char(a.CRNT_CNCT_DT, 'yyyymmddhh24miss') as CRNT_CNCT_DT             /*  현재접속일시 */
+			  , a.CRNT_CNCT_IP as CRNT_CNCT_IP             /*  현재접속IP */
+			  , a.CRNT_PWD as CRNT_PWD                 /*  현재패스워드 */
+			  , to_char(a.PWD_MDFC_DT, 'yyyymmddhh24miss') as PWD_MDFC_DT              /*  패스워드변경일시 */
+			  , a.CLNO as CLNO                     /*  휴대전화번호 */
+			  , a.EXTS_TLNO as EXTS_TLNO                /*  내선전화번호 */
+			  , a.PDA_NO as PDA_NO                   /*  PDA번호 */
+			  , a.EMAIL_ID as EMAIL_ID                 /*  이메일ID */
+			  , a.USER_LCNS_NO as USER_LCNS_NO             /*  사용자면허번호 */
+			  , a.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO        /*  사용자전문의사면허번호 */
+			  , to_char(a.USER_SPCZ_DRLC_ACQS_YMD, 'yyyymmdd') as USER_SPCZ_DRLC_ACQS_YMD  /*  사용자전문의사면허취득일자 */
+			  , to_char(a.TRNN_STRT_YMD, 'yyyymmdd') as TRNN_STRT_YMD            /*  연수시작일자 */
+			  , to_char(a.TRNN_FNSH_YMD, 'yyyymmdd') as TRNN_FNSH_YMD            /*  연수종료일자 */
+			  , a.RMRK_CTN as RMRK_CTN                 /*  비고내용 */
+			  , a.OCDT_CD as OCDT_CD                  /*  직무코드 */
+			  , a.OCFM_CD as OCFM_CD                  /*  직종코드 */
+			  , a.LNGG_CD as LNGG_CD                  /*  언어코드 */
+			  , a.OCCL_CD as OCCL_CD                  /*  직급코드 */
+			  , a.OCPS_CD as OCPS_CD                  /*  직위코드 */
+			  , a.OCRS_CD as OCRS_CD                  /*  직책코드 */
+		 from CCUSERAMV a
+		where a.LGIN_ID = #{lginId}
+		  /*  and trunc(sysdate) between a.APST_YMD and a.APFN_YMD */
+		  and rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO">
+	
+		<result property="emno" column="EMNO"/>
+		<result property="mysnId" column="MYSN_ID"/>
+		<result property="empyNm" column="EMPY_NM"/>
+		<result property="ensnEmpyNm" column="ENSN_EMPY_NM"/>
+		<result property="emplFrrn" column="EMPL_FRRN"/>
+		<result property="emplBrrn" column="EMPL_BRRN"/>
+		<result property="frgnYn" column="FRGN_YN"/>
+		<result property="empyNtnlCd" column="EMPY_NTNL_CD"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="slcdLncdDvsnCd" column="SLCD_LNCD_DVSN_CD"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="indvEmadNm" column="INDV_EMAD_NM"/>
+		<result property="empyClno" column="EMPY_CLNO"/>
+		<result property="cmpnTlno" column="CMPN_TLNO"/>
+		<result property="orglBlngDprtCd" column="ORGL_BLNG_DPRT_CD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="encmYmd" column="ENCM_YMD"/>
+		<result property="ctrcYmd" column="CTRC_YMD"/>
+		<result property="ctrcExptYmd" column="CTRC_EXPT_YMD"/>
+		<result property="hlofSttsCd" column="HLOF_STTS_CD"/>
+		<result property="rtrmPrapDd" column="RTRM_PRAP_DD"/>
+		<result property="rismPrapDd" column="RISM_PRAP_DD"/>
+		<result property="ocfmCd" column="OCFM_CD"/>
+		<result property="hrafOcfmCd" column="HRAF_OCFM_CD"/>
+		<result property="ocdtCd" column="OCDT_CD"/>
+		<result property="ocrsCd" column="OCRS_CD"/>
+		<result property="ocpsCd" column="OCPS_CD"/>
+		<result property="occlCd" column="OCCL_CD"/>
+		<result property="slclCd" column="SLCL_CD"/>
+		<result property="adrsZpcd" column="ADRS_ZPCD"/>
+		<result property="adrsBsisNm" column="ADRS_BSIS_NM"/>
+		<result property="adrsDetlNm" column="ADRS_DETL_NM"/>
+		<result property="drlcNo" column="DRLC_NO"/>
+		<result property="spdrLcnsNo" column="SPDR_LCNS_NO"/>
+		<result property="spdrLcnsNoAcqsYmd" column="SPDR_LCNS_NO_ACQS_YMD"/>
+		<result property="wrknPartCd" column="WRKN_PART_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90 () 
+        Description :                                           사원Master를 사원번호를 입력으로 단건 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsermmtS90_사원Master 단건 조회 */
+			   a.EMNO as EMNO                              /*  사원번호 */
+			 , a.MYSN_ID as MYSN_ID                           /*  싱글ID */
+			 , a.EMPY_NM as EMPY_NM                           /*  사원명 */
+			 , a.ENSN_EMPY_NM as ENSN_EMPY_NM                      /*  영문사원명 */
+			 , a.EMPL_FRRN as EMPL_FRRN                         /*  직원앞주민등록번호 */
+			 , a.EMPL_BRRN as EMPL_BRRN                         /*  직원뒤주민등록번호 */
+			 , a.FRGN_YN as FRGN_YN                           /*  외국인여부 */
+			 , a.EMPY_NTNL_CD as EMPY_NTNL_CD                      /*  사원국적코드 */
+			 , a.GEND_CD as GEND_CD                           /*  성별코드 */
+			 , a.SLCD_LNCD_DVSN_CD as SLCD_LNCD_DVSN_CD                 /*  양력음력구분코드 */
+			 , to_char(a.BTDT, 'yyyymmdd') as BTDT         /*  생년월일 */
+			 , a.INDV_EMAD_NM as INDV_EMAD_NM                      /*  개인이메일주소명 */
+			 , a.EMPY_CLNO as EMPY_CLNO                         /*  사원휴대전화번호 */
+			 , a.CMPN_TLNO as CMPN_TLNO                         /*  회사전화번호 */
+			 , a.ORGL_BLNG_DPRT_CD as ORGL_BLNG_DPRT_CD                 /*  원소속부서코드 */
+			 , a.BSPL_CD as BSPL_CD                           /*  사업장코드 */
+			 , a.DPRT_CD as DPRT_CD                           /*  부서코드 */
+			 , to_char(a.ENCM_YMD,      'yyyymmdd') as ENCM_YMD/*  입사일자 */
+			 , to_char(a.CTRC_YMD,      'yyyymmdd') as CTRC_YMD/*  계약일자 */
+			 , to_char(a.CTRC_EXPT_YMD, 'yyyymmdd') as CTRC_EXPT_YMD/*  계약만료일자 */
+			 , a.HLOF_STTS_CD as HLOF_STTS_CD                      /*  재직상태코드 */
+			 , to_char(a.RTRM_PRAP_DD, 'yyyymmdd') as RTRM_PRAP_DD /*  퇴직발령일 */
+			 , to_char(a.RISM_PRAP_DD, 'yyyymmdd') as RISM_PRAP_DD /*  복직발령일 */
+			 , a.OCFM_CD as OCFM_CD                           /*  직종코드 */
+			 , a.HRAF_OCFM_CD as HRAF_OCFM_CD                      /*  인사직종코드 */
+			 , a.OCDT_CD as OCDT_CD                           /*  직무코드 */
+			 , a.OCRS_CD as OCRS_CD                           /*  직책코드 */
+			 , a.OCPS_CD as OCPS_CD                           /*  직위코드 */
+			 , a.OCCL_CD as OCCL_CD                           /*  직급코드 */
+			 , a.SLCL_CD as SLCL_CD                           /*  호봉코드 */
+			 , a.ADRS_ZPCD as ADRS_ZPCD                         /*  주소우편번호 */
+			 , a.ADRS_BSIS_NM as ADRS_BSIS_NM                      /*  주소기본명 */
+			 , a.ADRS_DETL_NM as ADRS_DETL_NM                      /*  주소상세명 */
+			 , a.DRLC_NO as DRLC_NO                           /*  의사면허번호 */
+			 , a.SPDR_LCNS_NO as SPDR_LCNS_NO                      /*  전문의사면허번호 */
+			 , a.SPDR_LCNS_NO_ACQS_YMD as SPDR_LCNS_NO_ACQS_YMD             /*  전문의사면허번호취득일자 (YMD이지만 char type임).. */
+		     , a.WRKN_PART_CD as WRKN_PART_CD	/* 근무장소코드 */
+		 from HZUSERMMT a
+		where a.EMNO = #{emno}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO">
+	
+		<result property="frrn" column="FRRN"/>
+		<result property="brrn" column="BRRN"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="empyClno" column="EMPY_CLNO"/>
+		<result property="emrRdngAthrCd" column="EMR_RDNG_ATHR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10 (사용자 주민번호정보 조회 mrd_usrdpht_s10) 
+        Description :                                           사용자 주민번호정보 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriUserInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriUserInfoDAO-selectOneMrdUsrdphtS10_사용자주민번호조회 */
+		            c.EMPL_FRRN as FRRN
+		         ,  c.EMPL_BRRN as BRRN
+		         ,  b.LGIN_ID          as LGIN_ID            /* 로그인ID */
+		         ,  c.EMPY_CLNO        as EMPY_CLNO          /* 사원휴대전화번호 */
+		         ,  null as EMR_RDNG_ATHR_CD   /* EMR읽기권한코드 a.EMR_RDNG_ATHR_CD*/
+		      from  CCUSERAMT b
+		         ,  CCUSRDPHT a
+		         ,  HZUSERMMT c
+		     where  b.LGIN_ID = c.EMNO
+		       and  b.LGIN_ID = a.LGIN_ID
+		       and  a.USER_ID = #{gvUserId}
+	</select>
+
+
+
+</mapper>

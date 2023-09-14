@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccPrgmListMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CccPrgmListMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO">
+	
+		<result property="afiReptNtm" column="AFI_REPT_NTM"/>
+		<result property="prgmId" column="PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr (프로그램 조회) 
+        Description :                                           프로그램 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+			     select  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmInqr */
+						   count(*) as AFI_REPT_NTM
+		                 , #{prgmId} as PRGM_ID
+				   from CSPRMLTMT
+				 where PRGM_ID = #{prgmId}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO">
+	
+		<result property="en" column="EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck (화면ID 유효성 Check) 
+        Description :                                           화면ID 유효성 Check
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-selectOnePrgmIdValdCheck */
+						   'Y' as EN
+					 from
+						   CSPRMLTMT
+					where
+						   PRGM_ID = #{prgmId}
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="pckgId" column="PCKG_ID"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr (프로그램목록 조회) 
+        Description :                                           프로그램목록 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccPrgmListMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccPrgmListMngmDAO-listPrgmInqr */
+							PRGM_ID as PRGM_ID,
+							PRGM_NM as PRGM_NM,
+							PCKG_ID as PCKG_ID,
+							PRGM_TYP_CD as PRGM_TYP_CD,
+							''  as RTUR_VL,
+							'0'  as RTUR_VL_1
+					 from   CSPRMLTMT
+					where   (DLTN_YN is null or DLTN_YN = 'N')
+					  and   ( (upper(PRGM_NM) like '%' || upper(#{prgmNm}) || '%')
+							  or   (upper(PRGM_ID) like upper(#{prgmNm}) || '%') )
+		]]>
+	</select>
+
+
+
+</mapper>

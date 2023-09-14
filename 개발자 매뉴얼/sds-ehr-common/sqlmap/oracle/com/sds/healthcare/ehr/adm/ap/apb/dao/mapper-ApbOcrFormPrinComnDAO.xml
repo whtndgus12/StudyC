@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbOcrFormPrinComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbOcrFormPrinComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbOcrFormPrinComnDVO">
+	
+		<result property="formCot" column="FORM_COT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot (특정 OCR 서식 건수 조회) 
+        Description :                                           apd_frprint_s08
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbOcrFormPrinComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbOcrFormPrinComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-selectOneFormCot */
+			  count(*) as FORM_COT
+		 from
+			  APFRPRINT a
+		where a.PTNO               = #{ptno}
+		  and a.MCDP_CD            = #{mcdpCd}
+		  and a.FORM_NO            = #{formNo}  /* '00000001' */
+		  and ( a.MDRP_NO           is null
+				or
+				a.MDRP_NO            = 0
+			  )
+		  and nvl(a.DLTN_YN, 'N') != 'Y'
+		  and rownum               = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-updateMdrpNo  (서식의 접수번호 수정) 
+        Description :                                           apd_frprint_u07
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbOcrFormPrinComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-updateMdrpNo "  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbOcrFormPrinComnDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbOcrFormPrinComnDAO-updateMdrpNo  */
+			   APFRPRINT a
+		  set
+			   a.MDRP_NO            =  #{mdrpNo}	
+		      , LAST_UPDR_ID         = #{gvUserId}
+		      , LAST_UPDT_IP         = #{gvUserIp}
+		      , LAST_UPDT_DT         = sysdate
+		      , LAST_UPDT_CLNT_PRGM_ID   = #{gvClntPrgmId}
+		      , LAST_UPDT_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+		where  a.PTNO               =  #{ptno}
+		  and  a.MCDP_CD            =  #{mcdpCd}
+		  and  a.FORM_NO            =  #{formNo} /* '00000001' */
+		  and  ( a.MDRP_NO          is null
+				 or
+				 a.MDRP_NO          =  0
+			   )
+		  and  nvl(a.DLTN_YN, 'N') !=  'Y'
+		  and  a.PTAD_OCR_PRIN_SNO  =  ( select max(b.PTAD_OCR_PRIN_SNO)
+										   from APFRPRINT b
+										  where b.PTNO               =  #{ptno}
+											and b.MCDP_CD            =  #{mcdpCd}
+											and b.FORM_NO            =  #{formNo} /* '00000001' */
+											and ( b.MDRP_NO          is null
+												  or
+												  b.MDRP_NO          =  0
+												)
+											and nvl(b.DLTN_YN, 'N') !=  'Y'
+									   )
+	</update>
+
+</mapper>

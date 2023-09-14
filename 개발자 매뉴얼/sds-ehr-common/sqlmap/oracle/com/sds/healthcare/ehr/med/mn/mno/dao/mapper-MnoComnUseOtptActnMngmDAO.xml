@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnoComnUseOtptActnMngmDAO_sql.xml 
+    Description :                                      외래액팅관리
+                  -->
+<mapper namespace="MnoComnUseOtptActnMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mno-dao-MnoComnUseOtptActnMngmDAO-updateOtptActnPlac (외래액팅 장소 수정) 
+        Description :                                           mnd_ioutact_u05
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mno.vo.MnoComnUseOtptActnMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mno-dao-MnoComnUseOtptActnMngmDAO-updateOtptActnPlac"  parameterType="com.sds.healthcare.ehr.med.mn.mno.vo.MnoComnUseOtptActnMngmDVO"  >
+		<![CDATA[
+		update  /*+ com-sds-healthcare-ehr-med-mn-mno-dao-MnoComnUseOtptActnMngmDAO-updateOtptActnPlac_외래액팅 장소 다건수정 DAM */
+		        MNIOUTACT
+		   set
+		        PTNT_INFT_PLAC_CD       = #{frnsDprtCd}      /*  불출부서코드 */
+		     ,  LAST_UPDR_ID            = #{gvUserId}
+		     ,  LAST_UPDT_IP            = #{gvUserIp}
+		     ,  LAST_UPDT_DT            = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 where
+		        PTNO     = #{ptno}                          /*  환자번호 */
+		   and  ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')  /*  처방일자 */
+		   and  (
+		          (
+		            #{drbnNo} = 0
+		            and ORDR_SNO = #{ordrSno}
+		          )
+		          or
+		          ( #{drbnNo} > 0
+		            and ORDR_SNO in (
+		                             select  b.ORDR_SNO
+		                               from  MDMEDORDT b
+		                              where  b.PTNO     = #{ptno}
+		                                and  b.ORDR_YMD = to_date(#{ordrYmd},'yyyymmdd')
+		                                and  b.DRBN_NO  = #{drbnNo}
+		                            )
+		          )
+		        )
+		   and  ORCL_CD  in ('IJ1', 'DG1')
+		]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmApInterfaceDAO_sql.xml 
+    Description : -->
+<mapper namespace="MnmApInterfaceDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateEnrmPsblHhUpdt () 
+        Description :                                           AsIs : mnd_wmovemt_u10
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateEnrmPsblHhUpdt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateEnrmPsblHhUpdt  mnd_wmovemt_u10$U01_입실가능시간변경 */
+				   MNWMOVEMT
+			   set
+					PTRM_ASGM_DT = to_date(#{ptrmAsgmDt}  ,'YYYYMMDDHH24MISS') /* 입실가능시간으로 사용*/
+				 ,  LAST_UPDR_ID = #{gvUserId}                                  /*  최종수정자ID        */
+				 ,  LAST_UPDT_IP = #{gvUserIp}                                       /*  최종수정IP          */
+				 ,  LAST_UPDT_DT = sysdate                                           /*  최종수정일시          */
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                 /*  최종수정SMC클라이언트프로그램ID */
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                 /*  최종수정SMC서버프로그램ID */
+			 where
+					MDRP_NO            =  #{mdrpNo}
+			   and  MVMN_RQST_DVSN_CD  =  #{mvmnRqstDvsnCd}
+			   and  MVMN_RQST_SNO      =  #{mvmnRqstSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-deleteRmtrOnWrtsInfo (전동시 전실신청내역 삭제 함.) 
+        Description :                                           mnd_wmovemt_d03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-deleteRmtrOnWrtsInfo"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO"  >
+		 delete  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-deleteRmtrOnWrtsInfo */
+		    from
+		       MNWMOVEMT m
+		   where
+		       m.mdrp_no = #{mdrpNo}
+		     and  m.MVMN_RQST_DVSN_CD = nvl(#{mvmnRqstDvsnCd}, m.MVMN_RQST_DVSN_CD)
+		     and  m.MVMN_RQST_PRSS_CD = nvl(#{mvmnRqstPrssCd}, m.MVMN_RQST_PRSS_CD)
+		     and  m.ASGM_PTRM_FRMT_CD  = nvl(#{asgmPtrmFrmtCd}, m.ASGM_PTRM_FRMT_CD)
+		     /* // 간호전동완료건은 삭제 대상에서 제외한다. */
+		     and  m.MVOT_CNFR_DT is null
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateCrntAplyOnWrts (전동시 기존 전실신청내역 업데이트 DAM) 
+        Description :                                           mnd_wmovemt_u14
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateCrntAplyOnWrts"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmApInterfaceDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmApInterfaceDAO-updateCrntAplyOnWrts */
+		       MNWMOVEMT m
+		     set
+		       crnt_ward_cd           = #{crntWardCd}        
+		    ,  crnt_ptrm_no           = #{crntPtrmNo}           
+		    ,  crnt_ptrm_grad_cd      = #{crntPtrmGradCd}               
+		    ,  crnt_mcdp_cd           = nvl(#{crntMcdpCd}     , crnt_mcdp_cd)
+		    ,  crnt_chdr_id           = nvl(#{crntChdrId}     , crnt_chdr_id)    
+		    , LAST_UPDR_ID            = #{gvUserId}
+		    , LAST_UPDT_IP            = #{gvUserIp}
+		    , LAST_UPDT_DT            = sysdate
+		    , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		    , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}                                   
+		   where
+		       m.mdrp_no           = #{mdrpNo}
+		     and  m.MVOT_CNFR_DT is null /* // 간호전동처리 완료건은 제외한다. */
+		     and  m.mvmn_rqst_dvsn_cd = nvl(#{mvmnRqstDvsnCd}, m.mvmn_rqst_dvsn_cd)
+		     and  m.mvmn_rqst_prss_cd = #{mvmnRqstPrssCd}     
+		     and  m.dpro_yn = 'N' /* //nvl(:mns_wmovemt_011[0].dpro_yn, m.dpro_yn) */
+	</update>
+
+</mapper>

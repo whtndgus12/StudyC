@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AidExpsMngmAsstComDAO_sql.xml 
+    Description :                                      사후관리보조 DAO (COM)
+                  -->
+<mapper namespace="AidExpsMngmAsstComDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateEnamOnbrRdctInft2 (환자전액본인부담 삭감정보안내 수정2) 
+        Description :                                           환자전액본인부담 삭감정보안내 수정2
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aid.vo.AidExpsMngmAsstComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateEnamOnbrRdctInft2"  parameterType="com.sds.healthcare.ehr.adm.ai.aid.vo.AidExpsMngmAsstComDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateEnamOnbrRdctInft2 */
+						/*+ aid_rreobrt_u02$I01_환자별 삭감정보 조회 확인 update */
+				   AIRREOBRT
+			  set  ORCN_YMD     = trunc ( sysdate )    /*  처방확인일자 */
+				,  ORDR_CNFM_ID = #{gvUserId}     /*  처방확인자ID */
+				,  MDDR_RPLY_CTN = decode ( #{mddrRplyCtn}, null, MDDR_RPLY_CTN, #{mddrRplyCtn} )
+				,  MDDR_RPLY_DT = decode ( #{mddrRplyCtn}, null, MDDR_RPLY_DT, sysdate )
+				,  RPLY_MDDR_ID = decode ( #{mddrRplyCtn}, null, RPLY_MDDR_ID, #{gvUserId} )
+				,  LAST_UPDR_ID = #{gvUserId}
+				,  LAST_UPDT_IP = #{gvUserIp}
+				,  LAST_UPDT_DT = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO    = #{ptno}
+			  and  ORDR_CD = #{ordrCd}
+			  /*  and  ORCN_YMD is null */
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateNinlClamSnoUpdt2 (신포괄청구순번수정) 
+        Description :                                           청구명세서 테이블에 퇴원요약지/질향상점검표 심평원 전송 완료 후 순번 업데이트한다. (의무기록 순번 업데이트용)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aid.vo.AidExpsMngmAsstComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateNinlClamSnoUpdt2"  parameterType="com.sds.healthcare.ehr.adm.ai.aid.vo.AidExpsMngmAsstComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ai-aid-dao-AidExpsMngmAsstComDAO-updateNinlClamSnoUpdt2 */
+		<![CDATA[
+		update AICRSPCFT
+		   set DSCM_TRAS_SNO = nvl(decode(#{prsgDvsnCd}, '1', #{hiraTrasSno}, DSCM_TRAS_SNO), DSCM_TRAS_SNO)    /*퇴원요약지 순번*/
+		     , QICM_TRAS_SNO = nvl(decode(#{prsgDvsnCd}, '2', #{hiraTrasSno}, QICM_TRAS_SNO), QICM_TRAS_SNO)    /*질향상 순번*/
+		     , RFRC_BSDV_CD = '06'                                                                  /*3종서식 참고업무구분코드*/
+		     , LAST_UPDR_ID = #{gvUserId}                                                           /*최종수정자ID*/
+		     , LAST_UPDT_IP = #{gvUserIp}                                                           /*최종수정IP*/
+		     , LAST_UPDT_DT = sysdate                                                               /*최종수정일시*/
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                             /*최종수정클라이언트프로그램ID*/
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                             /*최종수정서버프로그램ID*/
+		 where CLPR_VL = #{clprVl} /*청구키*/
+		   ]]>
+	</update>
+
+</mapper>

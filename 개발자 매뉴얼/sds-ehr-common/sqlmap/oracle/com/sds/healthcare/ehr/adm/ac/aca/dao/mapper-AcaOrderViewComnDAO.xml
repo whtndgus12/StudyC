@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AcaOrderViewComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="AcaOrderViewComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptadClbaYmd" column="PTAD_CLBA_YMD"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="ptadCodvCd" column="PTAD_CODV_CD"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="mdfeCd" column="MDFE_CD"/>
+		<result property="exmnWntdDt" column="EXMN_WNTD_DT"/>
+		<result property="ortaNm" column="ORTA_NM"/>
+		<result property="rtrnSttsCd" column="RTRN_STTS_CD"/>
+		<result property="rtrnRqstDt" column="RTRN_RQST_DT"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="afiAbrvMcdpCd" column="AFI_ABRV_MCDP_CD"/>
+		<result property="chdrId" column="CHDR_ID"/>
+		<result property="chdrNm" column="CHDR_NM"/>
+		<result property="oddrId" column="ODDR_ID"/>
+		<result property="afiOddrNm" column="AFI_ODDR_NM"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="endrNm" column="ENDR_NM"/>
+		<result property="smcrYn" column="SMCR_YN"/>
+		<result property="smdrId" column="SMDR_ID"/>
+		<result property="afiSmdrNm" column="AFI_SMDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-listOrderView */
+			   PTNO as PTNO
+			,  to_char(PTAD_CLBA_YMD, 'yyyymmdd') as PTAD_CLBA_YMD            /*  원무계산기준일자 */
+			,  to_char(ORDR_YMD, 'yyyymmdd') as ORDR_YMD                      /*  처방일자         */
+			,  CODV_CD as CODV_CD                                                        /*  내원구분코드( 환자구분-진료)    */
+			,  PTAD_CODV_CD as PTAD_CODV_CD                                                   /*  1 원무내원구분코드( 환자구분-외래)    */
+			,  RCST_CD as RCST_CD                                                        /*  수납상태코드( 수납구분)         */
+			,  ORDR_SNO as ORDR_SNO                                                       /*  처방순번         */
+			,  MDFE_CD as MDFE_CD                                                        /*  처방코드         */
+			,  to_char(EXMN_WNTD_DT, 'yyyymmddhh24miss') as EXMN_WNTD_DT      /*  검사희망일시( 희망일시)         */
+			,  ORTA_NM as ORTA_NM                                                        /*  처방Table        */
+			,  RTRN_STTS_CD as RTRN_STTS_CD                                                   /*  반납상태코드( 반납구분)         */
+			,  to_char(RTRN_RQST_DT, 'yyyymmddhh24miss') as RTRN_RQST_DT      /*  반납요청일시( 반납일시)         */
+			,  MCDP_CD as MCDP_CD                                                        /*  진료과           */
+			, ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A where F_A.DPRT_CD = MCDP_CD group by F_A.ABRV_DPRT_CD ) as AFI_ABRV_MCDP_CD /*  약어진료과코드 */ ,  CHDR_ID as CHDR_ID
+			,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = CHDR_ID ) as CHDR_NM       /*  지정의사ID( 주치의)           */
+			,  ODDR_ID as ODDR_ID
+			,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = ODDR_ID ) as AFI_ODDR_NM   /*  처방의사ID( 처방의)           */
+			,  ENDR_ID as ENDR_ID
+			,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = ENDR_ID ) as ENDR_NM       /*  시행의사ID( 실시의)           */
+			,  SMCR_YN as SMCR_YN                                                        /*  선택진료여부( 지정여부)       */
+			,  SMDR_ID as SMDR_ID
+			,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = SMDR_ID ) as AFI_SMDR_NM       /*  선택의사ID( 지정의)           */
+		 from
+			   ACCLPAORV
+		where
+			   PTNO          = #{ptno}
+		  and  PTAD_MDRP_NO  = #{ptadMdrpNo}     /*  원무접수번호(원무팀 확인함) */
+		  and  ORDR_YMD = (select a1.MDCR_YMD from APRCRPTNT a1 where a1.MDRP_NO = #{ptadMdrpNo})
+		  and  (#{codvCd} is null or CODV_CD = #{codvCd})
+		  and  MDFE_CD      != 'PS011'       /*  C15110009925 PS011(의료질평가지원금) 제외 */
+		  and ((PTAD_CODV_CD = 'D' and nvl(DC_DVSN_CD, 'N') = 'N') or (PTAD_CODV_CD != 'D'))
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO">
+	
+		<result property="ordrYn" column="ORDR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn (입원취소시 검사처방여부) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsExmnYn */
+		       case when sum(NTM) > 0 then 'Y'
+		            else 'N'
+		       end as ORDR_YN
+		 from (
+		       select  count(*)               NTM
+		         from  ACCLPAORV
+		        where  PTAD_MDRP_NO             = #{mdrpNo}       
+		          and  PTAD_CLBA_YMD            = to_date(#{ptadClbaYmd}, 'yyyymmddhh24miss')
+		          and  nvl(PTAD_CODV_CD, 'O')   = #{ptadCodvCd}
+		          and  nvl(ORFR_CD, '*')       != 'P'
+		          and  MDFE_CD                  not in ('BL1001')
+		          and  ORTA_NM                  not in ('MDMEDORDT', 'MDEXMORDT')
+		        union  all
+		       select  /*+ index (a MDMEDORDT_IDX3) */
+		               count(*)               NTM
+		         from  MDMEDORDT a
+		        where  a.MDRP_NO                = #{mdrpNo}       
+		          and  a.PTAD_CLBA_YMD          = to_date(#{ptadClbaYmd}, 'yyyymmddhh24miss')
+		          and  nvl(a.PTAD_CODV_CD, 'O') = #{ptadCodvCd}
+		        /* and  nvl(a.ORFR_CD, '*')      != 'P' */
+		          and  (not (a.ORFR_CD = 'P' and a.TMPR_ORDR_YN = 'Y'))
+		          and  (
+		                  ( nvl( (select sum(s1.RTRN_RQST_CQY)
+		                            from SDJDGRTNT s1
+		                           where a.PTNO            = s1.PTNO
+		                             and a.ORDR_YMD        = s1.ORDR_YMD
+		                             and a.ORDR_SNO        = s1.ORDR_SNO
+		                             and a.MDTN_LCDV_CD    = s1.MDTN_LCDV_CD
+		                             and a.MDTN_NO_DVSN_CD = s1.MDTN_NO_DVSN_CD
+		                             and a.MDTN_NO         = s1.MDTN_NO
+		                         ), 0) < ( select s.TOTL_CLCL_QTY
+		                                     from SDPORDDET s   /*  약국 처방 */
+		                                    where a.PTNO            = s.PTNO
+		                                      and a.ORDR_YMD        = s.ORDR_YMD
+		                                      and a.ORDR_SNO        = s.ORDR_SNO
+		                                      and a.MDTN_LCDV_CD    = s.MDTN_LCDV_CD
+		                                      and a.MDTN_NO_DVSN_CD = s.MDTN_NO_DVSN_CD
+		                                      and a.MDTN_NO         = s.MDTN_NO
+		                                 )
+		                  )
+		                  or
+		                  ( /*  진행안된것은 dc여부만 확인 */
+		                    ( nvl(a.DC_DVSN_CD, 'N')  = 'N'
+		                      and nvl(a.DRUG_ORDR_PRSS_CD, '0') = '0')
+		                  )
+		               )
+		        union  all
+		       select  /*+ index (a MMMEDORT_IDX3) */
+		               count(*)  NTM
+		         from  MDEXMORDT a
+		        where  a.MDRP_NO                 = #{mdrpNo}          
+		          and  a.PTAD_CLBA_YMD           = to_date(#{ptadClbaYmd}, 'yyyymmddhh24miss')
+		          and  a.ORDR_CD                 not in ( select  EXMN_DTLS_CTRL_NM                                              
+		                                                    from  SZCTRLMMT s
+		                                                   where  s.EXMN_CTRL_CD = 'SFW_012'
+		                                                     and  s.EXMN_DTLS_CTRL_CD = '1'                                                     
+		                                                 )
+		          and  nvl(a.PTAD_CODV_CD, 'O')  = #{ptadCodvCd}
+		        /* and  nvl(a.ORFR_CD, '*')       != 'P' */
+		          and  (not (a.ORFR_CD = 'P' and a.TMPR_ORDR_YN = 'Y'))
+		          and  (
+		                  (
+		                   (nvl(a.RCST_CD, 'N') = 'Y')
+		                  /* and (nvl(DC_DVSN_CD, 'N') != 'X') */
+		                    and a.DC_DVSN_CD in ('N', 'Y')
+		                  )
+		                  or
+		                  (
+		                   ( nvl(a.RCST_CD, 'N') != 'Y')
+		                    and (nvl(DC_DVSN_CD, 'N') = 'N')
+		                  )
+		               )
+		    )
+		 ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO">
+	
+		<result property="ordrYn" column="ORDR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn (입원취소전 반납안된 약처방여부) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOneAdmsMedOrdrYn */
+		<![CDATA[
+		select  nvl(max('Y'),'N')       as ORDR_YN
+		  from  MDMEDORDT a
+		 where  a.PTNO          =   #{ptno}
+		   and  a.PTAD_MDRP_NO  =   #{mdrpNo}
+		   and  nvl(a.TMPR_ORDR_YN, 'N') = 'N'
+		   and  nvl(a.DC_DVSN_CD, 'N') in ('Y', 'N')
+		   and  a.PTAD_CODV_CD  =   'I'
+		   and  a.IHOH_DVSN_CD  =   'I'         -- 반납대상은 원내약으로 한정
+		   and  nvl(a.RCST_CD, 'N') != 'R'
+		   and  nvl(a.CMMD_BEFR_RTRN_DVSN_CD, 'N') != 'Y'
+		   and  not exists  (
+		                    select 1
+		                      from sdjdgrtnt t
+		                     where t.ptno     = a.ptno
+		                       and t.ordr_ymd = a.ordr_ymd
+		                       and t.ordr_sno = a.ordr_sno
+		                       and t.RTRN_DETL_DVSN_CD in ('A' ,'B' )  /*Z는 제외 */
+		                       and rownum = 1
+		                    )
+		   and  not exists  (
+		                     select 1
+		                     from sdddgcdmt s
+		                     where s.mdpr_cd = a.ORDR_CD
+		                     and s.MDPR_CLSF_DETL_CD = '10' /* 수액처방 */
+		                    )
+		   and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO">
+	
+		<result property="ptadMdrpNo" column="PTAD_MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.ac.aca.vo.AcaOrderViewComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne-result" useCache="true" flushCache="false">
+		 select  /*SQL_ID: com-sds-healthcare-ehr-adm-ac-aca-dao-AcaOrderViewComnDAO-selectOne */
+		         PTAD_MDRP_NO
+		   from  ACCLPAORV a
+		  where  1=1 
+		    and  a.PTAD_MDRP_NO        = #{mdrpNo}
+		    and  a.PTNO = #{ptno}
+		    and  nvl(a.RCST_CD, 'N')  != 'R'
+		    and  a.ORTA_NM != 'MDEXMORDT'
+		    and  rownum                = 1
+	</select>
+
+
+
+</mapper>

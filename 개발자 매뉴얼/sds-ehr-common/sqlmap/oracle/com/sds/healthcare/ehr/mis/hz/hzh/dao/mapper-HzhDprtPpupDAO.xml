@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhDprtPpupDAO_sql.xml 
+    Description : -->
+<mapper namespace="HzhDprtPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="ensnDprtNm" column="ENSN_DPRT_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup (공통부서 목록 팝업용) 
+        Description :                                           hzd_deptmmt_l02$S01_공통부서_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listComnDprtPpup */ 
+		select DPRT_CD      as DPRT_CD      -- 부서코드
+		     , KORN_DPRT_NM as KORN_DPRT_NM -- 한글부서명
+		     , ENSN_DPRT_NM as ENSN_DPRT_NM -- 영문부서명
+		     , USE_YN       as USE_YN       -- 사용여부
+		     , USE_YN       as USE_YN       -- 사용여부
+		     , ABRV_DPRT_CD as ABRV_DPRT_CD -- 부서 약어 코드
+		  from HZDEPTMMT -- 조직IF
+		 where decode(#{srchCd}, 'C', DPRT_CD, UPPER(KORN_DPRT_NM)) like #{srchCdNm} || '%' -- 검색코드명
+		   and USE_YN = decode(#{useYn}, 'A', USE_YN, #{useYn})
+		 order by HRAF_BASE_LVEL_NO, decode(#{srchCd}, 'C', DPRT_CD, KORN_DPRT_NM)  asc   
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup (회계부서 목록 팝업용) 
+        Description :                                           hzd_deptmmt_l08$S01_HZH010FA_Popup_회계부서_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhDprtPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhDprtPpupDAO-listAcnsDprtPpup */
+		            rownum         SQNC         -- 순서
+		         ,  x.DPRT_CD      DPRT_CD      -- 부서코드
+		         ,  x.KORN_DPRT_NM KORN_DPRT_NM -- 한글부서명
+		         ,  x.USE_YN       USE_YN
+		         ,  x.ABRV_DPRT_CD ABRV_DPRT_CD -- 부서 약어 코드
+		      from
+		            (select
+		                     s.DPRT_CD      DPRT_CD      -- 부서코드
+		                  ,  s.KORN_DPRT_NM KORN_DPRT_NM -- 한글부서명
+		                  ,  s.USE_YN       USE_YN
+		                  ,  s.ABRV_DPRT_CD ABRV_DPRT_CD
+		               from
+		                     (select  /*+ index(HZDEPTMMT_PK) */
+		                              a.DPRT_CD      DPRT_CD      -- 부서코드
+		                           ,  a.KORN_DPRT_NM KORN_DPRT_NM -- 한글부서명
+		                           ,  a.USE_YN       USE_YN
+		                           ,  a.ABRV_DPRT_CD ABRV_DPRT_CD
+		                        from
+		                              HZDEPTMMT a -- 조직IF
+		                       where
+		                              a.DPRT_CD                like #{srchCdNm} || '%' -- 검색코드명
+		                         and  #{srchCd} = 'C'                                   -- 검색코드[C:부서코드]
+		                         and  a.USE_YN = case when #{useYn} = 'A' then a.USE_YN
+		                                              else #{useYn}
+		                                          end
+		                         and  a.ACNN_DPRT_YN = 'Y'
+		                       union  all
+		                      select  /*+ index(a HZDEPTMMT_I01) */
+		                              a.DPRT_CD      DPRT_CD      -- 부서코드
+		                           ,  a.KORN_DPRT_NM KORN_DPRT_NM -- 한글부서명
+		                           ,  a.USE_YN       USE_YN
+		                           ,  a.ABRV_DPRT_CD ABRV_DPRT_CD                           
+		                        from
+		                              HZDEPTMMT a -- 조직IF
+		                       where
+		                              a.KORN_DPRT_NM           like '%' || #{srchCdNm} || '%' -- 검색코드명
+		                         and  #{srchCd} = 'N'                                          -- 검색코드[N:부서명]
+		                         and  a.USE_YN = case when #{useYn} = 'A' then a.USE_YN
+		                                              else #{useYn}
+		                                          end
+		                         and  a.ACNN_DPRT_YN = 'Y'
+		                      ) s
+		              order by  decode(#{srchCd}, 'C', s.DPRT_CD, s.KORN_DPRT_NM)  asc
+		            ) x
+		]]>
+	</select>
+
+
+
+</mapper>

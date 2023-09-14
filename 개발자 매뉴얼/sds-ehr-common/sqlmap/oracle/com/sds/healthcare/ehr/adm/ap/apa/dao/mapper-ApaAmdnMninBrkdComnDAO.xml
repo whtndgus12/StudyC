@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaAmdnMninBrkdComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaAmdnMninBrkdComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="formSno" column="FORM_SNO"/>
+		<result property="admsApntNo" column="ADMS_APNT_NO"/>
+		<result property="formFrmtCtn" column="FORM_FRMT_CTN"/>
+		<result property="formSlctVlCmbnCtn" column="FORM_SLCT_VL_CMBN_CTN"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd (입원결정서진료과별입력조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-selectOneAmdnMninBrkd */
+			   a.MCDP_CD                                as MCDP_CD
+			 , ( select F_A.ABRV_DPRT_CD
+			       from HZDEPTMMT F_A
+			      where F_A.DPRT_CD = a.MCDP_CD )       as ABRV_MCDP_CD -- 약어부서코드
+			 , a.FORM_SNO                               as FORM_SNO
+			 , a.ADMS_APNT_NO                           as ADMS_APNT_NO
+			 , a.FORM_FRMT_CTN                          as FORM_FRMT_CTN
+			 , a.FORM_SLCT_VL_CMBN_CTN                  as FORM_SLCT_VL_CMBN_CTN
+			 , to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss')  as LAST_UPDT_DT
+			 , a.LAST_UPDR_ID                           as LAST_UPDR_ID
+			 , ( select F_A.USER_NM
+			       from CCUSRDPHT F_A
+			      where F_A.USER_ID = a.LAST_UPDR_ID )  as LAST_UPDR_NM  -- 수정자명
+		  from APRCDCBLT a       -- 입원결정서필수입력내역
+		 where a.ADMS_APNT_NO = #{admsApntNo}
+		   and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-insertAmdnMninBrkd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-insertAmdnMninBrkd"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-insertAmdnMninBrkd */
+		 into  APRCDCBLT                                    /*  입원결정서필수입력내역 */
+			   (
+			   MCDP_CD                                             /*  진료과 */
+			,  FORM_SNO                                            /*  서식일련번호 */
+			,  ADMS_APNT_NO                                        /*  입원예약번호 */
+			,  FORM_FRMT_CTN                                       /*  서식형태내용 */
+			,  FORM_SLCT_VL_CMBN_CTN                               /*  서식선택값내용 */
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			   )
+		values
+			   (
+			   #{mcdpCd}                         /*  진료과 */
+			,  #{formSno}                        /*  서식일련번호 */
+			,  #{admsApntNo}                    /*  입원예약번호 */
+			  , #{formFrmtCtn}                                        /*  서식형태내용 */
+			,  #{formSlctVlCmbnCtn}           /*  서식선택값내용 */
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		  )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-deleteAmdnMninBrkd (입원결정서진료과 필수서식 등록) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-deleteAmdnMninBrkd"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninBrkdComnDVO"  >
+		 delete  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninBrkdComnDAO-deleteAmdnMninBrkd */
+			APRCDCBLT a
+		where  a.ADMS_APNT_NO = #{admsApntNo}
+	</delete>
+
+</mapper>

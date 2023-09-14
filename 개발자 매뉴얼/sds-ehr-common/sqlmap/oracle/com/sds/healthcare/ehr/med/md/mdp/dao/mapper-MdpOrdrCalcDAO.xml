@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrCalcDAO_sql.xml 
+    Description :                                      처방화면내 계산식에서 필요한 값들을 조회한다.
+                  -->
+<mapper namespace="MdpOrdrCalcDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrClclExrs-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="enfrYmd" column="ENFR_YMD"/>
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="mdcrDtlsCtrlCd" column="MDCR_DTLS_CTRL_CD"/>
+		<result property="exrsNcvlVl" column="EXRS_NCVL_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrClclExrs (처방의 계산식에서 사용할 검사결과 수치 조회) 
+        Description :                                           처방의 계산식에서 사용할 검사결과 수치 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrClclExrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrClclExrs"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrClclExrs-result" useCache="true" flushCache="false">
+		<![CDATA[
+		SELECT  A.PTNO                              AS PTNO
+		      , A.ENFR_YMD                          AS ENFR_YMD
+		      , A.EXMN_CD                           AS EXMN_CD
+		      , A.MDCR_DTLS_CTRL_CD                 AS MDCR_DTLS_CTRL_CD
+		      , A.EXRS_NCVL_VL                      AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  ( SELECT  A2.PTNO                                                           AS PTNO
+		                , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')                                   AS ENFR_YMD
+		                , A1.EXMN_CD                                                        AS EXMN_CD
+		                , A3.MDCR_CTRL_CHRC_VL2                                             AS MDCR_DTLS_CTRL_CD
+		                , A1.EXRS_NCVL_VL                                                   AS EXRS_NCVL_VL         -- 검사결과수치값
+		                , RANK() OVER(PARTITION BY A2.PTNO ORDER BY TRUNC(A2.ENFR_DT) DESC) AS RNK                  -- 시행일 기준 RANK (최근일 추출)
+		            FROM  SZRESULMT A1
+		                , MDEXMORDT A2
+		                , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                          , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                          , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		                      FROM  MZCTRLMMT A3   -- [진료제어정보]
+		                     WHERE  A3.MDCR_CTRL_CD = #{mdcrCtrlCd}
+		                       AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		                  )         A3
+		           WHERE  #{dvsnCd}       = '1'                       -- (1번 유형 쿼리)
+		             AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		             AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		             AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		             AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD      -- 검사코드
+		             AND  A2.PTNO         = #{ptno}
+		             AND  A1.ORDR_YMD     BETWEEN TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365 AND TO_DATE(#{enfrYmd}, 'YYYYMMDD')  
+		        )   A
+		 WHERE  A.RNK = 1
+		UNION ALL
+		-- type 2
+		SELECT  A2.PTNO                             AS PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')     AS ENFR_YMD
+		      , A1.EXMN_CD                          AS EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2               AS MDCR_DTLS_CTRL_CD
+		      , MAX(A1.EXRS_NCVL_VL)                AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  SZRESULMT A1
+		      , MDEXMORDT A2
+		      , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		            FROM  MZCTRLMMT A3   -- [진료제어정보]
+		           WHERE  A3.MDCR_CTRL_CD = #{mdcrCtrlCd}
+		             AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		        )         A3
+		 WHERE  #{dvsnCd}       = '2'                       -- (2번 유형 쿼리)
+		   AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		   AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		   AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		   AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD      -- 검사코드
+		   AND  A2.PTNO         = #{ptno}
+		   AND  TRUNC(A2.ENFR_DT) IN
+		        ( SELECT  MAX(A.ENFR_YMD)       AS ENFR_YMD
+		            FROM  ( SELECT  TRUNC(T.ENFR_DT)          AS ENFR_YMD
+		                          , COUNT(DISTINCT S.EXMN_CD) AS EXMN_CD_CNT
+		                      FROM  SZRESULMT S
+		                          , MDEXMORDT T
+		                     WHERE  S.PTNO          = #{ptno}
+		                       AND  S.ORDR_YMD      BETWEEN TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365 AND TO_DATE(#{enfrYmd}, 'YYYYMMDD') 
+		                       AND  S.EXMN_CD       IN  ( SELECT  U.MDCR_DTLS_CTRL_CD
+		                                                    FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                   WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                     AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                )
+		                       AND  S.PTNO          = T.PTNO                -- 환자번호
+		                       AND  S.ORDR_YMD      = T.ORDR_YMD            -- 오더일자
+		                       AND  S.ORDR_SNO      = T.ORDR_SNO            -- 오더순번
+		                       AND  T.DC_DVSN_CD    = 'N'                   -- D/C구분코드
+		                       AND  T.TMPR_ORDR_YN  = 'N'                   -- 임시처방여부
+		                     GROUP
+		                        BY  TRUNC(T.ENFR_DT)
+		                    HAVING  COUNT(DISTINCT S.EXMN_CD)   = ( SELECT  COUNT(DISTINCT NVL(U.MDCR_CTRL_CHRC_VL2, U.MDCR_DTLS_CTRL_CD))     -- TYPE2에서는 검사코드개수만큼으로 실개수로 비교함.
+		                                                              FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                             WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                               AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                          )
+		                  )   A
+		        )
+		 GROUP
+		    BY  A2.PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')
+		      , A1.EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2
+		UNION ALL
+		-- type 3
+		SELECT  A1.PTNO                             AS PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')     AS ENFR_YMD
+		      , A1.EXMN_CD                          AS EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2               AS MDCR_DTLS_CTRL_CD
+		      , MAX(A1.EXRS_NCVL_VL)                AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  SZRESULMT A1
+		      , MDEXMORDT A2
+		      , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		            FROM  MZCTRLMMT A3   -- [진료제어정보]
+		           WHERE  A3.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		             AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		        )         A3
+		 WHERE  #{dvsnCd}       = '3'                       -- 조회유형 (ProC 기준 Type-3)
+		   AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		   AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		   AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		   AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD      -- 검사코드 (OUTER 조인 안해도 된다)
+		   AND  A1.PTNO         = #{ptno}
+		   AND  A1.ORDR_YMD     IN
+		        ( SELECT  DECODE( #{aplyYmdDvsnCd}
+		                    , '2', MIN(A.ORDR_YMD)
+		                    , MAX(A.ORDR_YMD)
+		                  )                         AS ORDR_YMD
+		            FROM  ( SELECT  T.ORDR_YMD                AS ORDR_YMD
+		                          , COUNT(DISTINCT T.EXMN_CD) AS EXMN_CD_CNT
+		                      FROM  SZRESULMT T
+		                          , MDEXMORDT S
+		                     WHERE  T.PTNO          = #{ptno}
+		                       AND  T.ORDR_YMD      BETWEEN NVL(TO_DATE(#{admsYmd}, 'YYYYMMDD'), TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365)  AND TO_DATE(#{enfrYmd}, 'YYYYMMDD') 
+		                       AND  T.EXMN_CD       IN  ( SELECT  U.MDCR_DTLS_CTRL_CD
+		                                                    FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                   WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                     AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                )
+		                       AND  T.PTNO         = S.PTNO                   -- 환자번호
+		                       AND  T.ORDR_YMD     = S.ORDR_YMD               -- 오더일자
+		                       AND  T.ORDR_SNO     = S.ORDR_SNO               -- 오더순번
+		                       AND  S.DC_DVSN_CD    = 'N'                     -- D/C구분코드
+		                       AND  S.TMPR_ORDR_YN  = 'N'                     -- 임시처방여부
+		                     GROUP
+		                        BY  T.ORDR_YMD
+		                    HAVING  COUNT(DISTINCT S.ORDR_CD)  >= NVL(TO_NUMBER( #{ornoCd}),  ( SELECT  COUNT(DISTINCT NVL(U.MDCR_CTRL_CHRC_VL2, U.MDCR_DTLS_CTRL_CD))  -- 개수 직접지정 외 코드/종류 수량 비교
+		                                                                                          FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                                                         WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                                                           AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                                                      )
+		                                                          )
+		                  )   A
+		        )
+		 GROUP
+		    BY  A1.PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')
+		      , A1.EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2
+		UNION ALL
+		-- type 4
+		SELECT  A1.PTNO                             AS PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')     AS ENFR_YMD
+		      , A1.EXMN_CD                          AS EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2               AS MDCR_DTLS_CTRL_CD
+		      , MAX(A1.EXRS_NCVL_VL)                AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  SZRESULMT A1
+		      , MDEXMORDT A2
+		      , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		            FROM  MZCTRLMMT A3   -- [진료제어정보]
+		           WHERE  A3.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		             AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		        )         A3
+		 WHERE  #{dvsnCd}       = '4'                       -- (4번 유형 쿼리)
+		   AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		   AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		   AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		   AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD(+)   -- 검사코드
+		   AND  (A1.PTNO, A1.ORDR_YMD, A1.ORDR_SNO)  IN
+		        ( SELECT  A.PTNO                          AS PTNO
+		                , TO_CHAR(A.ORDR_YMD,'yyyymmdd')  AS ORDR_YMD
+		                , A.ORDR_SNO                      AS ORDR_SNO
+		            FROM  MDEXMORDT A
+		           WHERE  A.PTNO          = #{ptno}
+		             AND  A.ORDR_YMD      BETWEEN TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365  AND TO_DATE(#{enfrYmd}, 'YYYYMMDD') 
+		             AND  A.ORDR_CD       IN  ( SELECT  S.MDCR_DTLS_CTRL_CD
+		                                          FROM  MZCTRLMMT S   -- [진료제어정보]
+		                                         WHERE  S.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                           AND  TRUNC(SYSDATE)  BETWEEN S.APST_YMD AND S.APFN_YMD
+		                                      )
+		             AND  A.DC_DVSN_CD    = 'N'                   -- D/C구분코드
+		             AND  A.TMPR_ORDR_YN  = 'N'                   -- 임시처방여부
+		             AND  A.EXOR_PRSS_CD  = 'G'                   -- 검사처방진행상태코드(asis: procstat = 'N', tobe:G)
+		             AND  TO_CHAR(A.BLCL_BRCD_PRIN_DT, 'YYYYMMDD')  IN 
+		                  ( SELECT  MAX(T.BLCL_BRCD_PRIN_YMD)
+		                      FROM  ( SELECT  TO_CHAR(T.BLCL_BRCD_PRIN_DT, 'YYYYMMDD')  AS BLCL_BRCD_PRIN_YMD
+		                                    , COUNT(DISTINCT T.ORDR_CD)                 AS ORDR_CNT
+		                                FROM  MDEXMORDT T
+		                               WHERE  T.PTNO          = #{ptno}
+		                                 AND  T.ORDR_YMD      BETWEEN TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365  AND TO_DATE(#{enfrYmd}, 'YYYYMMDD') 
+		                                 AND  T.ORDR_CD       IN  ( SELECT  U.MDCR_DTLS_CTRL_CD
+		                                                              FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                             WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                               AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                          )
+		                                 AND  T.DC_DVSN_CD    = 'N'                   -- D/C구분코드
+		                                 AND  T.TMPR_ORDR_YN  = 'N'                   -- 임시처방여부
+		                                 AND  T.EXOR_PRSS_CD  = 'G'                   -- 검사처방진행상태코드(asis: procstat = 'N', tobe:G)
+		                               GROUP
+		                                  BY  TO_CHAR(T.BLCL_BRCD_PRIN_DT, 'YYYYMMDD')
+		                              HAVING  COUNT(DISTINCT T.ORDR_CD)   = ( SELECT  COUNT(NVL(U.MDCR_CTRL_CHRC_VL2, U.MDCR_DTLS_CTRL_CD))   -- 묶는값 없으면 등록된 오더코드 단일 개수만큼
+		                                                                        FROM  MZCTRLMMT U   -- [진료제어정보]
+		                                                                       WHERE  U.MDCR_CTRL_CD  = #{mdcrCtrlCd}
+		                                                                         AND  TRUNC(SYSDATE)  BETWEEN U.APST_YMD AND U.APFN_YMD
+		                                                                    )
+		                            ) T
+		                  )
+		        )
+		 GROUP
+		    BY  A1.PTNO
+		      , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')
+		      , A1.EXMN_CD
+		      , A3.MDCR_CTRL_CHRC_VL2
+		UNION ALL
+		SELECT  A.PTNO                              AS PTNO
+		      , A.ENFR_YMD                          AS ENFR_YMD
+		      , A.EXMN_CD                           AS EXMN_CD
+		      , A.MDCR_DTLS_CTRL_CD                 AS MDCR_DTLS_CTRL_CD
+		      , A.EXRS_NCVL_VL                      AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  ( SELECT  A2.PTNO                                                           AS PTNO
+		                , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')                                   AS ENFR_YMD
+		                , A1.EXMN_CD                                                        AS EXMN_CD
+		                , A3.MDCR_CTRL_CHRC_VL2                                             AS MDCR_DTLS_CTRL_CD
+		                , A1.EXRS_NCVL_VL                                                   AS EXRS_NCVL_VL         -- 검사결과수치값
+		                , RANK() OVER(PARTITION BY A2.PTNO, A3.MDCR_CTRL_CHRC_VL2 ORDER BY A1.ORDR_YMD DESC, NVL(A1.RPRT_DT, A2.ORDR_UPDT_DT) DESC) AS RNK
+		            FROM  SZRESULMT A1
+		                , MDEXMORDT A2
+		                , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                          , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                          , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		                      FROM  MZCTRLMMT A3   -- [진료제어정보]
+		                     WHERE  A3.MDCR_CTRL_CD = 'CALC201'
+		                       AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		                  )         A3
+		           WHERE  #{dvsnCd}       = 'E'                       -- (48번 유형 쿼리)
+		             AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		             AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		             AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		             AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD      -- 검사코드
+		             AND  A2.PTNO         = #{ptno}
+		             AND  A2.DC_DVSN_CD   = 'N'                   -- D/C구분코드
+		             AND  A2.TMPR_ORDR_YN = 'N'                   -- 임시처방여부
+		             AND  A2.ORDR_YMD     BETWEEN TO_DATE(#{enfrYmd}, 'YYYYMMDD') - 365 AND TO_DATE(#{enfrYmd}, 'YYYYMMDD')  
+		        )   A
+		 WHERE  A.RNK = 1
+		UNION ALL
+		SELECT  A.PTNO                              AS PTNO
+		      , A.ENFR_YMD                          AS ENFR_YMD
+		      , A.EXMN_CD                           AS EXMN_CD
+		      , A.MDCR_DTLS_CTRL_CD                 AS MDCR_DTLS_CTRL_CD
+		      , DECODE(REGEXP_INSTR(A.EXRS_NCVL_VL,'^[+-]?\d*(\.?\d*)$')
+		          , 0, '0'
+		          , TO_CHAR(TO_NUMBER(A.EXRS_NCVL_VL))
+		        )                                   AS EXRS_NCVL_VL         -- 검사결과수치값
+		  FROM  ( SELECT  A2.PTNO                                                           AS PTNO
+		                , TO_CHAR(A2.ENFR_DT, 'yyyymmdd')                                   AS ENFR_YMD
+		                , A1.EXMN_CD                                                        AS EXMN_CD
+		                , A3.MDCR_CTRL_CHRC_VL2                                             AS MDCR_DTLS_CTRL_CD
+		                , A1.EXRS_NCVL_VL                                                   AS EXRS_NCVL_VL         -- 검사결과수치값
+		                , DECODE( #{aplyYmdDvsnCd}
+		                    , '2', RANK() OVER(PARTITION BY A1.PTNO, A1.EXMN_CD ORDER BY A2.ENFR_DT ASC , A1.ORDR_YMD ASC , A1.ORDR_SNO ASC)      -- MIN
+		                    , RANK()      OVER(PARTITION BY A1.PTNO, A1.EXMN_CD ORDER BY A2.ENFR_DT DESC, A1.ORDR_YMD DESC, A1.ORDR_SNO DESC)     -- MAX
+		                  )                                                                 AS RNK
+		            FROM  SZRESULMT A1
+		                , MDEXMORDT A2
+		                , ( SELECT  A3.MDCR_DTLS_CTRL_CD      AS MDCR_DTLS_CTRL_CD
+		                          , A3.MDCR_CTRL_CHRC_VL2     AS MDCR_CTRL_CHRC_VL2
+		                          , A3.MDCR_CTRL_CHRC_VL4     AS MDCR_CTRL_CHRC_VL4
+		                      FROM  MZCTRLMMT A3   -- [진료제어정보]
+		                     WHERE  A3.MDCR_CTRL_CD = 'CALC301'
+		                       AND  TRUNC(SYSDATE)  BETWEEN A3.APST_YMD AND A3.APFN_YMD
+		                  )         A3
+		           WHERE  #{dvsnCd}       = 'S'                       -- (S번 쿼리 - 검사결과 연동 - Testosterone, SHBG)
+		             AND  A1.PTNO         = A2.PTNO                   -- 환자번호
+		             AND  A1.ORDR_YMD     = A2.ORDR_YMD               -- 오더일자
+		             AND  A1.ORDR_SNO     = A2.ORDR_SNO               -- 오더순번
+		             AND  A1.EXMN_CD      = A3.MDCR_DTLS_CTRL_CD      -- 검사코드
+		             AND  A2.PTNO         = #{ptno}
+		             AND  A2.DC_DVSN_CD   = 'N'                   -- D/C구분코드
+		             AND  A2.TMPR_ORDR_YN = 'N'                   -- 임시처방여부
+		             AND  A2.ENFR_DT      BETWEEN ADD_MONTHS(TRUNC(SYSDATE), TO_NUMBER( #{ornoCd})) AND TRUNC(SYSDATE) + 0.99999    -- 지정한 개월수 이전부터~오늘
+		             AND  A1.EXRS_NCVL_VL IS NOT NULL
+		        )   A
+		 WHERE  A.RNK = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrCct" column="ORDR_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct (처방 및 접수 건수조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO
+		resultMap : com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct-result
+    -->
+	<select id="com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCalcDVO"  resultMap="com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healistOrdrRptnCctthcare-ehr-med-md-mdp-dao-MdpOrdrCalcDAO-listOrdrRptnCct */
+		select a.ORDR_CD, sum(a.CNT) as ORDR_CCT 
+		  from (
+		    select a.ORDR_CD, count(*) CNT
+		     from MDEXMORDT a, MZCTRLMMT b
+		    where a.PTNO         = #{ptno} 
+		      and a.ORDR_YMD  between to_date(#{admsYmd},'YYYYMMDD') and to_date(#{enfrYmd},'YYYYMMDD')
+		      <if test='codvCd !=  null and codvCd != ""'>    
+		      and a.CODV_CD      = #{codvCd}
+		      </if>
+		      and a.DC_DVSN_CD   = 'N'
+		      and b.MDCR_CTRL_CD = #{mdcrCtrlCd}
+		      and a.ORDR_CD      = b.MDCR_DTLS_CTRL_CD   
+		    group by a.ORDR_CD
+		    union   
+		    select a.ORDR_CD, count(*)
+		     from MDEXMORDT a, MZCTRLMMT b
+		    where a.PTNO         = #{ptno}
+		      and a.EXRM_RPTN_DT  between to_date(#{admsYmd},'YYYYMMDD') and to_date(#{enfrYmd},'YYYYMMDD') + 0.99999  -- 검사실접수일시
+		      <if test='codvCd !=  null and codvCd != ""'>    
+		      and a.CODV_CD      = #{codvCd}
+		      </if>
+		      and a.DC_DVSN_CD   = 'N'
+		      and b.MDCR_CTRL_CD = #{mdcrCtrlCd}
+		      and a.ORDR_CD      = b.MDCR_DTLS_CTRL_CD   
+		     group by a.ORDR_CD
+		   )  a
+		 group by a.ORDR_CD
+	</select>
+
+
+
+</mapper>

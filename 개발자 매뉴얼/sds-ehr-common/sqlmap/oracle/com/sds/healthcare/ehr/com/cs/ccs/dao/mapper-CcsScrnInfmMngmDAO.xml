@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsScrnInfmMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcsScrnInfmMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+		<result property="prgmTypNm" column="PRGM_TYP_NM"/>
+		<result property="bsdvNm" column="BSDV_NM"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="menuGrpNm" column="MENU_GRP_NM"/>
+		<result property="pckgId" column="PCKG_ID"/>
+		<result property="bsdvCd" column="BSDV_CD"/>
+		<result property="prgmMngrId" column="PRGM_MNGR_ID"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="prgmTypCd" column="PRGM_TYP_CD"/>
+		<result property="imdgYn" column="IMDG_YN"/>
+		<result property="desgMdfcYn" column="DESG_MDFC_YN"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="acwrAsgnId" column="ACWR_ASGN_ID"/>
+		<result property="userNm1" column="USER_NM_1"/>
+		<result property="notcUseYn" column="NOTC_USE_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn (화면목록 조회) 
+        Description :                                           csd_prmltmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrn_화면목록 조회 */
+						a.PRGM_ID as PRGM_ID
+					,	a.PRGM_NM as PRGM_NM
+					,	b.DETL_CD_NM as PRGM_TYP_NM
+					,	c.DETL_CD_NM as BSDV_NM
+					,	d.USER_NM as USER_NM
+					,	e.MENU_GRP_NM as MENU_GRP_NM
+					,	a.PCKG_ID as PCKG_ID
+					,	a.BSDV_CD as BSDV_CD
+					,	a.PRGM_MNGR_ID as PRGM_MNGR_ID
+					,	a.MENU_GRP_ID as MENU_GRP_ID
+					,	a.PRGM_TYP_CD as PRGM_TYP_CD
+					,	a.IMDG_YN as IMDG_YN
+					,	a.DESG_MDFC_YN as DESG_MDFC_YN
+					,	to_char(a.FRST_RGST_DT,'yyyy-mm-dd') as FRST_RGST_DT
+					,	to_char(a.LAST_UPDT_DT,'yyyy-mm-dd') as LAST_UPDT_DT
+					,	a.ACWR_ASGN_ID as ACWR_ASGN_ID
+					,	f.USER_NM as USER_NM_1
+					,	a.NOTC_USE_YN as NOTC_USE_YN
+					,	a.RMRK_CTN as RMRK_CTN
+		from			CSPRMLTMT a
+					,	CCCMCDDMT b
+					,	CCCMCDDMT c
+					,	CCUSRDPHT d
+					,	CSMGLMGMT e
+					,	CCUSRDPHT f
+		where		b.COMN_GRP_CD  = 'CSX_001'
+		and			a.PRGM_TYP_CD  = b.COMN_DTLS_CD(+)
+		and			c.COMN_GRP_CD in ('CCC_005','CCC_006','CCC_007')
+		and			a.BSDV_CD = c.COMN_DTLS_CD(+)
+		and			a.PRGM_MNGR_ID = d.USER_ID(+)
+		and			a.MENU_GRP_ID  = e.MENU_GRP_ID(+)
+		and			a.ACWR_ASGN_ID = f.USER_ID(+)
+		and			(	(upper(a.PRGM_ID) like upper(#{prgmNm}) || '%') or
+							(upper(a.PRGM_NM) like '%' || upper(#{prgmNm}) || '%'))
+		and			(	(nvl(#{bsdvCd},'*') = '*') or
+							(a.BSDV_CD like #{bsdvCd} || '%'))
+		and			(	(nvl(#{menuGrpId},'*') = '*') or
+							(a.MENU_GRP_ID = #{menuGrpId}))
+		order by a.PRGM_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="cpntId" column="CPNT_ID"/>
+		<result property="fnctDetlCtn" column="FNCT_DETL_CTN"/>
+		<result property="cpntNm" column="CPNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct (화면기능 조회) 
+        Description :                                           csd_prcprmt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listScrnFnct_화면기능 조회 */
+					PRGM_ID as PRGM_ID
+				,	CPNT_ID as CPNT_ID
+				,	FNCT_DETL_CTN as FNCT_DETL_CTN
+				,	CPNT_NM as CPNT_NM
+		from		CSPRCPRMT
+		where	((nvl(#{prgmId},'*') = '*') or ( PRGM_ID = #{prgmId}))
+		order by CPNT_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="exctVrabVl" column="EXCT_VRAB_VL"/>
+		<result property="exctVrabDscrCtn" column="EXCT_VRAB_DSCR_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab (프로그램 실행변수 목록 조) 
+        Description :                                           csd_prmltdt_l01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab-result" useCache="true" flushCache="false">
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listPrgmExctVrab_프로그램 실행변수 목록 조회 DAM */
+					PRGM_ID as PRGM_ID,
+					EXCT_VRAB_VL as EXCT_VRAB_VL,
+					EXCT_VRAB_DSCR_CTN as EXCT_VRAB_DSCR_CTN
+		from		CSPRMLTDT
+		where	PRGM_ID = #{prgmId}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO">
+	
+		<result property="menuGrpNm" column="MENU_GRP_NM"/>
+		<result property="bsisLnggMenuNm" column="BSIS_LNGG_MENU_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm (메뉴사용프로그램 조회) 
+        Description :                                           csd_mngrpmt_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-listMenuUsePrgm_메뉴사용프로그램 조회 */
+					b.MENU_GRP_NM as MENU_GRP_NM
+				,	a.BSIS_LNGG_MENU_NM as BSIS_LNGG_MENU_NM
+		from		(	select		MENU_GRP_ID
+									,	BSIS_LNGG_MENU_NM
+						from			CSMNGRPMT
+						where		APST_DT < sysdate
+						and			APFN_DT > sysdate
+						and			PRGM_ID = #{prgmId}
+						group by	MENU_GRP_ID
+									,	BSIS_LNGG_MENU_NM
+					) a
+					, CSMGLMGMT b
+		where	a.MENU_GRP_ID = b.MENU_GRP_ID
+		and		b.APST_DT < sysdate
+		and		b.APFN_DT > sysdate
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnFnct (화면기능등록) 
+        Description :                                           csd_prcprmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnFnct"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		<![CDATA[
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnFnct_화면기능 등록 */
+		into    CSPRCPRMT(	PRGM_ID
+								,	CPNT_ID
+								,	FNCT_DETL_CTN
+								,	CPNT_NM
+								,	APST_DT
+								,	APFN_DT
+								,	FRST_RGSR_ID
+								,	FRST_RGST_IP
+								,	FRST_RGST_DT
+								,	FRST_RGST_CLNT_PRGM_ID
+								,	FRST_RGST_SRVR_PRGM_ID
+								,	LAST_UPDR_ID
+								,	LAST_UPDT_IP
+								,	LAST_UPDT_DT
+								,	LAST_UPDT_CLNT_PRGM_ID
+								,	LAST_UPDT_SRVR_PRGM_ID
+								)
+					values	(
+									#{prgmId}
+								,	#{cpntId}
+								,	#{fnctDetlCtn}
+								,	#{cpntNm}
+								,	trunc(sysdate)
+								,	to_date('29991231', 'yyyymmdd')
+								,	#{gvUserId}
+								,	#{gvUserIp}
+								,	sysdate
+								,	#{gvClntPrgmId}
+								,	#{gvSrvrPrgmId}
+								,	#{gvUserId}
+								,	#{gvUserIp}
+								,	sysdate
+								,	#{gvClntPrgmId}
+								,	#{gvSrvrPrgmId}
+								)
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnFnct (화면기능삭제) 
+        Description :                                           csd_prcprmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnFnct"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnFnct_화면기능 삭제 */
+		from		CSPRCPRMT
+		where	PRGM_ID = #{prgmId}
+		and		((nvl(#{cpntId}, '*') = '*') or (CPNT_ID = #{cpntId}))
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnInfm (화면정보등록) 
+        Description :                                           csd_prmltmt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnInfm"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertScrnInfm_화면정보 등록 */
+		into    CSPRMLTMT(	PRGM_ID
+								,	PRGM_NM
+								,	PCKG_ID
+								,	PRGM_TYP_CD
+								,	MENU_GRP_ID
+								,	BSDV_CD
+								,	IMDG_YN
+								,	PRGM_MNGR_ID
+								,	DESG_MDFC_YN
+								,	ACWR_ASGN_ID
+								,	NOTC_USE_YN
+								,	FRST_RGSR_ID
+								,	FRST_RGST_IP
+								,	FRST_RGST_DT
+								,	FRST_RGST_CLNT_PRGM_ID
+								,	FRST_RGST_SRVR_PRGM_ID
+								,	LAST_UPDR_ID
+								,	LAST_UPDT_IP
+								,	LAST_UPDT_DT
+								,	LAST_UPDT_CLNT_PRGM_ID
+								,	LAST_UPDT_SRVR_PRGM_ID
+								,	RMRK_CTN
+								)
+								values	(	#{prgmId}
+											,	#{prgmNm}
+											,	#{pckgId}
+											,	#{prgmTypCd}
+											,	#{menuGrpId}
+											,	#{bsdvCd}
+											,	#{imdgYn}
+											,	#{prgmMngrId}
+											,	#{desgMdfcYn}
+											,	#{acwrAsgnId}
+											,	#{notcUseYn}
+											,	#{gvUserId}
+											,	#{gvUserIp}
+											,	sysdate
+											,	#{gvClntPrgmId}
+											,	#{gvSrvrPrgmId}
+											,	#{gvUserId}
+											,	#{gvUserIp}
+											,	sysdate
+											,	#{gvClntPrgmId}
+											,	#{gvSrvrPrgmId}
+											,	#{rmrkCtn}
+										   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertPrgmExctVrab (프로그램 실행변수 목록 등록) 
+        Description :                                           csd_prmltdt_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertPrgmExctVrab"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		insert  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-insertPrgmExctVrab_프로그램 실행변수 목록 등록 */
+		into  CSPRMLTDT( PRGM_ID
+							   , EXCT_VRAB_VL
+							   , EXCT_VRAB_DSCR_CTN
+							   , FRST_RGSR_ID
+							   , FRST_RGST_IP
+							   , FRST_RGST_DT
+							   , FRST_RGST_CLNT_PRGM_ID
+							   , FRST_RGST_SRVR_PRGM_ID
+							   , LAST_UPDR_ID
+							   , LAST_UPDT_IP
+							   , LAST_UPDT_DT
+							   , LAST_UPDT_CLNT_PRGM_ID
+							   , LAST_UPDT_SRVR_PRGM_ID
+							   )
+					 values(
+								 #{prgmId}
+							   , #{exctVrabVl}
+							   , #{exctVrabDscrCtn}
+							   , #{gvUserId}
+							   , #{gvUserIp}
+							   , sysdate
+							   , #{gvClntPrgmId}
+							   , #{gvSrvrPrgmId}
+							   , #{gvUserId}
+							   , #{gvUserIp}
+							   , sysdate
+							   , #{gvClntPrgmId}
+							   , #{gvSrvrPrgmId}
+						   )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnInfm (화면목록정보 수정) 
+        Description :                                           csd_prmltmt_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnInfm"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		update  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnInfm_화면목록 정보 수정 */
+						   CSPRMLTMT
+				   set
+						   PRGM_NM            = #{prgmNm}
+						 , PCKG_ID            = #{pckgId}
+						 , PRGM_TYP_CD        = #{prgmTypCd}
+						 , MENU_GRP_ID        = #{menuGrpId}
+						 , BSDV_CD            = #{bsdvCd}
+						 , IMDG_YN            = #{imdgYn}
+						 , PRGM_MNGR_ID       = #{prgmMngrId}
+						 , DESG_MDFC_YN       = #{desgMdfcYn}
+						 , ACWR_ASGN_ID       = #{acwrAsgnId}
+						 , NOTC_USE_YN        = #{notcUseYn}
+						 , LAST_UPDR_ID       = #{gvUserId}
+						 , LAST_UPDT_IP       = #{gvUserIp}
+						 , LAST_UPDT_DT       = sysdate
+						 , LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+						 , LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+						 , RMRK_CTN           = #{rmrkCtn}
+				   where   PRGM_ID = #{prgmId}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deletePrgmExctVrab (프로그램 실행변수 삭제) 
+        Description :                                           csd_prmltdt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deletePrgmExctVrab"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deletePrgmExctVrab_프로그램 실행변수 삭제 DAM */
+		from		CSPRMLTDT
+		where	PRGM_ID = #{prgmId}
+		and		((nvl(#{exctVrabVl}, '*') = '*') or (EXCT_VRAB_VL = #{exctVrabVl}))
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnInfm (화면목록삭제) 
+        Description :                                           csd_prmltmt_d01
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnInfm"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		delete  /*+ com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-deleteScrnInfm_화면목록 삭제 */
+		from		CSPRMLTMT
+		where	PRGM_ID = #{prgmId}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnAsgnExcelUpload (화면담당자ID일괄변경처리) 
+        Description :                                           화면담당자ID를 엑셀업로드 방식으로 일괄변경처리를 수행한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnAsgnExcelUpload"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  >
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-updateScrnAsgnExcelUpload */
+			UPDATE CSPRMLTMT	-- 프로그램목록_T
+			   SET PRGM_MNGR_ID 			= UPPER(#{prgmMngrId})		-- 프로그램관리자ID
+			     , LAST_UPDR_ID       		= #{gvUserId}
+				 , LAST_UPDT_IP       		= #{gvUserIp}
+				 , LAST_UPDT_DT       		= sysdate
+				 , LAST_UPDT_CLNT_PRGM_ID	= #{gvClntPrgmId}
+				 , LAST_UPDT_SRVR_PRGM_ID  	= #{gvSrvrPrgmId}	
+			 WHERE PRGM_ID                  = UPPER(#{prgmId})			-- 프로그램ID
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO">
+	
+		<result property="en" column="EN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn (화면ID의 존재여부판별) 
+        Description :                                           화면ID의 존재여부판별을 수행한다.
+                                                                (Return : N, Y)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsScrnInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsScrnInfmMngmDAO-selectOneScrnInfmExistYn */
+		<![CDATA[
+		SELECT DECODE(COUNT(PRGM_ID), 0, 'N', 'Y') AS EN /* 프로그램 존재여부 */
+		  FROM CSPRMLTMT /* 프로그램목록_T */
+		 WHERE PRGM_ID = UPPER(#{prgmId})
+		]]>
+	</select>
+
+
+
+</mapper>

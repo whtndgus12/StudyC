@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOsetUseStstDAO_sql.xml 
+    Description :                                      처방SET 사용 통계 DAO
+                  -->
+<mapper namespace="MdpOsetUseStstDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO">
+	
+		<result property="yn" column="YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn (처방SET사용통계 등록여부 조회) 
+        Description :                                           처방SET사용통계 등록여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn-result" useCache="true" flushCache="false">
+		 select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-selectOneOrdrSetUseStstRgstYn */
+		           nvl(max('Y'), 'N') as YN
+		  from
+		           MDOSETUST
+		where
+		           OSET_WORK_YMD                      = trunc(sysdate)
+		  and  (OSET_CD, OSET_SNO, OSET_DVSN_CD) in (
+		                                                                     select
+		                                                                               OSET_CD,OSET_SNO,OSET_DVSN_CD
+		                                                                      from
+		                                                                               MDOSETBST
+		                                                                    where
+		                                                                               ORDR_CRTN_LNKN_NO = #{ordrCrtnLnknNo}
+		                                                                     )
+		  and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStst (처방SET사용통계 삭제) 
+        Description :                                           처방SET사용통계 삭제 mdo_osetbst_m01$D15
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStst"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStst */
+		  from  MDOSETUST
+		 where  
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+		   and  OSET_SNO in
+		        (
+		        select  OSET_SNO
+		          from  (
+		                select  OSET_SNO
+		                     ,  HGRN_OSET_SNO
+		                  from  MDOSETBST
+		                 where  OSET_CD      = #{osetCd}
+		                   and  OSET_DVSN_CD = #{osetDvsnCd}
+		                ) x
+		         start
+		          with  OSET_SNO = #{osetSno}
+		        connect
+		            by  prior OSET_SNO = HGRN_OSET_SNO
+		        )
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStstAll (처방SET 사용통계 삭제) 
+        Description :                                           처방SET 사용통계 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStstAll"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-deleteOsetUseStstAll */
+		  from  MDOSETUST
+		 where
+		        OSET_CD      = #{osetCd}
+		   and  OSET_DVSN_CD = #{osetDvsnCd}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetMntcCnfr (처방 SET 정비 확인) 
+        Description :                                           처방 SET을 통해 처방이 발행 된 경우 해당 처방 SET은 정비를 한것으로 간주 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetMntcCnfr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetMntcCnfr */
+		            MDOSETBST
+			 set
+					CNFM_ID = #{cnfmId}                                             /*  확인자ID */
+				 ,  CNFR_DT = sysdate                                               /*  확인일시 */
+				 ,  LAST_UPDR_ID = #{gvUserId}                                           /*  최종수정자ID */
+				 ,  LAST_UPDT_IP = #{gvUserIp}                                           /*  최종수정IP */
+				 ,  LAST_UPDT_DT = sysdate                                               /*  최종수정일시 */
+				 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                  /*  최종수정SMC클라이언트프로그램ID */
+				 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                  /*  최종수정SMC서버프로그램ID */
+		where
+					ORDR_CRTN_LNKN_NO = #{ordrCrtnLnknNo}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetUseStstNtm (처방SET사용통계 사용횟수증가) 
+        Description :                                           당일 처방SET으로 처방 발행한 경우 발행건수 + 1 로 Update 한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetUseStstNtm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-updateOrdrSetUseStstNtm */
+		            MDOSETUST
+		      set
+		            OSET_USE_NTM      = OSET_USE_NTM + 1                                          /*  처방SET사용횟수 */
+		         ,  LAST_UPDR_ID      = #{gvUserId}                                               /*  최종수정자ID */
+		         ,  LAST_UPDT_IP      = #{gvUserIp}                                               /*  최종수정IP */
+		         ,  LAST_UPDT_DT      = sysdate                                                   /*  최종수정일시 */
+		         ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}                                      /*  최종수정SMC클라이언트프로그램ID */
+		         ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}                                      /*  최종수정SMC서버프로그램ID */
+		 where
+		            OSET_WORK_YMD                      = trunc(sysdate)
+		    and (OSET_CD, OSET_SNO, OSET_DVSN_CD) in (
+		                                                                       select
+		                                                                                 OSET_CD, OSET_SNO, OSET_DVSN_CD
+		                                                                        from
+		                                                                                 MDOSETBST
+		                                                                      where
+		                                                                                 ORDR_CRTN_LNKN_NO = #{ordrCrtnLnknNo}
+		                                                                      )
+		    and rownum = 1
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-insertOrdrSetUseStst (처방SET사용통계 등록) 
+        Description :                                           당일 처방SET으로 최초 처방 발행인 경우에 처방SET사용통계를 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-insertOrdrSetUseStst"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOsetUseStstDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOsetUseStstDAO-insertOrdrSetUseStst */
+		 into MDOSETUST(
+		                         OSET_WORK_YMD
+		                       , OSET_CD
+		                       , OSET_SNO
+		                       , OSET_DVSN_CD
+		                       , OSET_USE_NTM
+		                       , FRST_RGSR_ID
+		                       , FRST_RGST_IP
+		                       , FRST_RGST_DT
+		                       , FRST_RGST_CLNT_PRGM_ID
+		                       , FRST_RGST_SRVR_PRGM_ID
+		                       , LAST_UPDR_ID
+		                       , LAST_UPDT_IP
+		                       , LAST_UPDT_DT
+		                       , LAST_UPDT_CLNT_PRGM_ID
+		                       , LAST_UPDT_SRVR_PRGM_ID
+		                       )
+		                  select trunc(sysdate)                                             /*  처방SET작업일자 */
+		                       , OSET_CD                                                    /*  처방SET코드 */
+		                       , OSET_SNO                                                   /*  처방SET일련번호 */
+		                       , OSET_DVSN_CD                                               /*  처방SET구분코드 */
+		                       , 1                                                          /*  처방SET사용횟수 */
+		                       , #{gvUserId}                                                /*  최초등록자ID */
+		                       , #{gvUserIp}                                                /*  최초등록IP */
+		                       , sysdate                                                    /*  최초등록일시 */
+		                       , #{gvClntPrgmId}                                            /*  최초등록SMC클라이언트프로그램ID */
+		                       , #{gvSrvrPrgmId}                                            /*  최초등록SMC서버프로그램ID */
+		                       , #{gvUserId}                                                /*  최종수정자ID */
+		                       , #{gvUserIp}                                                /*  최종수정IP */
+		                       , sysdate                                                    /*  최종수정일시 */
+		                       , #{gvClntPrgmId}                                            /*  최종수정SMC클라이언트프로그램ID */
+		                       , #{gvSrvrPrgmId}                                            /*  최종수정SMC서버프로그램ID  */
+		                    from
+		                         MDOSETBST
+		                   where
+		                         (OSET_CD, OSET_SNO, OSET_DVSN_CD) in (
+		                                                                select
+		                                                                       OSET_CD, OSET_SNO, OSET_DVSN_CD
+		                                                                  from
+		                                                                       MDOSETBST
+		                                                                 where
+		                                                                       ORDR_CRTN_LNKN_NO = #{ordrCrtnLnknNo}
+		                                                              )
+	</insert>
+
+</mapper>

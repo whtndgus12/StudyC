@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoRsinfotStatsDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoRsinfotStatsDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoRsinfotStatsDVO">
+	
+		<result property="comnDtlsCd1" column="COMN_DTLS_CD_1"/>
+		<result property="comnDtlsCd2" column="COMN_DTLS_CD_2"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="useCqy01" column="USE_CQY_01"/>
+		<result property="useCqy02" column="USE_CQY_02"/>
+		<result property="useCqy03" column="USE_CQY_03"/>
+		<result property="useCqy04" column="USE_CQY_04"/>
+		<result property="useCqy05" column="USE_CQY_05"/>
+		<result property="useCqy06" column="USE_CQY_06"/>
+		<result property="useCqy07" column="USE_CQY_07"/>
+		<result property="useCqy08" column="USE_CQY_08"/>
+		<result property="useCqy09" column="USE_CQY_09"/>
+		<result property="useCqy10" column="USE_CQY_10"/>
+		<result property="useCqy11" column="USE_CQY_11"/>
+		<result property="useCqy12" column="USE_CQY_12"/>
+		<result property="useCqy13" column="USE_CQY_13"/>
+		<result property="useCqy14" column="USE_CQY_14"/>
+		<result property="useCqy15" column="USE_CQY_15"/>
+		<result property="useCqy16" column="USE_CQY_16"/>
+		<result property="useCqy17" column="USE_CQY_17"/>
+		<result property="useCqy18" column="USE_CQY_18"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats (통계 조회) 
+        Description :                                           통계 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoRsinfotStatsDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoRsinfotStatsDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoRsinfotStatsDAO-listStats */
+		<![CDATA[
+		    select  /*+ cod_rsinfot_l02$S01_[비대상]시스템접수통계 */ 
+		            decode(aa.PRJT_TISS_CD,null, 'X' , substr(aa.PRJT_TISS_CD, 1, 1)) 	as COMN_DTLS_CD_1
+		          , decode(aa.PRJT_TISS_CD,null, 'XX', aa.PRJT_TISS_CD) 				as COMN_DTLS_CD_2    --프로젝트조직코드
+		          , decode(aa.PRJT_TISS_CD,null, '미배정', c2.DETL_CD_NM) 				as DETL_CD_NM_1
+		          , decode(aa.PRJT_TISS_CD,null, '미배정', c3.DETL_CD_NM) 				as DETL_CD_NM_2
+		          
+		          , sum(aa.DAYT_0) as USE_CQY_01  -- 당일접수건[기준일] V
+		          , sum(aa.DAYT_1) as USE_CQY_02  -- 당일접수건[기준일]	V
+		          , sum(aa.DAYT_3) as USE_CQY_03  -- 조치중[기준일] V
+		          , 0			   as USE_CQY_04  -- DUMMY
+		          , sum(aa.DAYT_4) as USE_CQY_05  -- 조치완료[기준일] V		          
+		          , sum(aa.DAYT_5) as USE_CQY_06  -- 설명완료[기준일] V
+		          
+		          , sum(aa.TOT_0)  as USE_CQY_07  -- 접수[누적] V
+		          , sum(aa.TOT_1)  as USE_CQY_08  -- 접수[누적] V
+		          , sum(aa.TOT_2)  as USE_CQY_09  -- 조치중[누적] V
+		          , 0			   as USE_CQY_10  -- DUMMY
+		          , sum(aa.TOT_3)  as USE_CQY_11  -- 조치완료[누적] V
+		          , sum(aa.TOT_4)  as USE_CQY_12  -- 설명완료[누적] V
+		          
+		          , sum(aa.DAYT_6) as USE_CQY_13  -- 병원이관건[기준일] V
+		          , sum(aa.DAYT_7) as USE_CQY_14  -- 확인불가[기준일] V
+		          
+		          , sum(aa.TOT_6)  as USE_CQY_15  -- 병원이관[누적] V
+		          , sum(aa.TOT_5)  as USE_CQY_16  -- 확인불가[누적] V
+		          
+		          , 0 			   as USE_CQY_17  -- 당일
+		          , 0 			   as USE_CQY_18
+		    from
+		       (
+		          select
+		                 a.PRJT_TISS_CD                                          --프로젝트조직코드
+		                 
+		                ,count(*)                                 	   as TOT_0  -- 접수
+		                ,sum(decode(a.RESP_PRSS_CD, '', 1, '1', 1, 0)) as TOT_1  -- 등록(접수로 본다)
+                        ,sum(decode(a.RESP_PRSS_CD,        '3', 1, 0)) as TOT_2  -- 조치중
+		                ,sum(decode(a.RESP_PRSS_CD,        '4', 1, 0)) as TOT_3  -- 조치완료
+		                ,sum(decode(a.RESP_PRSS_CD,        '5', 1, 0)) as TOT_4  -- 설명완료
+                        
+		                ,sum(decode(a.RESP_PRSS_CD,        '8', 1, 0)) as TOT_5  -- 확인불가                        
+		                ,sum(decode(a.RESP_PRSS_CD,        '9', 1, 0)) as TOT_6  -- 병원이관
+		                
+		                ,0 as DAYT_0
+		                ,0 as DAYT_1
+		                ,0 as DAYT_3
+		                ,0 as DAYT_4
+		                ,0 as DAYT_5
+		                
+		                ,0 as DAYT_6
+		                ,0 as DAYT_7
+		          from  CORSINFOT a,
+		                CCCMCDDMT c6
+		          where  nvl(a.DLTN_YN,'N') = 'N'
+		            and  c6.COMN_GRP_CD(+)          = 'COR_058'
+		            and  a.PRGM_IQRY_RPTN_DVSN_CD   = c6.COMN_DTLS_CD
+		            and  to_char(sysdate,'YYYYMMDD') between to_char(c6.APST_YMD,'YYYYMMDD') and to_char(c6.APFN_YMD,'YYYYMMDD')
+		          --  시스템
+		            and   ((nvl( #{afiSlctCtn} , '*') = '*') or ( #{afiSlctCtn}  like '%' || a.PRJT_TISS_CD || '%' and a.PRJT_TISS_CD is not null) )
+		          --  등록일자
+		            and   ((nvl( #{inqrStrtYmd} , '*') = '*') or
+		                  ( (to_char(a.RGST_YMD,'YYYYMMDD') >=  #{inqrStrtYmd} )
+		                and (to_char(a.RGST_YMD,'YYYYMMDD') <=  #{inqrFnshYmd} )))
+		          --  프로그램문의접수유형코드
+		            and   ((nvl( #{afiInqrCndtNm1} , '*') = '*') or ( #{afiInqrCndtNm1}  like '%' || a.PRGM_IQRY_RPTN_TYPE_CD || '%' and a.PRGM_IQRY_RPTN_TYPE_CD is not null) )
+		          --  최종유형
+		            and   ((nvl( #{afiInqrCndtNm2} , '*') = '*') or ( #{afiInqrCndtNm2}  like '%' || a.RPTN_LAST_TYPE_CD || '%' and a.RPTN_LAST_TYPE_CD is not null) )
+		          --  프로그램문의코드
+		            and   ((nvl( #{afiInqrCndtNm3} , '*') = '*') or ( #{afiInqrCndtNm3}  like '%' || a.RESP_PRSS_CD || '%' and a.RESP_PRSS_CD is not null) )
+		          --  프로그램문의접수구분코드
+		            and   ((nvl( #{afiInqrCndtNm4} , '*') = '*') or ( #{afiInqrCndtNm4}  like '%' || a.PRGM_IQRY_RPTN_DVSN_CD || '%' and a.PRGM_IQRY_RPTN_DVSN_CD is not null) )
+		          group by  a.PRJT_TISS_CD
+		          union all
+		          select
+		              a.PRJT_TISS_CD            --프로젝트조직코드
+		              
+		             ,0 as TOT_0
+		             ,0 as TOT_1
+		             ,0 as TOT_2
+		             ,0 as TOT_3
+		             ,0 as TOT_4
+		             
+		             ,0 as TOT_5
+		             ,0 as TOT_6
+		             
+		             ,sum(case when (to_char(a.RGST_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null) then 1 else 0 end) as DAYT_0 -- 접수[기준일]
+		             ,sum(case when (to_char(a.RGST_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null) then 1 else 0 end) as DAYT_1 -- 접수[기준일]
+		             ,sum(case when ((to_char(a.RGST_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null)) and (a.RESP_PRSS_CD = '3') then 1 else 0 end) as DAYT_3 -- 조치중[기준일]
+		             
+		              -- [DVLR_MNGN_FINS_DD : 개발자조치완료일] 
+		             ,sum(case when ((to_char(a.DVLR_MNGN_FINS_DD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null)) then 1 else 0 end) as DAYT_4 -- 조치완료[기준일]
+		             
+		              -- RPTN_RJCT_YMD : 접수기각일자
+		             ,sum(case when ((to_char(a.RPTN_RJCT_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null)) and (a.RESP_PRSS_CD = '5') then 1 else 0 end) as DAYT_5 -- 설명완료[기준일]		             
+		             ,sum(case when ((to_char(a.RGST_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null)) and (a.RESP_PRSS_CD = '9') then 1 else 0 end) as DAYT_6 -- 병원이관[기준일]
+		             
+		             -- ACWR_CNFR_DSLW_YMD : 현업확인불가일자 : 
+		             ,sum(case when ((to_char(a.ACWR_CNFR_DSLW_YMD,'YYYYMMDD') between #{inqrDt1} and #{inqrDt2}) or (#{inqrDt2} is null)) and (a.RESP_PRSS_CD = '8') then 1 else 0 end) as DAYT_7 -- 확인불가[기준일]
+		          from  CORSINFOT a,
+		                CCCMCDDMT c6
+		          where  nvl(a.DLTN_YN,'N') = 'N'
+		            and  c6.COMN_GRP_CD(+)          = 'COR_058'
+		            and  a.PRGM_IQRY_RPTN_DVSN_CD   = c6.COMN_DTLS_CD
+		            and  to_char(sysdate,'YYYYMMDD') between to_char(c6.APST_YMD,'YYYYMMDD') and to_char(c6.APFN_YMD,'YYYYMMDD')
+		          --  시스템
+		            and   ((nvl( #{afiSlctCtn} , '*') = '*') or ( #{afiSlctCtn}  like '%' || a.PRJT_TISS_CD || '%' and a.PRJT_TISS_CD is not null) )
+		          --  프로그램문의접수유형코드
+		            and   ((nvl( #{afiInqrCndtNm1} , '*') = '*') or ( #{afiInqrCndtNm1}  like '%' || a.PRGM_IQRY_RPTN_TYPE_CD || '%' and a.PRGM_IQRY_RPTN_TYPE_CD is not null) )
+		          --  최종유형
+		            and   ((nvl( #{afiInqrCndtNm2} , '*') = '*') or ( #{afiInqrCndtNm2}  like '%' || a.RPTN_LAST_TYPE_CD || '%' and a.RPTN_LAST_TYPE_CD is not null) )
+		          --  프로그램문의코드
+		            and   ((nvl( #{afiInqrCndtNm3} , '*') = '*') or ( #{afiInqrCndtNm3}  like '%' || a.RESP_PRSS_CD || '%' and a.RESP_PRSS_CD is not null) )
+		          --  프로그램문의접수구분코드
+		            and   ((nvl( #{afiInqrCndtNm4} , '*') = '*') or ( #{afiInqrCndtNm4}  like '%' || a.PRGM_IQRY_RPTN_DVSN_CD || '%' and a.PRGM_IQRY_RPTN_DVSN_CD is not null) )
+		          group by  a.PRJT_TISS_CD
+		       )aa
+		       ,CCCMCDDMT c2
+		       ,CCCMCDDMT c3
+		  where  c2.COMN_GRP_CD(+)          = 'CCC_005'
+		    and  substr(aa.PRJT_TISS_CD, 1, 1) = c2.COMN_DTLS_CD(+)
+		    and  c3.COMN_GRP_CD(+)          = 'CCC_006'
+		    and  aa.PRJT_TISS_CD            = c3.COMN_DTLS_CD(+)
+		   group by
+		        decode(aa.PRJT_TISS_CD,null,'X',substr(aa.PRJT_TISS_CD, 1, 1))
+		       ,decode(aa.PRJT_TISS_CD,null,'XX', aa.PRJT_TISS_CD)           --프로젝트조직코드
+		       ,decode(aa.PRJT_TISS_CD,null,'미배정', c2.DETL_CD_NM)
+		       ,decode(aa.PRJT_TISS_CD,null,'미배정', c3.DETL_CD_NM)
+		       ,decode(C3.SCRN_DSPL_SQNC,null,99,C3.SCRN_DSPL_SQNC)
+		    order by decode(C3.SCRN_DSPL_SQNC,null,99,C3.SCRN_DSPL_SQNC), 1,2
+		 ]]>
+	</select>
+
+
+
+</mapper>

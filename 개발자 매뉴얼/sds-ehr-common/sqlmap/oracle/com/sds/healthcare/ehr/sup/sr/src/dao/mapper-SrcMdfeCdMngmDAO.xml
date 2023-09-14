@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrcMdfeCdMngmDAO_sql.xml 
+    Description :                                      신규검사코드등록
+                  -->
+<mapper namespace="SrcMdfeCdMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-insertSwordrcmt (insert SWORDRCMT) 
+        Description :                                           Table[SWORDRCMT]'s insert method
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-insertSwordrcmt"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-insertSwordrcmt */
+		INSERT INTO SWORDRCMT 
+		(
+		  ORDR_CD		/* 처방코드 */
+		 ,ORDR_VALD_STRT_YMD		/* 처방유효시작일자 */
+		 ,ORDR_VALD_FNSH_YMD		/* 처방유효종료일자 */
+		 ,ORDR_NM		/* 처방명 */
+		 ,EXCF_CD		/* 검사분류코드 */
+		 ,DTLS_EXCF_CD		/* 세부검사분류코드 */
+		 ,SLIP_CD      /* 슬립코드  */
+		 ,FRST_RGSR_ID
+		 ,FRST_RGST_IP
+		 ,FRST_RGST_DT
+		 ,FRST_RGST_CLNT_PRGM_ID
+		 ,FRST_RGST_SRVR_PRGM_ID
+		 ,LAST_UPDR_ID
+		 ,LAST_UPDT_IP
+		 ,LAST_UPDT_DT
+		 ,LAST_UPDT_CLNT_PRGM_ID
+		 ,LAST_UPDT_SRVR_PRGM_ID
+		, SMCR_EXMN_YN
+		)
+		VALUES
+		(
+		  #{ordrCd}
+		 ,nvl(to_date(#{ordrValdStrtYmd},'yyyymmdd'),trunc(sysdate))
+		 ,nvl(to_date(#{ordrValdFnshYmd},'yyyymmdd'),to_date('29991231','yyyymmdd'))
+		 ,#{ordrNm}
+		 ,#{excfCd}
+		 ,#{dtlsExcfCd} 
+		 ,#{slipCd} 
+		 , #{gvUserId}
+		 , #{gvUserIp}
+		 , sysdate
+		 , #{gvClntPrgmId}
+		 , #{gvSrvrPrgmId}
+		 , #{gvUserId}
+		 , #{gvUserIp}
+		 , sysdate
+		 , #{gvClntPrgmId}
+		 , #{gvSrvrPrgmId}
+		 ,'N'
+		)
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd-result" type="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO">
+	
+		<result property="dtlsExcfCd" column="DTLS_EXCF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-listDtlsExcfCd */
+		select EXMN_DTLS_CTRL_CD as DTLS_EXCF_CD
+		 from SZCTRLMMT  
+		 where  EXMN_CTRL_CD ='SZ001'
+		 and APLY_PART_CD =#{excfCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateMdordrcmt (처방마스터 수정) 
+        Description :                                           처방마스터 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateMdordrcmt"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateMdordrcmt */
+		update MDORDRCMT
+		   set EXCF_CD=#{excfCd}
+		     , DTLS_EXCF_CD=#{dtlsExcfCd}
+		     ,  LAST_UPDR_ID            = #{gvUserId}
+		     ,  LAST_UPDT_IP            = #{gvUserIp}
+		     ,  LAST_UPDT_DT            = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		where ORDR_CD = #{ordrCd}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateSwordrcmtOrdrNm (검사처방 마스터 처방명 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateSwordrcmtOrdrNm"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO"  >
+		<![CDATA[
+		update /*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-updateSwordrcmtOrdrNm */
+		            SWORDRCMT 
+		   set  
+		            ORDR_NM                 = #{ordrNm}
+		       , SLIP_CD                  = #{slipCd}
+		       ,  LAST_UPDR_ID            = #{gvUserId}
+		       ,  LAST_UPDT_IP            = #{gvUserIp}
+		       ,  LAST_UPDT_DT            = sysdate
+		       ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		       ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		 where 
+		            ORDR_CD = #{ordrCd}
+		     and  ORDR_VALD_FNSH_YMD >= trunc(sysdate)  -- 오늘 이후에 존재하는 이력은 전부
+		     and  #{ordrNm} is not null
+		     and  (ORDR_NM != #{ordrNm} or -- 처방명이 변경되었을 경우에만 
+		           nvl(SLIP_CD, '*') != nvl(#{slipCd}, '*'))  --슬립코드 변경시 
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp-result" type="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO">
+	
+		<result property="slipCd" column="SLIP_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp"  parameterType="com.sds.healthcare.ehr.sup.sr.src.vo.SrcMdfeCdMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-src-dao-SrcMdfeCdMngmDAO-selectOneTmp */
+		select '' as SLIP_CD
+		 from  dual
+	</select>
+
+
+
+</mapper>

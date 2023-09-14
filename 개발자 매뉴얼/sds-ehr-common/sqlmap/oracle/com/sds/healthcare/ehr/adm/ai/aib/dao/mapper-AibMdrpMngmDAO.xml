@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AibMdrpMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="AibMdrpMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibMdrpMngmDAO-insertMdrpItemMdfc (진료접수항목변경이력 등록) 
+        Description :                                           aid_rcrimht_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibMdrpMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibMdrpMngmDAO-insertMdrpItemMdfc"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibMdrpMngmDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibMdrpMngmDAO-insertMdrpItemMdfc */
+		  into  APRCRIMHT
+				 (
+				    MDRP_NO
+				 ,  MDFC_CLMN_NM
+				 ,  MDFC_DT
+				 ,  ITEM_CHRC_VL1
+				 ,  ITEM_NMBR_VL1
+				 ,  ITEM_YMD_VL1
+				 ,  ITEM_CHRC_VL2
+				 ,  ITEM_NMBR_VL2
+				 ,  ITEM_YMD_VL2
+				 ,  FRST_RGSR_ID
+				 ,  FRST_RGST_IP
+				 ,  FRST_RGST_DT
+				 ,  FRST_RGST_CLNT_PRGM_ID
+				 ,  FRST_RGST_SRVR_PRGM_ID
+				 ,  LAST_UPDR_ID
+				 ,  LAST_UPDT_IP
+				 ,  LAST_UPDT_DT
+				 ,  LAST_UPDT_CLNT_PRGM_ID
+				 ,  LAST_UPDT_SRVR_PRGM_ID
+				 )
+		values
+				 (
+		   		    #{mdrpNo}
+		   	     ,  #{mdfcClmnNm}
+				 ,  decode(sysdate,(select max(x.MDFC_DT) from APRCRIMHT x where x.MDRP_NO = #{mdrpNo} and x.MDFC_CLMN_NM = #{mdfcClmnNm}), sysdate + (1/24/60/60), sysdate)
+		         --,  sysdate
+				 ,  #{itemChrcVl1}
+		   	     ,  #{itemNmbrVl1}
+		   	     ,  to_date(#{itemYmdVl1},'yyyymmddhh24miss')
+		   	     ,  #{itemChrcVl2}
+		   	     ,  #{itemNmbrVl2}
+		   	     ,  to_date(#{itemYmdVl2},'yyyymmddhh24miss')
+		   	     ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+				 ,  #{gvUserId}
+				 ,  #{gvUserIp}
+				 ,  sysdate
+				 ,  #{gvClntPrgmId}
+				 ,  #{gvSrvrPrgmId}
+				 )
+	</insert>
+
+</mapper>

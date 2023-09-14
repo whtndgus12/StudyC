@@ -1,0 +1,1498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HmaSttmMngmDAO_sql.xml 
+    Description :                                      전표관리 DAO
+                  -->
+<mapper namespace="HmaSttmMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="rsltVl" column="RSLT_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr (지급방법중복여부확인) 
+        Description :                                           hmd_hma1101_s02$S01_전표관리_지급방법중복여부확인_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneGiveMthdDplcYnCnfr */
+			   min(s1.RSLT_VL) as RSLT_VL
+		   from
+			   (select
+					case when max(t.STLN) is null
+						 then 'T'
+						 else 'F'
+					end                           RSLT_VL
+				from
+					HMSTDEBRT t
+				   ,HMPMNDTDT a
+				   ,HZMICOCDT b
+				where
+					t.BSPL_CD                                      = #{bsplCd}
+				and t.STTM_YMD                                     = #{sttmYmd}
+				and t.STTM_NO                                      = #{sttmNo}
+				and (   #{stln} is null
+					 or t.STLN                   <> #{stln}
+					)
+				and t.DEBT_CRED_DVSN_CD                            = 'C'
+				and a.TOAC_CD                                      = t.TOAC_CD
+				and nvl(a.MNGM_INST_DATA_CD, '*')                  = nvl(t.MNGM_INST_DATA_CD, '*')
+				and replace(nvl(a.MNGM_NO_DATA_CD, '*'), '-', '')  = replace(nvl(t.MNGM_NO_DATA_CD, '*'), '-', '')
+				and nvl(a.MNGM_YMD_DATA_CD, '*')                   = nvl(t.MNGM_YMD_DATA_CD, '*')
+				and nvl(a.MNGM_DVSN_DATA_CD, '*')                  = nvl(t.MNGM_DVSN_DATA_CD, '*')
+				and nvl(a.MNGM_ITEM_DATA_CD, '*')                  = nvl(t.MNGM_ITEM_DATA_CD, '*')
+				and a.BSPL_CD                                      = #{bsplCd}
+				and a.PYMN_MNGM_NO                                 = (select
+																		  PYMN_MNGM_NO
+																	  from
+																		  HMTXIBRKT
+																	  where
+																		  BSPL_CD = #{bsplCd}
+																	  and TXIN_NO = #{evdnMngmNo}
+																	  and '10'    = #{rcptKindCd}
+																	  union all
+																	  select
+																		  PYMN_MNGM_NO
+																	  from
+																		  HMCRUSBRT
+																	  where
+																		  BSPL_CD      = #{bsplCd}
+																	  and CRCR_MNGM_NO = #{evdnMngmNo}
+																	  and '30'         = #{rcptKindCd}
+																	  union all
+																	  select
+																		  PYMN_MNGM_NO
+																	  from
+																		  HMETEVBRT
+																	  where
+																		  BSPL_CD          = #{bsplCd}
+																	  and ETC_EVDN_MNGM_NO = #{evdnMngmNo}
+																	  and '50'             = #{rcptKindCd}
+																	  union all
+																	  select
+																		  PYMN_MNGM_NO
+																	  from
+																		  HMTXSBRKT
+																	  where
+																		  BSPL_CD      = #{bsplCd}
+																	  and TXSR_MNGM_NO = #{evdnMngmNo}
+																	  and '70'         = #{rcptKindCd}
+																	 )
+				and b.BSPL_CD                                      = #{bsplCd}
+				and b.COMN_GRP_CD                                  = 'HMA_022'
+				and b.MIS_COMN_CD                                  = t.TOAC_CD
+				and #{rcptKindCd}              is not null
+				union all
+				select
+					case when max(t.STLN) is null
+						 then 'T'
+						 else 'F'
+					end                           RSLT_VL
+				from
+					HMSTDEBRT t
+				where
+					t.BSPL_CD                                      = #{bsplCd}
+				and t.STTM_YMD                                     = #{sttmYmd}
+				and t.STTM_NO                                      = #{sttmNo}
+				and (   #{stln} is null
+					 or t.STLN                   <> #{stln}
+					)
+				and t.DEBT_CRED_DVSN_CD                            = 'C'
+				and t.TOAC_CD                                      = #{toacCd}
+				and replace(nvl(t.MNGM_NO_DATA_CD, '*'), '-', '')  = replace(nvl(#{mngmNoDataCd}, '*'), '-', '')
+				and #{rcptKindCd}              is null
+			   ) s1
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="fbSno" column="FB_SNO"/>
+		<result property="fbMngmNo" column="FB_MNGM_NO"/>
+		<result property="giveTrgtMngmInstNm" column="GIVE_TRGT_MNGM_INST_NM"/>
+		<result property="fbTnsfAmt" column="FB_TNSF_AMT"/>
+		<result property="fbBankCd" column="FB_BANK_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="depstAcntNo" column="DEPST_ACNT_NO"/>
+		<result property="depstDposNm" column="DEPST_DPOS_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl (FB이체내역상세_다건조회) 
+        Description :                                           hmd_hma1108_l01$S01_전표관리_FB이체내역상세_HMFBTNBDT_다건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listFbTnsfBrkdDetl */
+				   rownum as INQR_SNO
+				,  a.BSPL_CD as BSPL_CD                 /* 사업장코드 */
+				,  a.STTM_YMD as STTM_YMD                /* 전표일자 */
+				,  a.STTM_NO as STTM_NO                 /* 전표번호 */
+				,  a.STLN as STLN                    /* 전표LINE */
+				,  a.FB_SNO as FB_SNO                  /* FB일련번호 */
+				,  a.FB_MNGM_NO as FB_MNGM_NO              /* FB관리번호 */
+				,  b.GIVE_TRGT_MNGM_INST_NM as GIVE_TRGT_MNGM_INST_NM  /* 지급대상관리기관명 */
+				,  a.FB_TNSF_AMT as FB_TNSF_AMT             /* FB이체금액 */
+				,  a.FB_BANK_CD as FB_BANK_CD              /* FB은행코드 */
+				,  e.COMN_CD_NM as COMN_CD_NM              /* FB은행명 */
+				,  b.DEPST_ACNT_NO as DEPST_ACNT_NO           /* 예금계좌번호 */
+				,  b.DEPST_DPOS_NM as DEPST_DPOS_NM           /* 예금예금주명 */
+			 from
+				   HMFBTNBDT a  /* FB이체내역상세 */
+				,  HMGITRACT b  /* 지급대상계좌번호 */
+				,  HZMICOCDT e  /* MIS 공통코드 */
+			where
+				   a.BSPL_CD           = #{bsplCd}  /* 사업장코드 */
+			  and  a.STTM_YMD          = #{sttmYmd} /* 전표일자 */
+			  and  a.STTM_NO           = #{sttmNo}  /* 전표번호 */
+			  and  a.STLN              = #{stln}     /* 전표LINE */
+		   /* 지급대상계좌번호 */
+			  and  b.BSPL_CD           = a.BSPL_CD
+			  and  b.GIVE_TRGT_MNGM_NO = a.FB_MNGM_NO                 /* FB관리번호=지급대상관리번호 */
+		   /* 은행 */
+			  and  e.BSPL_CD           = a.BSPL_CD
+			  and  e.COMN_GRP_CD       = 'GA036'                      /* 공통그룹코드[GA036:은행코드] */
+			  and  e.MIS_COMN_CD       = a.FB_BANK_CD                 /* MIS공통코드=FB은행코드 */
+			order
+			   by  a.BSPL_CD
+				,  a.STTM_YMD
+				,  a.STTM_NO
+				,  a.STLN
+				,  a.FB_SNO
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="etcEvdnMngmNo" column="ETC_EVDN_MNGM_NO"/>
+		<result property="frmaTrncYmd" column="FRMA_TRNC_YMD"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="dprtNm" column="DPRT_NM"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="etcEvdnCstrNm" column="ETC_EVDN_CSTR_NM"/>
+		<result property="trncAmt" column="TRNC_AMT"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="atflNm" column="ATFL_NM"/>
+		<result property="asgnId" column="ASGN_ID"/>
+		<result property="asgnNm" column="ASGN_NM"/>
+		<result property="atmtJrnzYn" column="ATMT_JRNZ_YN"/>
+		<result property="trncYmd" column="TRNC_YMD"/>
+		<result property="typeDvsnCd" column="TYPE_DVSN_CD"/>
+		<result property="typeDvsnNm" column="TYPE_DVSN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd (기타영수증내역조회_다건조회) 
+        Description :                                           hmd_hma110b_l01$S01_전표관리_기타영수증내역조회_다건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listEtcRcptBrkd */
+			   rownum                                                   as INQR_SNO
+			  ,s2.BSPL_CD                                              as BSPL_CD          /*사업장코드 */
+			  ,s2.ETC_EVDN_MNGM_NO                                     as ETC_EVDN_MNGM_NO /*기타증빙관리번호 */
+			  ,to_char(to_date(s2.TRNC_YMD, 'YYYYMMDD'), 'YYYY-MM-DD') as FRMA_TRNC_YMD         /*거래일자 */
+			  ,s2.DPRT_CD                                              as DPRT_CD          /*부서코드 */
+			  ,b.KORN_DPRT_NM                                          as DPRT_NM          /*부서 */
+			  ,s2.USER_ID                                              as USER_ID          /*사용자ID */
+			  ,c.EMPY_NM                                               as USER_NM          /*사용자 */
+			  ,s2.ETC_EVDN_CSTR_NM                                     as ETC_EVDN_CSTR_NM /*기타증빙거래처명 */
+			  ,s2.TRNC_AMT                                             as TRNC_AMT         /*거래금액 */
+			  ,s2.RMRK_CTN                                             as RMRK_CTN         /*비고내용 */
+			  ,s2.ATFL_NM                                              as ATFL_NM          /*첨부파일명 */
+			  ,s2.ASGN_ID                                              as ASGN_ID          /*담당자ID */
+			  ,d.EMPY_NM                                               as ASGN_NM          /*담당자 */
+			  ,case when     s2.MNDT_YN_1 = 'N'
+						 and s2.MNDT_YN_2 = 'N'
+					then 'Y'
+					else 'N'
+			   end                                                     as ATMT_JRNZ_YN     /*자동기표여부    [Y:자동기표가능][N:자동기표불가능] */
+			  ,s2.TRNC_YMD
+			  ,s2.TYPE_DVSN_CD
+			  ,s2.TYPE_DVSN_NM
+		   from
+			   (select
+					s1.BSPL_CD          BSPL_CD
+				   ,s1.ETC_EVDN_MNGM_NO ETC_EVDN_MNGM_NO
+				   ,s1.TRNC_YMD         TRNC_YMD
+				   ,s1.DPRT_CD          DPRT_CD
+				   ,s1.USER_ID          USER_ID
+				   ,s1.ETC_EVDN_CSTR_NM ETC_EVDN_CSTR_NM
+				   ,s1.TRNC_AMT         TRNC_AMT
+				   ,s1.RMRK_CTN         RMRK_CTN
+				   ,s1.ATFL_NM          ATFL_NM
+				   ,s1.ASGN_ID          ASGN_ID
+				   ,case when    nvl(ab.USE_MNGM_NO, '*') = '*'
+							  or (    ad.CSTR_USE_YN       = 'Y'
+								  and nvl(ab.CSTR_CD, '*') = '*'
+								 )
+							  or (    nvl(ad.MNGM_INST_TYPE_CD, '*') <> '*'
+								  and nvl(ab.MNGM_INST_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ad.MNGM_NO_TYPE_CD, '*') <> '*'
+								  and nvl(ab.MNGM_NO_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ad.MNGM_YMD_TYPE_CD, '*') <> '*'
+								  and nvl(ab.MNGM_YMD_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ad.MNGM_DVSN_TYPE_CD, '*') <> '*'
+								  and nvl(ab.MNGM_DVSN_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ad.MNGM_ITEM_TYPE_CD, '*') <> 'E3'
+								  and nvl(ad.MNGM_ITEM_TYPE_CD, '*') <> 'E4'
+								  and nvl(ad.MNGM_ITEM_TYPE_CD, '*') <> 'E5'
+								  and nvl(ad.MNGM_ITEM_TYPE_CD, '*') <> '*'
+								  and nvl(ab.MNGM_ITEM_DATA_CD, '*')  = '*'
+								 )
+							  or (    ad.MNGM_ITEM_TYPE_CD   in ('E3', 'E4', 'E5')
+								  and (   ab.TOAC_CD like '2%'
+									   or (    ab.TOAC_CD  like '1%'
+										   and s1.TRNC_AMT    < 0
+										  )
+									  )
+								  and ab.MNGM_ITEM_DATA_CD   is null
+								 )
+							  or s1.DETL_BRKD_CTN is null
+						 then 'Y'
+						 else 'N'
+					end                                                      MNDT_YN_1    /*필수여부(사용목적, Y:추가입력필요, N:추가입력불요) */
+				   ,case when    nvl(ac.PYMN_MNGM_NO, '*') = '*'
+							  or (    ae.CSTR_USE_YN       = 'Y'
+								  and nvl(ac.CSTR_CD, '*') = '*'
+								 )
+							  or (    nvl(ae.MNGM_INST_TYPE_CD, '*') <> '*'
+								  and nvl(ac.MNGM_INST_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ae.MNGM_NO_TYPE_CD, '*') <> '*'
+								  and nvl(ac.MNGM_NO_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ae.MNGM_YMD_TYPE_CD, '*') <> '*'
+								  and nvl(ac.MNGM_YMD_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ae.MNGM_DVSN_TYPE_CD, '*') <> '*'
+								  and nvl(ac.MNGM_DVSN_DATA_CD, '*')  = '*'
+								 )
+							  or (    nvl(ae.MNGM_ITEM_TYPE_CD, '*') <> 'E3'
+								  and nvl(ae.MNGM_ITEM_TYPE_CD, '*') <> 'E4'
+								  and nvl(ae.MNGM_ITEM_TYPE_CD, '*') <> 'E5'
+								  and nvl(ae.MNGM_ITEM_TYPE_CD, '*') <> '*'
+								  and nvl(ac.MNGM_ITEM_DATA_CD, '*')  = '*'
+								 )
+							  or (    ae.MNGM_ITEM_TYPE_CD   in ('E3', 'E4', 'E5')
+								  and (   ac.TOAC_CD like '1%'
+									   or (    ac.TOAC_CD  like '2%'
+										   and s1.TRNC_AMT    < 0
+										  )
+									  )
+								  and ac.MNGM_ITEM_DATA_CD   is null
+								 )
+							  or (    ac.TOAC_CD   like '2150%'
+								  and ac.TOAC_CD not in ('215008', '215010')
+								  and not exists        (select
+															 1
+														 from
+															 HMGITRACT ss1
+														 where
+															 ss1.BSPL_CD                                   = #{bsplCd}
+														 and ss1.GIVE_TRGT_MNGM_DVSN_CD                    = s1.GIVE_TRGT_MNGM_DVSN_CD
+														 and case when ss1.GIVE_TRGT_MNGM_DVSN_CD = '3'
+																  then substr(ss1.GIVE_TRGT_MNGM_NO, 1, 7)
+																  else ss1.GIVE_TRGT_MNGM_NO
+															 end                                           = s1.GIVE_TRGT_MNGM_NO
+														 and ss1.DEPST_CNFR_RSLT_CD                        = '0000'
+				/*고신대추가: 설명은 HmaSttmMngmDAO-listEtcRcptBrkd 참고 */
+				                                                     union 
+				                                                    select 
+				                                                         1
+				                                                     from
+				                                                         HMGITRACT ss1
+				                                                     where
+				                                                         ss1.BSPL_CD                                   = #{bsplCd}
+				                                                     and ss1.GIVE_TRGT_MNGM_NO =(select MNGM_NO_DATA_CD  from HMPMNDTDT where PYMN_MNGM_NO = s1.PYMN_MNGM_NO)
+				                                                     and ss1.DEPST_CNFR_RSLT_CD                        = '0000'
+														)
+								 )
+							  or s1.DETL_BRKD_CTN is null
+						 then 'Y'
+						 else 'N'
+					end                                                      MNDT_YN_2    /*필수여부(지급방법, Y:추가입력필요, N:추가입력불요) */
+				   ,s1.TYPE_DVSN_CD
+				   ,z.COMN_CD_NM as TYPE_DVSN_NM
+				from
+					(select
+						 BSPL_CD          BSPL_CD
+						,ETC_EVDN_MNGM_NO ETC_EVDN_MNGM_NO
+						,TRNC_YMD         TRNC_YMD
+						,DPRT_CD          DPRT_CD
+						,USER_ID          USER_ID
+						,ETC_EVDN_CSTR_NM ETC_EVDN_CSTR_NM
+						,TRNC_AMT         TRNC_AMT
+						,RMRK_CTN         RMRK_CTN
+						,ATFL_NM          ATFL_NM
+						,ASGN_ID          ASGN_ID
+						,USE_MNGM_NO      USE_MNGM_NO
+						,PYMN_MNGM_NO     PYMN_MNGM_NO
+						,case when USER_DVSN_CD = '1'
+							  then '1'
+							  else '3'
+						 end                                                    GIVE_TRGT_MNGM_DVSN_CD
+						,case when USER_DVSN_CD = '1'
+							  then USER_ID
+							  when length(RFRN_NO) < 7
+							  then substr(RFRN_NO, 1, 6)
+							  when substr(RFRN_NO, 7, 1) not in ('1','2','3','4','5','6','7','8','9','0')
+							  then substr(RFRN_NO, 1, 7)
+							  when mod(to_number(substr(RFRN_NO, 7, 1)), 2) = 1
+							  then substr(RFRN_NO, 1, 6) || 'B'
+							  else substr(RFRN_NO, 1, 6) || 'A'
+						 end                                                    GIVE_TRGT_MNGM_NO
+						,DETL_BRKD_CTN                                          DETL_BRKD_CTN
+						,TYPE_DVSN_CD
+					 from
+						 HMETEVBRT
+					 where
+						 BSPL_CD  = #{bsplCd}
+					 and STTM_YMD = #{sttmYmd}
+					 and STTM_NO  = #{sttmNo}
+					 and STLN     = #{stln}
+					 union all
+					 select
+						 BSPL_CD          BSPL_CD
+						,ETC_EVDN_MNGM_NO ETC_EVDN_MNGM_NO
+						,TRNC_YMD         TRNC_YMD
+						,DPRT_CD          DPRT_CD
+						,USER_ID          USER_ID
+						,ETC_EVDN_CSTR_NM ETC_EVDN_CSTR_NM
+						,TRNC_AMT         TRNC_AMT
+						,RMRK_CTN         RMRK_CTN
+						,ATFL_NM          ATFL_NM
+						,ASGN_ID          ASGN_ID
+						,USE_MNGM_NO      USE_MNGM_NO
+						,PYMN_MNGM_NO     PYMN_MNGM_NO
+						,case when USER_DVSN_CD = '1'
+							  then '1'
+							  else '3'
+						 end                                                    GIVE_TRGT_MNGM_DVSN_CD
+						,case when USER_DVSN_CD = '1'
+							  then USER_ID
+							  when length(RFRN_NO) < 7
+							  then substr(RFRN_NO, 1, 6)
+							  when substr(RFRN_NO, 7, 1) not in ('1','2','3','4','5','6','7','8','9','0')
+							  then substr(RFRN_NO, 1, 7)
+							  when mod(to_number(substr(RFRN_NO, 7, 1)), 2) = 1
+							  then substr(RFRN_NO, 1, 6) || 'B'
+							  else substr(RFRN_NO, 1, 6) || 'A'
+						 end                                                    GIVE_TRGT_MNGM_NO
+						,DETL_BRKD_CTN                                          DETL_BRKD_CTN
+						,TYPE_DVSN_CD
+					 from
+						 HMETEVBRT
+					 where
+						 TRNC_YMD     >= case when #{fromInqrYmdEn} = 'Y'
+											  then #{fromInqrYmd}          /*거래일자     [FROM] */
+											  else TRNC_YMD
+										 end
+					 and TRNC_YMD     <= #{toInqrYmd}                      /*거래일자     [TO] */
+		--발의부서가 자신이 속한 부서(+하위부서)인 경우이거나.
+					 and (DPRT_CD      in (select
+											  regexp_substr(#{comnCdNm}, '[^,]+', 1, level)
+										  from
+											  DUAL
+										  connect by level <= regexp_count(#{comnCdNm}, ',') + 1
+										 )
+		--경리부서인경우 부서입력안했을때 다 보이게
+						or
+							'Y' = #{acnnDprtYn}
+					)
+					 and STTM_PRSG_YN  = 'N'                                                  /*전표처리여부 [=미처리] */
+					 and #{dvsnCd} is null
+					 and BSPL_CD = #{bsplCd}
+					 order by BSPL_CD
+							 ,TRNC_YMD
+							 ,ETC_EVDN_MNGM_NO
+					)                s1
+				   ,HMUMNDTDT ab /*(HM)사용필수기재사항 [사용목적] */
+				   ,HMPMNDTDT ac /*(HM)결제필수기재사항 [지급방법] */
+				   ,HZTOACCDT ad /*(HZ)계정과목(MDM연계)[사용목적] */
+				   ,HZTOACCDT ae /*(HZ)계정과목(MDM연계)[지급방법] */
+				   ,HZMICOCDT z /* MIS공통코드 HMA_032 기타증빙 유형구분코드*/
+				where
+					ab.BSPL_CD      (+) = #{bsplCd}
+				and ab.USE_MNGM_NO  (+) = s1.USE_MNGM_NO
+				and ac.BSPL_CD      (+) = #{bsplCd}
+				and ac.PYMN_MNGM_NO (+) = s1.PYMN_MNGM_NO
+				and ad.BSPL_CD      (+) = #{bsplCd}
+				and ad.TOAC_CD      (+) = ab.TOAC_CD
+				and to_char(trunc(sysdate),'yyyymmdd') between ad.USE_STRT_YMD(+) and ad.USE_FNSH_YMD(+)
+				and ae.BSPL_CD      (+) = #{bsplCd}
+				and ae.TOAC_CD      (+) = ac.TOAC_CD
+				and to_char(trunc(sysdate),'yyyymmdd') between ae.USE_STRT_YMD(+) and ae.USE_FNSH_YMD(+)
+				and z.BSPL_CD      (+)= #{bsplCd}
+				and z.COMN_GRP_CD  (+)= 'HMA_032'
+				and z.MIS_COMN_CD  (+)= s1.TYPE_DVSN_CD
+			   )                s2
+			  ,HZDEPTMMT b /* 조직IF */
+			  ,HZUSERMMT c /* 사원Master I/F */
+			  ,HZUSERMMT d /* 사원Master I/F */
+		   where
+			   b.DPRT_CD (+) = s2.DPRT_CD
+		   and c.EMNO    (+) = s2.USER_ID
+		   and d.EMNO    (+) = s2.ASGN_ID
+			]]>
+				--부서경비화면 조회 쿼리와 order by 일치 HzaAcnsDprtDAO-selectOneAcnsDprtBrkd
+				   order by BSPL_CD 
+				          , TRNC_YMD
+				          , ETC_EVDN_MNGM_NO
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="crcrMngmNo" column="CRCR_MNGM_NO"/>
+		<result property="frmaTrncYmd" column="FRMA_TRNC_YMD"/>
+		<result property="chno16CardNo" column="CHNO16_CARD_NO"/>
+		<result property="giveTrgtMngmInstNm" column="GIVE_TRGT_MNGM_INST_NM"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="mmbrNm" column="MMBR_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="dprtNm" column="DPRT_NM"/>
+		<result property="cdapNo" column="CDAP_NO"/>
+		<result property="wonTrncAmt" column="WON_TRNC_AMT"/>
+		<result property="dmscUseYn" column="DMSC_USE_YN"/>
+		<result property="afstBsrn" column="AFST_BSRN"/>
+		<result property="afstNm" column="AFST_NM"/>
+		<result property="afstBstyNm" column="AFST_BSTY_NM"/>
+		<result property="frmaTrncYmd1" column="FRMA_TRNC_YMD_1"/>
+		<result property="evdnDvsnCd" column="EVDN_DVSN_CD"/>
+		<result property="atflNm" column="ATFL_NM"/>
+		<result property="crcrAfstRmrkCtn" column="CRCR_AFST_RMRK_CTN"/>
+		<result property="wrnnTrgtYn" column="WRNN_TRGT_YN"/>
+		<result property="bstyNm" column="BSTY_NM"/>
+		<result property="dslwTrgtYn" column="DSLW_TRGT_YN"/>
+		<result property="atmtJrnzYn" column="ATMT_JRNZ_YN"/>
+		<result property="trncDvsnCd" column="TRNC_DVSN_CD"/>
+		<result property="afiTrncDvsnNm" column="AFI_TRNC_DVSN_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd (신용카드내역조회_다건조회) 
+        Description :                                           hmd_hma110c_l01$S01_전표관리_신용카드내역조회_다건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listCrcrBrkd */
+		       rownum as INQR_SNO
+		     , BSPL_CD
+		     , CRCR_MNGM_NO
+		     , FRMA_TRNC_YMD
+		     , CHNO16_CARD_NO
+		     , GIVE_TRGT_MNGM_INST_NM
+		     , USER_ID
+		     , MMBR_NM
+		     , DPRT_CD
+		     , DPRT_NM
+		     , CDAP_NO
+		     , WON_TRNC_AMT
+		     , DMSC_USE_YN
+		     , AFST_BSRN
+		     , AFST_NM
+		     , AFST_BSTY_NM
+		     , FRMA_TRNC_YMD_1
+		     , EVDN_DVSN_CD
+		     , ATFL_NM
+		     , CRCR_AFST_RMRK_CTN
+		     , WRNN_TRGT_YN
+		     , BSTY_NM
+		     , DSLW_TRGT_YN
+		     , ATMT_JRNZ_YN
+		     , TRNC_DVSN_CD
+		     , AFI_TRNC_DVSN_NM
+		  from (   
+				select  
+				        s2.BSPL_CD                                                  as BSPL_CD            /* 사업장코드 */
+				      , s2.CRCR_MNGM_NO                                             as CRCR_MNGM_NO       /* 신용카드관리번호 */
+				      , to_char(to_date(s2.TRNC_YMD, 'YYYYMMDD'), 'YYYY-MM-DD')     as FRMA_TRNC_YMD      /* 거래일자 */
+				      , s2.CHNO16_CARD_NO                                           as CHNO16_CARD_NO     /* 16자리카드번호 */
+				      , f.GIVE_TRGT_MNGM_INST_NM                                    as GIVE_TRGT_MNGM_INST_NM /* 지급대상관리기관명 */
+				      , s2.USER_ID                                                  as USER_ID            /* 사용자ID */
+				      , s2.MMBR_NM                                                  as MMBR_NM            /* 회원명 */
+				      , s2.DPRT_CD                                                  as DPRT_CD            /* 부서코드 */
+				      , s2.DPRT_NM                                                  as DPRT_NM            /* 부서명 */
+				      , s2.CDAP_NO                                                  as CDAP_NO            /* 카드승인번호 */
+				      , s2.WON_TRNC_AMT                                             as WON_TRNC_AMT       /*원화거래금액 */
+				      , s2.DMSC_USE_YN                                              as DMSC_USE_YN        /*국내사용여부 */
+				      , s2.AFST_BSRN                                                as AFST_BSRN          /*가맹점사업자등록번호 */
+				      , s2.AFST_NM                                                  as AFST_NM            /*가맹점명 */
+				      , s2.AFST_BSTY_NM                                             as AFST_BSTY_NM       /*가맹점업종명 */
+				      , to_char(to_date(s2.USE_APRV_YMD, 'YYYYMMDD'), 'YYYY-MM-DD') as FRMA_TRNC_YMD_1       /*사용승인일자 */
+				      , s2.EVDN_DVSN_CD                                             as EVDN_DVSN_CD       /*증빙구분코드 */
+				      , s2.ATFL_NM                                                  as ATFL_NM            /*첨부파일명 */
+				      , c.CRCR_AFST_RMRK_CTN                                        as CRCR_AFST_RMRK_CTN /*신용카드가맹점비고내용 */
+				      , case when c.BSRN is null then 'N'
+				             else 'Y'
+				        end                                                         as WRNN_TRGT_YN       /*경고대상 */
+				      , d.COMN_CD_NM                                                as BSTY_NM            /*업종명 */
+				      , case when    d.CHRC_CD_VL01  = '1'
+				                  or s2.CLAM_EXPN_YN = 'N'
+				             then 'Y'
+				             else 'N'
+				        end                                                         as DSLW_TRGT_YN       /*불가대상 */
+				      , case when     s2.MNDT_YN_1 = 'N'
+				                  and s2.MNDT_YN_2 = 'N'
+				             then 'Y'
+				             else 'N'
+				        end                                                         as ATMT_JRNZ_YN /* 자동기표여부    [Y:자동기표가능][N:자동기표불가능] */
+				      , s2.TRNC_DVSN_CD                                             as TRNC_DVSN_CD         /* 거래구분코드 */
+		              ,case s2.TRNC_DVSN_CD when '0' then '정상'
+		                                    when '1' then '취소'
+		                end                                                         as AFI_TRNC_DVSN_NM     /* AFI거래구분명 */
+				   from
+				        (select
+				                s1.BSPL_CD                            BSPL_CD
+				              , s1.CRCR_MNGM_NO                       CRCR_MNGM_NO
+				              , s1.TRNC_YMD                           TRNC_YMD
+				              , s1.CHNO16_CARD_NO                     CHNO16_CARD_NO
+				              , s1.USER_ID                            USER_ID
+				              , s1.MMBR_NM                            MMBR_NM
+				              , nvl(s1.DPRT_CD, s1.CARD_CMPN_DVSN_CD) DPRT_CD
+				              , s1.DPRT_NM                            DPRT_NM
+				              , s1.CDAP_NO                            CDAP_NO
+				              , s1.WON_TRNC_AMT                       WON_TRNC_AMT
+				              , s1.DMSC_USE_YN                        DMSC_USE_YN
+				              , s1.AFST_BSRN                          AFST_BSRN
+				              , s1.AFST_NM                            AFST_NM
+				              , s1.AFST_BSTY_NM                       AFST_BSTY_NM
+				              , s1.USE_APRV_YMD                       USE_APRV_YMD
+				              , s1.EVDN_DVSN_CD                       EVDN_DVSN_CD
+				              , s1.ATFL_NM                            ATFL_NM
+				              , s1.USE_BRKD_CLSF_CD                   USE_BRKD_CLSF_CD
+				              , case when    nvl(ab.USE_MNGM_NO, '*') = '*'
+				                          or (ad.CSTR_USE_YN                      = 'Y'                     and nvl(ab.CSTR_CD,           '*') = '*')
+				                          or (nvl(ad.MNGM_INST_TYPE_CD, '*')     <> '*'                     and nvl(ab.MNGM_INST_DATA_CD, '*') = '*')
+				                          or (nvl(ad.MNGM_NO_TYPE_CD,   '*')     <> '*'                     and nvl(ab.MNGM_NO_DATA_CD,   '*') = '*')
+				                          or (nvl(ad.MNGM_YMD_TYPE_CD,  '*')     <> '*'                     and nvl(ab.MNGM_YMD_DATA_CD,  '*') = '*')
+				                          or (nvl(ad.MNGM_DVSN_TYPE_CD, '*')     <> '*'                     and nvl(ab.MNGM_DVSN_DATA_CD, '*') = '*')
+				                          or (nvl(ad.MNGM_ITEM_TYPE_CD, '*') not in ('E3', 'E4', 'E5', '*') and nvl(ab.MNGM_ITEM_DATA_CD, '*') = '*')
+				                          or (    ad.MNGM_ITEM_TYPE_CD   in ('E3', 'E4', 'E5')
+				                              and (   ab.TOAC_CD like '2%'
+				                                   or (    ab.TOAC_CD      like '1%'
+				                                       and s1.WON_TRNC_AMT    < 0
+				                                      )
+				                                  )
+				                              and ab.MNGM_ITEM_DATA_CD   is null
+				                             )
+				                          or s1.DETL_BRKD_CTN is null
+				                     then 'Y'
+				                     else 'N'
+				                end                                   MNDT_YN_1    /*필수여부(사용목적, Y:추가입력필요, N:추가입력불요) */
+				              , case when    nvl(ac.PYMN_MNGM_NO, '*') = '*'
+				                          or (ae.CSTR_USE_YN                      = 'Y'                     and nvl(ac.CSTR_CD,           '*') = '*')
+				                          or (nvl(ae.MNGM_INST_TYPE_CD, '*')     <> '*'                     and nvl(ac.MNGM_INST_DATA_CD, '*') = '*')
+				                          or (nvl(ae.MNGM_NO_TYPE_CD,   '*')     <> '*'                     and nvl(ac.MNGM_NO_DATA_CD,   '*') = '*')
+				                          or (nvl(ae.MNGM_YMD_TYPE_CD,  '*')     <> '*'                     and nvl(ac.MNGM_YMD_DATA_CD,  '*') = '*')
+				                          or (nvl(ae.MNGM_DVSN_TYPE_CD, '*')     <> '*'                     and nvl(ac.MNGM_DVSN_DATA_CD, '*') = '*')
+				                          or (nvl(ae.MNGM_ITEM_TYPE_CD, '*') not in ('E3', 'E4', 'E5', '*') and nvl(ac.MNGM_ITEM_DATA_CD, '*') = '*')
+				                          or (    ae.MNGM_ITEM_TYPE_CD   in ('E3', 'E4', 'E5')
+				                              and (   ac.TOAC_CD like '1%'
+				                                   or (    ac.TOAC_CD      like '2%'
+				                                       and s1.WON_TRNC_AMT    < 0
+				                                      )
+				                                  )
+				                              and ac.MNGM_ITEM_DATA_CD   is null
+				                             )
+				                          or (    ac.TOAC_CD   like '2150%'
+				                              and ac.TOAC_CD not in ('215008', '215010')
+				                              and not exists        (select
+				                                                         1
+				                                                     from
+				                                                         HMGITRACT ss1
+				                                                     where
+				                                                         ss1.BSPL_CD                                   = #{bsplCd}
+				                                                     and ss1.GIVE_TRGT_MNGM_DVSN_CD                    = s1.GIVE_TRGT_MNGM_DVSN_CD
+				                                                     and case when ss1.GIVE_TRGT_MNGM_DVSN_CD = '3'
+				                                                              then substr(ss1.GIVE_TRGT_MNGM_NO, 1, 7)
+				                                                              else ss1.GIVE_TRGT_MNGM_NO
+				                                                         end                                           = s1.GIVE_TRGT_MNGM_NO
+				                                                     and ss1.DEPST_CNFR_RSLT_CD                        = '0000'
+				        /*고신대추가: 설명은 HmaSttmMngmDAO-listEtcRcptBrkd 참고 */
+				                                                     union 
+				                                                     select 
+				                                                          1
+				                                                      from
+				                                                          HMGITRACT ss1
+				                                                      where
+				                                                          ss1.BSPL_CD                                   = #{bsplCd}
+				                                                      and ss1.GIVE_TRGT_MNGM_NO =(select MNGM_NO_DATA_CD  from HMPMNDTDT where PYMN_MNGM_NO = s1.PYMN_MNGM_NO)
+				                                                      and ss1.DEPST_CNFR_RSLT_CD                        = '0000'
+				                                                    )
+				                             )
+				                          or s1.DETL_BRKD_CTN is null
+				                     then 'Y'
+				                     else 'N'
+				                end                                   MNDT_YN_2    /*필수여부(지급방법, Y:추가입력필요, N:추가입력불요) */
+				              , s1.CLAM_EXPN_YN                       CLAM_EXPN_YN
+				              , s1.TRNC_DVSN_CD                       TRNC_DVSN_CD
+				          from
+				                ( /* 전표매핑내역 ------------------------------------------------ */
+				                  select
+				                         BSPL_CD           BSPL_CD
+				                       , CRCR_MNGM_NO      CRCR_MNGM_NO
+				                       , TRNC_YMD          TRNC_YMD
+				                       , CHNO16_CARD_NO    CHNO16_CARD_NO
+				                       , USER_ID           USER_ID
+				                       , MMBR_NM           MMBR_NM
+				                       , DPRT_CD           DPRT_CD
+				                       , DPRT_NM           DPRT_NM
+				                       , CDAP_NO           CDAP_NO
+				                       , WON_TRNC_AMT      WON_TRNC_AMT
+				                       , DMSC_USE_YN       DMSC_USE_YN
+				                       , AFST_BSRN         AFST_BSRN
+				                       , AFST_NM           AFST_NM
+				                       , AFST_BSTY_NM      AFST_BSTY_NM
+				                       , USE_APRV_YMD      USE_APRV_YMD
+				                       , EVDN_DVSN_CD      EVDN_DVSN_CD
+				                       , ATFL_NM           ATFL_NM
+				                       , USE_BRKD_CLSF_CD  USE_BRKD_CLSF_CD
+				                       , USE_MNGM_NO       USE_MNGM_NO
+				                       , PYMN_MNGM_NO      PYMN_MNGM_NO
+				                       , CLAM_EXPN_YN      CLAM_EXPN_YN
+				                       , '4'               GIVE_TRGT_MNGM_DVSN_CD
+				                       , CHNO16_CARD_NO    GIVE_TRGT_MNGM_NO
+				                       , CARD_CMPN_DVSN_CD CARD_CMPN_DVSN_CD
+				                       , DETL_BRKD_CTN     DETL_BRKD_CTN
+				                       , TRNC_DVSN_CD      TRNC_DVSN_CD
+				                    from 
+				                         HMCRUSBRT /*(HM)신용카드사용내역 */
+				                   where
+				                         BSPL_CD  = #{bsplCd}
+				                     and STTM_YMD = #{sttmYmd}
+				                     and STTM_NO  = #{sttmNo}
+				                     and STLN     = #{stln}
+				                  union all
+				                  /* 전표 매핑대상내역 ------------------------------------------------ */
+				                  select
+				                          t.BSPL_CD           BSPL_CD
+				                        , t.CRCR_MNGM_NO      CRCR_MNGM_NO
+				                        , t.TRNC_YMD          TRNC_YMD
+				                        , t.CHNO16_CARD_NO    CHNO16_CARD_NO
+				                        , t.USER_ID           USER_ID
+				                        , t.MMBR_NM           MMBR_NM
+				                        , t.DPRT_CD           DPRT_CD
+				                        , t.DPRT_NM           DPRT_NM
+				                        , t.CDAP_NO           CDAP_NO
+				                        , t.WON_TRNC_AMT      WON_TRNC_AMT
+				                        , t.DMSC_USE_YN       DMSC_USE_YN
+				                        , t.AFST_BSRN         AFST_BSRN
+				                        , t.AFST_NM           AFST_NM
+				                        , t.AFST_BSTY_NM      AFST_BSTY_NM
+				                        , t.USE_APRV_YMD      USE_APRV_YMD
+				                        , t.EVDN_DVSN_CD      EVDN_DVSN_CD
+				                        , t.ATFL_NM           ATFL_NM
+				                        , t.USE_BRKD_CLSF_CD  USE_BRKD_CLSF_CD
+				                        , t.USE_MNGM_NO       USE_MNGM_NO
+				                        , t.PYMN_MNGM_NO      PYMN_MNGM_NO
+				                        , t.CLAM_EXPN_YN      CLAM_EXPN_YN
+				                        , '4'                 GIVE_TRGT_MNGM_DVSN_CD
+				                        , t.CHNO16_CARD_NO    GIVE_TRGT_MNGM_NO
+				                        , t.CARD_CMPN_DVSN_CD CARD_CMPN_DVSN_CD
+				                        , t.DETL_BRKD_CTN     DETL_BRKD_CTN
+				                        , t.TRNC_DVSN_CD      TRNC_DVSN_CD
+				                     from
+				                          ( 
+				                            /* 매출 */
+				                            select
+				                                   BSPL_CD           BSPL_CD
+				                                 , CRCR_MNGM_NO      CRCR_MNGM_NO
+				                                 , TRNC_YMD          TRNC_YMD
+				                                 , CHNO16_CARD_NO    CHNO16_CARD_NO
+				                                 , USER_ID           USER_ID
+				                                 , MMBR_NM           MMBR_NM
+				                                 , DPRT_CD           DPRT_CD
+				                                 , DPRT_NM           DPRT_NM
+				                                 , CDAP_NO           CDAP_NO
+				                                 , WON_TRNC_AMT      WON_TRNC_AMT
+				                                 , DMSC_USE_YN       DMSC_USE_YN
+				                                 , AFST_BSRN         AFST_BSRN
+				                                 , AFST_NM           AFST_NM
+				                                 , AFST_BSTY_NM      AFST_BSTY_NM
+				                                 , USE_APRV_YMD      USE_APRV_YMD
+				                                 , EVDN_DVSN_CD      EVDN_DVSN_CD
+				                                 , ATFL_NM           ATFL_NM
+				                                 , USE_BRKD_CLSF_CD  USE_BRKD_CLSF_CD
+				                                 , USE_MNGM_NO       USE_MNGM_NO
+				                                 , PYMN_MNGM_NO      PYMN_MNGM_NO
+				                                 , CLAM_EXPN_YN      CLAM_EXPN_YN
+				                                 , CHNO16_CARD_NO    GIVE_TRGT_MNGM_NO
+				                                 , CARD_CMPN_DVSN_CD CARD_CMPN_DVSN_CD
+				                                 , DETL_BRKD_CTN     DETL_BRKD_CTN
+				                                 , TRNC_DVSN_CD      TRNC_DVSN_CD
+				                              from
+				                                   HMCRUSBRT
+				                             where
+				                                   USE_APRV_YMD      >= case when #{fromInqrYmdEn} = 'Y'
+				                                                             then #{fromInqrYmd}
+				                                                             else USE_APRV_YMD --else to_char(add_months(to_date(   {toInqrYmd}, 'YYYYMMDD'), -6), 'YYYYMMDD')
+				                                                        end
+				                               and USE_APRV_YMD      <= #{toInqrYmd}
+				                               and CRCR_MTRL_DVSN_CD  = 'S'
+				                               and STTM_PRSG_YN       = 'N'
+				                               and CLAM_EXPN_YN       = 'Y' /*청구대상여부 [=청구대상] */
+				                               and #{dvsnCd} <> 'S'
+				                               and BSPL_CD = #{bsplCd}
+				                           ) t
+				                    where
+				                          (   t.CHNO16_CARD_NO = #{crcrNo}
+				                           or (    t.CHNO16_CARD_NO like #{crcrNo} || '%'                  /*카드번호 */
+				                               and (
+				----부서가 자신이 속한 부서(+하위부서)인 경우이거나.
+				                                    t.DPRT_CD          in (select
+				                                                                 regexp_substr(#{comnCdNm}, '[^,]+', 1, level)
+				                                                            from
+				                                                                 DUAL
+				                                                          connect by level <= regexp_count(#{comnCdNm}, ',') + 1
+				                                                         )
+				--경리부서인경우 부서입력안했을때 다 보이게
+				                           or
+				                               'Y' = #{acnnDprtYn}
+				                                           )
+				                                         )
+				                          )
+				                          and (case 
+				                                    /* 승인금액과 취소금액의 합이 같을 경우에 제외 처리 */
+				                                    when   (select
+				                                                nvl(sum(ss1.WON_TRNC_AMT), 0)
+				                                            from
+				                                                HMCRUSBRT ss1
+				                                            where
+				                                                ss1.CHNO16_CARD_NO     = t.CHNO16_CARD_NO /*16자리카드번호 */
+				                                            and ss1.CDAP_NO            = t.CDAP_NO        /*카드승인번호 */
+				                                            and ss1.USE_APRV_YMD       = t.USE_APRV_YMD   /*사용승인일자 */
+				                                            and ss1.TRNC_DVSN_CD       = '0' /* 승인 */
+				                                            and ss1.BEFR_CRCR_MNGM_NO is null
+				                                           )
+				                                         + (select
+				                                                nvl(sum(abs(ss1.WON_TRNC_AMT) * -1), 0)
+				                                            from
+				                                                HMCRUSBRT ss1
+				                                            where
+				                                                ss1.CHNO16_CARD_NO    = t.CHNO16_CARD_NO /*16자리카드번호 */
+				                                            and ss1.CDAP_NO           = t.CDAP_NO        /*카드승인번호 */
+				                                            and ss1.USE_APRV_YMD      = t.USE_APRV_YMD   /*사용승인일자 */
+				                                            and ss1.TRNC_DVSN_CD      = '1'   /* 취소 */
+				                                           ) = 0
+				                                    then 'N'
+				                                    else 'Y'
+				                               end)           = 'Y'
+				                    order by BSPL_CD
+				                           , TRNC_YMD
+				                )         s1
+				              , HMUMNDTDT ab /*(HM)사용필수기재사항 [사용목적] */
+				              , HMPMNDTDT ac /*(HM)결제필수기재사항 [지급방법] */
+				              , HZTOACCDT ad /*(HZ)계정과목(MDM연계)[사용목적] */
+				              , HZTOACCDT ae /*(HZ)계정과목(MDM연계)[지급방법] */
+				          where
+				                ab.BSPL_CD      (+) = #{bsplCd}
+				            and ab.USE_MNGM_NO  (+) = s1.USE_MNGM_NO
+				            and ac.BSPL_CD      (+) = #{bsplCd}
+				            and ac.PYMN_MNGM_NO (+) = s1.PYMN_MNGM_NO
+				            and ad.BSPL_CD      (+) = #{bsplCd}
+				            and ad.TOAC_CD      (+) = ab.TOAC_CD
+				            and to_char(trunc(sysdate),'yyyymmdd') between ad.USE_STRT_YMD(+) and ad.USE_FNSH_YMD(+)
+				            and ae.BSPL_CD      (+) = #{bsplCd}
+				            and ae.TOAC_CD      (+) = ac.TOAC_CD
+				            and to_char(trunc(sysdate),'yyyymmdd') between ae.USE_STRT_YMD(+) and ae.USE_FNSH_YMD(+)
+				        )                s2
+				      , HZCRAFWTT c /* 신용카드가맹점 경고대상 */
+				      , HZMICOCDT d /* MIS공통코드 */
+		              , HMGITRACT f /* 지급계좌번호 */
+				  where
+				        c.BSPL_CD     (+) = #{bsplCd}
+				    and c.BSRN        (+) = s2.AFST_BSRN
+				    and d.BSPL_CD     (+) = #{bsplCd}
+				    and d.COMN_GRP_CD (+) = 'GA902'     /* 접대/경비 분류코드 */
+				    and d.MIS_COMN_CD (+) = s2.USE_BRKD_CLSF_CD
+		            and f.BSPL_CD     (+) = s2.BSPL_CD
+		            and f.GIVE_TRGT_MNGM_DVSN_CD (+) = '4' /* 지급계좌번호관리 유형 : 신용카드 */
+		            and f.GIVE_TRGT_MNGM_NO (+)= s2.CHNO16_CARD_NO
+				  order by to_char(to_date(s2.TRNC_YMD, 'YYYYMMDD'), 'YYYY-MM-DD')
+				         , s2.CHNO16_CARD_NO
+				         , s2.CDAP_NO
+		      )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="dvsnCd" column="DVSN_CD"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="depsYmd" column="DEPS_YMD"/>
+		<result property="depsHh" column="DEPS_HH"/>
+		<result property="bnkbDepsAmt" column="BNKB_DEPS_AMT"/>
+		<result property="bnkbDeprNm" column="BNKB_DEPR_NM"/>
+		<result property="acntNo" column="ACNT_NO"/>
+		<result property="depsBankCd" column="DEPS_BANK_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="bnkbTrasYmd" column="BNKB_TRAS_YMD"/>
+		<result property="trasSno" column="TRAS_SNO"/>
+		<result property="depsCstrCd" column="DEPS_CSTR_CD"/>
+		<result property="mthrAcntNo" column="MTHR_ACNT_NO"/>
+		<result property="hsptAcntNm" column="HSPT_ACNT_NM"/>
+		<result property="trasId" column="TRAS_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd (입금내역조회_다건조회) 
+        Description :                                           hmd_hma110d_l02$S01_전표관리_입금내역조회_다건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkd */
+		       rownum as INQR_SNO
+		      ,a.DVSN_CD as DVSN_CD       /*구분코드 */
+		      ,a.BSPL_CD as BSPL_CD       /*사업장코드 */
+		      ,a.BNKB_DEPS_YMD as DEPS_YMD /*입금일자 */
+		      ,a.DEPS_HH as DEPS_HH /*입금시간 */
+		      ,a.BNKB_DEPS_AMT as BNKB_DEPS_AMT /*입금금액 */
+		      ,a.BNKB_DEPR_NM as BNKB_DEPR_NM  /*입금자 */
+		      ,a.ACNT_NO as ACNT_NO       /*계좌번호 */
+		      ,a.DEPS_BANK_CD as DEPS_BANK_CD  /*입금은행 */
+		      ,c.COMN_CD_NM as COMN_CD_NM    /*입금은행명 */
+		      ,a.BNKB_TRAS_YMD as BNKB_TRAS_YMD /*통장전송일자 */
+		      ,a.TRAS_SNO as TRAS_SNO      /*전송일련번호 */
+		      ,a.DEPS_CSTR_CD as DEPS_CSTR_CD  /*입금거래점 */
+		      ,(select
+		            nvl(ss1.MTHR_ACNT_NO, ss1.HSPT_ACNT_NO)
+		        from
+		            HZHSACNOT ss1 /*(HZ)병원계좌번호 */
+		        where
+		            ss1.HSPT_ACNT_NO = a.ACNT_NO
+		       )  as MTHR_ACNT_NO
+		      ,(select
+		            ss2.HSPT_ACNT_NM
+		        from
+		            HZHSACNOT ss2 /*(HZ)병원계좌번호 */
+		        where
+		            ss2.HSPT_ACNT_NO = a.ACNT_NO
+		       )  as HSPT_ACNT_NM
+		      ,a.TRAS_ID as TRAS_ID       /*전송ID */
+		   from
+		       (select
+		            '1'                                                   DVSN_CD       /*구분코드 */
+		           ,b.BSPL_CD                                             BSPL_CD       /*사업장코드 */
+		           ,b.BNKB_DEPS_YMD                                       BNKB_DEPS_YMD /*입금일자 */
+		           ,b.DEPS_HH                                             DEPS_HH /*입금시간*/
+		           ,decode(b.TRNC_DVSN_CD, '51', -1, 1) * b.BNKB_DEPS_AMT BNKB_DEPS_AMT /*입금금액 */
+		           ,b.BNKB_DEPR_NM                                        BNKB_DEPR_NM  /*입금자 */
+		           ,b.ACNT_NO                                             ACNT_NO       /*계좌번호 */
+		           ,(select
+		                 max(ss1.FNIN_CD)
+		             from
+		                 HZHSACNOT ss1
+		             where
+		                 ss1.HSPT_ACNT_NO = b.ACNT_NO
+		            )                                                     DEPS_BANK_CD  /*입금은행 */
+		           ,b.BNKB_TRAS_YMD                                       BNKB_TRAS_YMD /*통장전송일자 */
+		           ,b.TRAS_SNO                                            TRAS_SNO      /*전송일련번호 */
+		           ,b.DEPS_CSTR_CD                                        DEPS_CSTR_CD  /*입금거래점 */
+		           ,b.TRAS_ID                                             TRAS_ID       /*전송ID */
+		        from
+		            HMBNDEBRT b
+		        where
+		            b.BSPL_CD         = #{bsplCd}
+		        and b.STTM_YMD        = #{sttmYmd}
+		        and b.STTM_NO         = #{sttmNo}
+		        and b.STLN            = #{stln}
+		        and b.DEPS_BANK_CD like #{depsBankCd} || '%'
+		        union all
+		        select
+		            '2'                                                   DVSN_CD       /*구분코드 */
+		           ,b.BSPL_CD                                             BSPL_CD       /*사업장코드 */
+		           ,b.BNKB_DEPS_YMD                                       BNKB_DEPS_YMD /*입금일자 */
+		           ,b.DEPS_HH                                             DEPS_HH /*입금시간*/
+		           ,decode(b.TRNC_DVSN_CD, '51', -1, 1) * b.BNKB_DEPS_AMT BNKB_DEPS_AMT /*입금금액 */
+		           ,b.BNKB_DEPR_NM                                        BNKB_DEPR_NM  /*입금자 */
+		           ,b.ACNT_NO                                             ACNT_NO       /*계좌번호 */
+		           ,a.FNIN_CD                                             DEPS_BANK_CD  /*입금은행 */
+		           ,b.BNKB_TRAS_YMD                                       BNKB_TRAS_YMD /*통장전송일자 */
+		           ,b.TRAS_SNO                                            TRAS_SNO      /*전송일련번호 */
+		           ,b.DEPS_CSTR_CD                                        DEPS_CSTR_CD  /*입금거래점 */
+		           ,b.TRAS_ID                                             TRAS_ID       /*전송ID */
+		        from
+		            (select 
+		                  t.HSPT_ACNT_NO ACNT_NO
+		                 ,t.FNIN_CD      FNIN_CD
+		              from
+		                  HZHSACNOT t /*병원계좌번호 */
+		              where
+		                  t.BSPL_CD           = #{bsplCd}             /*사업장코드 */
+		              and t.USE_YN            = 'Y'
+		             and exists             ( /* 병원계좌번호 관리부서/담당자 */
+		                                      select
+		                                             1
+		                                        from
+		                                             HZATMMDTT ss1 /*(HZ)병원계좌번호관리부서 */
+		                                       where
+		                                             ss1.BSPL_CD           = #{bsplCd}
+		                                         and ss1.HSPT_ACNT_MNGM_NO = t.HSPT_ACNT_MNGM_NO
+		                                         and (case when ss1.DPRT_CD = '*'
+		                                                  then 'Y'
+		                                                  when     ss1.DPRT_CD       = (select
+		                                                                                    ss2.ORGL_BLNG_DPRT_CD
+		                                                                                from
+		                                                                                    HZUSERMMT ss2 /*(HZ)사원마스터 */
+		                                                                                where
+		                                                                                    ss2.EMNO              = #{gvUserId}
+		                                                                               )
+		                                                       and ss1.MNGM_ASGN_ID in ('*', #{gvUserId})
+		                                                  then 'Y'
+		                                                  else 'N'
+		                                              end) = 'Y'
+		                                      union all
+		                                      /* 재무부서 */
+		                                      select
+		                                             1
+		                                        from
+		                                             HZUSERMMT a  /*(HZ)사원마스터 */
+		                                           , HZMICOCDT b  /* MIS공통코드 */
+		                                       where
+		                                             a.EMNO        = #{gvUserId}
+		                                         and b.COMN_CD_NM  = a.ORGL_BLNG_DPRT_CD
+		                                         and b.COMN_GRP_CD = 'HMH_001'          /* 경영관리 시스템설정 및 상수 */
+		                                         and b.MIS_COMN_CD = 'ACNN_DPRT_CD'     /* 재무부서코드 */
+		                                    )
+		            )                a
+		           ,HMBNDEBRT b
+		        where
+		            b.BSPL_CD          = #{bsplCd}
+		        and b.BNKB_DEPS_YMD   >= case #{fromInqrYmdEn} when 'Y'
+		                                                                           then #{fromInqrYmd} /*입금일자[FROM] */
+		                                                                           else b.BNKB_DEPS_YMD
+		                                 end
+		        and b.BNKB_DEPS_YMD   <= #{toInqrYmd}                                        /*입금일자[TO] */
+		        and b.TRNC_DVSN_CD    in ('20', '40', '51')
+		        and b.ACNT_NO       like #{acntNo} || '%'
+		        and b.DEPS_BANK_CD  like #{depsBankCd} || '%'
+		        and b.ACNT_NO          = a.ACNT_NO
+		        and b.STTM_PRSG_YN     = 'N'
+		        and #{dvsnCd} is null
+		        order by BNKB_DEPS_YMD, DEPS_HH
+		       )                a
+		      ,HZMICOCDT c /* MIS공통코드[DEPS_BANK_CD, GA036] */
+		   where
+		       c.BSPL_CD     (+) = a.BSPL_CD
+		   and c.COMN_GRP_CD (+) = 'GA036'
+		   and c.MIS_COMN_CD (+) = a.DEPS_BANK_CD
+		    ]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="depstAcntNo" column="DEPST_ACNT_NO"/>
+		<result property="hsptAcntNm" column="HSPT_ACNT_NM"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo (입금내역조회_계좌번호목록_조회) 
+        Description :                                           hmd_hma110d_l03$S01_전표관리_입금내역조회_계좌번호목록_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listDepsBrkdInqrAcntNo */
+		        DEPST_ACNT_NO  as DEPST_ACNT_NO
+		      , HSPT_ACNT_NM   as HSPT_ACNT_NM
+		      , COMN_CD_NM     as COMN_CD_NM
+		   from
+		        ( select
+		                 t.DEPST_ACNT_NO            DEPST_ACNT_NO
+		               , t.HSPT_ACNT_NM             HSPT_ACNT_NM
+		               , --자주쓰는 통장을 상단에 조회되록 처리
+		                 (
+		                  select nvl(COMN_INQR_SQNC, 99999) --조회순서 입력안했을 경우 99999 강제셋팅
+		                    from HZMICOCDT z
+		                   where z.MIS_COMN_CD = t.DEPST_ACNT_NO
+		                     and Z.COMN_GRP_CD = 'HZA_013' --MIS공통코드: 계좌번호 우선정렬
+		                 ) as                       SORT_CD
+		               , a.COMN_CD_NM               COMN_CD_NM
+		            from
+		                 HZHSACNOT t /*(HZ)병원계좌번호 */
+		               , HZMICOCDT a /*(HZ)MIS공통코드 */
+		           where
+		                 t.BSPL_CD     =    #{bsplCd}
+		             and t.USE_YN      =    'Y'
+		             and t.TOAC_CD     like #{toacCd} || '%'
+		             and a.BSPL_CD     =    #{bsplCd}
+		             and a.COMN_GRP_CD =    'GA036'
+		             and a.MIS_COMN_CD =    t.FNIN_CD
+		             and exists             ( /* 병원계좌번호 관리부서/담당자 */
+					                          select
+		                                             1
+		                                        from
+		                                             HZATMMDTT ss1 /*(HZ)병원계좌번호관리부서 */
+		                                       where
+		                                             ss1.BSPL_CD           = #{bsplCd}
+		                                         and ss1.HSPT_ACNT_MNGM_NO = t.HSPT_ACNT_MNGM_NO
+		                                         and (case
+		                                                  --1. 모든부서에게 보이는 계좌
+		                                                  when ss1.DPRT_CD = '*' 
+		                                                  then 'Y'
+		                                                  --2. * : 관리부서와 로그인한 부서가 같으면서 해당부서의 모든 사용자
+		                                                  --3. userId: 관리부서와 로그인한 부서가 같으면서 담당자가 본인
+		                                                  when     ss1.DPRT_CD       = (select
+		                                                                                    ss2.ORGL_BLNG_DPRT_CD
+		                                                                                from
+		                                                                                    HZUSERMMT ss2 /*(HZ)사원마스터 */
+		                                                                                where
+		                                                                                    ss2.EMNO              = #{asgnId}
+		                                                                               )
+		                                                       and ss1.MNGM_ASGN_ID in ('*', #{asgnId})
+		                                                  then 'Y'
+		                                                  else 'N'
+		                                              end) = 'Y'
+		                                      union all
+		                                      /*4. 재무부서는 모든 계좌 다 보이게 */
+		                                      select
+		                                             1
+		                                        from
+		                                             HZUSERMMT a  /*(HZ)사원마스터 */
+		                                           , HZMICOCDT b  /* MIS공통코드 */
+		                                       where
+		                                             a.EMNO        = #{asgnId}
+		                                         and b.COMN_CD_NM  = a.ORGL_BLNG_DPRT_CD
+		                                         and b.COMN_GRP_CD = 'HMH_001'          /* 경영관리 시스템설정 및 상수 */
+		                                         and b.MIS_COMN_CD = 'ACNN_DPRT_CD'     /* 재무부서코드 */
+		                                    )
+		        ) 
+		  order by SORT_CD
+		         , COMN_CD_NM
+		         , DEPST_ACNT_NO
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="mtinDprtCd" column="MTIN_DPRT_CD"/>
+		<result property="mtinDprtNm" column="MTIN_DPRT_NM"/>
+		<result property="useDprtCd" column="USE_DPRT_CD"/>
+		<result property="useDprtNm" column="USE_DPRT_NM"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="expdCtn" column="EXPD_CTN"/>
+		<result property="atenNm" column="ATEN_NM"/>
+		<result property="atndPrsnCnt" column="ATND_PRSN_CNT"/>
+		<result property="usePlacNm" column="USE_PLAC_NM"/>
+		<result property="useAmt" column="USE_AMT"/>
+		<result property="cstUseYmd" column="CST_USE_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm (경비사용내역관리_단건조회) 
+        Description :                                           hmd_hma110e_s01$S01_전표관리_경비사용내역관리_단건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneCstUseBrkdMngm */
+				   a.BSPL_CD       as BSPL_CD       /* 사업장코드 */
+				,  f.BSPL_NM       as BSPL_NM       /* 사업장명 */
+				,  a.STTM_YMD      as STTM_YMD      /* 전표일자 */
+				,  a.STTM_NO       as STTM_NO       /* 전표번호 */
+				,  a.STLN          as STLN          /* 전표LINE */
+				,  b.MTIN_DPRT_CD  as MTIN_DPRT_CD  /* 발의부서코드 */
+				,  c.KORN_DPRT_NM  as MTIN_DPRT_NM  /* 발의부서 */
+				,  a.USE_DPRT_CD   as USE_DPRT_CD   /* 사용부서코드 */
+				,  c.KORN_DPRT_NM  as USE_DPRT_NM   /* 사용부서 */
+				,  a.USER_ID       as USER_ID       /* 사용자ID */
+				,  e.EMPY_NM       as USER_NM       /* 사용자 */
+				,  a.EXPD_CTN      as EXPD_CTN      /* 지출내용 */
+				,  a.ATEN_NM       as ATEN_NM       /* 참석자명 */
+				,  a.ATND_PRSN_CNT as ATND_PRSN_CNT /* 참석인원수 */
+				,  a.USE_PLAC_NM   as USE_PLAC_NM   /* 사용장소명 */
+				,  a.USE_AMT       as USE_AMT       /* 사용금액 */
+				,  a.CST_USE_YMD   as CST_USE_YMD   /* 경비사용일자 */
+			 from
+				   HMCSUSBRT a /* 경비사용내역 */
+				,  HMSTTBRKT b /* 전표내역 */
+				,  HZDEPTMMT c /* 조직IF */
+				,  HZDEPTMMT d /* 조직IF */
+				,  HZUSERMMT e /* 사원Master I/F */
+				,  HZBSPLINT f /* 사업장정보 */
+			where
+		   /* 조회조건 */
+				   a.BSPL_CD     = #{bsplCd}
+			  and  a.STTM_YMD    = #{sttmYmd}
+			  and  a.STTM_NO     = #{sttmNo}
+			  and  a.STLN        = #{stln}
+		   /* 전표내역 */
+			  and  b.BSPL_CD     = a.BSPL_CD
+			  and  b.STTM_YMD    = a.STTM_YMD
+			  and  b.STTM_NO     = a.STTM_NO
+		   /* 사업장 */
+			  and  f.BSPL_CD     = a.BSPL_CD
+		   /* 발의부서 */
+			  and  c.DPRT_CD     = b.MTIN_DPRT_CD
+		   /* 사용부서 */
+			  and  d.DPRT_CD  (+)= a.USE_DPRT_CD
+		   /* 사용자 */
+			  and  e.EMNO     (+)= a.USER_ID
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="inqrSno" column="INQR_SNO"/>
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="realUseDprtSno" column="REAL_USE_DPRT_SNO"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="sttmAmt" column="STTM_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm (사용부서내역관리_다건조회) 
+        Description :                                           hmd_hma110f_l01$S01_전표관리_사용부서내역관리_다건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-listUseDprtBrkdMngm */
+				   rownum as INQR_SNO
+				,  z.BSPL_CD as BSPL_CD           /* 사업장코드 */
+				,  z.STTM_YMD as STTM_YMD          /* 전표일자 */
+				,  z.STTM_NO as STTM_NO           /* 전표번호 */
+				,  z.STLN as STLN              /* 전표LINE */
+				,  z.REAL_USE_DPRT_SNO as REAL_USE_DPRT_SNO /* 실제사용부서일련번호 */
+				,  z.DPRT_CD as DPRT_CD           /* 부서코드 */
+				,  z.DPRT_NM as KORN_DPRT_NM           /* 부서명 */
+				,  z.STTM_AMT as STTM_AMT          /* 전표금액 */
+			 from (
+				   select
+						   a.BSPL_CD           BSPL_CD           /* 사업장코드 */
+						,  a.STTM_YMD          STTM_YMD          /* 전표일자 */
+						,  a.STTM_NO           STTM_NO           /* 전표번호 */
+						,  a.STLN              STLN              /* 전표LINE */
+						,  a.REAL_USE_DPRT_SNO REAL_USE_DPRT_SNO /* 실제사용부서일련번호 */
+						,  a.DPRT_CD           DPRT_CD           /* 부서코드 */
+						,  d.KORN_DPRT_NM      DPRT_NM           /* 부서명 */
+						,  a.STTM_AMT          STTM_AMT          /* 전표금액 */
+					 from
+						   HMREUSDMT a /* 실제사용부서관리 */
+						,  HZDEPTMMT d /* 조직IF */
+					where
+				   /* 조회조건 */
+						   a.BSPL_CD     = #{bsplCd}
+					  and  a.STTM_YMD    = #{sttmYmd}
+					  and  a.STTM_NO     = #{sttmNo}
+					  and  a.STLN        = #{stln}
+				   /* 사용부서 */
+					  and  d.DPRT_CD  (+)= a.DPRT_CD
+					order
+					   by  a.BSPL_CD
+						,  a.DPRT_CD
+				  ) z
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="bsplCd" column="BSPL_CD"/>
+		<result property="bsplNm" column="BSPL_NM"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="mtinDprtCd" column="MTIN_DPRT_CD"/>
+		<result property="mtinDprtNm" column="MTIN_DPRT_NM"/>
+		<result property="mimnSno" column="MIMN_SNO"/>
+		<result property="mtrlDvsnCd" column="MTRL_DVSN_CD"/>
+		<result property="mimnDepsYmd" column="MIMN_DEPS_YMD"/>
+		<result property="mimnDepsAmt" column="MIMN_DEPS_AMT"/>
+		<result property="mimnDeprNm" column="MIMN_DEPR_NM"/>
+		<result property="mimnCnrbNm" column="MIMN_CNRB_NM"/>
+		<result property="deprDvsnCd" column="DEPR_DVSN_CD"/>
+		<result property="deprNo" column="DEPR_NO"/>
+		<result property="deprAdrsNm" column="DEPR_ADRS_NM"/>
+		<result property="amtSptnYn" column="AMT_SPTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm (후원금전입금관리_단건조회) 
+        Description :                                           hmd_hma110g_s01$S01_전표관리_후원금전입금관리_HMSPMMVIT_단건조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSpmnMimnMngm */
+				   a.BSPL_CD       as BSPL_CD       /* 사업장코드 */
+				,  f.BSPL_NM       as BSPL_NM       /* 사업장명 */
+				,  a.STTM_YMD      as STTM_YMD      /* 전표일자 */
+				,  a.STTM_NO       as STTM_NO       /* 전표번호 */
+				,  a.STLN          as STLN          /* 전표LINE */
+				,  b.MTIN_DPRT_CD  as MTIN_DPRT_CD  /* 발의부서코드 */
+				,  c.KORN_DPRT_NM  as MTIN_DPRT_NM  /* 발의부서 */
+				,  a.MIMN_SNO      as MIMN_SNO      /* 전입금일련번호 */
+				,  a.MTRL_DVSN_CD  as MTRL_DVSN_CD  /* 자료구분코드 */
+				,  a.MIMN_DEPS_YMD as MIMN_DEPS_YMD /* 전입금입금일자 */
+				,  a.MIMN_DEPS_AMT as MIMN_DEPS_AMT /* 전입금입금금액 */
+				,  a.MIMN_DEPR_NM  as MIMN_DEPR_NM  /* 전입금입금자명 */
+				,  a.MIMN_CNRB_NM  as MIMN_CNRB_NM  /* 전입금기부자명 */
+				,  a.DEPR_DVSN_CD  as DEPR_DVSN_CD  /* 입금자구분코드 */
+				,  a.DEPR_NO       as DEPR_NO       /* 입금자번호 */
+				,  a.DEPR_ADRS_NM  as DEPR_ADRS_NM  /* 입금자주소명 */
+				,  a.AMT_SPTN_YN	as AMT_SPTN_YN   /*후원금 분리 여부*/
+			 from
+				   HMSPMMVIT a /* 후원금전입금 */
+				,  HMSTTBRKT b /* 전표내역 */
+				,  HZDEPTMMT c /* 조직IF */
+				,  HZBSPLINT f /* 사업장정보 */
+			where
+		   /* 조회조건 */
+				   a.BSPL_CD     = #{bsplCd}
+			  and  a.STTM_YMD    = #{sttmYmd}
+			  and  a.STTM_NO     = #{sttmNo}
+			  and  a.STLN        = #{stln}
+		   /* 전표내역 */
+			  and  b.BSPL_CD     = a.BSPL_CD
+			  and  b.STTM_YMD    = a.STTM_YMD
+			  and  b.STTM_NO     = a.STTM_NO
+		   /* 사업장 */
+			  and  f.BSPL_CD     = a.BSPL_CD
+		   /* 발의부서 */
+			  and  c.DPRT_CD     = b.MTIN_DPRT_CD
+		--EHR추가: 후원금이 분리되는 경우가 있기 때문에 최초 입금데이터를 조회함.
+			  and  a.MIMN_SNO = 1
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam-result" type="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO">
+	
+		<result property="unstBam" column="UNST_BAM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam (전표라인저장전_미결잔액조회) 
+        Description :                                           hmd_stdebrt_s04$S01_전표관리_전표라인저장전_미결잔액조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO
+		resultMap : com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam"  parameterType="com.sds.healthcare.ehr.mis.hm.hma.vo.HmaSttmMngmDVO"  resultMap="com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hm-hma-dao-HmaSttmMngmDAO-selectOneSttmLineSaveBefUnstBam */
+				 UNST_BAM
+			   + (select
+					   nvl(max(case when    (    ss1.TOAC_CD           like '1%'
+											 and ss1.DEBT_CRED_DVSN_CD    = 'D'
+											)
+										 or (    ss1.TOAC_CD           like '2%'
+											 and ss1.DEBT_CRED_DVSN_CD    = 'C'
+											)
+									then 0 /*발생위치이고 전표가 수정상태이면 미승인이므로 잔액계산에서 제외해야 함 */
+									else 1 /*반제위치이고 전표가 수정상태이면 해당 라인 입력 전으로 잔액을 복구시킴 */
+							   end * ss1.STTM_AMT
+							  )
+						  , 0 /*전표가 등록상태 */
+						  )
+				  from
+					  HMSTDEBRT ss1 /*(HM)전표상세내역 */
+				  where
+					  ss1.BSPL_CD  = #{bsplCd}
+				  and ss1.STTM_YMD = #{sttmYmd}
+				  and ss1.STTM_NO  = #{sttmNo}
+				  and ss1.STLN     = #{stln}
+				  and exists
+				  (   select 1 from
+						  (select
+									#{bsplCd}       BSPL_CD            /*사업장코드 */
+								   ,b.TOAC_CD                         TOAC_CD            /*계정과목코드 */
+								   ,decode(b.UNST_MNGM_ITEM_1_LCTN_NO
+										  , '1', #{jrsdDprtCd}                  /*귀속부서 */
+										  , '2', #{cstrCd}                       /*거래처 */
+										  , '3', #{mngmInstDataCd}             /*관리기관 */
+										  , '4', #{mngmNoDataCd}               /*관리번호 */
+										  , '5', #{mngmYmdDataCd}              /*관리일자 */
+										  , '6', #{mngmDvsnDataCd}             /*관리구분 */
+										  , '7', #{mngmItemDataCd}             /*관리항목 */
+										  , ''
+										  )                           UNST_MNGM_ITEM_CD1 /*미결관리항목코드1 */
+								   ,decode(b.UNST_MNGM_ITEM_2_LCTN_NO
+										  , '1', #{jrsdDprtCd}                  /*귀속부서 */
+										  , '2', #{cstrCd}                       /*거래처 */
+										  , '3', #{mngmInstDataCd}             /*관리기관 */
+										  , '4', #{mngmNoDataCd}               /*관리번호 */
+										  , '5', #{mngmYmdDataCd}              /*관리일자 */
+										  , '6', #{mngmDvsnDataCd}             /*관리구분 */
+										  , '7', #{mngmItemDataCd}             /*관리항목 */
+										  , ''
+										  )                           UNST_MNGM_ITEM_CD2 /*미결관리항목코드2 */
+								   ,decode(b.UNST_MNGM_ITEM_3_LCTN_NO
+										  , '1', #{jrsdDprtCd}                  /*귀속부서 */
+										  , '2', #{cstrCd}                       /*거래처 */
+										  , '3', #{mngmInstDataCd}             /*관리기관 */
+										  , '4', #{mngmNoDataCd}               /*관리번호 */
+										  , '5', #{mngmYmdDataCd}              /*관리일자 */
+										  , '6', #{mngmDvsnDataCd}             /*관리구분 */
+										  , '7', #{mngmItemDataCd}             /*관리항목 */
+										  , ''
+										  )                           UNST_MNGM_ITEM_CD3 /*미결관리항목코드3 */
+								 from
+									 HZTOACCDT b
+								 where
+									 b.BSPL_CD            = #{bsplCd}
+								 and b.TOAC_CD            = #{toacCd}
+								 and b.USE_STRT_YMD      <= #{sttmYmd}
+								 and b.USE_FNSH_YMD      >= #{sttmYmd}
+								 and b.UNST_MNGM_TYPE_CD <> '1'
+								) f
+							   ,HMUNSBRKT z /* 미결내역 */
+							where
+								z.BSPL_CD                      = f.BSPL_CD
+							and z.TOAC_CD                      = f.TOAC_CD
+							and nvl(replace(z.UNST_MNGM_ITEM_CD1, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD1, '-', ''), '*')
+							and nvl(replace(z.UNST_MNGM_ITEM_CD2, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD2, '-', ''), '*')
+							and nvl(replace(z.UNST_MNGM_ITEM_CD3, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD3, '-', ''), '*')
+							and z.sttm_ymd = ss1.sttm_ymd
+							and z.sttm_no  = ss1.sttm_no
+							and z.stln     = ss1.stln
+				  )
+				 )                                                 as UNST_BAM
+		   from
+			   (select
+					nvl(sum(case when     z.UNST_DVSN_CD = '1'
+									  and z.APRV_YN      = 'Y'
+								 then z.STTM_AMT
+								 when z.UNST_DVSN_CD = '2'
+								 then (-1) * z.STTM_AMT
+								 else 0
+							end
+						   )
+					   , 0
+					   )                                       UNST_BAM
+				from
+					(select
+						 #{bsplCd}       BSPL_CD            /*사업장코드 */
+						,b.TOAC_CD                         TOAC_CD            /*계정과목코드 */
+						,decode(b.UNST_MNGM_ITEM_1_LCTN_NO
+							   , '1', #{jrsdDprtCd}                  /*귀속부서 */
+							   , '2', #{cstrCd}                       /*거래처 */
+							   , '3', #{mngmInstDataCd}             /*관리기관 */
+							   , '4', #{mngmNoDataCd}               /*관리번호 */
+							   , '5', #{mngmYmdDataCd}              /*관리일자 */
+							   , '6', #{mngmDvsnDataCd}             /*관리구분 */
+							   , '7', #{mngmItemDataCd}             /*관리항목 */
+							   , ''
+							   )                           UNST_MNGM_ITEM_CD1 /*미결관리항목코드1 */
+						,decode(b.UNST_MNGM_ITEM_2_LCTN_NO
+							   , '1', #{jrsdDprtCd}                  /*귀속부서 */
+							   , '2', #{cstrCd}                       /*거래처 */
+							   , '3', #{mngmInstDataCd}             /*관리기관 */
+							   , '4', #{mngmNoDataCd}               /*관리번호 */
+							   , '5', #{mngmYmdDataCd}              /*관리일자 */
+							   , '6', #{mngmDvsnDataCd}             /*관리구분 */
+							   , '7', #{mngmItemDataCd}             /*관리항목 */
+							   , ''
+							   )                           UNST_MNGM_ITEM_CD2 /*미결관리항목코드2 */
+						,decode(b.UNST_MNGM_ITEM_3_LCTN_NO
+							   , '1', #{jrsdDprtCd}                  /*귀속부서 */
+							   , '2', #{cstrCd}                       /*거래처 */
+							   , '3', #{mngmInstDataCd}             /*관리기관 */
+							   , '4', #{mngmNoDataCd}               /*관리번호 */
+							   , '5', #{mngmYmdDataCd}              /*관리일자 */
+							   , '6', #{mngmDvsnDataCd}             /*관리구분 */
+							   , '7', #{mngmItemDataCd}             /*관리항목 */
+							   , ''
+							   )                           UNST_MNGM_ITEM_CD3 /*미결관리항목코드3 */
+					  from
+						  HZTOACCDT b
+					  where
+						  b.BSPL_CD            = #{bsplCd}
+					  and b.TOAC_CD            = #{toacCd}
+					  and b.USE_STRT_YMD      <= #{sttmYmd}
+					  and b.USE_FNSH_YMD      >= #{sttmYmd}
+					  and b.UNST_MNGM_TYPE_CD <> '1'
+					 ) f
+					,HMUNSBRKT z /* 미결내역 */
+				 where
+					 z.BSPL_CD                      = f.BSPL_CD
+				 and z.TOAC_CD                      = f.TOAC_CD
+				 and nvl(replace(z.UNST_MNGM_ITEM_CD1, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD1, '-', ''), '*')
+				 and nvl(replace(z.UNST_MNGM_ITEM_CD2, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD2, '-', ''), '*')
+				 and nvl(replace(z.UNST_MNGM_ITEM_CD3, '-', ''), '*') = nvl(replace(f.UNST_MNGM_ITEM_CD3, '-', ''), '*')
+				) s1
+			]]>
+	</select>
+
+
+
+</mapper>

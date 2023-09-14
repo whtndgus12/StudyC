@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuAtchFileDeleteDAO_sql.xml 
+    Description :                                      첨부파일 삭제
+                  -->
+<mapper namespace="CcuAtchFileDeleteDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO">
+	
+		<result property="dvsnVl" column="DVSN_VL"/>
+		<result property="rgstYmd" column="RGST_YMD"/>
+		<result property="bultId" column="BULT_ID"/>
+		<result property="rgstSno" column="RGST_SNO"/>
+		<result property="atflSno" column="ATFL_SNO"/>
+		<result property="atflTypCd" column="ATFL_TYP_CD"/>
+		<result property="fileGrpId" column="FILE_GRP_ID"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-listCcuAtchFileDelete */
+		<![CDATA[
+		   select 
+		       '1'                           as DVSN_VL
+		     , to_char(a.RGST_YMD, 'YYYYMMDD') as RGST_YMD                    /* 등록일자   */
+		     , '0000'                        as BULT_ID                     /* 게시ID   */
+		     , a.RGST_SNO                    as RGST_SNO                    /* 등록일련번호   */
+		     , a.ATFL_SNO                    as ATFL_SNO                    /* 첨부파일일련번호   */
+		     , a.FILE_ATCH_DVSN_CD           as ATFL_TYP_CD        /* 파일첨부구분코드   */
+		     , a.FILE_GRP_ID                 as FILE_GRP_ID                 /* 파일그룹ID   */
+		     , a.FILE_ID                     as FILE_ID                     /* 파일ID   */
+		     , a.FILE_SIZE_VL                as FILE_SIZE_VL                /* 파일크기값   */
+		     , a.FILE_NM                     as FILE_NM                     /* 파일명   */
+		     , nvl(a.DLTN_YN ,'N')           as DLTN_YN                     /* 삭제여부   */
+		     , to_char(a.LAST_UPDT_DT, 'YYYYMMDD') as LAST_UPDT_DT  
+		  from CUNOTIAFT a  /* NOTI  */
+		     , (
+		        select B.RGST_YMD
+		             , B.RGST_SNO  
+		             , SUM(decode(C.INQR_YN, 'Y',1,0)) as INQR_YN_CNT    /* OPEN */
+		             , MIN(To_date(C.INQR_DT)) as INQR_DT  
+		             , count(*)  as CNT
+		          from CUNOTIAFT A
+		             , CUNOTIMMT B
+		             , CUNOTIDMT C
+		         where A.RGST_YMD = B.RGST_YMD
+		           and A.RGST_SNO = B.RGST_SNO
+		           and B.RGST_YMD = C.RGST_YMD
+		           and B.RGST_SNO = C.RGST_SNO
+		           and nvl(A.DLTN_YN ,'N') <>'Y'
+		]]>          
+			<choose>
+			   <!-- 삭제 기본일수  -->
+			  <when test="kpngDdcn1 != null and kpngDdcn1 != 0">
+		<![CDATA[
+			      and B.RGST_YMD <= to_date(sysdate) - #{kpngDdcn2}
+		]]>          
+			  </when>
+			   <!-- 삭제 미오픈 기본일수  -->
+			  <when test="kpngDdcn3 != null and kpngDdcn3 != 0">
+		<![CDATA[		       
+		          and B.RGST_YMD <= to_date(sysdate) - #{kpngDdcn4}
+		]]>          
+			   </when>
+			 </choose>
+		<![CDATA[		       
+		          group by B.RGST_YMD, B.RGST_SNO
+		        ) b      
+		 where a.RGST_YMD = b.RGST_YMD
+		   and a.RGST_SNO = b.RGST_SNO
+		   and ( 
+		]]>          
+		 <if test="kpngDdcn2 != null and kpngDdcn2 != 0">   
+		<![CDATA[		       
+		           ((b.INQR_YN_CNT = CNT) and b.INQR_DT  <= to_date(sysdate)  - #{kpngDdcn3})
+		        or
+		]]>          
+		 </if>           
+		<![CDATA[		       
+		            ((b.INQR_YN_CNT < CNT) and a.RGST_YMD <= to_date(sysdate)  - #{kpngDdcn4})
+		       )
+		union all 
+		select 
+		       '2'                           as DVSN_VL
+		     , to_char(a.LAST_UPDT_DT, 'YYYYMMDD')     as RGST_YMD                    /* 등록일자   */
+		     , a.BULT_ID                     as BULT_ID                     /* 게시ID   */
+		     ,  1                            as RGST_SNO                    /* 등록일련번호   */
+		     , a.ATFL_SNO                    as ATFL_SNO                    /* 첨부파일일련번호   */
+		     , '1'                 as ATFL_TYP_CD                           /* 첨부유형코드  a.ATFL_TYP_CD */
+		     , ''                            as FILE_GRP_ID                 /* 파일그룹ID   */
+		     , a.FILE_ID                     as FILE_ID                     /* 파일ID   */
+		     , a.FILE_SIZE_VL                as FILE_SIZE_VL                /* 파일크기값   */
+		     , a.FILE_NM                     as FILE_NM                     /* 파일명   */
+		     , nvl(a.DLTN_YN ,'N')           as DLTN_YN                     /* 삭제여부   */
+		     , to_char(a.LAST_UPDT_DT, 'YYYYMMDD') as LAST_UPDT_DT                
+		  from CUBLBRFMT a  /* 게시판첨부파일 */
+		     , CUBLBRMMT b   
+		 where  nvl(a.DLTN_YN ,'N') <>'Y'
+		   and  a.BULT_ID  = b.BULT_ID
+		   and  a.ATFL_TYP_CD = 'BOARD_ATCHFILE'
+		   and  b.WRTG_DT  <= to_date(sysdate) -  #{kpngDdcn1}
+		order by 1,2  
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCunotiafe (Noti 첨부차일 삭제(CUNOTIAFT)) 
+        Description :                                           Noti 첨부차일 삭제(CUNOTIAFT)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCunotiafe"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCunotiafe */
+		<![CDATA[
+		 update CUNOTIAFT
+		       set
+		           DLTN_YN                                  = #{dltnYn}                              -- 삭제여부
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where RGST_YMD                      = to_date(#{rgstYmd}, 'YYYYMMDD')  /* 등록일자   */
+		   and RGST_SNO                      = #{rgstSno}                    /* 등록일련번호   */
+		   and ATFL_SNO                      = #{atflSno}                    /* 첨부파일일련번호   */
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCublbrfmt (게시판 첨부파일 삭제(CUBLBRFMT)) 
+        Description :                                           게시판 첨부파일 삭제(CUBLBRFMT)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCublbrfmt"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuAtchFileDeleteDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuAtchFileDeleteDAO-updateAtchFileCublbrfmt */
+		<![CDATA[
+		update 
+		      CUBLBRFMT  /* 게시판첨부파일 */
+		   set
+		           DLTN_YN                         = #{dltnYn}                      /* 삭제여부   */
+		         , LAST_UPDR_ID                    = #{gvUserId}                    
+		         , LAST_UPDT_IP                    = #{gvUserIp}                    
+		         , LAST_UPDT_DT                    = sysdate                        
+		         , LAST_UPDT_CLNT_PRGM_ID          = #{gvClntPrgmId}                
+		         , LAST_UPDT_SRVR_PRGM_ID          = #{gvSrvrPrgmId}                
+		 where BULT_ID                       = #{bultId}                     /* 게시ID   */
+		   and ATFL_SNO                      = #{atflSno}                    /* 첨부파일일련번호   */
+		]]>
+	</update>
+
+</mapper>

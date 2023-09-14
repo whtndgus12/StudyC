@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MraSetTissExmnRprtDtDAO_sql.xml 
+    Description : -->
+<mapper namespace="MraSetTissExmnRprtDtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mra-dao-MraSetTissExmnRprtDtDAO-updateSetTissExmnRprtDt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mr.mra.vo.MraSetTissExmnRprtDtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mr-mra-dao-MraSetTissExmnRprtDtDAO-updateSetTissExmnRprtDt"  parameterType="com.sds.healthcare.ehr.med.mr.mra.vo.MraSetTissExmnRprtDtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mr-mra-dao-MraSetTissExmnRprtDtDAO-updateSetTissExmnRprtDt */
+		/*조직검사결과보고일시 세팅*/
+		<![CDATA[
+		 UPDATE MRDSCWKCT -- 작업확인자이력
+		   SET TISS_EXMN_RPRT_DT      = to_date(#{tissExmnRprtDt}, 'yyyymmddhh24miss')
+		     , TISS_EXMN_RPRT_CNFR_DT = NULL
+		     , LAST_UPDR_ID = #{gvUserId}
+			 , LAST_UPDT_IP = #{gvUserIp}
+			 , LAST_UPDT_DT = sysdate
+			 , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 WHERE MDRP_NO = #{mdrpNo}
+		   AND CNFM_ID IS NOT NULL
+		   AND CNCL_YN <> 'Y'
+		   AND WORK_CNFR_DVSN_CD = '3' -- 3:리첵
+		   AND NOT EXISTS ( SELECT 1
+		                      FROM MRADCLCNT Z -- 입원취소
+		                     WHERE Z.MDRP_NO = #{mdrpNo}
+		                       AND ADMS_CNRE_CD <> '99'  --입원취소의 취소
+		                  ) -- 입원취소되면 MRDSCWKCT도 초기화되지만 혹시 몰라서 추가...
+		]]>
+	</update>
+
+</mapper>

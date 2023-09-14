@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbAscsComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbAscsComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO">
+	
+		<result property="spsdId" column="SPSD_ID"/>
+		<result property="istyAsstCd" column="ISTY_ASST_CD"/>
+		<result property="hcrdYn" column="HCRD_YN"/>
+		<result property="hlinAplyYn" column="HLIN_APLY_YN"/>
+		<result property="mdadAplyYn" column="MDAD_APLY_YN"/>
+		<result property="comnAplyYn" column="COMN_APLY_YN"/>
+		<result property="strtScinCd" column="STRT_SCIN_CD"/>
+		<result property="fnshScinCd" column="FNSH_SCIN_CD"/>
+		<result property="spcsDvsnCd" column="SPCS_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsAplyBase */
+		       a.SPSD_ID
+		     , a.ISTY_ASST_CD
+		     , a.HCRD_YN
+		     , a.HLIN_APLY_YN as HLIN_APLY_YN
+		     , a.MDAD_APLY_YN as MDAD_APLY_YN
+		     , a.COMN_APLY_YN as COMN_APLY_YN
+		     , a.STRT_SCIN_CD as STRT_SCIN_CD
+		     , a.FNSH_SCIN_CD as FNSH_SCIN_CD  
+		     , a.SPCS_DVSN_CD as SPCS_DVSN_CD
+		  from  AIIMASABT a   
+		 where  1=1 
+		 <if test='codvCd == "I"'>
+		  and  a.ASCS_SCIN_CLSF_CD   in ('A','B','I','F','U')  --##02 수정
+		 </if> 
+		 <if test='codvCd == "H"'>
+		 and  a.ASCS_SCIN_CLSF_CD   = 'C'
+		 </if> 
+		 <if test='codvCd == "M"'> 
+		 and  a.ASCS_SCIN_CLSF_CD   = 'I'      -- 투석
+		 </if> 
+		 <if test='codvCd != "I" and codvCd != "H" '> 
+		 and  a.ASCS_SCIN_CLSF_CD   in ('A','B','I','F','U') 
+		 </if> 
+		 <![CDATA[
+		 and  a.STRT_SCIN_CD   <= #{scinCd}
+		 and  a.FNSH_SCIN_CD   >  #{scinCd}
+		 ]]>
+		 and #{codvCd} = #{codvCd}
+		 and  trunc(sysdate)      between nvl(a.APST_YMD, to_date('19940101','yyyymmdd'))
+		                              and nvl(a.APFN_YMD, to_date('29991231','yyyymmdd'))
+		 and  a.spsd_id not in ('V801', 'V811') /*치매가정간호 제외*/
+		 and  rownum  = 1     
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO">
+	
+		<result property="vrctFormItemChrcVl" column="VRCT_FORM_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl () 
+        Description :                                           수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneVrctFormItemChrcVl */
+		          b.VRCT_FORM_ITEM_CHRC_VL as VRCT_FORM_ITEM_CHRC_VL
+		    from  APVCISNCT a
+		        , APVCISDLT b
+		   where  a.PTNO           = #{ptno}
+		     and  a.CRTT_ISNC_DT   = (select  max(c.CRTT_ISNC_DT)
+		                                from  APVCISNCT c
+		                               where  c.PTNO           = a.PTNO
+		                                 and  (
+		                                                 c.CRTT_ID in ('A09'
+		                                                              ,'A29'
+		                                                              -- ITBay 20190305 장준혁 산정특례 3월 고시적용
+					                                                  -- 아래 APVCISDLT 쿼리에서 100485 신청구분중 1:암 만 적용하므로 신서식은 구분으로 처리 A51, A61
+					                                                  ,'A51'
+					                                                  ,'A61'
+		                                                              ) --//##13
+		                                            and  exists (select  1
+		                                                           from  APVCISDLT x
+		                                                          where  x.CRTT_ISNC_SNO          = c.CRTT_ISNC_SNO
+		                                                            and  x.CRTT_ITEM_ID           = '100485'
+		                                                            and  x.VRCT_FORM_ITEM_CHRC_VL = '1'
+		                                                                -- 산정특례 구분 (1:암, 2:희귀난치성 질환))
+		                                                        )
+		                                      )
+		                                 and  c.CRTT_STTS_CD = '10'
+		                                 --//##13 상병비교 - 3단까지 비교함
+		                                 and  exists (select  1
+		                                                from  APVCISDLT x
+		                                               where  x.CRTT_ISNC_SNO          = c.CRTT_ISNC_SNO
+		                                                 and  x.CRTT_ITEM_ID           = '100494' --// 상병코드
+		                                                 and  x.VRCT_FORM_ITEM_CHRC_VL like substr(#{scinCd}, 1, 3)||'%'
+		                                             )
+		                             )
+		     and  (
+		                     a.CRTT_ID in ('A09'
+		                                  ,'A29'
+		                                  -- ITBay 20190305 장준혁 산정특례 3월 고시적용
+		                                  -- 아래 APVCISDLT 쿼리에서 100485 신청구분중 1:암 만 적용하므로 신서식은 구분으로 처리 A51, A61
+		                                  ,'A51'
+					                      ,'A61'
+		                                  ) --//##13
+		                and  exists (select  1
+		                               from  APVCISDLT x
+		                              where  x.CRTT_ISNC_SNO          = a.CRTT_ISNC_SNO
+		                                and  x.CRTT_ITEM_ID           = '100485'
+		                                and  x.VRCT_FORM_ITEM_CHRC_VL = '1'
+		                                    -- 산정특례 구분 (1:암, 2:희귀난치성 질환))
+		                            )
+		          )
+		     and  a.CRTT_STTS_CD   = '10'
+		     and  b.CRTT_ISNC_SNO  = a.CRTT_ISNC_SNO
+		     and  b.CRTT_ITEM_ID   = '102218'
+		     and  b.VRCT_FORM_ITEM_CHRC_VL = #{vrctFormItemChrcVl}
+		     -------------------------------------
+		     --//##13 상병비교 - 3단까지 비교함
+		     -------------------------------------
+		     and  exists (select  1
+		                    from  APVCISDLT x
+		                   where  x.CRTT_ISNC_SNO          = a.CRTT_ISNC_SNO
+		                     and  x.CRTT_ITEM_ID           = '100494' --// 상병코드
+		                     and  x.VRCT_FORM_ITEM_CHRC_VL like substr(#{scinCd}, 1, 3)||'%'
+		                 )
+		     -------------------------------------
+		     and  rownum           = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsCrtt-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO">
+	
+		<result property="crttIsncSno" column="CRTT_ISNC_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsCrtt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsCrtt-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsCrtt"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneAscsCrtt-result" useCache="true" flushCache="false">
+		select  a.CRTT_ISNC_SNO       as CRTT_ISNC_SNO
+		  from APVCISNCT a
+		     , APVCISDLT b 
+		where 1=1 
+		 and a.ptno = #{ptno}
+		 and a.crtt_isnc_sno = b.crtt_isnc_sno
+		 and a.crtt_id = #{crttId}
+		 and b.crtt_item_id = #{crttItemId}
+		 and b.vrct_form_item_chrc_vl like #{vrctFormItemChrcVl}
+		 and rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO">
+	
+		<result property="ctn" column="CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAscsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAscsComnDAO-selectOneCheck */
+		select FN_AC_CHECK_APQLQLDLT_R  (#{ptno}
+		                                 ,#{codvCd}
+		                                 ,#{scinCd}
+		                                 , 'A'
+		                                 , ''
+		                                 , ''
+		                                 ) as ctn
+		  from dual
+	</select>
+
+
+
+</mapper>

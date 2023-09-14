@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccCnctHxTrgMgmtDAO_sql.xml 
+    Description :                                      화면 접속 대상 조회
+                  -->
+<mapper namespace="CccCnctHxTrgMgmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO">
+	
+		<result property="srvrClntDiv" column="SRVR_CLNT_DIV"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="useYn" column="USE_YN"/>
+		<result property="srvcNoteCtn" column="SRVC_NOTE_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg (화면 접속 대상 조회) 
+        Description :                                           화면 접속 대상 조회..
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctTrg */
+		SELECT SRVR_CLNT_DIV
+		    	 , PRGM_ID
+				 , USE_YN
+				 , SRVC_NOTE_CTN
+		  FROM CUCTHPRGT
+		 WHERE SRVR_CLNT_DIV like #{srchSrvrClntDiv} || '%'
+		   AND PRGM_ID like #{srchPrgmId} || '%'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO">
+	
+		<result property="mdfcHxInptDt" column="MDFC_HX_INPT_DT"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="menuGrpNm" column="MENU_GRP_NM"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="bsisLnggMenuNm" column="BSIS_LNGG_MENU_NM"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx (화면 접속 이력) 
+        Description :                                           화면 접속 이력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx-result" useCache="true" flushCache="false">
+		<![CDATA[
+				SELECT /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listScrCnctHx */
+					   		TO_CHAR(A.MDFC_HX_INPT_DT, 'YYYY/MM/DD HH24:MI:SS') AS MDFC_HX_INPT_DT   /* 변경이력입력일시 */
+				     	  , A.LGIN_ID                                                                                                          /* 로그인ID */
+				     	  , B.USER_NM  																									   /* 로그인명 */
+				     	  , A.MENU_GRP_ID 																								   /* 메뉴그룹ID */
+				     	  , C.MENU_GRP_NM 																						       /* 메뉴그룹명 */
+				     	  , A.MENU_ID 																									   /* 메뉴ID */
+				     	  , D.BSIS_LNGG_MENU_NM 																					   /* 기본언어메뉴명 */
+						  , A.FRST_RGST_IP      																							   /* 최초등록IP */
+				  FROM CUUMNUSHT A
+				     	  , CCUSERAMT B  																								  /* NEXMED-EHR 사용자T */
+				     	  , CSMGLMGMT C  																								  /* 메뉴그룹목록관리T */
+				     	  , CSMNGRPMT D  																								  /* 통합메뉴T */
+				 WHERE A.LGIN_ID         		= B.LGIN_ID
+				   	AND A.MENU_GRP_ID     	= C.MENU_GRP_ID(+)
+				   	AND A.MENU_GRP_ID     	= D.MENU_GRP_ID(+)
+				   	AND A.MENU_ID         	= D.MENU_ID(+)
+				   	AND A.PRGM_ID         	= #{srchPrgmId}
+				   	AND A.MDFC_HX_INPT_DT BETWEEN TO_DATE(#{srchStartDay}  || '000000' , 'YYYYMMDDHH24MISS') 
+				                             					 AND TO_DATE(#{srchEndDay}   || '235959' , 'YYYYMMDDHH24MISS')
+		]]>
+		<if test="lginId != null and lginId != ''.toString()">		                             
+				   AND A.LGIN_ID LIKE #{lginId} || '%'                           
+		</if>		   
+		<![CDATA[		                             
+				 ORDER 
+				    BY A.MDFC_HX_INPT_DT DESC
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO">
+	
+		<result property="logOcrnDt" column="LOG_OCRN_DT"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="srvcInptCtn" column="SRVC_INPT_CTN"/>
+		<result property="srvcNoteCtn" column="SRVC_NOTE_CTN"/>
+		<result property="cnctIp" column="CNCT_IP"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx (서비스 접속 이력) 
+        Description :                                           서비스 접속 이력
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx-result" useCache="true" flushCache="false">
+		<![CDATA[
+				SELECT /*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-listSvcCnctHx */
+				       TO_CHAR(A.LOG_OCRN_DT, 'YYYY/MM/DD HH24:MI:SS') AS LOG_OCRN_DT	/* 로그발생시점 */
+				     , A.USER_ID														/* 사용자ID */
+				     , B.USER_NM														/* 사용자명 */
+				     , C.PRGM_ID														/* 서비스ID */
+				     , substr(A.SRVC_INPT_CTN, 1, 997) AS SRVC_INPT_CTN			    	/* 서비스입력내용 */
+				 	 , C.SRVC_NOTE_CTN           									   	/* 서비스노트내용 */
+				     -- 2022.01.12. KHS. CNCT_IP 컬럼에 
+		             --                  10.1.133.53, 10.40.101.27, 10.40.111.12 
+		             --                  와 같은 형태로 들어가 있어서 자리수 에러가 난다.
+		             --                  첫번째것만 가지고 가도록 수정
+		             , fn_sd_gettoken(A.CNCT_IP, ',', 1) as CNCT_IP											         	/* 접속IP */
+				  FROM CSSYSLGMT A														/* 시스템로그T */
+					 , CCUSERAMT B														/* NEXMED-EHR 사용자T */
+		       		 , CUCTHPRGT C														/*접속이력대상프로그램*/
+			     WHERE A.USER_ID        			= B.LGIN_ID
+		  		   AND A.SRVC_ID = C.PRGM_ID
+		]]>
+		<if test="srchSrvcId != null">
+				   AND A.SRVC_ID LIKE '%' || #{srchSrvcId} || '%'
+		</if>
+		<![CDATA[
+				   AND A.LOG_OCRN_DT BETWEEN TO_DATE(#{srchStartDay}, 'YYYYMMDDHH24MISS') 
+				                         AND TO_DATE(#{srchEndDay}  , 'YYYYMMDDHH24MISS')
+		]]>
+		<if test="userId != null and userId != ''.toString()">		                             
+				   AND A.USER_ID LIKE #{userId} || '%'   
+		</if>                        
+		<![CDATA[                         
+		  	   ORDER 
+				     BY A.LOG_OCRN_DT DESC
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-insertScrCnctTrg (화면 접속 대상 저장) 
+        Description :                                           화면 접속 대상 저장
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-insertScrCnctTrg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-insertScrCnctTrg */
+		INSERT
+			INTO CUCTHPRGT
+					(SRVR_CLNT_DIV
+					, PRGM_ID 
+					, USE_YN
+					, SRVC_NOTE_CTN
+		            , FRST_RGSR_ID
+		            , FRST_RGST_IP
+		            , FRST_RGST_DT
+		            , FRST_RGST_CLNT_PRGM_ID
+		            , FRST_RGST_SRVR_PRGM_ID
+		            , LAST_UPDR_ID
+		            , LAST_UPDT_IP
+		            , LAST_UPDT_DT
+		            , LAST_UPDT_CLNT_PRGM_ID
+		            , LAST_UPDT_SRVR_PRGM_ID)
+		     VALUES (#{srvrClntDiv}
+		     		, #{prgmId}
+		     		, #{useYn} 
+		     		, #{srvcNoteCtn}                      
+		            , #{gvLginId}
+		            , #{gvUserIp}
+		            , sysdate
+		            , #{gvClntPrgmId}
+		            , #{gvSrvrPrgmId}
+		            , #{gvLginId}
+		            , #{gvUserIp}
+		            , sysdate
+		            , #{gvClntPrgmId}
+		            , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-updateScrCnctTrg (화면 접속 대상 수정) 
+        Description :                                           화면 접속 대상 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-updateScrCnctTrg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-updateScrCnctTrg */
+				UPDATE CUCTHPRGT
+				SET SRVR_CLNT_DIV 	= #{srvrClntDiv}
+				  	, PRGM_ID 				= #{prgmId}
+				  	, USE_YN 				= #{useYn}
+				  	, SRVC_NOTE_CTN  		= #{srvcNoteCtn}  
+			      	, LAST_UPDR_ID  		= #{gvLginId}
+			      	, LAST_UPDT_IP  		= #{gvUserIp}
+			      	, LAST_UPDT_DT  	= sysdate
+			      	, LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			      	, LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			    WHERE SRVR_CLNT_DIV 	= #{srchSrvrClntDiv}
+			    AND upper(PRGM_ID) 			= upper(#{srchPrgmId})
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-deleteScrCnctTrg (화면 접속 대상 삭제) 
+        Description :                                           화면 접속 대상 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-deleteScrCnctTrg"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccCnctHxTrgMgmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccCnctHxTrgMgmtDAO-deleteScrCnctTrg */
+			    DELETE CUCTHPRGT
+			    WHERE SRVR_CLNT_DIV 	= #{srchSrvrClntDiv}
+			    AND PRGM_ID 				= #{srchPrgmId}
+	</delete>
+
+</mapper>

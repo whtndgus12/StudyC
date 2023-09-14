@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SrpPacsUserDAO_sql.xml 
+    Description : -->
+<mapper namespace="SrpPacsUserDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm-result" type="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpPacsUserDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="crntPwd" column="CRNT_PWD"/>
+		<result property="pacsAccsNo" column="PACS_ACCS_NO"/>
+		<result property="pacsPhtrDprtClsfCd" column="PACS_PHTR_DPRT_CLSF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sr.srp.vo.SrpPacsUserDVO
+		resultMap : com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm"  parameterType="com.sds.healthcare.ehr.sup.sr.srp.vo.SrpPacsUserDVO"  resultMap="com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sr-srp-dao-SrpPacsUserDAO-selectOnePacsUserInfm */
+		select
+		    LGIN_ID,
+		    USER_NM,
+		    CRNT_PWD,
+		    (
+		        select
+		            PACS_ACCS_NO
+		        from
+		            MDEXMORDT
+		        where
+		            PTNO = #{ptno}
+		            and ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		            and ORDR_SNO = #{ordrSno}
+					and rownum = 1
+		    ) as PACS_ACCS_NO,
+		    (
+		        select
+		            a.PACS_PHTR_DPRT_CLSF_CD
+		        from
+		            MDEXMORDT m
+		          , MDORDRCMT a
+		        where
+		                m.PTNO     = #{ptno}
+		            and m.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+		            and m.ORDR_SNO = #{ordrSno}
+		            and a.ORDR_CD  = m.ORDR_CD
+					and rownum = 1
+		    ) as PACS_PHTR_DPRT_CLSF_CD
+		from
+		    CCUSERAMT
+		where
+		    LGIN_ID = #{lginId}
+	</select>
+
+
+
+</mapper>

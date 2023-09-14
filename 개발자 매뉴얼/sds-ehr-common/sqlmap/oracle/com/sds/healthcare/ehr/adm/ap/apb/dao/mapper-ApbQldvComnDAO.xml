@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbQldvComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbQldvComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="stempLocal" column="STEMP_LOCAL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo (산정특례 중증 재등록 여부 조회 DAM) 
+        Description :                                           apd_qlqldlt_s07
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo-result" useCache="true" flushCache="false">
+		  select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneAscsSrilReRgstInfo */
+		   FN_AC_CHECK_APQLQLDLT_R(
+		              #{ptno}
+		             ,  #{otamDvsnCd}
+		             ,  #{scinCd}
+		             ,  #{wodvCd}
+		             ,  #{mcdpCd}
+		             ,  #{scinSqnc}
+		             ) as STEMP_LOCAL
+		  from  dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="ptqlFnshYmd" column="PTQL_FNSH_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd (환자자격가장최근종료일자) 
+        Description :                                           apd_qlqldlt_s08
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstPtqlFnshYmd */
+						   max(to_char(PTQL_FNSH_YMD, 'yyyymmdd')) as PTQL_FNSH_YMD /*  환자자격종료일자 */
+					 from  APQLQLDLT a
+					where  PTNO = #{ptno}
+					  and  ASCS_CLSF_CD = #{ascsClsfCd}                        /*  산정특례분류코드 */
+			         <if test='nhicRgstScinCd != null and nhicRgstScinCd != ""'>
+		              and  a.NHIC_RGST_SCIN_CD like #{nhicRgstScinCd}||'%' 
+		             </if>
+					  and  PTQL_FNSH_YMD is not null
+					  and  CNCL_DT is null
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="paclYmd" column="PACL_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd (원무계산일자 조회 DAM(산정특례) 
+        Description :                                           apd_exmordt_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd-result" useCache="true" flushCache="false">
+		  select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOnePaclYmd */
+						   nvl(min(to_char(a.PACL_YMD, 'yyyymmdd')),'29991231') as PACL_YMD /*  원무계산일자 */
+					 from  MDEXMORDT a
+					where  a.PTNO = #{ptno}
+					  and  a.PACL_YMD between to_date(#{exptYmd}, 'yyyymmdd')    /*  중증만료일자 */
+					  and  to_date(#{fndgYmd}, 'yyyymmdd')     /*  확진일자 */
+					  and  nvl(a.DC_DVSN_CD,'N') = 'N'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="crttIsncDt" column="CRTT_ISNC_DT"/>
+		<result property="srilMdcrRgstNo" column="SRIL_MDCR_RGST_NO"/>
+		<result property="srilPtntApdcSttsCd" column="SRIL_PTNT_APDC_STTS_CD"/>
+		<result property="nhicRgstScinCd" column="NHIC_RGST_SCIN_CD"/>
+		<result property="nhicRgstScinSno" column="NHIC_RGST_SCIN_SNO"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="ascsClsfCd" column="ASCS_CLSF_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs-result" useCache="true" flushCache="false">
+		  select  /*+ index (a APQLQLDLT_I05) SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listAscs */
+		           a.CRTT_ISNC_DT
+		        ,  a.SRIL_MDCR_RGST_NO        
+		        ,  a.SRIL_PTNT_APDC_STTS_CD
+		        ,  a.NHIC_RGST_SCIN_CD
+		        ,  a.NHIC_RGST_SCIN_SNO
+		        ,  a.SCIN_CD
+		        ,  a.ASCS_CLSF_CD
+		    from  APQLQLDLT a
+		   where  a.PTNO          = #{ptno}
+		     and  trunc(sysdate)  between case when a.PTQL_STRT_YMD  is null
+		                                            then trunc(a.CRTT_ISNC_DT)
+		                                       when trunc(a.CRTT_ISNC_DT)   is null
+		                                            then a.PTQL_STRT_YMD
+		                                       else least(trunc(a.CRTT_ISNC_DT), a.PTQL_STRT_YMD)
+		                                  end
+		                              and nvl(a.PTQL_FNSH_YMD, add_months(trunc(a.CRTT_ISNC_DT), #{adtnMmcn}) - 1)                           
+		     and  a.CNCL_DT       is null
+		     and  a.ASCS_CLSF_CD  = #{ascsClsfCd}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="fndgYmd" column="FNDG_YMD"/>
+		<result property="ptqlStrtYmd" column="PTQL_STRT_YMD"/>
+		<result property="ptqlFnshYmd" column="PTQL_FNSH_YMD"/>
+		<result property="ascsSrilDmntOrnoStrtYmd" column="ASCS_SRIL_DMNT_ORNO_STRT_YMD"/>
+		<result property="ascsSrilDmntOrnoFnshYmd" column="ASCS_SRIL_DMNT_ORNO_FNSH_YMD"/>
+		<result property="dmntExtnBefPrvsAprvDdcn" column="DMNT_EXTN_BEF_PRVS_APRV_DDCN"/>
+		<result property="dmntExtnAftPrvsAprvDdcn" column="DMNT_EXTN_AFT_PRVS_APRV_DDCN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOneLtstAcscQldv */
+		        to_char(a.FNDG_YMD, 'yyyymmdd') as FNDG_YMD
+		     ,  to_char(a.PTQL_STRT_YMD, 'yyyymmdd')as PTQL_STRT_YMD
+		     ,  to_char(a.PTQL_FNSH_YMD, 'yyyymmdd')as PTQL_FNSH_YMD
+		     ,  to_char(ASCS_SRIL_DMNT_ORNO_STRT_YMD, 'yyyymmdd') as ASCS_SRIL_DMNT_ORNO_STRT_YMD
+		     ,  to_char(ASCS_SRIL_DMNT_ORNO_FNSH_YMD, 'yyyymmdd') as ASCS_SRIL_DMNT_ORNO_FNSH_YMD
+		     ,  DMNT_EXTN_BEF_PRVS_APRV_DDCN as DMNT_EXTN_BEF_PRVS_APRV_DDCN
+		     ,  DMNT_EXTN_BEF_PRVS_APRV_DDCN as DMNT_EXTN_AFT_PRVS_APRV_DDCN
+		  from  APQLQLDLT a
+		 where  a.PTNO          = #{ptno}
+		   and  a.ASCS_CLSF_CD  = #{ascsClsfCd}
+		   and  a.CNCL_DT      is null
+		  <if test='nhicRgstScinCd != null and nhicRgstScinCd != ""'>
+		   and  a.NHIC_RGST_SCIN_CD like #{nhicRgstScinCd}||'%' 
+		  </if>
+		   and  nvl(a.PTQL_FNSH_YMD, to_date('29991231','yyyymmdd'))
+		         = (select  /* index (k APQLQLDLT_I05) */
+		                    max(nvl(k.PTQL_FNSH_YMD, to_date('29991231', 'yyyymmdd')))
+		              from  APQLQLDLT k
+		             where  k.PTNO          = a.PTNO
+		               and  k.ASCS_CLSF_CD  = a.ASCS_CLSF_CD
+		               and  k.CNCL_DT      is null
+		               <if test='nhicRgstScinCd != null and nhicRgstScinCd != ""'>
+		               and  k.NHIC_RGST_SCIN_CD like #{nhicRgstScinCd}||'%' 
+		              </if>
+		           )
+		   and rownum = 1      
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="ascsClsfCd" column="ASCS_CLSF_CD"/>
+		<result property="scinCd" column="SCIN_CD"/>
+		<result property="ptqlStrtYmd" column="PTQL_STRT_YMD"/>
+		<result property="ptqlFnshYmd" column="PTQL_FNSH_YMD"/>
+		<result property="srilMdcrRgstNo" column="SRIL_MDCR_RGST_NO"/>
+		<result property="reRgstPblcNo" column="RE_RGST_PBLC_NO"/>
+		<result property="crttIsncDt" column="CRTT_ISNC_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-listPtntAscs */
+		       a.ASCS_CLSF_CD as ASCS_CLSF_CD
+		     , SCIN_CD as SCIN_CD /*암상병코드*/
+		     , to_char(a.PTQL_STRT_YMD,'yyyymmdd') as PTQL_STRT_YMD
+		     , to_char(a.PTQL_FNSH_YMD,'yyyymmdd') as PTQL_FNSH_YMD
+		     , SRIL_MDCR_RGST_NO as SRIL_MDCR_RGST_NO
+		     , RE_RGST_PBLC_NO as RE_RGST_PBLC_NO
+		     , to_char(a.CRTT_ISNC_DT,'yyyymmdd') as CRTT_ISNC_DT
+		 from APQLQLDLT a
+		     , CCCMCDDMT b
+		where a.PTNO           = #{ptno}
+		  and a.PTNT_QLDV_CD   = 'S'  /* 산정특례 */
+		  and a.CNCL_DT        is null
+		  and nvl(a.PTQL_FNSH_YMD, to_date('29991231','yyyymmdd'))
+		                              = (select max(nvl(a.PTQL_FNSH_YMD, to_date('29991231','yyyymmdd')))
+		                                    from APQLQLDLT aa
+		                                   where aa.PTNO         = a.PTNO
+		                                     and aa.PTNT_QLDV_CD   = 'S'
+		                                     and aa.ASCS_CLSF_CD = a.ASCS_CLSF_CD
+		                                     and aa.CNCL_DT is null )
+		  and b.COMN_GRP_CD    = 'AP131'  
+		  and b.COMN_DTLS_CD   = a.ASCS_CLSF_CD
+		  and  trunc(sysdate) between decode( a.PTQL_STRT_YMD, null , trunc(a.CRTT_ISNC_DT)
+		                                                                           ,decode(trunc(a.CRTT_ISNC_DT), null
+		                                                                                                               , a.PTQL_STRT_YMD
+		                                                                                                               , least(trunc(a.CRTT_ISNC_DT),a.PTQL_STRT_YMD))
+		                                             )
+		                                and (case when ASCS_CLSF_CD in( 'B', 'b', '2', 'D' ) then nvl(add_months(a.PTQL_FNSH_YMD,6),   add_months(trunc(a.CRTT_ISNC_DT),12) - 1 )
+		                                          else nvl(a.PTQL_FNSH_YMD,   add_months(trunc(a.CRTT_ISNC_DT),60) - 1)
+		                                      end
+		                                 )
+		  /* 2022.03.22 이해광 ASCS_CLSF_CD 값이 1:보험(암), 2:급여(암) 인경우 환자의 보험자격과 비교해서 유효한경우에만 가져오도록 함. */
+		  and     (   (   a.ASCS_CLSF_CD in ( '1' ,   '2' )   
+		            and exists ( 
+		                            select 
+		                                    1
+		                            from
+		                                    apqlqlfct   x
+		                            where
+		                                    x.ptno      =   a.ptno
+		                            and     trunc(sysdate)  between x.isty_strt_ymd
+		                                                    and     x.isty_fnsh_ymd
+		                            and     substr(x.isty_cd,1,1)   =   a.ascs_clsf_cd
+		                        )
+		            )
+		        or
+		            (   a.ASCS_CLSF_CD not in ( '1' ,   '2' ) 
+		            )
+		        )
+		 order by a.ASCS_CLSF_CD, a.PTQL_STRT_YMD, a.PTQL_FNSH_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntQldvCd" column="PTNT_QLDV_CD"/>
+		<result property="ascsClsfCd" column="ASCS_CLSF_CD"/>
+		<result property="cnclDt" column="CNCL_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQldvComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQldvComnDAO-selectOne */
+		       a.PTNO
+		     , a.PTNT_QLDV_CD 
+		     , a.ASCS_CLSF_CD
+		     , to_char(a.CNCL_DT, 'yyyymmddhh24miss')  as CNCL_DT
+		  from APQLQLDLT a
+		 where 1=1
+		   <if test='inqrYmd != null and inqrYmd != ""'> 
+		   and to_date(#{inqrYmd}, 'yyyymmdd') between a.PTQL_STRT_YMD 
+		                                           and a.PTQL_FNSH_YMD + 0.99999
+		   </if>
+		   <if test='ptno != null and ptno != ""'>
+		   and a.PTNO = #{ptno}
+		   </if>
+		   <if test='ptntQldvCd != null and ptntQldvCd != ""'>
+		   and a.PTNT_QLDV_CD      = #{ptntQldvCd}
+		   </if>
+		   <if test='ascsClsfCd != null and ascsClsfCd != ""'>
+		   and a.ASCS_CLSF_CD      = #{ascsClsfCd}
+		   </if>
+		  <if test='cnclYn == "N"'>
+		   and #{cnclYn}  = 'N'
+		   and a.CNCL_DT           is  null
+		  </if>
+		   and rownum = 1  
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApcPtadCheckComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApcPtadCheckComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg-result" type="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcPtadCheckComnDVO">
+	
+		<result property="cnfrMesgCtn" column="CNFR_MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apc.vo.ApcPtadCheckComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg"  parameterType="com.sds.healthcare.ehr.adm.ap.apc.vo.ApcPtadCheckComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApcPtadCheckComnDAO-selectOnePtadMsg */
+		<![CDATA[
+		select  replace(c.PTNT_CTRL_CHRC_VL1, '[msgCtn]', a.MDCR_CTN||chr(13)||h.KORN_DPRT_NM||' '||a.msg) as CNFR_MESG_CTN
+		  from  (
+		    select  a.MCDP_CD
+		         ,  to_char(a.MDCR_YMD, 'yyyy-mm-dd') ||' ~ '||
+		            case when a.dsch_dt = to_date('29991231','yyyymmdd')
+		                 then '재원중'
+		                 else to_char(a.dsch_dt, 'yyyy-mm-dd') end as MDCR_CTN
+		         ,  '입.퇴원 환자입니다.' as msg
+		      from  APRCRPTNT a
+		     where  1=1
+		       and  a.PTNO     =  #{ptno}
+		       and  a.CODV_CD  = 'I'
+		       and  a.CNCL_DT is null
+		       and nvl(a.DRG_YN, 'Y')    = 'Y'
+		       and nvl(to_date(#{implYmd}, 'yyyymmdd'), trunc(sysdate))
+		                          between trunc(a.MDCR_YMD)
+		                              and trunc(a.DSCH_DT)
+		     union
+		       all
+		    select  a.MCDP_CD
+		         ,  to_char(a.ADMS_PRRN_YMD, 'yyyy-mm-dd') as MDCR_CTN
+		         ,  '입원 예정환자입니다.' as msg
+		      from  APRCAMAPT a
+		     where  1=1
+		       and  a.PTNO    =   #{ptno}
+		       and  a.CNCL_DT is  null
+		       and  a.ADMS_DT is null
+		       and  a.ADMS_PRRN_YMD = nvl(to_date(#{implYmd}, 'yyyymmdd'), trunc(sysdate))
+		        ) a
+		     ,  HZDEPTMMT h
+		     ,  APCTRLMMT c
+		 where  1=1
+		   and  h.DPRT_CD = a.MCDP_CD
+		   and  c.PTNT_CTRL_CD = 'AP017'
+		   and  c.PTNT_DTLS_CTRL_CD = 'M02'
+		   and  rownum = 1
+		]]>
+	</select>
+
+
+
+</mapper>

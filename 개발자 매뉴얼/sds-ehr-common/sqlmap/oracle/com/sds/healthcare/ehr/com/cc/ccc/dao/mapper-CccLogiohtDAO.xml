@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CccLogiohtDAO_sql.xml 
+    Description :                                      로그인 정보
+                  -->
+<mapper namespace="CccLogiohtDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-insertLogioht () 
+        Description :                                           CcdLogiohtI01DAO
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-insertLogioht"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-insertLogioht */
+		<![CDATA[
+			   	insert  /*+ ccd_logioht_i01$I01_시스템접속이력 입력 DAM */
+			   		into
+			   				CSLOGIOHT
+			   			   (
+			   				 LGIN_ID,
+			   				 USER_LOG_DT,
+			   				 LOG_DVSN_CD,
+			   				 LOG_SNO,
+			   				 CNCT_IP,
+			   				 SESN_ID,
+			   				 FRST_RGSR_ID,
+			   				 FRST_RGST_IP,
+			   				 FRST_RGST_DT,
+			   				 FRST_RGST_CLNT_PRGM_ID,
+			   				 FRST_RGST_SRVR_PRGM_ID,
+			   				 LAST_UPDR_ID,
+			   				 LAST_UPDT_IP,
+			   				 LAST_UPDT_DT,
+			   				 LAST_UPDT_CLNT_PRGM_ID,
+			   				 LAST_UPDT_SRVR_PRGM_ID )
+			   		select
+			   				#{gvLginId},
+			   				sysdate,
+			   				#{logDvsnCd},
+			   				(nvl(max(to_number(LOG_SNO)), 0)) + 1,
+			   				#{gvUserIp},
+			   				'',
+			   				#{gvLginId},
+			   				#{gvUserIp},
+			   				sysdate,
+			   				#{gvClntPrgmId},
+			   				#{gvSrvrPrgmId},
+			   				#{gvLginId},
+			   				#{gvUserIp},
+			   				sysdate,
+			   				#{gvClntPrgmId},
+			   				#{gvSrvrPrgmId}
+			   		  from
+			   				CSLOGIOHT
+			   		 where
+			   				LGIN_ID = #{gvLginId}
+			   		   and  trunc(USER_LOG_DT) = trunc(sysdate)
+			   		   and  LOG_DVSN_CD = #{logDvsnCd}
+					]]>
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userLogDt" column="USER_LOG_DT"/>
+		<result property="logDvsnCd" column="LOG_DVSN_CD"/>
+		<result property="logSno" column="LOG_SNO"/>
+		<result property="cnctIp" column="CNCT_IP"/>
+		<result property="lginWayCd" column="LGIN_WAY_CD"/>
+		<result property="smisCnctOprnSystNm" column="SMIS_CNCT_OPRN_SYST_NM"/>
+		<result property="smisCnctVrsnNo" column="SMIS_CNCT_VRSN_NO"/>
+		<result property="afiRturVl1" column="AFI_RTUR_VL_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht () 
+        Description :                                           로그인시접속정보조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneLogioht */
+		select  /*+ ccd_logioht_s01$S01_로그인시접속정보조회 */
+						   LGIN_ID as LGIN_ID                   /* 로그인ID */
+						  ,to_char(USER_LOG_DT, 'YYYYMMDDHH24MISS') as USER_LOG_DT               /* 사용자로그일시 */
+						  ,LOG_DVSN_CD as LOG_DVSN_CD               /* 로그구분코드 */
+						  ,LOG_SNO as LOG_SNO                   /* 로그일련번호 */
+						  ,CNCT_IP as CNCT_IP                   /* 접속IP */
+						  ,LGIN_WAY_CD as LGIN_WAY_CD               /* 로그인방식코드 */
+						  ,SMIS_CNCT_OPRN_SYST_NM as SMIS_CNCT_OPRN_SYST_NM    /* SMIS접속운영시스템명 */
+						  ,SMIS_CNCT_VRSN_NO as SMIS_CNCT_VRSN_NO         /* SMIS접속버전번호 */
+						  ,decode(CNCT_IP,#{cnctIp},'Y',#{gvUserIp},'Y','N') as AFI_RTUR_VL_1
+					 from
+						 (
+						   select /*+ index_desc( a CSLOGIOHT_PK) */
+								  LGIN_ID                   /* 로그인ID */
+								 ,USER_LOG_DT               /* 사용자로그일시 */
+								 ,LOG_DVSN_CD               /* 로그구분코드 */
+								 ,LOG_SNO                   /* 로그일련번호 */
+								 ,CNCT_IP                   /* 접속IP */
+								 ,LGIN_WAY_CD               /* 로그인방식코드 */
+								 ,SMIS_CNCT_OPRN_SYST_NM    /* SMIS접속운영시스템명 */
+								 ,SMIS_CNCT_VRSN_NO         /* SMIS접속버전번호 */
+								 ,SESN_ID                   /* 세션ID */
+								 ,rownum as arow
+						   from CSLOGIOHT a
+						   where LGIN_ID = trim(decode(#{gvLginId},null,#{gvUserId},#{gvLginId}))
+							 and LOG_DVSN_CD in ('I','O')
+							 and rownum &lt; 3
+						 )
+					 where arow = 2
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime-result" type="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO">
+	
+		<result property="autoLogoutTime" column="AUTO_LOGOUT_TIME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime (로그아웃 타임 시간) 
+        Description :                                           로그아웃 타임 시간
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime"  parameterType="com.sds.healthcare.ehr.com.cc.ccc.vo.CccLogiohtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccc-dao-CccLogiohtDAO-selectOneAutoLogoutTime */
+		<![CDATA[
+		select
+		        greatest    (   nvl (   to_number   (   a.comn_envr_stup_item_chrc_vl   )   ,   0   )
+		                    ,   nvl (   to_number   (   d.comn_envr_stup_item_chrc_vl   )   ,   0   )
+		                    ,   nvl (   to_number   (   e.comn_envr_stup_item_chrc_vl   )   ,   0   )
+		                    ,   nvl (   to_number   (   f.comn_envr_stup_item_chrc_vl   )   ,   0   )
+		                    )                   as  auto_logout_time
+		from
+		        ccenstimt   a
+		    ,   ccuseramt   b
+		    ,   ccusrdpht   c
+		    ,   csenstimt   d
+		    ,   csenstimt   e
+		    ,   csenstimt   f
+		where
+		        a.comn_envr_stup_grp_cd         =   'LNEV_CONTENTS'
+		and     a.comn_envr_stup_item_cd        =   'AUTO_LOGOUT_TIME'
+		and     b.lgin_id                       =   #{lginId}
+		and     c.lgin_id                       =   b.lgin_id
+		and     c.mnsb_yn                       =   'Y'
+		and     d.comn_envr_stup_grp_cd     (+) =   'CSU_LOGOUT_DPRT_TIME'
+		and     d.comn_envr_stup_item_cd    (+) =   c.mdcr_dprt_cd
+		--  2021.05.08. KHS.    기존 직종조건 없애고 사용자 조건으로 변경.
+		and     e.comn_envr_stup_grp_cd     (+) =   'CSU_LOGOUT_USER_TIME'
+		and     e.comn_envr_stup_item_cd    (+) =   b.lgin_id
+		--  2021.05.08. KHS.    직종상세조건이지만 컬럼길이의 제한으로 코드명을 OCFM으로 한다. ㅡㅡ;
+		and     f.comn_envr_stup_grp_cd     (+) =   'CSU_LOGOUT_OCFM_TIME'
+		and     f.comn_envr_stup_item_cd    (+) =   b.ocfm_detl_cd
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmqExrsItemMngmDAO_sql.xml 
+    Description :                                      검사결과항목관리
+                  -->
+<mapper namespace="SmqExrsItemMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd-result" type="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="exrsFrmtCd" column="EXRS_FRMT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd (검사항목 리스트) 
+        Description :                                           검사항목 검색(ORDR_CD, ORDR_NM) 결과 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd"  parameterType="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd-result" useCache="true" flushCache="false">
+		select /* com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExmnCd */
+						a.ORDR_CD as ORDR_CD
+					,	b.ORDR_NM as ORDR_NM
+					,	b.EXRS_FRMT_CD as EXRS_FRMT_CD
+		from			SMMORDCLT	a,
+						MDORDRCMT b
+		where		a.ORDR_CD like upper(pa_sm.set_ec(#{ordrNm})) || '%' escape pa_sm.ec
+		and			a.HLSC_CLSF_CD = #{hlscClsfCd}
+		and			b.ORDR_CD = a.ORDR_CD
+		<![CDATA[
+		and			b.APST_YMD <= trunc(sysdate)
+		and			b.APFN_YMD >= trunc(sysdate)
+		]]>
+		and			nvl(b.SET_EXMN_YN, 'N') = 'N'
+		and			nvl(b.USER_SET_YN, 'N') = 'N'
+		union
+		select
+						a.ORDR_CD as ORDR_CD
+					,	b.ORDR_NM as ORDR_NM
+					,	b.EXRS_FRMT_CD as EXRS_FRMT_CD
+		from			SMMORDCLT	a,
+						MDORDRCMT b
+		where		b.UPRC_ORDR_NM like '%' || upper(pa_sm.set_ec(#{ordrNm})) || '%' escape pa_sm.ec
+		<![CDATA[
+		and			b.APST_YMD <= trunc(sysdate)
+		and			b.APFN_YMD >= trunc(sysdate)
+		]]>
+		and			nvl(b.SET_EXMN_YN, 'N') = 'N'
+		and			nvl(b.USER_SET_YN, 'N') = 'N'
+		and			a.ORDR_CD = b.ORDR_CD
+		and			a.HLSC_CLSF_CD = #{hlscClsfCd}
+		order by ORDR_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem-result" type="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO">
+	
+		<result property="exmnCd" column="EXMN_CD"/>
+		<result property="exmnNm" column="EXMN_NM"/>
+		<result property="hlscClsfCd" column="HLSC_CLSF_CD"/>
+		<result property="hlscRsltCd" column="HLSC_RSLT_CD"/>
+		<result property="rsltCdNm" column="RSLT_CD_NM"/>
+		<result property="rfrcSbjcCtn" column="RFRC_SBJC_CTN"/>
+		<result property="abnrOpnnYn" column="ABNR_OPNN_YN"/>
+		<result property="cstzHlscAbnrOpnnYn" column="CSTZ_HLSC_ABNR_OPNN_YN"/>
+		<result property="cstzCyclVl" column="CSTZ_CYCL_VL"/>
+		<result property="cstzCyclResnCtn" column="CSTZ_CYCL_RESN_CTN"/>
+		<result property="rsltCdFvrtCtn" column="RSLT_CD_FVRT_CTN"/>
+		<result property="cancYn" column="CANC_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem"  parameterType="com.sds.healthcare.ehr.sup.sm.smq.vo.SmqExrsItemMngmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smq-dao-SmqExrsItemMngmDAO-listExrsItem */
+		       a.EXMN_CD as EXMN_CD
+		     , b.ORDR_NM as EXMN_NM
+		     , a.HLSC_CLSF_CD as HLSC_CLSF_CD
+		     , a.HLSC_RSLT_CD as HLSC_RSLT_CD
+		     , a.RSLT_CD_NM as RSLT_CD_NM
+		     , a.RFRC_SBJC_CTN as RFRC_SBJC_CTN
+		     , a.ABNR_OPNN_YN as ABNR_OPNN_YN
+		     , a.CSTZ_HLSC_ABNR_OPNN_YN as CSTZ_HLSC_ABNR_OPNN_YN
+		     , a.CSTZ_CYCL_VL as CSTZ_CYCL_VL
+		     , a.CSTZ_CYCL_RESN_CTN as CSTZ_CYCL_RESN_CTN
+		     , a.RSLT_CD_FVRT_CTN as RSLT_CD_FVRT_CTN
+		     , a.CANC_YN as CANC_YN
+		  FROM SMCRTXTCT a
+		     , MDORDRCMT b
+		 WHERE 1=1
+		<choose>
+		    <when test='afiPrsgNm == "exmnCd_hlscClsfCd"'>
+		    <!-- #{afiPrsgNm} -->
+		   AND a.EXMN_CD = #{exmnCd}
+		   AND a.HLSC_CLSF_CD = #{hlscClsfCd}
+		    </when>
+		    <when test='afiPrsgNm == "exmnCd_hlscClsfCd2"'>
+		   AND a.EXMN_CD like pa_sm.set_ec(#{exmnCd}) || '%' escape pa_sm.ec
+		   AND a.HLSC_CLSF_CD = #{hlscClsfCd}
+		        <if test='rsltCdNm != null'>
+		   and RSLT_CD_NM like '%' || upper(pa_sm.set_ec(#{rsltCdNm})) || '%' escape pa_sm.ec
+		        </if>   
+		    </when>
+		    <otherwise>
+		   AND a.EXMN_CD = #{exmnCd}
+		   AND a.HLSC_CLSF_CD = #{hlscClsfCd}
+		   AND a.HLSC_RSLT_CD = #{hlscRsltCd}
+		    </otherwise>
+		</choose>
+		   and b.ORDR_CD = a.EXMN_CD 
+		<if test='exmnNm != null'>
+		   and UPRC_ORDR_NM like '%' || upper(pa_sm.set_ec(#{exmnNm})) || '%' escape pa_sm.ec
+		</if>   
+		 order by 
+		       a.EXMN_CD
+		     , a.HLSC_RSLT_CD
+	</select>
+
+
+
+</mapper>

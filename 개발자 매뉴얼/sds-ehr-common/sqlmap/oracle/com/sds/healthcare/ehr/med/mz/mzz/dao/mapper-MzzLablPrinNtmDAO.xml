@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MzzLablPrinNtmDAO_sql.xml 
+    Description :                                      MCOM투약정보수정DAO
+                  -->
+<mapper namespace="MzzLablPrinNtmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU06 () 
+        Description :                                           투약라벨 출력횟수 수정_PK사용 mnd_mdmedor_u06
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU06"  parameterType="com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU06 */
+		update  /*+ mnd_mdmedor_u06$I01_투약라벨 출력횟수 수정_PK사용 DAM */
+		       MDMEDORDT
+		  set
+		       MDTN_LABL_PRIN_NTM = nvl(to_number(MDTN_LABL_PRIN_NTM), 0)+1
+		       /* 서버 프로그램 전환시 자동 추가된 항목 */
+		    ,  LAST_UPDR_ID = #{gvUserId}
+		    ,  LAST_UPDT_IP = #{gvUserIp}
+		    ,  LAST_UPDT_DT = sysdate
+		    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where
+		       ( PTNO, ORDR_YMD, nvl(DRBN_NO, ORDR_SNO) )
+		       in (
+		            select  PTNO
+		                 ,  ORDR_YMD
+		                 ,  nvl(DRBN_NO, #{ordrSno})
+		              from  MDMEDORDT
+		             where  PTNO     = #{ptno}
+		               and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		               and  ORDR_SNO = #{ordrSno}
+		        )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU01 () 
+        Description :                                           투약라벨 출력횟수 수정_ROWID사용 mnd_mdmedor_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU01"  parameterType="com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-updateMndMdmedorU01 */
+		update  /*+ mnd_mdmedor_u01$I01_투약라벨 출력횟수 수정 DAM */
+		       MDMEDORDT
+		  set  MDTN_LABL_PRIN_NTM = nvl(to_number(MDTN_LABL_PRIN_NTM), 0)+1
+		    /* 서버 프로그램 전환시 자동 추가된 항목 */
+		    ,  LAST_UPDR_ID = #{gvUserId}
+		    ,  LAST_UPDT_IP = #{gvUserIp}
+		    ,  LAST_UPDT_DT = sysdate
+		    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  (PTNO, ORDR_YMD, nvl( to_char(DRBN_NO), rowidtochar(rowid)))
+		       in (
+		       select  PTNO
+		            ,  ORDR_YMD
+		            ,  nvl(to_char(DRBN_NO), rowidtochar(rowid))
+		         from  MDMEDORDT
+		        where  rowid = #{rwidVl}
+		        )
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001-result" type="com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO">
+	
+		<result property="dvsnCd" column="DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001 () 
+        Description :                                           필요한변수추가
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO
+		resultMap : com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001"  parameterType="com.sds.healthcare.ehr.med.mz.mzz.vo.MzzLablPrinNtmDVO"  resultMap="com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-mz-mzz-dao-MzzLablPrinNtmDAO-selectOneDvsnCd0001 */
+		        '' as DVSN_CD
+		  from  dual
+	</select>
+
+
+
+</mapper>

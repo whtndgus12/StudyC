@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SdpAdrRporComnDAO_sql.xml 
+    Description :                                      SdpAdrRporComnDAO 클래스
+                  -->
+<mapper namespace="SdpAdrRporComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn-result" type="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO">
+	
+		<result property="adrpSno" column="ADRP_SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn (ADR보고서 순번 조회) 
+        Description :                                           ADR보고서 순번 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO
+		resultMap : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO"  resultMap="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-selectOneAdrRporTn */
+		<![CDATA[
+				   select  /*+ sdd_cadrrmt_s02$S01_ADR보고서 순번 조회 */
+			   nvl(max(ADRP_SNO),0)+1  as ADRP_SNO
+		 from  SDCADRRMT
+		where  PTNO = #{ptno}
+		  and  ADRP_YMD = to_date(#{adrpYmd}, 'yyyyMMdd')
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporMstr (Side-Reaction에서 ADR보고서 마스터 입력) 
+        Description :                                           Side-Reaction에서 ADR보고서 마스터 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporMstr"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporMstr */
+		<![CDATA[
+				   insert  /*+ sdd_cadrrmt_i02$I01_Side-Reaction에서 ADR보고서 마스터 입력 */
+		  into SDCADRRMT  /*ADR보고서*/
+				   (
+					   PTNO /* 환자번호                  */
+					,  ADRP_YMD /* ADR 보고일자              */
+					,  ADRP_SNO /* ADR 보고순번              */
+					,  ADR_PRSS_CD /* 진행상태(SD641)           */
+					,  MNFS_YMD  /* 발현일                    */
+					,  MNFS_TMNG_CD /* 발현시기(투약후)(SD642)   */
+					,  RPRR_ID /* 보고자ID                  */
+					,  RPRT_IP  /*보고IP */
+					,  RPRT_DT  /*보고일시*/
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+				   )
+			 select  a.PTNO  /* 환자번호                  */
+				  ,  trunc(sysdate)  /* adr 보고일자              */
+				  ,  to_number(#{adrpSno}) /* ADR 보고순번              */
+				  ,  '01'   /* 진행상태(SD641)           */
+				  ,  trunc(b.ENFR_DT)  /* 발현일                    */
+				  ,  '01'/* 발현시기(투약후)(SD642)   */
+				  ,  #{rprrId}   /* 보고자ID  */
+				  ,  #{gvUserIp}  /*보고IP */
+				  ,  sysdate
+				  ,  #{gvUserId}
+				  ,  #{gvUserIp}
+				  ,  sysdate
+				  ,  #{gvClntPrgmId}
+				  ,  #{gvSrvrPrgmId}
+				  ,  #{gvUserId}
+				  ,  #{gvUserIp}
+				  ,  sysdate
+				  ,  #{gvClntPrgmId}
+				  ,  #{gvSrvrPrgmId}
+			   from  SRSIDREMT a  /*환자별부작용관리*/
+				  ,  SWWORKMMT b  /*환자검사작업관리 */
+				  ,  MDORDRCMT c  /*처방코드기본*/
+			  where  a.PTNO = #{ptno}
+				and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+				and  a.ORDR_SNO = to_number(#{ordrSno})
+				and  a.CNMD_CD  = #{cnmdCd}
+				and  a.SDEF_SNO = to_number(#{sdefSno})
+				and  b.PTNO = a.PTNO
+				and  b.ORDR_YMD = a.ORDR_YMD
+				and  b.ORDR_SNO = a.ORDR_SNO
+				and  b.EXCF_CD = 'SR'
+				and  c.ORDR_CD = a.CNMD_CD
+				and  c.ORDR_CLTY_CD in ('B1', 'B2', 'B3', 'B4')
+				and  c.MDPR_CLSF_CD = '7'
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporSspcDgst (Side-Reaction에서 ADR보고서의심약물 입력) 
+        Description :                                           Side-Reaction에서 ADR보고서의심약물 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporSspcDgst"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporSspcDgst */
+		<![CDATA[
+				   insert  /*+ sdd_cadrrmt_i03$I01_Side-Reaction에서 ADR보고서의심약물 입력 */
+		into  SDCADRRDT  /*ADR보고서의심약물*/
+					(
+					   PTNO   /* 환자번호         */
+					,  ADRP_YMD  /* ADR 보고일자     */
+					,  ADRP_SNO  /* ADR 보고순번     */
+					,  SSDG_SNO  /* 의심약물순번     */
+					,  ORDR_YMD   /* 처방일자         */
+					,  ORDR_SNO   /* 처방순번         */
+					,  MDPR_CD  /* 약품코드         */
+					,  MDPR_NM  /* 약품명           */
+					,  ADPA_CD  /* 투여경로(SD640)  */
+					,  ADMN_STRT_YMD  /* 투여시작일자     */
+					,  ADMN_FNSH_YMD  /* 투여종료일자     */
+					,  PCKN_UNAD_QTY  /* 투여량(포장단위) */
+					,  PCUN_CD  /* 단위(포장단위)   */
+					,  NTM  /* 횟수             */
+					,  HIRA_PRDC_CD  /*심평원제품코드 */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					)
+			   select  a.PTNO   /* 환자번호                     */
+					,  trunc(sysdate)   /* adr 보고일자                 */
+					,  to_number(#{adrpSno})   /* adr 보고순번                 */
+					,  1    /* 의심약물순번     */
+					,  a.ORDR_YMD   /* 처방일자         */
+					,  a.ORDR_SNO  /* 처방순번         */
+					,  a.CNMD_CD  /* 약품코드         */
+					,  c.ORDR_NM    /* 약품명           */
+					,  c.DRAP_DVSN_CD  /* 투여경로(sd640)  */
+					,  trunc(b.ENFR_DT)   /* 투여시작일자     */
+					,  trunc(b.ENFR_DT)  /* 투여종료일자     */
+					,  null  /* 투여량(포장단위) */
+					,  c.INVN_PCUN_CD  /* 단위(포장단위)   */
+					,  null   /* 횟수             */
+					,  #{hiraPrdcCd}   /* 심평원코드         */
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+				 from
+					   SRSIDREMT a   /*환자별부작용관리*/
+					,  SWWORKMMT b   /*환자검사작업관리 */
+					,  MDORDRCMT c    /*처방코드기본*/
+				where  a.PTNO = #{ptno}
+				  and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+				  and  a.ORDR_SNO = to_number(#{ordrSno})
+				  and  a.CNMD_CD  = #{cnmdCd}
+				  and  a.SDEF_SNO = to_number(#{sdefSno})
+				  and  b.PTNO = a.PTNO
+				  and  b.ORDR_YMD = a.ORDR_YMD
+				  and  b.ORDR_SNO = a.ORDR_SNO
+				  and  b.EXCF_CD = 'SR'
+				  and  c.ORDR_CD = a.CNMD_CD
+				  and  c.ORDR_CLTY_CD in ('B1', 'B2', 'B3', 'B4')
+				  and  c.MDPR_CLSF_CD = '7'
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporHarc (Side-Reaction에서 ADR보고서유해반응 입력) 
+        Description :                                           Side-Reaction에서 ADR보고서유해반응 입력
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporHarc"  parameterType="com.sds.healthcare.ehr.sup.sd.sdp.vo.SdpAdrRporComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-sd-sdp-dao-SdpAdrRporComnDAO-insertAdrRporHarc */
+		<![CDATA[
+				   insert  /*+ sdd_cadrrmt_i04$I01_Side-Reaction에서 ADR보고서유해반응 입력 */
+		 into  SDCADRRIT  /*ADR보고서유해반응*/
+				(
+				   PTNO   /* 환자번호 */
+				,  ADRP_YMD  /* ADR 보고일자                 */
+				,  ADRP_SNO  /* ADR 보고순번                 */
+				,  ADR_RPOR_HARC_GRP_CD   /* ADR 보고서 유해반응 그룹코드 */
+				,  ADR_RPOR_HARC_CD  /* ADR 보고서 유해반응 코드     */
+				,  ADR_RPOR_HARC_ETME_CTN  /* ADR 보고서 유해반응 기타     */
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				)
+				select
+					PTNO
+					,ADRP_YMD
+					,ADRP_SNO
+					,ADR_RPOR_HARC_GRP_CD
+					,ADR_RPOR_HARC_CD
+					,substr(aa,1,length(aa)-1) ADR_RPOR_HARC_ETME_CTN
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+				from
+					(
+					select
+					   PTNO
+						,ADRP_YMD
+						,ADRP_SNO
+						,ADR_RPOR_HARC_GRP_CD
+						,ADR_RPOR_HARC_CD
+						,decode(a1,'','',a1||',')||decode(a2,'','',a2||',')||decode(a3,'','',a3||',')||decode(a4,'','',a4||',')||decode(a5,'','',a5||',')||
+					   decode(a6,'','',a6||',')||decode(a7,'','',a7||',')||decode(a8,'','',a8||',')||decode(a9,'','',a9||',')||decode(a10,'','',a10||',')  aa
+					from
+						(
+						 select
+							a.PTNO    /* 환자번호                     */
+									, trunc(sysdate)  ADRP_YMD /* ADR 보고일자                 */
+									, to_number(#{adrpSno})  ADRP_SNO /* ADR 보고순번                 */
+									, 'SD662'   ADR_RPOR_HARC_GRP_CD /* ADR 보고서 유해반응 그룹코드 */
+									, '00'  ADR_RPOR_HARC_CD /* ADR 보고서 유해반응 기타     */
+							, nvl(FN_SR_SYMPTOM_S(a.SDEF_RESN_CMBN_CTN1,'SR013'), '')  a1                               /* 사유명1              */
+							, nvl(FN_SR_SYMPTOM_S(a.SDEF_RESN_CMBN_CTN2,'SR021'), '')  a2                               /* 사유명2              */
+							, nvl(FN_SR_SYMPTOM_S(a.SDEF_RESN_CMBN_CTN3,'SR022'), '')  a3                               /* 사유명3              */
+							, nvl(FN_SR_SYMPTOM_S(a.SDEF_RESN_CMBN_CTN4,'SR023'), '')  a4                               /* 사유명4              */
+							, nvl(FN_SR_SYMPTOM_S(a.SDEF_RESN_CMBN_CTN5,'SR024'), '')  a5                               /* 사유명5              */
+							, nvl(FN_SR_SYMPTOM_S(a.AFSD_RESN_CD1,'SR013'), '')        a6                           /* POST사유명1          */
+							, nvl(FN_SR_SYMPTOM_S(a.AFSD_RESN_CD2,'SR021'), '')        a7                           /* POST사유명2          */
+							, nvl(FN_SR_SYMPTOM_S(a.AFSD_RESN_CD3,'SR022'), '')        a8                           /* POST사유명3          */
+							, nvl(FN_SR_SYMPTOM_S(a.AFSD_RESN_CD4,'SR023'), '')        a9                           /* POST사유명4          */
+							, nvl(FN_SR_SYMPTOM_S(a.AFSD_RESN_CD5,'SR024'), '')        a10                           /* POST사유명5          */
+							  from
+									SRSIDREMT a  /*환자별부작용관리*/
+							 where
+									a.ptno = #{ptno}
+							   and  a.ORDR_YMD = to_date(#{ordrYmd}, 'yyyymmdd')
+							   and  a.ORDR_SNO = to_number(#{ordrSno})
+							   and  a.CNMD_CD  = #{cnmdCd}
+							   and  a.SDEF_SNO = to_number(#{sdefSno})
+						  )
+					)
+		]]>
+	</insert>
+
+</mapper>

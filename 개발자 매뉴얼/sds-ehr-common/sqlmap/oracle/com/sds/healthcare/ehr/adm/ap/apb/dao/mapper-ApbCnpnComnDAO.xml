@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbCnpnComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbCnpnComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO">
+	
+		<result property="wodvCd" column="WODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneDummy */
+		select '' WODV_CD
+		from dual
+	</select>
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchUpdatePtntCnpn (환자 연락처 수정) 
+        Description :                                           xpd_cscnpnt_u01$I01_고객 연락처 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchUpdatePtntCnpn" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO" >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchUpdatePtntCnpn */
+					   APPTCNPNT
+				  set
+					   PTNT_TLNO         = decode(instr(nvl(#{ptntTlno},' '),'*'),0,replace(#{ptntTlno}, '-', ''),PTNT_TLNO)  /* 고객전화번호 */
+					,  TLNO_CNFR_NEED_YN = nvl(#{tlnoCnfrNeedYn} , TLNO_CNFR_NEED_YN   ) /* 전화번호확인필요여부 */
+					,  OVRS_TLNO_YN      = nvl(#{ovrsTlnoYn}      , OVRS_TLNO_YN        ) /* 해외전화번호여부 */
+					,  PNRL_CD = nvl(#{pnrlCd}      , PNRL_CD        ) /* 환자관계코드 */
+				    ,  SMSR_TRGT_DVSN_CD = nvl(#{smsrTrgtDvsnCd} , SMSR_TRGT_DVSN_CD   ) /* SMS대상구분코드 */
+					,  RMRK_CTN          = #{rmrkCtn}           /* 비고내용 */
+					,  ALMTK_TRAS_YN  = #{almtkTrasYn}           /*알림톡전송여부*/
+		            ,  LAST_UPDR_ID      = #{gvUserId}
+					,  LAST_UPDT_IP      = #{gvUserIp}
+					,  LAST_UPDT_DT      = sysdate
+					,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+					,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+				where  PTNO          = #{ptno}
+				  and  CNPN_DVSN_CD      = #{cnpnDvsnCd}
+				  and  CNPN_SNO          = nvl(#{cnpnSno}, CNPN_SNO)
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchInsertPtntCnpn (환자 연락처 등록) 
+        Description :                                           xpd_cscnpnt_i01$I01_고객 연락처 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchInsertPtntCnpn" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO" >
+		insert/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchInsertPtntCnpn */
+				 into APPTCNPNT
+					(
+					   PTNO
+					,  CNPN_DVSN_CD
+					,  CNPN_SNO
+					,  PTNT_TLNO
+					,  TLNO_CNFR_NEED_YN
+					,  OVRS_TLNO_YN
+					,  PNRL_CD
+					,  SMSR_TRGT_DVSN_CD
+					,  RMRK_CTN
+		            ,  ALMTK_TRAS_YN
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					)
+				values
+					(
+					   #{ptno}
+					,  #{cnpnDvsnCd}
+					,  (select nvl(max(CNPN_SNO), 0) + 1
+						  from APPTCNPNT inner
+						 where inner.ptno      = #{ptno}
+						   and inner.CNPN_DVSN_CD = #{cnpnDvsnCd})
+					,  replace(#{ptntTlno}, '-', '')
+					,  #{tlnoCnfrNeedYn}
+					,  #{ovrsTlnoYn}
+					,  #{pnrlCd}
+					,  #{smsrTrgtDvsnCd} /* 기��� 핸드폰 번호만 전송여부를 관리함. */
+					,  #{rmrkCtn}
+		            ,  #{almtkTrasYn}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					)
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchDeletePtntCnpn (환자 연락처 삭제) 
+        Description :                                           xpd_cscnpnt_d01$I01_고객 연락처 삭제
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchDeletePtntCnpn" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO" >
+		delete /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-executeBatchDeletePtntCnpn */
+					   APPTCNPNT
+				where
+					   PTNO      = #{ptno}      /* 고객ID */
+				  and  CNPN_DVSN_CD = #{cnpnDvsnCd} /* 연락처구분코드 */
+				  and  CNPN_SNO     = #{cnpnSno}
+	</update>
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cnpnDvsnCd" column="CNPN_DVSN_CD"/>
+		<result property="cnpnSno" column="CNPN_SNO"/>
+		<result property="ptntTlno" column="PTNT_TLNO"/>
+		<result property="tlnoCnfrNeedYn" column="TLNO_CNFR_NEED_YN"/>
+		<result property="ovrsTlnoYn" column="OVRS_TLNO_YN"/>
+		<result property="pnrlCd" column="PNRL_CD"/>
+		<result property="smsrTrgtDvsnCd" column="SMSR_TRGT_DVSN_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="cnpnDvsnNm" column="CNPN_DVSN_NM"/>
+		<result property="pnrlNm" column="PNRL_NM"/>
+		<result property="almtkTrasYn" column="ALMTK_TRAS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn (환자연락저조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-listCnpn */
+		      PTNO                    as PTNO
+		     ,CNPN_DVSN_CD            as CNPN_DVSN_CD
+		     ,CNPN_SNO                as CNPN_SNO
+		     ,fn_ap_wrap_telno(PTNT_TLNO, OVRS_TLNO_YN) as PTNT_TLNO
+		     ,TLNO_CNFR_NEED_YN       as TLNO_CNFR_NEED_YN
+		     ,OVRS_TLNO_YN            as OVRS_TLNO_YN
+		     ,PNRL_CD                 as PNRL_CD
+		     ,SMSR_TRGT_DVSN_CD       as SMSR_TRGT_DVSN_CD
+		     ,RMRK_CTN                as RMRK_CTN
+		     ,b.DETL_CD_NM            as CNPN_DVSN_NM
+		     ,c.DETL_CD_NM            as PNRL_NM
+		     ,a.ALMTK_TRAS_YN         as ALMTK_TRAS_YN
+		from APPTCNPNT a
+		   , CCCMCDDMT b
+		   , CCCMCDDMT c
+		where a.ptno = #{ptno}
+		<if test="cnpnDvsnCd != null">
+		  and a.CNPN_DVSN_CD = #{cnpnDvsnCd}
+		</if>
+		  and b.COMN_GRP_CD(+) = 'APB_002' 
+		  and b.COMN_DTLS_CD(+) = a.CNPN_DVSN_CD
+		  and c.COMN_GRP_CD(+) = 'AP216' 
+		  and c.COMN_DTLS_CD(+) = a.PNRL_CD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cnpnDvsnCd" column="CNPN_DVSN_CD"/>
+		<result property="cnpnSno" column="CNPN_SNO"/>
+		<result property="ptntTlno" column="PTNT_TLNO"/>
+		<result property="tlnoCnfrNeedYn" column="TLNO_CNFR_NEED_YN"/>
+		<result property="ovrsTlnoYn" column="OVRS_TLNO_YN"/>
+		<result property="pnrlCd" column="PNRL_CD"/>
+		<result property="smsrTrgtDvsnCd" column="SMSR_TRGT_DVSN_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn-result" useCache="true" flushCache="false">
+		 SELECT  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-selectOneCnpn */
+		        PTNO
+		      , CNPN_DVSN_CD 
+		      , CNPN_SNO
+		      , PTNT_TLNO
+		      , TLNO_CNFR_NEED_YN
+		      , OVRS_TLNO_YN
+		      , PNRL_CD
+		      , SMSR_TRGT_DVSN_CD
+		      , RMRK_CTN
+		   FROM APPTCNPNT
+		  WHERE 
+		        PTNO         = #{ptno}
+		    AND CNPN_DVSN_CD = #{cnpnDvsnCd}     
+		    AND CNPN_SNO     = #{cnpnSno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCnpn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  >
+		insert /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCnpn */
+		 into APPTCNPNT
+			(
+			   PTNO
+			,  CNPN_DVSN_CD
+			,  CNPN_SNO
+			,  PTNT_TLNO
+			,  TLNO_CNFR_NEED_YN
+			,  OVRS_TLNO_YN
+			,  PNRL_CD
+			,  SMSR_TRGT_DVSN_CD
+			,  RMRK_CTN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			)
+		values
+			(
+			   #{ptno}
+			,  #{cnpnDvsnCd}
+			,  #{cnpnSno}
+			,  replace(#{ptntTlno}, '-', '')
+			,  #{tlnoCnfrNeedYn}
+			,  #{ovrsTlnoYn}
+			,  #{pnrlCd}
+			,  #{smsrTrgtDvsnCd} /* 기��� 핸드폰 번호만 전송여부를 관리함. */
+			,  #{rmrkCtn}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-updateCnpn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-updateCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-updateCnpn */
+			   APPTCNPNT
+		  set
+			   PTNT_TLNO         = decode(instr(nvl(#{ptntTlno},' '),'*'),0,replace(#{ptntTlno}, '-', ''),PTNT_TLNO)  /* 고객전화번호 */
+			,  TLNO_CNFR_NEED_YN = nvl(#{tlnoCnfrNeedYn} , TLNO_CNFR_NEED_YN   ) /* 전화번호확인필요여부 */
+			,  OVRS_TLNO_YN      = nvl(#{ovrsTlnoYn}      , OVRS_TLNO_YN        ) /* 해외전화번호여부 */
+			,  PNRL_CD = nvl(#{pnrlCd}      , PNRL_CD        ) /* 환자관계코드 */
+		    ,  SMSR_TRGT_DVSN_CD = nvl(#{smsrTrgtDvsnCd} , SMSR_TRGT_DVSN_CD   ) /* SMS대상구분코드 */
+			,  RMRK_CTN          = nvl(#{rmrkCtn}          , RMRK_CTN            ) /* 비고내용 */
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		where  PTNO          = #{ptno}
+		  and  CNPN_DVSN_CD      = #{cnpnDvsnCd}
+		  and  CNPN_SNO          = nvl(#{cnpnSno}, CNPN_SNO)
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-deleteCnpn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-deleteCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-deleteCnpn */
+			   APPTCNPNT
+		where
+			   PTNO      = #{ptno}      /* 고객ID */
+		  and  CNPN_DVSN_CD = #{cnpnDvsnCd} /* 연락처구분코드 */
+		  and  CNPN_SNO     = #{cnpnSno}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCopyPrpdNwbrCnpn (엄마연락처 신생아연락처로 복사) 
+        Description :                                           엄마연락처를 신생아연락처로 복사한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCopyPrpdNwbrCnpn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCnpnComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCnpnComnDAO-insertCopyPrpdNwbrCnpn */
+		insert
+		 into APPTCNPNT
+			(
+			   PTNO
+			,  CNPN_DVSN_CD
+			,  CNPN_SNO
+			,  PTNT_TLNO
+			,  TLNO_CNFR_NEED_YN
+			,  OVRS_TLNO_YN
+			,  PNRL_CD
+			,  SMSR_TRGT_DVSN_CD
+			,  RMRK_CTN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+			)
+		select  
+		 	    #{nwbrPtno}
+		     ,  CNPN_DVSN_CD
+		     ,  CNPN_SNO
+		     ,  PTNT_TLNO
+		     ,  TLNO_CNFR_NEED_YN
+		     ,  OVRS_TLNO_YN
+		     ,  PNRL_CD
+		     ,  SMSR_TRGT_DVSN_CD
+		     ,  RMRK_CTN
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}     
+		  from  APPTCNPNT
+		 where  1=1
+		   and  PTNO = #{prpdPtno}
+		   and  CNPN_DVSN_CD = 'BP'
+	</insert>
+
+</mapper>

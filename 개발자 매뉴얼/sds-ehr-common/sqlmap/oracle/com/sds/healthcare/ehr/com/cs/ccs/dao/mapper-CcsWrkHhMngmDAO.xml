@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsWrkHhMngmDAO_sql.xml 
+    Description :                                      추가근무 등록내역 조회, 관리
+                  -->
+<mapper namespace="CcsWrkHhMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO">
+	
+		<result property="sno" column="SNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneMaxSno */
+		SELECT CAST(NVL(MAX(SNO),0) + 1 AS NUMBER(5)) AS "SNO" 
+		  FROM CSWRKNHMT
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO">
+	
+		<result property="sno" column="SNO"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="strtHh" column="STRT_HH"/>
+		<result property="fnshHh" column="FNSH_HH"/>
+		<result property="sttsVl" column="STTS_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHh */
+		SELECT H.SNO
+		         ,  H.LGIN_ID            /* 로그인ID */
+				 , M.USER_NM           /* 사용자이름 */
+				 , to_char(H.STRT_YMD, 'yyyymmdd') as STRT_YMD            /* 시작일자 */
+				 , to_char(H.FNSH_YMD, 'yyyymmdd') as FNSH_YMD          /* 종료일자 */
+		   		 , H.STRT_HH														        /* 시작시간 */
+		   	 	 , H.FNSH_HH 														        /* 종료시간 */
+		   	 	 , H.STTS_VL  														        /* 상태값 */
+		--   		 , to_char(to_date(H.STRT_HH,   'hh24mi'), 'hh24mi') as STRT_HH           /* 시작시간 */
+		--   	 	 , to_char(to_date(H.FNSH_HH, 'hh24mi'), 'hh24mi') as FNSH_HH           /* 종료시간 */
+		 FROM CSWRKNHMT H           /* 추가근무시간관리 Table*/
+		 		 , CCUSERAMT M            /* 사용자마스터 Table*/
+		         , CCUSRDPHT D             /* 사용자 역할정보 Table*/
+		 WHERE D.MDCR_DPRT_CD= #{mdcrDprtCd}   /* 관리자 소속 부서원에 대한 정보 읽기*/
+		    AND H.LGIN_ID =  M.LGIN_ID
+		    AND D.LGIN_ID =  M.LGIN_ID
+		    AND H.STRT_YMD BETWEEN to_date(#{strtYmd},'YYYYMMDD') and to_date(#{fnshYmd},'YYYYMMDD') +1 
+		    AND H.FNSH_YMD between to_date(#{strtYmd},'YYYYMMDD') and to_date(#{fnshYmd},'YYYYMMDD') 
+		 ORDER BY H.LGIN_ID, H.STRT_YMD, H.FNSH_YMD, H.STRT_HH, H.FNSH_HH ASC
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHh () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHh"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHh */
+		 INSERT 
+		   INTO CSWRKNHMT( SNO
+		                    , LGIN_ID
+		                    , STRT_YMD
+		                    , FNSH_YMD
+		                    , STRT_HH
+		                    , FNSH_HH
+		                    , STTS_VL
+		                    , FRST_RGSR_ID
+		                    , FRST_RGST_IP
+		                    , FRST_RGST_DT
+		                    , FRST_RGST_CLNT_PRGM_ID
+		                    , FRST_RGST_SRVR_PRGM_ID
+		                    , LAST_UPDR_ID
+		                    , LAST_UPDT_IP
+		                    , LAST_UPDT_DT
+		                    , LAST_UPDT_CLNT_PRGM_ID
+		                    , LAST_UPDT_SRVR_PRGM_ID)
+		       VALUES        
+						(    #{sno}
+							, #{lginId}
+		                    , TO_DATE(#{strtYmd}, 'yyyymmdd')
+		                    , TO_DATE(#{fnshYmd}, 'yyyymmdd')  
+		                    , #{strtHh}
+		                    , #{fnshHh}  
+		                    , #{sttsVl}                       
+		                    , #{gvLginId}
+		                    , #{gvUserIp}
+		                    , sysdate
+		                    , #{gvClntPrgmId}
+		                    , #{gvSrvrPrgmId}
+		                    , #{gvLginId}
+		                    , #{gvUserIp}
+		                    , sysdate
+		                    , #{gvClntPrgmId}
+		                    , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateWrkHh () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateWrkHh"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateWrkHh */
+		            UPDATE CSWRKNHMT
+						SET  
+		                       STRT_YMD               		 = #{strtYmd}       /* 시작일자 */
+		              	    ,  FNSH_YMD               		 = #{fnshYmd}     /* 종료일자 */
+		                 	,  STRT_HH               	 		 = #{strtHh}         /* 시작시간 */
+		                 	,  FNSH_HH                			 = #{fnshHh}       /* 종료시간 */  
+		                    ,  STTS_VL                 			 = #{sttsVl}         /* 상태값 */             
+		                    ,  LAST_UPDR_ID           		 = #{gvLginId}     /* 최종수정자ID */ 
+		                    ,  LAST_UPDT_IP           		 = #{gvUserIp}     /* 최종수정IP */ 
+		                    ,  LAST_UPDT_DT           		 = sysdate          /* 최종수정일시 */ 
+		                    ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}  /* 최종수정클라이언트프로그램ID */ 
+		                    ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}  /* 최종수정서버프로그램ID */ 
+		        WHERE             
+		                    SNO = #{sno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHh () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHh"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHh */
+		   DELETE 
+		     FROM CSWRKNHMT
+		   WHERE SNO = #{sno}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="mngrId" column="MNGR_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="strtHh" column="STRT_HH"/>
+		<result property="fnshHh" column="FNSH_HH"/>
+		<result property="trgtYn" column="TRGT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listWrkHd */
+		SELECT D.DPRT_CD            /* 부서코드 */
+			 , T.KORN_DPRT_NM   /* 한글부서명 */
+		     , D.MNGR_ID            /* 관리자ID */
+			 , C.USER_NM           /* 사용자이름 */
+		   	 , D.STRT_HH			   /* 시작시간 */
+		   	 , D.FNSH_HH 			   /* 종료시간 */
+			 , D.TRGT_YN             /* 근무시간 관리대상 여부 */
+		  FROM CSWRKNHDT D      /* 추가근무시간관리 Table*/
+			 , HZDEPTMMT T       /* 조직Master Table*/
+		     , CCUSERAMT C        /* 사용자마스터 Table*/
+		 WHERE 1=1	
+			<if test="dprtCd != null">
+		   AND T.DPRT_CD LIKE '%' || #{dprtCd} || '%'
+			</if>
+		   AND T.DPRT_CD = D.DPRT_CD  
+		   AND D.MNGR_ID = C.LGIN_ID
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHd"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		 /*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-insertWrkHd */
+		 INSERT 
+		   INTO CSWRKNHDT( DPRT_CD
+		                    , TRGT_YN
+		                    , STRT_HH
+		                    , FNSH_HH
+		                    , LGIN_ID
+		                    , MNGR_ID
+		                    , FRST_RGSR_ID
+		                    , FRST_RGST_IP
+		                    , FRST_RGST_DT
+		                    , FRST_RGST_CLNT_PRGM_ID
+		                    , FRST_RGST_SRVR_PRGM_ID
+		                    , LAST_UPDR_ID
+		                    , LAST_UPDT_IP
+		                    , LAST_UPDT_DT
+		                    , LAST_UPDT_CLNT_PRGM_ID
+		                    , LAST_UPDT_SRVR_PRGM_ID)
+		       VALUES   (#{dprtCd}
+		                    , #{trgtYn}     
+		                    , #{strtHh}
+		                    , #{fnshHh}      
+							, #{lginId}     
+							, #{mngrId}            
+		                    , #{gvLginId}
+		                    , #{gvUserIp}
+		                    , sysdate
+		                    , #{gvClntPrgmId}
+		                    , #{gvSrvrPrgmId}
+		                    , #{gvLginId}
+		                    , #{gvUserIp}
+		                    , sysdate
+		                    , #{gvClntPrgmId}
+		                    , #{gvSrvrPrgmId})
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHd"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-deleteWrkHd */
+		   DELETE 
+		     FROM CSWRKNHDT
+		   WHERE DPRT_CD = #{dprtCd}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO">
+	
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="trgtYn" column="TRGT_YN"/>
+		<result property="strtHh" column="STRT_HH"/>
+		<result property="fnshHh" column="FNSH_HH"/>
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="mngrId" column="MNGR_ID"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgstIp" column="FRST_RGST_IP"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="frstRgstClntPrgmId" column="FRST_RGST_CLNT_PRGM_ID"/>
+		<result property="frstRgstSrvrPrgmId" column="FRST_RGST_SRVR_PRGM_ID"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdtIp" column="LAST_UPDT_IP"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdtClntPrgmId" column="LAST_UPDT_CLNT_PRGM_ID"/>
+		<result property="lastUpdtSrvrPrgmId" column="LAST_UPDT_SRVR_PRGM_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-selectOneWrkHd */
+		SELECT *
+		 FROM CSWRKNHDT
+		 WHERE DPRT_CD = #{dprtCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateTrgt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateTrgt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-updateTrgt */
+		<![CDATA[
+		  UPDATE CSWRKNHHM 
+		     SET ALRM_CD =
+		    CASE WHEN (SUBSTR(FNSH_HH,1,4) >= '180000') THEN
+		         CASE WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(FNSH_HH,1,4))) > 30              THEN '3'  
+		              WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(FNSH_HH,1,4))) BETWEEN 0 AND 30  THEN '1'   
+		              WHEN (TO_CHAR(SYSDATE+30/24/60, 'HH24MI')   >= (SUBSTR(FNSH_HH,1,4)))         THEN '2'  
+		              ELSE '4'                                                                        
+		          END  
+		         WHEN (SUBSTR(FNSH_HH,1,4) <= '080000') THEN
+		         CASE WHEN (TO_CHAR(SYSDATE, 'YYYYMMDD') < FNSH_YMD)                       		  	THEN '4'         
+		              WHEN (TO_CHAR(SYSDATE, 'HH24MI') > (SUBSTR(FNSH_HH,1,4)))            		  	THEN '3'         
+		              WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(FNSH_HH,1,4))) BETWEEN 0 AND 30  THEN '1' 
+		              WHEN (TO_CHAR(SYSDATE+30/24/60, 'HH24MI') >= (SUBSTR(FNSH_HH,1,4)))  		  	THEN '2'        
+		              ELSE '4'                                                                           
+		          END
+		         ELSE '4'                                                                                                                
+		     END 
+		   WHERE SYSDATE BETWEEN STRT_YMD AND FNSH_YMD+1
+		]]>					
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="alrmCd" column="ALRM_CD"/>
+		<result property="sno" column="SNO"/>
+		<result property="currentTime" column="CURRENT_TIME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsWrkHhMngmDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsWrkHhMngmDAO-listTrgt */
+		<![CDATA[
+		SELECT A.LGIN_ID
+		     , A.USER_NM
+		     , CASE WHEN (SUBSTR(M.FNSH_HH,1,4) >= '1800') THEN -- 6시 이후
+		            CASE WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(M.FNSH_HH,1,4))) > 10              THEN '3'  
+		                 WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(M.FNSH_HH,1,4))) BETWEEN 0 AND 10  THEN '1'   
+		                 WHEN (TO_CHAR(SYSDATE+30/24/60, 'HH24MI') - (SUBSTR(M.FNSH_HH,1,4)) >= 0 )      THEN '2'  
+		                 ELSE '4'                                                                        
+		             END  
+		            WHEN (SUBSTR(M.FNSH_HH,1,4) <= '0800') THEN -- 8시 이전
+		            CASE WHEN SYSDATE < FNSH_YMD                                              		  	 THEN '44'       
+		                 WHEN (TO_CHAR(SYSDATE, 'HH24MI') - (SUBSTR(M.FNSH_HH,1,4))) > 10        		 THEN '33' 
+		                 WHEN ((TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(M.FNSH_HH,1,4))) BETWEEN 0 AND 10  THEN '1' 
+		                 WHEN (TO_CHAR(SYSDATE+30/24/60, 'HH24MI') - (SUBSTR(M.FNSH_HH,1,4)) >= 0)       THEN '2'        
+		                 ELSE '44'                                                                           
+		             END
+		            ELSE -- 추가근무 미등록
+		            CASE WHEN ( (TO_CHAR(SYSDATE, 'HH24MI')) - (SUBSTR(A.FNSH_HH,1,4))) BETWEEN 0 AND 10 THEN '1'
+				         WHEN ( TO_CHAR(SYSDATE+30/24/60, 'HH24MI') - (SUBSTR(A.FNSH_HH,1,4))  >= 0)  	 THEN '2' 
+		                 ELSE '333'
+		             END
+		        END AS ALRM_CD  -- 1: 종료, 2:경고, 3: 종료완료, 4: 비대상
+		     , M.SNO
+			 ,  TO_CHAR(SYSDATE, 'HH24MISS') AS "CURRENT_TIME"
+		  FROM (SELECT A.LGIN_ID, A.USER_NM, A.MDCR_DPRT_CD, D.STRT_HH, D.FNSH_HH
+		          FROM CCUSRDPHT A
+		             , CSWRKNHDT D
+		         WHERE A.MDCR_DPRT_CD =  D.DPRT_CD
+		           AND D.TRGT_YN = 'Y' ) A
+		LEFT JOIN (SELECT SNO, LGIN_ID, STRT_YMD, FNSH_YMD, STRT_HH, FNSH_HH
+		             FROM CSWRKNHMT 
+		            WHERE 1=1
+		              AND ((SUBSTR(FNSH_HH,1,4) >= '1800') AND (SYSDATE BETWEEN STRT_YMD AND FNSH_YMD+1  )
+		               OR ((SUBSTR(FNSH_HH,1,4) <= '0800') AND (SYSDATE BETWEEN STRT_YMD AND FNSH_YMD+1) ) ) )  M 
+		       ON  A.LGIN_ID = M.LGIN_ID 
+		]]>	
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuPcReprDAO_sql.xml 
+    Description :                                      PC 수리신청 관련 DAO
+                  -->
+<mapper namespace="CcuPcReprDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO">
+	
+		<result property="smisUuid" column="SMIS_UUID"/>
+		<result property="rgstDt" column="RGST_DT"/>
+		<result property="rcvrNm" column="RCVR_NM"/>
+		<result property="smsrCtn" column="SMSR_CTN"/>
+		<result property="sucsYn" column="SUCS_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr (PC 수리신청 내역 조회) 
+        Description :                                           PC 수리신청 SMS 발송내역을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listPcRepr */
+		select
+		        a.smis_uuid                                                 as  smis_uuid
+		    ,   to_char (   a.frst_rgst_dt  ,   'yyyy-mm-dd hh24:mi:ss' )   as  rgst_dt     --  등록일시
+		    ,   (
+		            select
+		                    z.detl_cd_nm
+		            from
+		                    cccmcddmt   z
+		            where
+		                    z.comn_grp_cd   =   'CUB_004'
+		            and     z.comn_dtls_cd  =   a.rcvr_tlno
+		        )                                                   as  rcvr_nm         --  수신자
+		    ,   a.smsr_ctn                                          as  smsr_ctn        --  메시지
+		    ,   decode  (   b.intg_mesg_rspn_cd_vl
+		                ,   '6'     ,   'Y'
+		                ,   '99'    ,   ''
+		                ,   null    ,   ''
+		                            ,   'N'
+		                )                                           as  sucs_yn         --  성공여부
+		from 
+		        ccimetpmt   a
+		    ,   ccimerpmt   b
+		where 
+		        a.bsdv_cd                           =       #{bsdvCd}
+		and     a.intg_mesg_typ_cd                  =       'S'
+		and     trunc   (   a.mesg_sndg_ymd )       between to_date (   #{inqrStrtYmd}  ,   'yyyy-mm-dd'    )
+		                                            and     to_date (   #{inqrFnshYmd}  ,   'yyyy-mm-dd'    )
+		and     b.smis_uuid                     (+) =       a.smis_uuid 
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO">
+	
+		<result property="psblYn" column="PSBL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime (근무시간여부 조회) 
+        Description :                                           SMS 전송가능여부를 체크하기 위해 근무시간 여부를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-selectOneCheckWkTime */
+		select
+		        nvl (   max (   case
+		                            when    to_char (   sysdate ,   'd' )           in      (   '2'
+		                                                                                    ,   '3'
+		                                                                                    ,   '4'
+		                                                                                    ,   '5'
+		                                                                                    ,   '6'
+		                                                                                    )
+		                            and     to_char (   sysdate ,   'hh24mi'    )   between '0830'
+		                                                                            and     '1730'      then    'Y'
+		                                                                                                else    'N'
+		                        end
+		                )
+		            ,   'N'
+		            )       psbl_yn
+		from
+		        dual
+		where
+		        not exists  (
+		                        select
+		                                1
+		                        from
+		                                apdspbhlt   a
+		                        where
+		                                a.hldy_ymd  =   trunc   (   sysdate )
+		                    )
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mesgSndgYmd" column="MESG_SNDG_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno (SMS 전송대상 리스트 조회) 
+        Description :                                           PC 수리신청 SMS를 보낼 담당자와 전화번호 리스트를 조회한다
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuPcReprDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuPcReprDAO-listSMSTlno */
+		select
+		        a.comn_dtls_cd                                      as  comn_dtls_cd
+		    ,   a.detl_cd_nm                                        as  detl_cd_nm
+		    ,   (
+		            select
+		                    to_char (   max (   x.mesg_sndg_ymd )   ,   'yyyy-mm-dd hh24:mi:ss' )
+		            from
+		                    ccimetpmt   x
+		            where
+		                    x.mesg_sndg_ymd >=  trunc   (   sysdate )
+		            and     x.rcvr_tlno     =   a.comn_dtls_cd
+		            and     x.bsdv_cd       =   'PCSURINO'
+		        )                                                   as  mesg_sndg_ymd
+		from
+		        cccmcddmt   a
+		where
+		        a.comn_grp_cd           =       'CUB_004'
+		and     trunc   (   sysdate )   between a.apst_ymd
+		                                and     a.apfn_ymd
+		order   by
+		        mesg_sndg_ymd   nulls   first
+	</select>
+
+
+
+</mapper>

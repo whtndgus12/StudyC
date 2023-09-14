@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApdCrttIsncDetlComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApdCrttIsncDetlComnDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-insertCrttIsncDetl (제증명발급상세 입력) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-insertCrttIsncDetl"  parameterType="com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO"  >
+		 insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-insertCrttIsncDetl */
+		 into APVCISDLT
+		  (
+		        CRTT_ISNC_SNO
+		      , VRCT_FORM_ITEM_SNO
+		      , CRTT_ID
+		      , CRTT_VRSN_ID
+		      , CRTT_ITEM_ID
+		      , GRID_ROW_SQNC
+		      , GRID_CLMN_SQNC
+		      , VRCT_FORM_ITEM_CHRC_VL
+		      , VRCT_FORM_ITEM_NMBR_VL
+		      , VRCT_FORM_ITEM_YMD_VL
+		      , VRCT_FORM_ITEM_CLOB_VL
+		      , VRCT_FORM_ITEM_BLOB_VL
+		      ,  FRST_RGSR_ID
+		      ,  FRST_RGST_IP
+		      ,  FRST_RGST_DT
+		      ,  FRST_RGST_CLNT_PRGM_ID
+		      ,  FRST_RGST_SRVR_PRGM_ID
+		      ,  LAST_UPDR_ID
+		      ,  LAST_UPDT_IP
+		      ,  LAST_UPDT_DT
+		      ,  LAST_UPDT_CLNT_PRGM_ID
+		      ,  LAST_UPDT_SRVR_PRGM_ID
+		  )
+		  values
+		  (
+		         #{crttIsncSno}
+		      ,  (select nvl(max(VRCT_FORM_ITEM_SNO),0)+1
+		            from APVCISDLT
+		           where CRTT_ISNC_SNO = #{crttIsncSno})
+		      ,  #{crttId}
+		      ,  #{crttVrsnId}
+		      ,  #{crttItemId}
+		      ,  #{gridRowSqnc}
+		      ,  #{gridClmnSqnc}
+		      ,  #{vrctFormItemChrcVl}
+		      ,  #{vrctFormItemNmbrVl}
+		      ,  to_date(#{vrctFormItemYmdVl}, 'YYYYMMDDhh24miss')
+		      ,  #{vrctFormItemClobVl}
+		      ,  #{vrctFormItemBlobVlByte}
+		      ,  #{gvUserId}
+		      ,  #{gvUserIp}
+		      ,  sysdate
+		      ,  #{gvClntPrgmId}
+		      ,  #{gvSrvrPrgmId}
+		      ,  #{gvUserId}
+		      ,  #{gvUserIp}
+		      ,  sysdate
+		      ,  #{gvClntPrgmId}
+		      ,  #{gvSrvrPrgmId}
+		  )
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne-result" type="com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO">
+	
+		<result property="crttItemId" column="CRTT_ITEM_ID"/>
+		<result property="vrctFormItemChrcVl" column="VRCT_FORM_ITEM_CHRC_VL"/>
+		<result property="vrctFormItemYmdVl" column="VRCT_FORM_ITEM_YMD_VL"/>
+		<result property="crttId" column="CRTT_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne"  parameterType="com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-selectOne */
+		        a.CRTT_ITEM_ID
+		      , a.VRCT_FORM_ITEM_CHRC_VL
+			   , to_char(a.VRCT_FORM_ITEM_YMD_VL, 'yyyymmdd') as VRCT_FORM_ITEM_YMD_VL
+		      , a.CRTT_ID
+		  from APVCISDLT a
+		 where 1=1
+		 <if test='crttId != null and crttId != ""'>
+		   and a.CRTT_ID = #{crttId} 
+		 </if>
+		 <if test='crttVrsnId != null and crttVrsnId != ""'>
+		   and a.CRTT_VRSN_ID = #{crttVrsnId}
+		 </if>
+		 <if test='crttItemId != null and crttItemId != ""'>   
+		   and a.CRTT_ITEM_ID = #{crttItemId}
+		 </if> 
+		 <if test='crttIsncSno != null and crttIsncSno != ""'>   
+		   and a.CRTT_ISNC_SNO = #{crttIsncSno}
+		 </if>  
+		   and rownum = 1
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-update () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apd-dao-ApdCrttIsncDetlComnDAO-update"  parameterType="com.sds.healthcare.ehr.adm.ap.apd.vo.ApdCrttIsncDetlComnDVO"  >
+		update APVCISDLT
+		   set 
+		       LAST_UPDR_ID           = #{gvUserId}
+		     , LAST_UPDT_IP           = #{gvUserIp}
+		     , LAST_UPDT_DT           = sysdate
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}   
+		     <if test="vrctFormItemChrcVl != null">
+		     , VRCT_FORM_ITEM_CHRC_VL = #{vrctFormItemChrcVl}
+		     </if>
+		     <if test="vrctFormItemNmbrVl != null">
+		     , VRCT_FORM_ITEM_NMBR_VL = #{vrctFormItemNmbrVl}
+		     </if>
+		     <if test="vrctFormItemYmdVl != null">
+		     , VRCT_FORM_ITEM_YMD_VL  = to_date( #{vrctFormItemYmdVl} , 'YYYYMMDDhh24miss' )
+		     </if>
+		 where 1=1
+		   and CRTT_ISNC_SNO = #{crttIsncSno}
+		   and CRTT_ITEM_ID = #{crttItemId}
+	</update>
+
+</mapper>

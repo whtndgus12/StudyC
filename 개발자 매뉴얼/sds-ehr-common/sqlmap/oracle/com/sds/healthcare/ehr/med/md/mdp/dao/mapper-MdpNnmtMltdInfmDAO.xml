@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpNnmtMltdInfmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpNnmtMltdInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpNnmtMltdInfmDVO">
+	
+		<result property="nnmtMltdAnctYn" column="NNMT_MLTD_ANCT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001 (비대면 다학제 알람 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpNnmtMltdInfmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpNnmtMltdInfmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpNnmtMltdInfmDAO-listNnmtMltdAlrm001 */
+		       case when (
+		                  select count(x.PTNO)
+		                    from (
+		                          select a.PTNO
+		                            from MDMMCIPST a   /*  비대면다학제요약기록 (기록여부 표시) */
+		                           where a.ptno = #{ptno}
+		                             and a.last_updt_dt between trunc(sysdate) - 7 and sysdate
+		                         
+		                          union all
+		                          select a.PTNO
+		                            from MDTUMORDT a   /* KUMC TUMORBOARD기록 (기록여부 표시) */
+		                           where a.ptno = #{ptno}
+		                             and a.last_updt_dt between trunc(sysdate) - 7 and sysdate
+		                             and a.save_dvsn_cd = 'Y'
+		                         ) x
+		                ) > 0 THEN 'Y'
+		         else 'N' end      as NNMT_MLTD_ANCT_YN   /* 비대면다학제알림여부 */
+		from dual
+		]]>
+	</select>
+
+
+
+</mapper>

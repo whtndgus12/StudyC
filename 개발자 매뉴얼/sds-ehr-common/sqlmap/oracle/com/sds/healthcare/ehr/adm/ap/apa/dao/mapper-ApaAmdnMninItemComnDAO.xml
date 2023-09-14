@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaAmdnMninItemComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaAmdnMninItemComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="formSno" column="FORM_SNO"/>
+		<result property="formApstYmd" column="FORM_APST_YMD"/>
+		<result property="formApfnYmd" column="FORM_APFN_YMD"/>
+		<result property="formFrmtCtn" column="FORM_FRMT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem (입원결정서진료과필수서식조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apc-dao-ApaAmdnMninItemComnDAO-selectOneAmdnMninItem */
+		        a.MCDP_CD                                as MCDP_CD
+		     ,  (select F_A.ABRV_DPRT_CD
+		           from HZDEPTMMT F_A
+		          where F_A.DPRT_CD = a.MCDP_CD )       as ABRV_MCDP_CD    /* 약어부서코드 */
+		     ,  a.FORM_SNO                               as FORM_SNO
+		     ,  to_char(a.FORM_APST_YMD, 'yyyymmdd')     as FORM_APST_YMD
+		     ,  to_char(a.FORM_APFN_YMD, 'yyyymmdd')     as FORM_APFN_YMD
+		     ,  a.FORM_FRMT_CTN                          as FORM_FRMT_CTN   /* 서식형태내용 */
+		  from  APRCDCITT a                       /* 입원결정서필수입력항목 */
+		 where  a.MCDP_CD = #{mcdpCd}
+		   and  decode(#{inqrYmd}, null, trunc(sysdate)
+		                               , to_date(#{inqrYmd}, 'yyyymmdd')
+		              ) between  a.FORM_APST_YMD
+		                    and  a.FORM_APFN_YMD
+		   and  rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO">
+	
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="formSno" column="FORM_SNO"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="mcdpCd1" column="MCDP_CD_1"/>
+		<result property="formApstYmd" column="FORM_APST_YMD"/>
+		<result property="formApfnYmd" column="FORM_APFN_YMD"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx (입원예약 필수입력 항목관리 이력조회) 
+        Description :                                           apd_rcdcitt_l01$S01_입원예약 필수입력 항목관리 이력조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-listAdmsApntMninItemHx */
+		      ( select F_A.ABRV_DPRT_CD
+		          from HZDEPTMMT F_A
+		         where F_A.DPRT_CD = a.MCDP_CD
+		         group
+		            by F_A.ABRV_DPRT_CD )              as MCDP_CD
+		   ,  a.FORM_SNO                               as FORM_SNO
+		   ,  a.LAST_UPDR_ID                           as LAST_UPDR_ID
+		   ,  a.MCDP_CD                                as MCDP_CD_1
+		   ,  to_char(a.FORM_APST_YMD, 'YYYYMMDD')     as FORM_APST_YMD
+		   ,  to_char(a.FORM_APFN_YMD, 'YYYYMMDD')     as FORM_APFN_YMD
+		   ,  a.FRST_RGSR_ID                           as FRST_RGSR_ID
+		   ,  to_char(a.FRST_RGST_dT, 'YYYYMMDDhh24mi') as FRST_RGSR_ID
+		   ,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDhh24mi') as LAST_UPDT_DT
+		from  APRCDCITT a
+		where  a.MCDP_CD = nvl(#{mcdpCd}, a.MCDP_CD )
+		order
+		  by 1, 2 desc, 3
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO">
+	
+		<result property="formApstYmd" column="FORM_APST_YMD"/>
+		<result property="formApfnYmd" column="FORM_APFN_YMD"/>
+		<result property="formFrmtCtn" column="FORM_FRMT_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem (입원예약 필수입력 항목관리 조회) 
+        Description :                                           apd_rcdcitt_s01$S01_입원예약 필수입력 항목관리 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-selectOneAdmsApntMninItem */
+		        to_char(FORM_APST_YMD,'yyyymmdd')  as FORM_APST_YMD
+		     ,  to_char(FORM_APFN_YMD,'yyyymmdd')  as FORM_APFN_YMD
+		     ,  FORM_FRMT_CTN                                as FORM_FRMT_CTN         
+		  from  APRCDCITT
+		 where  FORM_SNO = #{formSno}
+		   and  MCDP_CD  = #{mcdpCd}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-insertAdmsApntMnin (입원예약 필수입력 항목관리) 
+        Description :                                           apd_rcdcitt_i01$I01_입원예약 필수입력 항목관리
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-insertAdmsApntMnin"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-insertAdmsApntMnin */
+		into  APRCDCITT
+		(
+		    MCDP_CD
+		,   FORM_SNO
+		,   FORM_APST_YMD
+		,   FORM_APFN_YMD
+		,   FORM_FRMT_CTN
+		/* 서버 프로그램 전환시 자동 추가된 항목 */
+		,   FRST_RGSR_ID
+		,   FRST_RGST_IP
+		,   FRST_RGST_DT
+		,   LAST_UPDR_ID
+		,   LAST_UPDT_IP
+		,   LAST_UPDT_DT
+		,   LAST_UPDT_SRVR_PRGM_ID
+		,   FRST_RGST_CLNT_PRGM_ID
+		,   FRST_RGST_SRVR_PRGM_ID
+		,   LAST_UPDT_CLNT_PRGM_ID
+		)
+		values
+		(
+		  #{mcdpCd}
+		,  (select  nvl(max(x.form_sno),0)+1
+		     from  APRCDCITT x
+		    where  x.MCDP_CD  = #{mcdpCd})
+		,  to_date(#{formApstYmd},'yyyymmdd')
+		,  to_date(#{formApfnYmd},'yyyymmdd')
+		,  #{formFrmtCtn}
+		,  #{gvUserId}
+		,  #{gvUserIp}
+		,  sysdate
+		,  #{gvUserId}
+		,  #{gvUserIp}
+		,  sysdate
+		,  #{gvSrvrPrgmId}
+		,  #{gvClntPrgmId}
+		,  #{gvSrvrPrgmId}
+		,  #{gvClntPrgmId}
+		)
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-updateAdmsApntMnin (입원예약 필수입력 항목 업데이트) 
+        Description :                                           신규기능
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-updateAdmsApntMnin"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaAmdnMninItemComnDVO"  >
+		update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaAmdnMninItemComnDAO-updateAdmsApntMnin */
+		       APRCDCITT
+		   set FORM_APST_YMD = to_date(#{formApstYmd}, 'yyyymmdd')
+		     , FORM_APFN_YMD = to_date(#{formApfnYmd}, 'yyyymmdd')
+		     , FORM_FRMT_CTN = #{formFrmtCtn}
+		     , LAST_UPDR_ID  = #{gvUserId}
+		     , LAST_UPDT_IP  = #{gvUserIp}
+		     , LAST_UPDT_DT  = sysdate
+		     , LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     , LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		where MCDP_CD = #{mcdpCd}
+		  and FORM_SNO = #{formSno}
+	</update>
+
+</mapper>

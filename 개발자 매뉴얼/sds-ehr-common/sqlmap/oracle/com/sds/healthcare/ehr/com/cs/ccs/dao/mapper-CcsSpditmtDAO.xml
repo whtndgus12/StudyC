@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcsSpditmtDAO_sql.xml 
+    Description :                                      스피드버튼 항목정보
+                  -->
+<mapper namespace="CcsSpditmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt-result" type="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsSpditmtDVO">
+	
+		<result property="spdBttnId" column="SPD_BTTN_ID"/>
+		<result property="spdBttnNm" column="SPD_BTTN_NM"/>
+		<result property="prinSqnc" column="PRIN_SQNC"/>
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="atmtExctYn" column="ATMT_EXCT_YN"/>
+		<result property="menuExrnYn" column="MENU_EXRN_YN"/>
+		<result property="dplcExctPsblYn" column="DPLC_EXCT_PSBL_YN"/>
+		<result property="swmdYn" column="SWMD_YN"/>
+		<result property="exctScopCd" column="EXCT_SCOP_CD"/>
+		<result property="mltxLnggAplyYn" column="MLTX_LNGG_APLY_YN"/>
+		<result property="exctVrabVl" column="EXCT_VRAB_VL"/>
+		<result property="stupFileNm" column="STUP_FILE_NM"/>
+		<result property="scryPrinUseYn" column="SCRY_PRIN_USE_YN"/>
+		<result property="mtsgYn" column="MTSG_YN"/>
+		<result property="menuGrpId" column="MENU_GRP_ID"/>
+		<result property="menuId" column="MENU_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt (스피드버튼 항목정보 조회) 
+        Description :                                           스피드버튼 항목정보 조회 
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cs.ccs.vo.CcsSpditmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt"  parameterType="com.sds.healthcare.ehr.com.cs.ccs.vo.CcsSpditmtDVO"  resultMap="com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cs-ccs-dao-CcsSpditmtDAO-listSpditmt */
+		select  /*+ csd_spditmt_l02$S01_스피드버튼 항목정보 조회 */
+							a.SPD_BTTN_ID as SPD_BTTN_ID
+						  , a.SPD_BTTN_NM as SPD_BTTN_NM
+						  , a.PRIN_SQNC as PRIN_SQNC
+						  , b.PRGM_ID as PRGM_ID
+						  , b.ATMT_EXCT_YN as ATMT_EXCT_YN
+						  , b.MENU_EXRN_YN as MENU_EXRN_YN
+						  , b.DPLC_EXCT_PSBL_YN as DPLC_EXCT_PSBL_YN
+						  , b.SWMD_YN as SWMD_YN
+						  , b.EXCT_SCOP_CD as EXCT_SCOP_CD
+						  , b.MLTX_LNGG_APLY_YN as MLTX_LNGG_APLY_YN
+						  , b.EXCT_VRAB_VL as EXCT_VRAB_VL
+						  , b.STUP_FILE_NM as STUP_FILE_NM
+						  , b.SCRY_PRIN_USE_YN as SCRY_PRIN_USE_YN
+						  , b.MTSG_YN as MTSG_YN
+						  , b.MENU_GRP_ID as MENU_GRP_ID
+						  , b.MENU_ID as MENU_ID
+				   from     CSSPDITMT a
+						  , CSMNGRPMT b
+				   where    a.MENU_GRP_ID = b.MENU_GRP_ID
+					 and    a.MENU_ID     = b.MENU_ID
+					 and    b.APST_DT     < sysdate
+					 and    b.APFN_DT     > sysdate
+					 and    a.LGIN_ID     = #{gvLginId}
+					 and   ((nvl(#{spdBttnGrpId}, '*') = '*') or (a.SPD_BTTN_GRP_ID = #{spdBttnGrpId}))
+				   order by a.PRIN_SQNC
+		]]>
+	</select>
+
+
+
+</mapper>

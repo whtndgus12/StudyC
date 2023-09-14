@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbPtnoNornDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbPtnoNornDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn */
+		   decode( #{prsgFlagNm}  || to_char(max(substr(PTNO, 2, 7)), '0000000')
+				  ,#{prsgFlagNm}
+				  ,#{prsgFlagNm}  || to_char(sysdate, 'YY')||'00001'
+				  ,(#{prsgFlagNm} || substr(to_char(max(substr(PTNO, 2, 7))+1, '0000000'), 2, 7))) as PTNO
+		from  APPTPTNTT
+		where  PTNO like #{prsgFlagNm} || to_char(sysdate, 'YY')||'%'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO">
+	
+		<result property="ptno" column="PTNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02-result" useCache="true" flushCache="false">
+		select  /*+ index (a APPTPTNTT_PK) SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneCnsgClrsPtnoNorn02 */
+		            to_char(nvl(to_number(max(substr(PTNO, 4, 5))), 0) + 1, '00009') as PTNO
+		  from  APPTPTNTT a
+		  where  PTNO    like #{prsgFlagNm} || to_char(sysdate, 'yy') || '%'
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO">
+	
+		<result property="nextPtnoSeq" column="NEXT_PTNO_SEQ"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbPtnoNornDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbPtnoNornDAO-selectOneNextPtnoSeq */
+		        APPTPTNTTQ.nextval as NEXT_PTNO_SEQ
+		  from  dual
+	</select>
+
+
+
+</mapper>

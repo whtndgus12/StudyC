@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcmMaskrmtDAO_sql.xml 
+    Description :                                      마스킹
+                  -->
+<mapper namespace="CcmMaskrmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn-result" type="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO">
+	
+		<result property="prgmId" column="PRGM_ID"/>
+		<result property="prgmNm" column="PRGM_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn"  parameterType="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-listMaskrmtScrn */
+		 select  /*+ cmd_maskrmt_l06$S01_마스킹 적용대상 화면 리스트 조회 */
+						   distinct(PRGM_ID) as PRGM_ID,
+						   (
+							select
+									PRGM_NM
+							  from
+									CSPRMLTMT
+							 where
+									CSPRMLTMT.PRGM_ID = CCMASKRMT.PRGM_ID
+						   ) as PRGM_NM
+					from
+						  CCMASKRMT
+				   order by
+						  PRGM_ID
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr-result" type="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO">
+	
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr (마스킹 권한 조회) 
+        Description :                                           마스킹 권한 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr"  parameterType="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthr */
+		select  /*+ cmd_maskrmt_s03$S01_마스킹 권한 조회 */ 
+		            nvl(max(a.auto_mask),'N')  as RTUR_VL_1,
+		            nvl(max(a.pop_up)   ,'Y')  as RTUR_VL_2,
+		            ''                         as RTUR_VL_3
+		      from
+		           (
+		            select
+		        	        'Y' AUTO_MASK
+		        		   ,'N' POP_UP
+		             from
+		        	       CCMASKRMT
+		            where
+		        	       PRGM_ID = #{prgmId}
+		              and  MASK_INQR_DVSN_CD = 'F'
+		        	  and  MASK_INQR_DVSN_VL = 'AUTO'
+		        	  and  sysdate between APST_YMD and APFN_YMD
+		         union all
+		            select
+		                    'Y' AUTO_MASK
+		                   ,'N' POP_UP
+		             from
+		                   (
+		                      select /*+ NO_INDEX_FFS(A) */
+		                              LEVEL
+		                              ,a.DPRT_CD
+		                              ,a.HRAF_BASE_LVEL_NO
+		                              ,a.HRAF_BASE_SORT_SQNC
+		                              ,a.HRAF_HGRN_DPRT_CD
+		                              ,a.KORN_DPRT_NM
+		                        from
+		                              HZDEPTMMT a,
+		                              (
+		                                 select
+		                                         MASK_INQR_DVSN_VL
+		                                   from
+		                                         CCMASKRMT
+		                                  where
+		                                         PRGM_ID = #{prgmId}
+		                                    and  MASK_INQR_DVSN_CD = 'D'
+		                              ) b
+		                      where
+		                             a.DPRT_CD = b.MASK_INQR_DVSN_VL(+)
+		                 start with
+		                             a.DPRT_CD = b.MASK_INQR_DVSN_VL
+		           connect by prior
+		                             a.DPRT_CD = a.HRAF_HGRN_DPRT_CD
+		                  )
+		            where
+		                   DPRT_CD in (
+		                                 select
+		                                         MDCR_DPRT_CD
+		                                   from
+		                                         CCUSRDPHT
+		                                  where
+		                                         USER_ID = #{gvUserId}
+		                              )
+		         union all
+		            select
+		                    'Y' AUTO_MASK
+		                   ,'N' POP_UP
+		              from
+		                    CCMASKRMT
+		             where
+		                    PRGM_ID = #{prgmId}
+		               and  MASK_INQR_DVSN_CD = 'O'
+		               and  MASK_INQR_DVSN_VL in(
+		                                           select
+		                                                  OCFM_CD
+		                                            from
+		                                                  CCUSERAMV a,
+		                                                  CCUSRDPHT b
+		                                           where  a.LGIN_ID = b.LGIN_ID
+		                                             and  b.USER_ID = #{gvUserId}
+		                                      )
+		              and  sysdate between APST_YMD and APFN_YMD
+		         union all
+		            select
+		                   'Y' AUTO_MASK
+		                  ,'N' POP_UP
+		             from
+		                   CCMASKRMT
+		            where
+		                   PRGM_ID = #{prgmId}
+		              and  MASK_INQR_DVSN_CD = 'U'
+		              and  MASK_INQR_DVSN_VL = #{gvUserId}
+		              and  sysdate between APST_YMD and APFN_YMD
+		        union all
+		           select
+		                  'N' AUTO_MASK
+		                 ,'N' POP_UP
+		            from
+		                  CCMASKRMT
+		           where
+		                  PRGM_ID = #{prgmId}
+		             and  MASK_INQR_DVSN_CD = 'F'
+		             and  MASK_INQR_DVSN_VL = 'FORM'
+		             and  sysdate between APST_YMD and APFN_YMD
+		          ) a
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn-result" type="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO">
+	
+		<result property="rturVl1" column="RTUR_VL_1"/>
+		<result property="rturVl2" column="RTUR_VL_2"/>
+		<result property="rturVl3" column="RTUR_VL_3"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn (마스크 권한 조회(화면용)) 
+        Description :                                           마스크 권한 조회(화면용)
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn"  parameterType="com.sds.healthcare.ehr.com.cc.ccm.vo.CcmMaskrmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-ccm-dao-CcmMaskrmtDAO-selectOneMaskAthrForScrn */
+		select  /*+ cmd_maskrmt_s05$S01_마스크 권한 조회(화면용) */ 
+		                nvl(max(a.auto_mask),'N')  as RTUR_VL_1,
+		                nvl(max(a.pop_up)   ,'Y')  as RTUR_VL_2,
+		                ''                         as RTUR_VL_3
+		          from
+		               (
+		                select
+		                        'Y' AUTO_MASK
+		                       ,'N' POP_UP
+		                  from
+		                        CCMASKRMT
+		                 where
+		                        PRGM_ID = #{prgmId}
+		                   and  MASK_INQR_DVSN_CD = 'D'
+		                   and  MASK_INQR_DVSN_VL in(
+		                                               select
+		                                                       c.MDCR_DPRT_CD
+		                                                 from
+		                                                       CCUSRDPHT c,
+		                                                       HZDEPTMMT d
+		                                                where
+		                                                       c.MDCR_DPRT_CD = d.DPRT_CD
+		                                                  and  c.USER_ID = #{gvUserId}
+		                                                     )
+		                   and  sysdate between APST_YMD and APFN_YMD
+		           union all
+		                   select
+		                           'Y' AUTO_MASK
+		                          ,'N' POP_UP
+		                     from
+		                           CCMASKRMT
+		                    where
+		                           PRGM_ID = #{prgmId}
+		                      and  MASK_INQR_DVSN_CD = 'O'
+		                      and  MASK_INQR_DVSN_VL in(
+		                                                  select
+		                                                         OCFM_CD
+		                                                   from
+		                                                         CCUSERAMV a,
+		                                                         CCUSRDPHT b
+		                                                  where  a.LGIN_ID = b.LGIN_ID
+		                                                    and  b.USER_ID = #{gvUserId}
+		                                             )
+		                     and  sysdate between APST_YMD and APFN_YMD
+		           union all
+		                select
+		                       'Y' AUTO_MASK
+		                      ,'N' POP_UP
+		                 from
+		                       CCMASKRMT
+		                where
+		                       PRGM_ID = #{prgmId}
+		                  and  MASK_INQR_DVSN_CD = 'U'
+		                  and  MASK_INQR_DVSN_VL = #{gvUserId}
+		                  and  sysdate between APST_YMD and APFN_YMD
+		              ) a
+	</select>
+
+
+
+</mapper>

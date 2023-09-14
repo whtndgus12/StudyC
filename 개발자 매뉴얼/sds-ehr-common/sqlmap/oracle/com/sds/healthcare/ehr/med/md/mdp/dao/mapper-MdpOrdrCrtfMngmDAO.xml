@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpOrdrCrtfMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpOrdrCrtfMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-insertOrdrCrtfElcrSgntInfm (전자서명처방등록) 
+        Description :                                           전자서명한 처방정보를 저장한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-insertOrdrCrtfElcrSgntInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		insert  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-insertOrdrCrtfElcrSgntInfm_전자서명처방등록 단건등록 */
+		  into  MDCERTIFT
+		        (
+		        PTNO
+		     ,  RCKI_CD
+		     ,  RCRD_DT
+		     ,  RCRD_SNO
+		     ,  GNDR_ID
+		     ,  MDRP_NO
+		     ,  CODV_CD
+		     ,  ODKI_CD
+		     ,  CRTF_DT
+		     ,  SGNT_IMAG_BD
+		     ,  ORDR_ORSN_CTN
+		     ,  ORDR_YMD
+		     ,  ORDR_SNO
+		     /*  AUDIT */
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		        )
+		values  (
+		        #{ptno}
+		     ,  #{rckiCd}
+		     ,  to_date(#{rcrdDt}, 'YYYYMMDD')
+		     ,  (
+		        select  nvl(max(RCRD_SNO), 0) + 1
+		          from  MDCERTIFT
+		         where  PTNO    = #{ptno}
+		           and  RCKI_CD = #{rckiCd}
+		           and  RCRD_DT = to_date(#{rcrdDt}, 'YYYYMMDD')
+		        )
+		     ,  #{gndrId}
+		     ,  #{mdrpNo}
+		     ,  #{codvCd}
+		     ,  #{odkiCd}
+		     ,  sysdate
+		     ,  #{sgntImagBdByte}
+		     ,  #{ordrOrsnCtn}
+		     ,  to_date(#{ordrYmd}, 'yyyymmdd')
+		     ,  #{ordrSno}
+		     /*  AUDIT */
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		        )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBsisOrdrCrtfInfm (기본처방인증자수정) 
+        Description :                                           기본처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBsisOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBsisOrdrCrtfInfm_기본처방인증자수정 단건수정 */
+				   MDBASORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateDrugOrdrCrtfInfm (약처방인증자수정) 
+        Description :                                           약처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateDrugOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateDrugOrdrCrtfInfm_약처방인증자수정 단건수정 */
+		           MDMEDORDT a
+		      set
+		           CRTF_DVSN_CD      = '2' /*  2: 인증완료 */
+		        ,  ATHN_ID           = case when (MDPR_CLSF_CD = '3') and (nvl(ORGL_ORDR_SNO, 0) > 0) and (exists (select 1 from MZCTRLMMT where MDCR_CTRL_CD = 'MDP_330' and MDCR_DTLS_CTRL_CD = a.ORDR_CRTN_DVSN_CD)) 
+		                                    then ''
+		                                    else #{updrId}             
+		                                end /* D/C후 재처방도 원처방일련번호를 가지고 있기 때문에 제외처리 2020.10.19 obh */
+		        , CRTF_IP            = case when (MDPR_CLSF_CD = '3') and (nvl(ORGL_ORDR_SNO, 0) > 0) and (exists (select 1 from MZCTRLMMT where MDCR_CTRL_CD = 'MDP_330' and MDCR_DTLS_CTRL_CD = a.ORDR_CRTN_DVSN_CD)) 
+		                                    then ''
+		                                    else #{gvUserIp}             
+		                                end /* D/C후 재처방도 원처방일련번호를 가지고 있기 때문에 제외처리 2020.10.19 obh */ 
+		        , CRTF_DT            = case when (MDPR_CLSF_CD = '3') and (nvl(ORGL_ORDR_SNO, 0) > 0) and (exists (select 1 from MZCTRLMMT where MDCR_CTRL_CD = 'MDP_330' and MDCR_DTLS_CTRL_CD = a.ORDR_CRTN_DVSN_CD)) 
+		                                    then cast(null as timestamp)
+		                                    else to_date(#{saveDt}, 'YYYYMMDDHH24MISS')             
+		                                end /* D/C후 재처방도 원처방일련번호를 가지고 있기 때문에 제외처리 2020.10.19 obh */
+		        --,  decode(MDPR_CLSF_CD || sign(1000000 - decode(ORGL_ORDR_SNO, null, 1000000, 0, 1000000, ORGL_ORDR_SNO)), '31', '', updrId)
+		        --,  CRTF_IP           = decode(MDPR_CLSF_CD || sign(1000000 - decode(ORGL_ORDR_SNO, null, 1000000, 0, 1000000, ORGL_ORDR_SNO)), '31', '', gvUserIp)
+		        --,  CRTF_DT           = decode(MDPR_CLSF_CD || sign(1000000 - decode(ORGL_ORDR_SNO, null, 1000000, 0, 1000000, ORGL_ORDR_SNO)), '31', cast(null as timestamp), to_date(saveDt, 'YYYYMMDDHH24MISS'))
+		        ,  LAST_UPDR_ID      = #{gvUserId}
+		        ,  LAST_UPDT_IP      = #{gvUserIp}
+		        ,  LAST_UPDT_DT      = sysdate
+		        ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		        ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		    where
+		           PTNO     = #{ptno}
+		      and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+		      and  ORDR_SNO = #{ordrSno}
+		    ]]> 
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateExmnOrdrCrtfInfm (검사처방인증자수정) 
+        Description :                                           검사처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateExmnOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateExmnOrdrCrtfInfm_검사처방인증자수정 단건수정 */
+				   MDEXMORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrFeeOrdrCrtfInfm (처방료 처방인증자수정) 
+        Description :                                           처방료 처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrFeeOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrFeeOrdrCrtfInfm_처치처방인증자수정 단건수정 */
+				   MDTRTORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBlodOrdrCrtfInfm (혈액 처방인증자수정) 
+        Description :                                           혈액 처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBlodOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateBlodOrdrCrtfInfm_수혈처방인증자수정 단건수정 */
+				   MDBLDORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateRhblOrdrCrtfInfm (재활 처방인증자수정) 
+        Description :                                           재활 처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateRhblOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateRhblOrdrCrtfInfm_재활처방인증자수정 단건수정 */
+				   MDREHORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateCivOrdrCrtfInfm (CIV 처방인증자수정) 
+        Description :                                           CIV 처방의 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateCivOrdrCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateCivOrdrCrtfInfm_CIV처방인증자수정 단건수정 */
+				   MDCIVORDT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrAdtnSpabSbjcCrtfInfm (처방추가특기사항 처방인증자수정) 
+        Description :                                           처방추가특기사항 인증관련 정보를 수정한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrAdtnSpabSbjcCrtfInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-updateOrdrAdtnSpabSbjcCrtfInfm_처방특기사항 인증t시각 단건수정 */
+				   MDPADUNNT
+			  set
+				   CRTF_DVSN_CD      = '2'     /*  2: 인증완료 */
+				,  ATHN_ID           = #{updrId}
+				,  CRTF_IP           = #{gvUserIp}
+				,  CRTF_DT           = to_date(#{saveDt}, 'YYYYMMDDHH24MISS')
+				/*  AUDIT */
+				,  LAST_UPDR_ID      = #{gvUserId}
+				,  LAST_UPDT_IP      = #{gvUserIp}
+				,  LAST_UPDT_DT      = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where
+				   PTNO     = #{ptno}
+			  and  ORDR_YMD = to_date(#{ordrYmd}, 'YYYYMMDD')
+			  and  ORDR_SNO = #{ordrSno}
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-updateOrdrCrtfElcrSgntInfm-updateOrdrCrtfElcrSgntInfm (처방인증 수정) 
+        Description :                                           처방인증 수정 mdd_certift_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-updateOrdrCrtfElcrSgntInfm-updateOrdrCrtfElcrSgntInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-updateOrdrCrtfElcrSgntInfm-updateOrdrCrtfElcrSgntInfm */
+		        MDCERTIFT
+		   set
+		        SGNT_IMAG_BD  = #{sgntImagBdByte}
+		     ,  ORDR_ORSN_CTN = null
+		     ,  LAST_UPDR_ID           = #{gvUserId}
+		     ,  LAST_UPDT_IP           = #{gvUserIp}
+		     ,  LAST_UPDT_DT           = sysdate
+		     ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		     ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where
+		        PTNO     = #{ptno}
+		   and  RCKI_CD  = '888'
+		   and  RCRD_DT  = to_date(#{rcrdDt}, 'YYYYMMDD')
+		   and  GNDR_ID  = #{gndrId}
+		   and  RCRD_SNO = #{rcrdSno}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="rcrdDt" column="RCRD_DT"/>
+		<result property="rcrdSno" column="RCRD_SNO"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="crtfDt" column="CRTF_DT"/>
+		<result property="sgntImagBdByte" column="SGNT_IMAG_BD_BYTE"/>
+		<result property="sgntImagBd" column="SGNT_IMAG_BD"/>
+		<result property="ordrOrsnCtn" column="ORDR_ORSN_CTN"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf (처방인증내역 조회) 
+        Description :                                           처방인증내역 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-listOrdrCrtf */
+		select  PTNO
+		     ,  RCKI_CD
+		     ,  to_char(RCRD_DT, 'YYYYMMDD')            as RCRD_DT
+		     ,  RCRD_SNO
+		     ,  to_char(ORDR_YMD, 'yyyymmdd')           as ORDR_YMD
+		     ,  ORDR_SNO
+		     ,  GNDR_ID
+		     ,  MDRP_NO
+		     ,  CODV_CD
+		     ,  ODKI_CD
+		     ,  to_char(CRTF_DT, 'YYYYMMDDHH24MISS')    as CRTF_DT
+		     ,  SGNT_IMAG_BD                            as SGNT_IMAG_BD_BYTE
+		     ,  ''                                      as SGNT_IMAG_BD
+		     ,  ORDR_ORSN_CTN
+		     , ''                                       as ORDR_CLTY_CD
+		  from  MDCERTIFT
+		 where  PTNO        =   #{ptno}
+		   and  RCKI_CD     =   #{rckiCd}
+		 <if test='ordrYmd != null and ordrYmd != ""'>
+		   and  ORDR_YMD    =   to_date(#{ordrYmd}, 'yyyymmdd')
+		 </if>
+		 <if test='ordrSno != null and ordrSno != 0'>
+		   and  ORDR_SNO    =   #{ordrSno}
+		 </if>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rckiCd" column="RCKI_CD"/>
+		<result property="rcrdDt" column="RCRD_DT"/>
+		<result property="rcrdSno" column="RCRD_SNO"/>
+		<result property="gndrId" column="GNDR_ID"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="odkiCd" column="ODKI_CD"/>
+		<result property="crtfDt" column="CRTF_DT"/>
+		<result property="sgntImagBdByte" column="SGNT_IMAG_BD_BYTE"/>
+		<result property="sgntImagBd" column="SGNT_IMAG_BD"/>
+		<result property="ordrOrsnCtn" column="ORDR_ORSN_CTN"/>
+		<result property="ordrCltyCd" column="ORDR_CLTY_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf (처방인증데이터 조회) 
+        Description :                                           처방인증데이터 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpOrdrCrtfMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpOrdrCrtfMngmDAO-selectOneOrdrCrtf */
+		        PTNO
+		     ,  RCKI_CD
+		     ,  to_char(RCRD_DT, 'YYYYMMDD') as RCRD_DT
+		     ,  RCRD_SNO
+		     ,  GNDR_ID
+		     ,  MDRP_NO
+		     ,  CODV_CD
+		     ,  ODKI_CD
+		     ,  to_char(CRTF_DT, 'YYYYMMDDHH24MISS') as CRTF_DT
+		     ,  SGNT_IMAG_BD as SGNT_IMAG_BD_BYTE
+		     ,  '' as SGNT_IMAG_BD
+		     ,  ORDR_ORSN_CTN
+		     , '' as ORDR_CLTY_CD
+		  from  
+		        MDCERTIFT
+		 where  
+		        PTNO = #{ptno}
+		   and  RCKI_CD = #{rckiCd}
+		   and  RCRD_DT = to_date(#{rcrdDt}, 'YYYYMMDD')
+		   and  RCRD_SNO = #{rcrdSno}
+	</select>
+
+
+
+</mapper>

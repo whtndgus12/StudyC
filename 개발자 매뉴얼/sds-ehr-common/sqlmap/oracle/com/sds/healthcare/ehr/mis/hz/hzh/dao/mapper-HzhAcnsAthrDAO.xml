@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhAcnsAthrDAO_sql.xml 
+    Description :                                      회계권한 DAO
+                  -->
+<mapper namespace="HzhAcnsAthrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnsAthrDVO">
+	
+		<result property="rsltVl" column="RSLT_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck (전체부서_회계권한체크) 
+        Description :                                           hzd_acsyatt_s03$S01_전부서회계권한보유여부확인_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnsAthrDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhAcnsAthrDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhAcnsAthrDAO-selectOneAllDprtAcnsAthrCeck */
+			   case when max(BSPL_CD) is null
+					then 'F'
+					else 'T'
+			   end                             as RSLT_VL
+		   from
+			   HZACSYATT
+		   where
+			   BSPL_CD            = #{bsplCd}
+		   and ACNS_PRGM_ID      in ('*', substr(#{gvClntPrgmId}, 5))
+		   and ACNS_MNGM_USER_ID in ('*', #{gvUserId})
+		   and ACNS_MNGM_DPRT_CD in (select
+										 '*'
+									 from
+										 DUAL
+									 union all
+									 select
+										 ORGL_BLNG_DPRT_CD
+									 from
+										 HZUSERMMT
+									 where
+										 EMNO = #{gvUserId}
+									)
+		   and ACNS_USE_USER_ID   = '*'
+		   and ACNS_USE_DPRT_CD   = '*'
+			]]>
+	</select>
+
+
+
+</mapper>

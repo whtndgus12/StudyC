@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpInrfMngrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpInrfMngrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="rcisNo" column="RCIS_NO"/>
+		<result property="vrfcRsltCd" column="VRFC_RSLT_CD"/>
+		<result property="rsltCtn" column="RSLT_CTN"/>
+		<result property="allUrlCtn" column="ALL_URL_CTN"/>
+		<result property="itmKindCd" column="ITM_KIND_CD"/>
+		<result property="bdbkCtn" column="BDBK_CTN"/>
+		<result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOneDummy */
+		select 
+		          '' as PTNO  /* 환자번호 */
+		        , '' as PTNT_NM  /* 환자명 */
+		        , '' as RCIS_NO  /* 요양기관번호 */
+		        , '' as VRFC_RSLT_CD  /* 검증결과코드 */
+		        , '' as RSLT_CTN  /* 결과내용 */
+		        , '' as ALL_URL_CTN /* 전체 URL내용 */
+		        , '' as ITM_KIND_CD  /* 문서종류코드 */
+		        , '' as BDBK_CTN  /* 수신본문내용 */
+		        , '' as USER_ID  /* 조회사용자ID */
+		from dual
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO">
+	
+		<result property="vrfcRsltCd" column="VRFC_RSLT_CD"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn (연명의료조회용 환자주민등록번호 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-selectOnePtntRsrn */
+		select 
+		          a.FRRN||a.BRRN as VRFC_RSLT_CD
+		        , a.PTNT_NM as PTNT_NM
+		  from APPTPTNTT a
+		 where a.PTNO = #{ptno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-updateBmipInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-updateBmipInfo"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpInrfMngrDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-updateBmipInfo */
+		update  /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpInrfMngrDAO-updateBmipInfo_사전연명의료의향서여부 정보 업데이트 */
+		        APRCADBLT A
+		   set  
+				BMIP_YN	= #{bmipYn}  /* 사전연명의료의향서여부   	*/
+		   		/* 서버 프로그램 전환시 자동 추가된 항목 */
+				,  LAST_UPDR_ID           = #{gvUserId}
+				,  LAST_UPDT_IP           = #{gvUserIp}
+				,  LAST_UPDT_DT           = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		 where  
+		        ptno = #{ptno}
+	</update>
+
+</mapper>

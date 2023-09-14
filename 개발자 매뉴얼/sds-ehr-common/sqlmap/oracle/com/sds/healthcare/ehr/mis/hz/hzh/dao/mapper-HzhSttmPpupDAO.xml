@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhSttmPpupDAO_sql.xml 
+    Description : -->
+<mapper namespace="HzhSttmPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="stln" column="STLN"/>
+		<result property="mtinDprtCd" column="MTIN_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="toacCd" column="TOAC_CD"/>
+		<result property="sttmJrnzNm" column="STTM_JRNZ_NM"/>
+		<result property="debtSumAmt" column="DEBT_SUM_AMT"/>
+		<result property="credSumAmt" column="CRED_SUM_AMT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup (HZH010F8_1_Popup_전표번호_조회_DAM) 
+        Description :                                           hzd_sttbrkt_l01$S01_전표번호_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmNoPpup */
+				   rownum         as SQNC         /* 순서 */
+				,  x.STTM_YMD     as STTM_YMD     /* 전표일자 */
+				,  x.STTM_NO      as STTM_NO      /* 전표번호 */
+				,  x.STLN         as STLN         /* 전표LINE */
+				,  x.MTIN_DPRT_CD as MTIN_DPRT_CD /* 발의부서코드 */
+				,  x.KORN_DPRT_NM as KORN_DPRT_NM /* 한글부서명 */
+				,  x.TOAC_CD      as TOAC_CD      /* 계정과목코드 */
+				,  x.STTM_JRNZ_NM as STTM_JRNZ_NM /* 전표기표명 */
+				,  x.DEBT_SUM_AMT as DEBT_SUM_AMT /* 차변금액 */
+				,  x.CRED_SUM_AMT as CRED_SUM_AMT /* 대변금액 */
+			 from
+				  (select
+						   a.STTM_YMD                                      STTM_YMD     /* 전표일자 */
+						,  a.STTM_NO                                       STTM_NO      /* 전표번호 */
+						,  b.STLN                                          STLN         /* 전표LINE */
+						,  a.MTIN_DPRT_CD                                  MTIN_DPRT_CD /* 발의부서코드 */
+						,  c.KORN_DPRT_NM                                  KORN_DPRT_NM /* 한글부서명 */
+						,  b.TOAC_CD                                       TOAC_CD      /* 계정과목코드 */
+						,  d.STTM_JRNZ_NM                                  STTM_JRNZ_NM /* 전표기표명 */
+						,  decode(b.DEBT_CRED_DVSN_CD, 'D', b.STTM_AMT, 0) DEBT_SUM_AMT /* 차변금액 */
+						,  decode(b.DEBT_CRED_DVSN_CD, 'C', b.STTM_AMT, 0) CRED_SUM_AMT /* 대변금액 */
+					 from
+						   HMSTTBRKT a /* 전표내역 */
+						,  HMSTDEBRT b /* 전표상세내역 */
+						,  HZDEPTMMT c /* 조직IF */
+						,  HZTOACCDT d /* 계정과목 */
+					where
+						   a.BSPL_CD       = #{bsplCd}      /* 사업장코드 */
+					  and  a.STTM_YMD      = #{sttmYmd}     /* 전표일자 */
+					  and  a.MTIN_DPRT_CD  = #{mtinDprtCd} /* 발의부서코드 */
+					  and  b.BSPL_CD       = a.BSPL_CD                        /* 사업장코드 */
+					  and  b.STTM_YMD      = a.STTM_YMD                       /* 전표일자 */
+					  and  b.STTM_NO       = a.STTM_NO                        /* 전표번호 */
+					  and  c.DPRT_CD       = a.MTIN_DPRT_CD                   /* 부서코드 */
+					  and  d.BSPL_CD       = a.BSPL_CD                        /* 사업장코드 */
+					  and  d.TOAC_CD       = b.TOAC_CD                        /* 계정과목코드 */
+					  and  d.USE_STRT_YMD <= a.STTM_YMD                       /* 사용시작일자 */
+					  and  d.USE_FNSH_YMD >= a.STTM_YMD                       /* 사용종료일자 */
+					order  by  a.STTM_YMD desc
+							,  a.STTM_NO  asc
+							,  b.STLN     asc
+				  ) x
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="sttmYmd" column="STTM_YMD"/>
+		<result property="sttmNo" column="STTM_NO"/>
+		<result property="ntm" column="NTM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt (HZH010FD_1_Popup_전표Line수_조회_DAM) 
+        Description :                                           hzd_sttbrkt_l02$S01_전표Line수_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhSttmPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhSttmPpupDAO-listSttmLineCnt */
+		    select  /*+ hzd_sttbrkt_l02$S01_전표Line수_Popup_조회_DAM */ 
+		            rownum     SQNC     -- 순서
+		         ,  x.STTM_YMD STTM_YMD -- 전표일자
+		         ,  x.STTM_NO  STTM_NO  -- 전표번호
+		         ,  x.NTM      NTM      -- LINE수
+		      from
+		           (select
+		                    a.STTM_YMD    STTM_YMD -- 전표일자
+		                 ,  a.STTM_NO     STTM_NO  -- 전표번호
+		                 ,  count(b.STLN) NTM      -- LINE수
+		              from
+		                    HMSTTBRKT a -- 전표내역
+		                 ,  HMSTDEBRT b -- 전표상세내역
+		             where
+		                    a.BSPL_CD      =    #{bsplCd}                       -- 사업장코드
+		               and  a.STTM_YMD     =   #{sttmYmd}                      -- 전표일자
+		               and  a.MTIN_DPRT_CD = nvl(#{mtinDprtCd}, a.MTIN_DPRT_CD) -- 발의부서코드
+		               and  b.BSPL_CD      = a.BSPL_CD                                             -- 사업장코드
+		               and  b.STTM_YMD     = a.STTM_YMD                                            -- 전표일자
+		               and  b.STTM_NO      = a.STTM_NO                                             -- 전표번호
+		             group  by  a.STTM_YMD
+		                     ,  a.STTM_NO
+		             order  by  a.STTM_YMD
+		                     ,  a.STTM_NO
+		           ) x
+	</select>
+
+
+
+</mapper>

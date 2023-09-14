@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MriComnDtlsCdInfoDAO_sql.xml 
+    Description :                                      MR_공통상세코드정보DAO mrd_cmcddmt_l90 mrd_cmcddmt_l91
+                  -->
+<mapper namespace="MriComnDtlsCdInfoDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90 (공통코드상세 내역 조회 mrd_cmcddmt_l90) 
+        Description :                                           공통코드상세 내역을 조회한다. 공통코드는 필수입력
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90-result" useCache="true" flushCache="false">
+		<![CDATA[
+						   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL90_공통코드 상세내역 조회 */
+								  b.COMN_GRP_CD as COMN_GRP_CD            /*  공통그룹코드 */
+								, b.COMN_DTLS_CD as COMN_DTLS_CD           /*  공통세부코드 */
+								, b.DETL_CD_NM as DETL_CD_NM             /*  상세코드명 */
+								, b.DETL_CD_DSCR_CTN as DETL_CD_DSCR_CTN       /*  상세코드설명내용 */
+								, to_char(b.APST_YMD, 'yyyymmdd') as APST_YMD                /*  적용시작일자 */
+								, to_char(b.APFN_YMD, 'yyyymmdd') as APFN_YMD                /*  적용종료일자 */
+								, b.SCRN_DSPL_SQNC as SCRN_DSPL_SQNC         /*  화면표시순서 */
+								, '' as COMN_ITEM_CD                       /*  공통항목코드 */
+								, '' as COMN_ITEM_CHRC_VL                       /*  공통항목문자값 */
+							 from CCCMCDMMT a
+								, CCCMCDDMT b
+							where a.COMN_GRP_CD   = b.COMN_GRP_CD
+							  and a.COMN_GRP_CD   = #{comnGrpCd}
+							  and b.COMN_DTLS_CD  = nvl(#{comnDtlsCd}, b.COMN_DTLS_CD)
+							  and sysdate between b.APST_YMD and b.APFN_YMD
+							  order by b.SCRN_DSPL_SQNC, b.COMN_DTLS_CD
+							]]>
+			
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91 (코드상세 항목 조회 mrd_cmcddmt_l91) 
+        Description :                                           코드상세 리스트를 항목을 구분하여 조회한다
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91-result" useCache="true" flushCache="false">
+		<![CDATA[
+						   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcddmtL91_코드상세항목 조회 */
+								  b.COMN_GRP_CD as COMN_GRP_CD            /*  공통그룹코드 */
+								, b.COMN_DTLS_CD as COMN_DTLS_CD           /*  공통세부코드 */
+								, b.DETL_CD_NM as DETL_CD_NM             /*  상세코드명 */
+								, b.DETL_CD_DSCR_CTN as DETL_CD_DSCR_CTN       /*  상세코드설명내용 */
+								, to_char(b.APST_YMD, 'yyyymmdd') as APST_YMD                /*  적용시작일자 */
+								, to_char(b.APFN_YMD, 'yyyymmdd') as APFN_YMD                /*  적용종료일자 */
+								, b.SCRN_DSPL_SQNC as SCRN_DSPL_SQNC         /*  화면표시순서 */
+								, c.COMN_ITEM_CD as COMN_ITEM_CD           /*  공통항목코드 */
+								, c.COMN_ITEM_CHRC_VL as COMN_ITEM_CHRC_VL      /*  공통항목문자값 */
+							 from CCCMCDMMT a /*  코드IF */
+								, CCCMCDDMT b /*  코드상세IF */
+								, CCCMCDIDT c /*  코드항목값IF */
+							where a.COMN_GRP_CD       = b.COMN_GRP_CD
+							  and a.COMN_GRP_CD       = c.COMN_GRP_CD
+							  and a.COMN_GRP_CD       = #{comnGrpCd}
+							  and b.COMN_DTLS_CD      = c.COMN_DTLS_CD
+							  and b.COMN_DTLS_CD      = nvl(#{comnDtlsCd}, b.COMN_DTLS_CD)
+							  and c.COMN_ITEM_CD      = nvl(#{comnItemCd}, c.COMN_ITEM_CD)
+							  and c.COMN_ITEM_CHRC_VL = nvl(#{comnItemChrcVl}, 'Y') /*  코드상세내역에 항목값 설정 시 의무기록은 'Y'로 설정함. */
+							  and sysdate between a.APST_YMD and a.APFN_YMD
+							  order by c.COMN_ITEM_CD, b.SCRN_DSPL_SQNC
+							]]>
+			
+			
+			
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05-result" type="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO">
+	
+		<result property="comnGrpCd" column="COMN_GRP_CD"/>
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="scrnDsplSqnc" column="SCRN_DSPL_SQNC"/>
+		<result property="comnItemNm" column="COMN_ITEM_NM"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05 (공통코드 조회_항목조건 mrd_cmcdmmt_l05) 
+        Description :                                           공통코드 조회_항목조건
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO
+		resultMap : com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05"  parameterType="com.sds.healthcare.ehr.med.mr.mri.vo.MriComnDtlsCdInfoDVO"  resultMap="com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05-result" useCache="true" flushCache="false">
+		<![CDATA[
+				   select  /*SQL_ID: com-sds-healthcare-ehr-med-mr-mri-dao-MriComnDtlsCdInfoDAO-listMrdCmcdmmtL05_공통코드 조회_항목조건 */
+						   distinct
+						   b.COMN_GRP_CD as COMN_GRP_CD
+						,  b.COMN_DTLS_CD as COMN_DTLS_CD
+						,  b.DETL_CD_NM as DETL_CD_NM
+						,  b.DETL_CD_DSCR_CTN as DETL_CD_DSCR_CTN
+						,  to_char(b.APST_YMD, 'yyyymmdd') as APST_YMD
+						,  to_char(b.APFN_YMD, 'yyyymmdd') as APFN_YMD
+						,  b.SCRN_DSPL_SQNC as SCRN_DSPL_SQNC
+						,  c.COMN_ITEM_NM as COMN_ITEM_NM
+						,  d.COMN_ITEM_CD as COMN_ITEM_CD
+						,  d.COMN_ITEM_CHRC_VL as COMN_ITEM_CHRC_VL
+					 from  CCCMCDMMT a
+						,  CCCMCDDMT b
+						,  CCCMCDIMT c
+						,  CCCMCDIDT d
+					where  a.COMN_GRP_CD   = b.COMN_GRP_CD
+					  and  a.COMN_GRP_CD   = c.COMN_GRP_CD(+)
+					  and  b.COMN_GRP_CD   = d.COMN_GRP_CD(+)
+					  and  a.COMN_GRP_CD   = #{comnGrpCd}
+					  and  b.COMN_DTLS_CD  = d.COMN_DTLS_CD(+)
+					  and  b.COMN_DTLS_CD  = nvl(#{comnDtlsCd}, b.COMN_DTLS_CD)
+					  and  b.DETL_CD_NM like nvl(#{detlCdNm}  , b.DETL_CD_NM) || '%'
+					  and  (
+							 (
+							   (#{comnItemNm} is not null) and
+							   c.COMN_ITEM_NM = #{comnItemNm}
+							 )
+							 or
+							 (
+							   #{comnItemNm} is null
+							 )
+						   )
+					  and  (
+							 (
+							   (#{comnItemChrcVl} is not null) and
+							   d.COMN_ITEM_CHRC_VL = #{comnItemChrcVl}
+							 )
+							  or
+							 (
+							   #{comnItemChrcVl} is null
+							 )
+						   )
+					  and  sysdate between a.APST_YMD
+									   and a.APFN_YMD
+					  and  #{dvsnCd} = 'C'
+					union
+					  all
+				   select  a.MR_CTRL_CD
+						,  a.MR_DTLS_CTRL_CD
+						,  a.MR_DTLS_CTRL_NM
+						,  ''
+						,  to_char(a.APST_YMD, 'yyyymmdd')
+						,  to_char(a.APFN_YMD, 'yyyymmdd')
+						,  CTRL_SORT_SQNC
+						,  ''
+						,  ''
+						,  ''
+					 from  MRCTRLMMT a
+					where  a.MR_CTRL_CD = #{comnGrpCd}
+					  and  a.MR_DTLS_CTRL_CD = nvl(#{comnDtlsCd} , a.MR_DTLS_CTRL_CD)
+					  and  a.MR_DTLS_CTRL_NM like  '%' || nvl(#{detlCdNm}, a.MR_DTLS_CTRL_NM) || '%'
+					  and  #{dvsnCd} = 'M'
+					  and  sysdate between a.APST_YMD
+									   and a.APFN_YMD
+					order
+					   by  7
+						,  2
+					]]>
+	</select>
+
+
+
+</mapper>

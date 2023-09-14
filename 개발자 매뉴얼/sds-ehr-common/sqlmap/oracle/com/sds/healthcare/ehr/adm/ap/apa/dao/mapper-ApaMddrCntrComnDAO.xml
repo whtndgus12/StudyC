@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaMddrCntrComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaMddrCntrComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOneMdcrPsblMddrYn -result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrCntrComnDVO">
+	
+		<result property="mdcrPsblMddrYn" column="MDCR_PSBL_MDDR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOneMdcrPsblMddrYn  (진료가능의사여부 체크) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrCntrComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOneMdcrPsblMddrYn -result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOneMdcrPsblMddrYn "  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaMddrCntrComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOneMdcrPsblMddrYn -result" useCache="true" flushCache="false">
+			select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaMddrCntrComnDAO-selectOne000 */
+				   'Y' as MDCR_PSBL_MDDR_YN
+			 from  APDSDRCNT  /*  의사진료센터 */
+			where  MDDR_ID = #{mddrId}
+			  and  MCDP_CD = #{mcdpCd}	  
+			  <if test="inqrYmd != null">
+			  and  to_date(#{inqrYmd}, 'yyyymmdd') between   APST_YMD and APFN_YMD
+		      </if>
+		      <if test="inqrYmd == null">
+		      and  trunc(sysdate) between   APST_YMD and APFN_YMD
+		      </if>
+			  and  MCCN_CD = #{mccnCd}
+			  and  rownum    = 1	
+	</select>
+
+
+
+</mapper>

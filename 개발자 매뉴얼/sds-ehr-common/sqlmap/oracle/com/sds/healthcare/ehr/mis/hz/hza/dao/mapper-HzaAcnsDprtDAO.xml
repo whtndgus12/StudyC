@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzaAcnsDprtDAO_sql.xml 
+    Description :                                      회계부서 DAO
+                  -->
+<mapper namespace="HzaAcnsDprtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd-result" type="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaAcnsDprtDVO">
+	
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd (회계부서내역_조회) 
+        Description :                                           hzd_deptmmt_s02$S01_회계부서내역_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hza.vo.HzaAcnsDprtDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd"  parameterType="com.sds.healthcare.ehr.mis.hz.hza.vo.HzaAcnsDprtDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hza-dao-HzaAcnsDprtDAO-selectOneAcnsDprtBrkd */
+		        substr(max(sys_connect_by_path(DPRT_CD, ',')), 2)  as COMN_CD_NM
+		  from
+		        ( select
+		                 s1.DPRT_CD                              DPRT_CD
+		               , row_number() over (order by s1.DPRT_CD) RN
+		            from
+		                 ( select
+		                          t.DPRT_CD DPRT_CD
+		                     from
+		                          HZDEPTMMT t
+		                        , HZDEPTMMT a
+		                    where
+		                      /* 인사대표부서 컬럼사용 하지않음 -> 발령부서(DPRT_CD)로 대체
+		                          t.HRAF_RPRS_DPRT_CD = a.HRAF_RPRS_DPRT_CD */
+		                          t.DPRT_CD      = a.DPRT_CD
+		                      and t.ACNN_DPRT_YN = 'Y'
+		                      and a.DPRT_CD      = #{dprtCd}
+		                      and #{dprtCd}      is not null
+		                   union all
+		                   select
+		                          distinct
+		                          DPRT_CD DPRT_CD
+		                     from
+		                          ( select
+		                                   t.DPRT_CD DPRT_CD
+		                              from
+		                                   HZDEPTMMT t
+		                                 , HZDEPTMMT a
+		                                 , HZACSYATT b
+		                             where
+		                               /* 인사대표부서 컬럼사용 하지않음 -> 발령부서(DPRT_CD)로 대체
+		                                   t.HRAF_RPRS_DPRT_CD = a.HRAF_RPRS_DPRT_CD */
+		                                   t.DPRT_CD            = a.DPRT_CD
+		                               and t.ACNN_DPRT_YN       =  'Y'
+		                               and a.DPRT_CD            =  b.ACNS_USE_DPRT_CD
+		                               and b.BSPL_CD            =  #{bsplCd}
+		                               and b.ACNS_PRGM_ID       in ('*', substr(#{gvSrvrPrgmId}, 5))
+		                               and b.ACNS_MNGM_DPRT_CD  in ('*'
+		                                                           , (select
+		                                                                     ORGL_BLNG_DPRT_CD
+		                                                                from
+		                                                                     HZUSERMMT
+		                                                               where
+		                                                                     EMNO = #{gvUserId}
+		                                                             )
+		                                                           )
+		                               and b.ACNS_MNGM_USER_ID  in ('*', #{gvUserId})
+		                               and b.ACNS_USE_USER_ID   =  '*'
+		                            union all
+		                            select
+		                                   ORGL_BLNG_DPRT_CD DPRT_CD
+		                              from
+		                                   HZUSERMMT
+		                             where
+		                                   EMNO = #{gvUserId}
+		                          )
+		                    where
+		                          #{dprtCd} is null
+		                 ) s1
+		        )
+		  start with RN = 1
+		  connect by prior RN = RN - 1
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbQlfcComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbQlfcComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcComnDVO">
+	
+		<result property="istyCd" column="ISTY_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc-result" useCache="true" flushCache="false">
+		select  /*+ index_desc (a APQLQLFCT_PK) SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcComnDAO-selectOneLtstQlfc */
+		           a.ISTY_CD
+		  from  APQLQLFCT a
+		 where  a.PTNO           = #{ptno}
+		   and  a.ISTY_STRT_YMD  = (select  max(x.ISTY_STRT_YMD)
+		                              from  APQLQLFCT x
+		                             where  x.PTNO           = a.PTNO
+		                               and  x.CNCL_DT       is null
+		                               and  x.QLFC_LOSE_YMD is null
+		                           )
+		   and  a.CNCL_DT       is null
+		   and  a.QLFC_LOSE_YMD is null
+		   and  rownum           = 1
+	</select>
+
+
+
+</mapper>

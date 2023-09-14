@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbCeckPtntMngmDAO_sql.xml 
+    Description :                                      체크환자관리
+                  -->
+<mapper namespace="ApbCeckPtntMngmDAO">
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm () 
+        Description :                                           apd_ptceckt_i24$I01_CHECK환자관리입력DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		/* SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm */
+		insert  /* ApbCeckPtntMngmDAO-insertCeckPtntMngm_환자체크사항 입력 */
+		  into  APPTCECKT
+		        (
+		        PTNO
+		     ,  PTNT_CECK_SBJC_SNO
+		     ,  PUBL_DPRT_RANG_CD
+		     ,  PTNT_RFRC_CLSF_CD
+		     ,  PTNT_RFRC_CTN
+		     ,  PUBL_STRT_YMD
+		     ,  PUBL_FNSH_YMD
+		     ,  MCDP_CD
+		     ,  MDDR_ID
+		     ,  PTNT_CECK_SBJC_IMDG_CD
+		     ,  ORTA_NM
+		     ,  ORPR_VL
+		     ,  ITDV_CD
+		     ,  FRST_RGSR_ID
+		     ,  FRST_RGST_IP
+		     ,  FRST_RGST_DT
+		     ,  FRST_RGST_CLNT_PRGM_ID
+		     ,  FRST_RGST_SRVR_PRGM_ID
+		     ,  LAST_UPDR_ID
+		     ,  LAST_UPDT_IP
+		     ,  LAST_UPDT_DT
+		     ,  LAST_UPDT_CLNT_PRGM_ID
+		     ,  LAST_UPDT_SRVR_PRGM_ID
+		     ,  PTNT_CHCL_DETL_DVSN_CD	/*환자체크리스트상세구분코드(APB_038)*/
+		     ,  CHCL_PTAD_PUBL_YN	    /*체크리스트원무공개여부*/
+		     ,  CHCL_CHCK_PUBL_YN	    /*체크리스트심사공개여부*/
+		     ,  CHCL_MDCR_PUBL_YN	    /*체크리스트진료공개여부*/
+		     ,  CHCL_CARE_PUBL_YN	    /*체크리스트간호공개여부*/
+		     ,  CHCL_MDCR_SPRT_PUBL_YN	/*체크리스트진료지원공개여부*/
+		     ,  CHCL_DPRT_PUBL_YN	    /*체크리스트부서공개여부*/
+		     ,  CHCL_PUBL_DPRT_CD	    /*체크리스트공개부서코드*/
+		     ,  CHCL_DLTN_ATHR_CD	    /*체크리스트삭제권한코드*/
+		     ,  CHCL_DLTN_PSBL_DPRT_CD	/*체크리스트삭제가능부서코드*/
+		        )
+		values  (
+		        #{ptno}
+		     ,  (   select  nvl(max(PTNT_CECK_SBJC_SNO), 0) + 1
+		              from  APPTCECKT
+		             where  PTNO  = #{ptno}
+		        )
+		     ,  #{publDprtRangCd}
+		     ,  nvl(#{ptntRfrcClsfCd}, 'C')
+		     ,  #{ptntRfrcCtn}
+		     ,  decode(#{publStrtYmd} , null , trunc(sysdate), to_date(#{publStrtYmd}, 'yyyymmdd'))
+		     ,  decode(#{publFnshYmd} , null, to_date('29991231', 'yyyymmdd'), to_date(#{publFnshYmd}, 'yyyymmdd'))
+		     ,  #{mcdpCd}
+		     ,  #{mddrId}
+		     ,  #{ptntCeckSbjcImdgCd}
+		     ,  #{ortaNm}
+		     ,  #{orprVl}
+		     ,  #{itdvCd}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{ptntChclDetlDvsnCd}
+		     ,  decode(#{publDprtRangCd}, '0', 'Y', '1', 'Y', #{chclPtadPublYn})
+		     ,  decode(#{publDprtRangCd}, '0', 'Y', '2', 'Y', #{chclChckPublYn})
+		     ,  decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrPublYn})
+		     ,  decode(#{publDprtRangCd}, '0', 'Y', #{chclCarePublYn})
+		     ,  decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrSprtPublYn})
+		     ,  #{chclDprtPublYn}
+		     ,  #{chclPublDprtCd}
+		     ,  nvl(#{chclDltnAthrCd}, '0')
+		     ,  #{chclDltnPsblDprtCd}
+		        )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm2 (환자체크사항 등록 [AsIs : acd_ptceckt_i01]) 
+        Description :                                           환자체크사항을 신규 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm2"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+				   insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertCeckPtntMngm2 */ 
+		              into
+					APPTCECKT
+					 (
+					   PTNO
+					 , PTNT_CECK_SBJC_SNO
+					 , PUBL_STRT_YMD
+					 , PUBL_FNSH_YMD
+					 , PUBL_DPRT_RANG_CD
+					 , MCDP_CD
+					 , MDDR_ID
+					 , PTNT_RFRC_CLSF_CD
+					 , PTNT_CECK_SBJC_IMDG_CD
+					 , PTNT_RFRC_CTN
+					 , CNCL_DT
+					 , CNCR_ID
+					 , ORTA_NM
+					 , ORPR_VL
+					 , FRST_RGSR_ID
+					 , FRST_RGST_IP
+					 , FRST_RGST_DT
+					 , FRST_RGST_CLNT_PRGM_ID
+					 , FRST_RGST_SRVR_PRGM_ID
+					 , LAST_UPDR_ID
+					 , LAST_UPDT_IP
+					 , LAST_UPDT_DT
+					 , LAST_UPDT_CLNT_PRGM_ID
+					 , LAST_UPDT_SRVR_PRGM_ID
+		             , PTNT_CHCL_DETL_DVSN_CD	/*환자체크리스트상세구분코드(APB_038)*/
+		             , CHCL_PTAD_PUBL_YN	    /*체크리스트원무공개여부*/
+		             , CHCL_CHCK_PUBL_YN	    /*체크리스트심사공개여부*/
+		             , CHCL_MDCR_PUBL_YN	    /*체크리스트진료공개여부*/
+		             , CHCL_CARE_PUBL_YN	    /*체크리스트간호공개여부*/
+		             , CHCL_MDCR_SPRT_PUBL_YN	/*체크리스트진료지원공개여부*/
+		             , CHCL_DPRT_PUBL_YN	    /*체크리스트부서공개여부*/
+		             , CHCL_PUBL_DPRT_CD	    /*체크리스트공개부서코드*/
+		             , CHCL_DLTN_ATHR_CD	    /*체크리스트삭제권한코드*/
+		             , CHCL_DLTN_PSBL_DPRT_CD	/*체크리스트삭제가능부서코드*/
+					 )
+				   values(
+					   #{ptno}
+					 , (select nvl(max(x.PTNT_CECK_SBJC_SNO) + 1, 1)
+						  from APPTCECKT x
+						 where x.PTNO = #{ptno})
+					 , nvl(to_date(#{publStrtYmd}, 'yyyymmdd'), trunc(sysdate))
+					 , nvl(to_date(#{publFnshYmd}, 'yyyymmdd'), to_date('29991231', 'yyyymmdd'))
+					 , nvl(#{publDprtRangCd}, '1')
+					 , #{mcdpCd}
+					 , #{mddrId}
+					 , #{ptntRfrcClsfCd}          /* k */
+					 , #{ptntCeckSbjcImdgCd}
+					 , decode(#{ptntRfrcClsfCd}, 'K', '▶ 적용사유 : ') || #{ptntRfrcCtn}              /*  */
+					 , decode(#{cnclYn}, 'Y', sysdate         ,#{cnclDt})
+					 , decode(#{cnclYn}, 'Y', #{gvUserId},#{cncrId})
+					 , #{ortaNm}
+					 , #{orprVl}
+					 , #{gvUserId}
+					 , #{gvUserIp}
+					 , sysdate
+					 , #{gvClntPrgmId}
+					 , #{gvSrvrPrgmId}
+					 , #{gvUserId}
+					 , #{gvUserIp}
+					 , sysdate
+					 , #{gvClntPrgmId}
+					 , #{gvSrvrPrgmId}
+		             , #{ptntChclDetlDvsnCd}
+		             , decode(#{publDprtRangCd}, '0', 'Y', '1', 'Y', #{chclPtadPublYn})
+		             , decode(#{publDprtRangCd}, '0', 'Y', '2', 'Y', #{chclChckPublYn})
+		             , decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrPublYn})
+		             , decode(#{publDprtRangCd}, '0', 'Y', #{chclCarePublYn})
+		             , decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrSprtPublYn})
+		             , #{chclDprtPublYn}
+		             , #{chclPublDprtCd}
+		             , nvl(#{chclDltnAthrCd}, '0')
+		             , #{chclDltnPsblDprtCd}
+					 )
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertUnclSmsrLog (미수관련 SMS정보 등록 [AsIs : acd_ptceckt_i04]) 
+        Description :                                           미수관련 SMS 전송로그를 등록한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertUnclSmsrLog"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+				   insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-insertUnclSmsrLog */
+					 into  APPTCECKT     /* 환자체크사항 */
+						(  PTNO                                     /* 환자번호 */
+						,  PTNT_CECK_SBJC_SNO                       /* 환자체크사항일련번호 */
+						,  PUBL_STRT_YMD                            /* 공개시작일자 */
+						,  PUBL_FNSH_YMD                            /* 공개종료일자 */
+						,  PUBL_DPRT_RANG_CD                        /* 공개부서범위코드 */
+						,  PTNT_CECK_SBJC_IMDG_CD                   /* 환자체크사항중요도코드 */
+						,  MCDP_CD                                  /* 진료과코드 */
+						,  MDDR_ID                                  /* 진료의사ID */
+						,  PTNT_RFRC_CLSF_CD                        /* 환자참고분류코드 */
+						,  PTNT_RFRC_CTN                            /* 환자참고내용 */
+						,  ORTA_NM                                  /* 처방테이블명 */
+						,  ORPR_VL                                  /* 처방키값 */
+						,  CNCL_DT                                  /* 취소일시 */
+						,  CNCR_ID                                  /* 취소자ID */
+						,  FRST_RGSR_ID                             /* 최초등록자ID */
+						,  FRST_RGST_IP                             /* 최초등록IP */
+						,  FRST_RGST_DT                             /* 최초등록일시 */
+						,  FRST_RGST_CLNT_PRGM_ID                        /* 최초등록SMC클라이언트프로그램ID */
+						,  FRST_RGST_SRVR_PRGM_ID                        /* 최초등록SMC서버프로그램ID */
+						,  LAST_UPDR_ID                             /* 최종수정자ID */
+						,  LAST_UPDT_IP                             /* 최종수정IP */
+						,  LAST_UPDT_DT                             /* 최종수정일시 */
+						,  LAST_UPDT_CLNT_PRGM_ID                        /* 최종수정SMC클라이언트프로그램ID */
+						,  LAST_UPDT_SRVR_PRGM_ID                        /* 최종수정SMC서버프로그램ID */
+		                ,  CHCL_PTAD_PUBL_YN	    /*체크리스트원무공개여부*/
+						)
+				   select  a.PTNO
+						,  (
+							   select  nvl(max(sa.PTNT_CECK_SBJC_SNO), 0) +1
+								 from  APPTCECKT sa
+								where  sa.PTNO = a.PTNO
+						   )
+						,  trunc(sysdate)
+						,  to_date('29991231', 'yyyymmdd')
+						,  '1'
+						,  '2'
+						,  a.MCDP_CD
+						,  a.MDDR_ID
+						,  'C'
+						,  #{unclMemoCtn}
+						|| '('
+						|| to_char(sysdate,'yyyy-mm-dd hh24:mi')
+						|| ')'
+						,  null
+						,  null
+						,  null
+						,  null
+						,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+						,  #{gvUserId}
+						,  #{gvUserIp}
+						,  sysdate
+						,  #{gvClntPrgmId}
+						,  #{gvSrvrPrgmId}
+		                , 'Y'
+					 from  ACURUCOCT a
+					where  a.PTNO     =  #{ptno}
+					  and  a.UCOC_YMD =  to_date(#{ucocYmd}, 'yyyymmdd')
+					  and  a.UCOC_SNO =  #{ucocSno}
+					  and  rownum     =  1
+		]]>
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckCnclByOrpr (원무 체크사항 취소 By 처방키) 
+        Description :                                           원무 체크사항 취소 By 처방키
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckCnclByOrpr"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckCnclByOrpr */
+		update  /* ApbCeckPtntMngmDAO-updateCeckCnclByOrpr_원무 체크사항 취소 By 처방키 */
+		        APPTCECKT
+		   set  CNCL_DT                 =   sysdate
+		     ,  CNCR_ID                 =   #{gvUserId}
+			 ,  LAST_UPDR_ID            =   #{gvUserId}
+			 ,  LAST_UPDT_IP            =   #{gvUserIp}
+			 ,  LAST_UPDT_DT            =   sysdate
+			 ,  LAST_UPDT_CLNT_PRGM_ID  =   #{gvClntPrgmId}
+			 ,  LAST_UPDT_SRVR_PRGM_ID  =   #{gvSrvrPrgmId}
+		 where  PTNO                    =   #{ptno}
+		   and  ORTA_NM                 =   #{ortaNm}
+		   and  ORPR_VL                 =   #{orprVl}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCncl () 
+        Description :                                           apd_ptceckt_u01$U01_환자체크사항 취소 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCncl"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+		   update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCncl */
+				   APPTCECKT a
+			  set
+				   a.CNCL_DT = sysdate
+				,  a.CNCR_ID           = #{gvUserId}
+				,  LAST_UPDR_ID        = #{gvUserId} /*  취소일때는 id가 바뀌지 않아야 함. */
+				,  LAST_UPDT_IP        = #{gvUserIp}
+				,  LAST_UPDT_DT        = sysdate
+				,  FRST_RGST_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  FRST_RGST_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+			where  a.PTNO               = #{ptno}
+			  and  a.PTNT_CECK_SBJC_SNO = #{ptntCeckSbjcSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntMngm () 
+        Description :                                           apd_ptceckt_u24$I01_CHECK환자관리수정DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntMngm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntMngm */
+				APPTCECKT a
+		   set
+				a.PUBL_DPRT_RANG_CD  = #{publDprtRangCd}
+			 ,  a.PTNT_RFRC_CTN      = #{ptntRfrcCtn}
+			 ,  a.PUBL_STRT_YMD      = to_date(#{publStrtYmd}, 'yyyymmdd')
+			 ,  a.PUBL_FNSH_YMD      = to_date(#{publFnshYmd}, 'yyyymmdd')
+			 ,  a.MDDR_ID			  = #{mddrId}
+			 ,  a.PTNT_RFRC_CLSF_CD  = #{ptntRfrcClsfCd}
+			 ,  a.PTNT_CECK_SBJC_IMDG_CD = #{ptntCeckSbjcImdgCd}
+			 ,  LAST_UPDR_ID = #{gvUserId}
+			 ,  LAST_UPDT_IP = #{gvUserIp}
+			 ,  LAST_UPDT_DT = sysdate
+			 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     ,  a.PTNT_CHCL_DETL_DVSN_CD = #{ptntChclDetlDvsnCd} 	/*환자체크리스트상세구분코드(APB_038)*/
+		     ,  a.CHCL_PTAD_PUBL_YN	     = decode(#{publDprtRangCd}, '0', 'Y', '1', 'Y', #{chclPtadPublYn})      /*체크리스트원무공개여부*/
+		     ,  a.CHCL_CHCK_PUBL_YN	     = decode(#{publDprtRangCd}, '0', 'Y', '2', 'Y', #{chclChckPublYn})      /*체크리스트심사공개여부*/
+		     ,  a.CHCL_MDCR_PUBL_YN	     = decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrPublYn})      /*체크리스트진료공개여부*/
+		     ,  a.CHCL_CARE_PUBL_YN	     = decode(#{publDprtRangCd}, '0', 'Y', #{chclCarePublYn})      /*체크리스트간호공개여부*/
+		     ,  a.CHCL_MDCR_SPRT_PUBL_YN = decode(#{publDprtRangCd}, '0', 'Y', #{chclMdcrSprtPublYn})  /*체크리스트진료지원공개여부*/
+		     ,  a.CHCL_DPRT_PUBL_YN	     = #{chclDprtPublYn}      /*체크리스트부서공개여부*/
+		     ,  a.CHCL_PUBL_DPRT_CD	     = #{chclPublDprtCd}      /*체크리스트공개부서코드*/
+		     ,  a.CHCL_DLTN_ATHR_CD	     = #{chclDltnAthrCd}      /*체크리스트삭제권한코드*/
+		     ,  a.CHCL_DLTN_PSBL_DPRT_CD = #{chclDltnPsblDprtCd}  /*체크리스트삭제가능부서코드*/
+		 where  1=1
+		   and  a.PTNO   = #{ptno}
+		   and  a.PTNT_CECK_SBJC_SNO   = #{ptntCeckSbjcSno}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updatePtntScryYn () 
+        Description :                                           apd_ptptntt_u10$U01_환자보안여부 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updatePtntScryYn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+		   update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updatePtntScryYn */
+			   APPTPTNTT
+		   set
+			   SCRY_YN   = #{scryYn}/* 보안여부 */
+			/*  서버 프로그램 전환시 자동 추가된 항목 */
+			,  LAST_UPDR_ID = #{gvUserId}
+			,  LAST_UPDT_IP = #{gvUserIp}
+			,  LAST_UPDT_DT = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		   where  PTNO = #{ptno}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntCeckSbjcSno" column="PTNT_CECK_SBJC_SNO"/>
+		<result property="publStrtYmd" column="PUBL_STRT_YMD"/>
+		<result property="publFnshYmd" column="PUBL_FNSH_YMD"/>
+		<result property="publDprtRangCd" column="PUBL_DPRT_RANG_CD"/>
+		<result property="ptntCeckSbjcImdgCd" column="PTNT_CECK_SBJC_IMDG_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="ptntRfrcClsfCd" column="PTNT_RFRC_CLSF_CD"/>
+		<result property="ptntRfrcCtn" column="PTNT_RFRC_CTN"/>
+		<result property="ortaNm" column="ORTA_NM"/>
+		<result property="orprVl" column="ORPR_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis (체크리스트조회 기본) 
+        Description :                                           apd_ptceckt_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis-result" useCache="true" flushCache="false">
+		 select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckBsis */
+						   PTNO as PTNO
+						,  PTNT_CECK_SBJC_SNO as PTNT_CECK_SBJC_SNO
+						,  to_char(PUBL_STRT_YMD, 'yyyymmdd') as PUBL_STRT_YMD
+						,  to_char(PUBL_FNSH_YMD, 'yyyymmdd') as PUBL_FNSH_YMD
+						,  PUBL_DPRT_RANG_CD as PUBL_DPRT_RANG_CD
+						,  PTNT_CECK_SBJC_IMDG_CD as PTNT_CECK_SBJC_IMDG_CD
+						,  MCDP_CD as MCDP_CD
+						,  MDDR_ID as MDDR_ID
+						,  PTNT_RFRC_CLSF_CD as PTNT_RFRC_CLSF_CD
+						,  PTNT_RFRC_CTN as PTNT_RFRC_CTN
+						,  ORTA_NM as ORTA_NM
+						,  ORPR_VL as ORPR_VL
+					 from  APPTCECKT
+					where  PTNO = #{ptno}
+					  and  CNCL_DT is null
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="publDprtRangCd" column="PUBL_DPRT_RANG_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="ptntRfrcCtn" column="PTNT_RFRC_CTN"/>
+		<result property="cnclDt" column="CNCL_DT"/>
+		<result property="cncrId" column="CNCR_ID"/>
+		<result property="afiCncrNm" column="AFI_CNCR_NM"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="detlCdNm2" column="DETL_CD_NM_2"/>
+		<result property="publStrtYmd" column="PUBL_STRT_YMD"/>
+		<result property="publFnshYmd" column="PUBL_FNSH_YMD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="mcdpNm" column="MCDP_NM"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="ptntRfrcClsfCd" column="PTNT_RFRC_CLSF_CD"/>
+		<result property="ptntCeckSbjcImdgCd" column="PTNT_CECK_SBJC_IMDG_CD"/>
+		<result property="afiPtntCeckSbjcImdgNm" column="AFI_PTNT_CECK_SBJC_IMDG_NM"/>
+		<result property="ptntChclDetlDvsnCd" column="PTNT_CHCL_DETL_DVSN_CD"/>
+		<result property="ptntChclDetlDvsnNm" column="PTNT_CHCL_DETL_DVSN_NM"/>
+		<result property="chclPtadPublYn" column="CHCL_PTAD_PUBL_YN"/>
+		<result property="chclChckPublYn" column="CHCL_CHCK_PUBL_YN"/>
+		<result property="chclMdcrPublYn" column="CHCL_MDCR_PUBL_YN"/>
+		<result property="chclCarePublYn" column="CHCL_CARE_PUBL_YN"/>
+		<result property="chclMdcrSprtPublYn" column="CHCL_MDCR_SPRT_PUBL_YN"/>
+		<result property="chclDprtPublYn" column="CHCL_DPRT_PUBL_YN"/>
+		<result property="chclPublDprtCd" column="CHCL_PUBL_DPRT_CD"/>
+		<result property="aplnBlngDprtNm" column="APLN_BLNG_DPRT_NM"/>
+		<result property="chclDltnAthrCd" column="CHCL_DLTN_ATHR_CD"/>
+		<result property="chclDltnPsblDprtCd" column="CHCL_DLTN_PSBL_DPRT_CD"/>
+		<result property="etcDprtNm" column="ETC_DPRT_NM"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm () 
+        Description :                                           apd_ptceckt_l24$S01_CHECK환자관리조회DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngm */
+		        a.PTNO as PTNO                                          /*  환자번호 */
+		     ,  a.PUBL_DPRT_RANG_CD as PUBL_DPRT_RANG_CD                /*  부서범위 */
+		     ,  (
+		        select  x.DETL_CD_NM
+		          from  CCCMCDDMT x
+		         where  x.COMN_GRP_CD  = 'AP035'
+		           and  x.COMN_DTLS_CD = a.PUBL_DPRT_RANG_CD) as DETL_CD_NM /*  부서범위 */
+		     ,  a.PTNT_RFRC_CTN as PTNT_RFRC_CTN                                 /*  체크사항 */
+		     ,  to_char(a.CNCL_DT, 'yyyymmddhh24miss') as CNCL_DT        /*  취소일시 */
+		     ,  a.CNCR_ID as CNCR_ID                                       /*  취소자ID */
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.CNCR_ID) as AFI_CNCR_NM /*  취소자명 */
+		     ,  a.LAST_UPDR_ID as LAST_UPDR_ID                                  /*  수정자   */
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.LAST_UPDR_ID) as LAST_UPDR_NM /*  수정자명 */
+		     ,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24miss') as LAST_UPDT_DT   /*  수정일시 */
+		     ,  a.PTNT_CECK_SBJC_SNO as DETL_CD_NM_2                            /*  수정일시 */
+		     ,  to_char(a.PUBL_STRT_YMD, 'yyyymmdd') as PUBL_STRT_YMD          /*  시작일시 */
+		     ,  to_char(a.PUBL_FNSH_YMD, 'yyyymmdd') as PUBL_FNSH_YMD          /*  종료일시 */
+		     ,  a.MCDP_CD as MCDP_CD                                       /*  진료과코드*/
+		     ,  (select x.KORN_DPRT_NM from HZDEPTMMT x where x.DPRT_CD = a.MCDP_CD) as MCDP_NM  /*  진료과명 */
+		     ,  a.MDDR_ID as MDDR_ID                                       /*  진료의사ID*/
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.MDDR_ID) as MDDR_NM                /*  진료의사명 */
+		     ,  a.PTNT_RFRC_CLSF_CD as PTNT_RFRC_CLSF_CD                             /*  환자참고분류코드*/
+		     ,  a.PTNT_CECK_SBJC_IMDG_CD as PTNT_CECK_SBJC_IMDG_CD                        /*  환자체크사항중요도코드*/
+		     ,  nvl((
+		            select  x.DETL_CD_NM
+		              from  CCCMCDDMT x
+		             where  1=1
+		               and  X.COMN_GRP_CD  = 'APB_021'
+		               and  X.COMN_DTLS_CD = a.PTNT_CECK_SBJC_IMDG_CD), '하') as AFI_PTNT_CECK_SBJC_IMDG_NM /*  환자체크사항중요도코드명*/
+		     ,  a.PTNT_CHCL_DETL_DVSN_CD	/*환자체크리스트상세구분코드(APB_038)*/
+		     ,  (
+		        select  x.DETL_CD_NM
+		          from  CCCMCDDMT x
+		         where  x.COMN_GRP_CD  = 'APB_038'
+		           and  x.COMN_DTLS_CD = a.PTNT_CHCL_DETL_DVSN_CD) as PTNT_CHCL_DETL_DVSN_NM
+		     ,  a.CHCL_PTAD_PUBL_YN	/*체크리스트원무공개여부*/
+		     ,  a.CHCL_CHCK_PUBL_YN	/*체크리스트심사공개여부*/
+		     ,  a.CHCL_MDCR_PUBL_YN	/*체크리스트진료공개여부*/
+		     ,  a.CHCL_CARE_PUBL_YN	/*체크리스트간호공개여부*/
+		     ,  a.CHCL_MDCR_SPRT_PUBL_YN	/*체크리스트진료지원공개여부*/
+		     ,  a.CHCL_DPRT_PUBL_YN	/*체크리스트부서공개여부*/
+		     ,  a.CHCL_PUBL_DPRT_CD	/*체크리스트공개부서코드*/
+		     ,  (select x.KORN_DPRT_NM from HZDEPTMMT x where x.DPRT_CD = a.CHCL_PUBL_DPRT_CD) as APLN_BLNG_DPRT_NM
+		     ,  a.CHCL_DLTN_ATHR_CD	/*체크리스트삭제권한코드*/
+		     ,  a.CHCL_DLTN_PSBL_DPRT_CD	/*체크리스트삭제가능부서코드*/
+		     ,  (select x.KORN_DPRT_NM from HZDEPTMMT x where x.DPRT_CD = a.CHCL_DLTN_PSBL_DPRT_CD) as ETC_DPRT_NM
+		     ,  a.FRST_RGSR_ID as FRST_RGSR_ID
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.FRST_RGSR_ID) as FRST_RGSR_NM
+		     ,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss') as FRST_RGST_DT  /*  입력일시 */
+		  from  APPTCECKT a
+		 where  1=1
+		   and  a.PTNO     = #{ptno}          /*  환자번호 */
+		        /* and  a.MEMOTYP   in (:lsFlag,'Z') */
+		   and  (
+		            (    #{prsgFlagNm} != 'K'
+		            and  a.PTNT_RFRC_CLSF_CD   in (#{prsgFlagNm}, 'Z')
+		            )
+		        or  (    #{prsgFlagNm}  = 'K'
+		            and  a.PTNT_RFRC_CLSF_CD   = 'K')
+		        )  /*  'K' 분기 */
+		   and  (
+		            (    #{cnclYn} = 'N'
+		            and  a.CNCL_DT is null
+		            )
+		        or  (    #{cnclYn} = 'Y'
+		            and '*' = '*'
+		            )
+		        )
+		   and  (
+		                nvl(a.CHCL_PTAD_PUBL_YN, 'N') = #{chclPtadPublYn}
+		            or  nvl(a.CHCL_CHCK_PUBL_YN, 'N') = #{chclChckPublYn}
+		            or  nvl(a.CHCL_MDCR_PUBL_YN, 'N') = #{chclMdcrPublYn}
+		            or  nvl(a.CHCL_CARE_PUBL_YN, 'N') = #{chclCarePublYn}
+		            or  nvl(a.CHCL_MDCR_SPRT_PUBL_YN, 'N') = #{chclMdcrSprtPublYn}
+		            or  (
+		                     nvl(a.CHCL_DPRT_PUBL_YN, 'N') = #{chclDprtPublYn}
+		                and  a.CHCL_PUBL_DPRT_CD = #{chclPublDprtCd}
+		                )
+		        )
+		 order
+		    by  decode(#{sortSqncCd}, 'A', a.PTNO
+		                                 , a.PTNT_CECK_SBJC_IMDG_CD) asc
+		     ,  a.LAST_UPDT_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptnoNm" column="PTNO_NM"/>
+		<result property="publDprtRangCd" column="PUBL_DPRT_RANG_CD"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+		<result property="ptntRfrcClsfCd" column="PTNT_RFRC_CLSF_CD"/>
+		<result property="ptntRfrcCtn" column="PTNT_RFRC_CTN"/>
+		<result property="cnclDt" column="CNCL_DT"/>
+		<result property="cncrId" column="CNCR_ID"/>
+		<result property="afiCncrNm" column="AFI_CNCR_NM"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="publStrtYmd" column="PUBL_STRT_YMD"/>
+		<result property="publFnshYmd" column="PUBL_FNSH_YMD"/>
+		<result property="ptntCeckSbjcImdgCd" column="PTNT_CECK_SBJC_IMDG_CD"/>
+		<result property="afiPtntCeckSbjcImdgNm" column="AFI_PTNT_CECK_SBJC_IMDG_NM"/>
+		<result property="ptntChclDetlDvsnCd" column="PTNT_CHCL_DETL_DVSN_CD"/>
+		<result property="ptntChclDetlDvsnNm" column="PTNT_CHCL_DETL_DVSN_NM"/>
+		<result property="chclPtadPublYn" column="CHCL_PTAD_PUBL_YN"/>
+		<result property="chclChckPublYn" column="CHCL_CHCK_PUBL_YN"/>
+		<result property="chclMdcrPublYn" column="CHCL_MDCR_PUBL_YN"/>
+		<result property="chclCarePublYn" column="CHCL_CARE_PUBL_YN"/>
+		<result property="chclMdcrSprtPublYn" column="CHCL_MDCR_SPRT_PUBL_YN"/>
+		<result property="chclDprtPublYn" column="CHCL_DPRT_PUBL_YN"/>
+		<result property="chclPublDprtCd" column="CHCL_PUBL_DPRT_CD"/>
+		<result property="aplnBlngDprtNm" column="APLN_BLNG_DPRT_NM"/>
+		<result property="chclDltnAthrCd" column="CHCL_DLTN_ATHR_CD"/>
+		<result property="chclDltnPsblDprtCd" column="CHCL_DLTN_PSBL_DPRT_CD"/>
+		<result property="etcDprtNm" column="ETC_DPRT_NM"/>
+		<result property="frstRgsrId" column="FRST_RGSR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby () 
+        Description :                                           apd_ptceckt_l44$S01_CHECK환자관리기간별조회DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby-result" useCache="true" flushCache="false">
+		<![CDATA[ 
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckPtntMngmPerdClby */
+		        a.PTNO as PTNO                                                    /*  환자번호 */
+		     ,  b.PTNT_NM as PTNO_NM                                                 /*  환자명   */
+		     ,  a.PUBL_DPRT_RANG_CD as PUBL_DPRT_RANG_CD                                        /*  부서범위 */
+		     ,  (
+		        select  nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		          from  CCCMCDDMT F_A
+		             ,  CCCMCDDLT F_B
+		         where  F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		           and  F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		           and  F_A.COMN_GRP_CD  = 'AP035'
+		           and  F_A.COMN_DTLS_CD = a.PUBL_DPRT_RANG_CD
+		           and  F_B.LNGG_CD(+)   = nvl(null, '*')) as DETL_CD_NM_1                /*  부서범위명 */
+		     ,  a.PTNT_RFRC_CLSF_CD as PTNT_RFRC_CLSF_CD                                       /*  메모구분 */
+		     ,  a.PTNT_RFRC_CTN as PTNT_RFRC_CTN                                           /*  체크사항 */
+		     ,  to_char(a.CNCL_DT, 'yyyymmddhh24mi') as CNCL_DT                      /*  취소일시 */
+		     ,  a.CNCR_ID as CNCR_ID                                                 /*  취소자ID */
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.CNCR_ID) as AFI_CNCR_NM                          /*  취소자명 */
+		     ,  a.LAST_UPDR_ID as LAST_UPDR_ID                                            /*  수정자   */
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.LAST_UPDR_ID) as LAST_UPDR_NM                     /*  수정자명 */
+		     ,  to_char(a.LAST_UPDT_DT, 'yyyymmddhh24mi') as LAST_UPDT_DT                 /*  수정일시 */
+		     ,  to_char(a.PUBL_STRT_YMD, 'yyyymmdd') as PUBL_STRT_YMD                    /*  시작일시 */
+		     ,  to_char(a.PUBL_FNSH_YMD, 'yyyymmdd') as PUBL_FNSH_YMD                    /*  종료일시 */
+		     ,  a.PTNT_CECK_SBJC_IMDG_CD as PTNT_CECK_SBJC_IMDG_CD                        /*  환자체크사항중요도코드*/
+		     ,  (
+		        select  nvl(F_B.DETL_CD_NM, F_A.DETL_CD_NM)
+		          from  CCCMCDDMT F_A
+		             ,  CCCMCDDLT F_B
+		         where  F_A.COMN_GRP_CD  = F_B.COMN_GRP_CD(+)
+		           and  F_A.COMN_DTLS_CD = F_B.COMN_DTLS_CD(+)
+		           and  F_A.COMN_GRP_CD  = 'APB_021'
+		           and  F_A.COMN_DTLS_CD = a.PTNT_CECK_SBJC_IMDG_CD
+		           and  F_B.LNGG_CD(+)   = nvl(null, '*'))  as AFI_PTNT_CECK_SBJC_IMDG_NM     /*  환자체크사항중요도코드명*/
+		     ,  a.PTNT_CHCL_DETL_DVSN_CD  /*환자체크리스트상세구분코드(APB_038)*/
+		     ,  (
+		        select  x.DETL_CD_NM
+		          from  CCCMCDDMT x
+		         where  x.COMN_GRP_CD  = 'APB_038'
+		           and  x.COMN_DTLS_CD = a.PTNT_CHCL_DETL_DVSN_CD) as PTNT_CHCL_DETL_DVSN_NM
+		     ,  a.CHCL_PTAD_PUBL_YN /*체크리스트원무공개여부*/
+		     ,  a.CHCL_CHCK_PUBL_YN /*체크리스트심사공개여부*/
+		     ,  a.CHCL_MDCR_PUBL_YN /*체크리스트진료공개여부*/
+		     ,  a.CHCL_CARE_PUBL_YN /*체크리스트간호공개여부*/
+		     ,  a.CHCL_MDCR_SPRT_PUBL_YN  /*체크리스트진료지원공개여부*/
+		     ,  a.CHCL_DPRT_PUBL_YN /*체크리스트부서공개여부*/
+		     ,  a.CHCL_PUBL_DPRT_CD /*체크리스트공개부서코드*/
+		     ,  (select x.KORN_DPRT_NM from HZDEPTMMT x where x.DPRT_CD = a.CHCL_PUBL_DPRT_CD) as APLN_BLNG_DPRT_NM
+		     ,  a.CHCL_DLTN_ATHR_CD /*체크리스트삭제권한코드*/
+		     ,  a.CHCL_DLTN_PSBL_DPRT_CD  /*체크리스트삭제가능부서코드*/
+		     ,  (select x.KORN_DPRT_NM from HZDEPTMMT x where x.DPRT_CD = a.CHCL_DLTN_PSBL_DPRT_CD) as ETC_DPRT_NM
+		     ,  a.FRST_RGSR_ID as FRST_RGSR_ID
+		     ,  (select x.USER_NM from CCUSRDPHT x where x.USER_ID = a.FRST_RGSR_ID) as FRST_RGSR_NM
+		     ,  to_char(a.FRST_RGST_DT, 'yyyymmddhh24miss') as FRST_RGST_DT
+		  from
+		        APPTCECKT a
+		     ,  APPTPTNTT b
+		 where  1=1
+		   and  a.LAST_UPDT_DT between to_date(#{inqrStrtDt}, 'yyyymmdd')
+			                       and to_date(#{inqrFnshDt}, 'yyyymmdd') + .99999
+		   and  a.PTNT_RFRC_CLSF_CD in ( nvl(#{prsgFlagNm}, a.PTNT_RFRC_CLSF_CD), 'Z' ) /*  메모구분 */
+		   and  a.PTNO               = nvl(#{ptno}, a.PTNO)                                /*  환자번호 */
+		   and  a.LAST_UPDR_ID       = nvl(#{lastUpdrId}, a.LAST_UPDR_ID)                /*  입력자ID */
+		   and  b.PTNO               = a.PTNO
+		   and  (
+		                nvl(a.CHCL_PTAD_PUBL_YN, 'N') = #{chclPtadPublYn}
+		            or  nvl(a.CHCL_CHCK_PUBL_YN, 'N') = #{chclChckPublYn}
+		            or  nvl(a.CHCL_MDCR_PUBL_YN, 'N') = #{chclMdcrPublYn}
+		            or  nvl(a.CHCL_CARE_PUBL_YN, 'N') = #{chclCarePublYn}
+		            or  nvl(a.CHCL_MDCR_SPRT_PUBL_YN, 'N') = #{chclMdcrSprtPublYn}
+		            or  (
+		                     nvl(a.CHCL_DPRT_PUBL_YN, 'N') = #{chclDprtPublYn}
+		                and  a.CHCL_PUBL_DPRT_CD = #{chclPublDprtCd}
+		                )
+		        )
+		 order
+		    by  a.PTNT_CECK_SBJC_IMDG_CD asc
+		     ,  a.LAST_UPDT_DT desc
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntCeckSbjcSno" column="PTNT_CECK_SBJC_SNO"/>
+		<result property="ptntRfrcClsfCd" column="PTNT_RFRC_CLSF_CD"/>
+		<result property="publDprtRangCd" column="PUBL_DPRT_RANG_CD"/>
+		<result property="ptntCeckSbjcImdgCd" column="PTNT_CECK_SBJC_IMDG_CD"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="lastUpdrId" column="LAST_UPDR_ID"/>
+		<result property="ptntRfrcCtn" column="PTNT_RFRC_CTN"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="publStrtYmd" column="PUBL_STRT_YMD"/>
+		<result property="publFnshYmd" column="PUBL_FNSH_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc (체크리스트조회) 
+        Description :                                           apd_ptceckt_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-listCeckSbjc */
+		     a.PTNO
+		  ,  a.PTNT_CECK_SBJC_SNO  
+		  ,  PTNT_RFRC_CLSF_CD                         PTNT_RFRC_CLSF_CD  
+		  ,  PUBL_DPRT_RANG_CD                        PUBL_DPRT_RANG_CD 
+		  ,  decode(PTNT_CECK_SBJC_IMDG_CD, '1', '1', '2', '2', '3', '3', '2') as PTNT_CECK_SBJC_IMDG_CD
+		  ,  to_char(a.LAST_UPDT_DT, 'yyyymmdd')    LAST_UPDT_DT 
+		  ,  a.LAST_UPDR_ID                           LAST_UPDR_ID 
+		  ,  PTNT_RFRC_CTN                            PTNT_RFRC_CTN  
+		  ,  b.USER_NM                                USER_NM 
+		  ,  to_char(PUBL_STRT_YMD, 'yyyymmdd') PUBL_STRT_YMD 
+		  ,  to_char(PUBL_FNSH_YMD, 'yyyymmdd')   PUBL_FNSH_YMD 
+		 from
+		     APPTCECKT a  
+		  ,  CCUSRDPHT b
+		where  a.PTNO     =  #{ptno}
+		  and  (
+		      (
+		      ( PUBL_DPRT_RANG_CD  in ('0', nvl(#{publDprtRangCd}, PUBL_DPRT_RANG_CD) ) ) 
+		      and
+		      (nvl(#{publDprtRangCd}, '1')  != '2')
+		      )
+		      or
+		      ( (#{publDprtRangCd} ='2')
+		       and
+		      ( PUBL_DPRT_RANG_CD = #{publDprtRangCd})
+		      )               
+		     )
+		  and  PTNT_RFRC_CLSF_CD   in  ('C', 'Z')
+		  and  a.CNCL_DT  is  null
+		  and  trunc(sysdate) between PUBL_STRT_YMD and PUBL_FNSH_YMD  
+		  and  b.USER_ID(+) = a.LAST_UPDR_ID
+		order by PTNT_CECK_SBJC_IMDG_CD, a.LAST_UPDT_DT
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntRfrcCtn" column="PTNT_RFRC_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn () 
+        Description :                                           apd_ptceckt_s01$S01_메모및보안여부조회 dam
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneMemoAndScryYn */
+				   a.PTNO as PTNO
+				,  a.PTNT_RFRC_CTN as PTNT_RFRC_CTN
+			 from  APPTCECKT a
+			where  PTNO   = #{ptno}
+			  and  PTNT_RFRC_CLSF_CD = #{ptntRfrcClsfCd}
+			  and  CNCL_DT is null
+			  and  rownum = 1
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO">
+	
+		<result property="wodvCd" column="WODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-selectOneDummy */
+		select '' as WODV_CD
+		from dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCnclAhedAdmsYn (원무 체크사항 취소 By 선등록) 
+        Description :                                           원무 체크사항 취소 By 선등록
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCnclAhedAdmsYn"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbCeckPtntMngmDVO"  >
+		<![CDATA[
+		   update /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbCeckPtntMngmDAO-updateCeckPtntCnclAhedAdmsYn */
+		    APPTCECKT a
+			  set
+				   a.CNCL_DT = sysdate
+				,  a.CNCR_ID           = #{gvUserId}
+				,  LAST_UPDR_ID        = #{gvUserId} /*  취소일때는 id가 바뀌지 않아야 함. */
+				,  LAST_UPDT_IP        = #{gvUserIp}
+				,  LAST_UPDT_DT        = sysdate
+				,  FRST_RGST_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  FRST_RGST_SRVR_PRGM_ID   = #{gvSrvrPrgmId}
+			where  1=1
+		      and  a.PTNO                = #{ptno}
+			  and  a.PTNT_RFRC_CTN 		 = #{ptntRfrcCtn}
+		      and  a.PUBL_STRT_YMD 		>= TO_DATE(#{admsPrrnYmd},'yyyy-mm-dd')
+		      and  a.CNCL_DT            is null 
+		]]>
+	</update>
+
+</mapper>

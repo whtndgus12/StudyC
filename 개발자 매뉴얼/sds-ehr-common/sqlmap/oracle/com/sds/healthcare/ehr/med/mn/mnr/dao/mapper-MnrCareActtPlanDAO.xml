@@ -1,0 +1,902 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnrCareActtPlanDAO_sql.xml 
+    Description : MnrCareActtPlanDAO 클래스
+-->
+<mapper namespace="MnrCareActtPlanDAO">
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtNnenPlan () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtNnenPlan"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		delete  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtNnenPlan_[간호활동] 세부활동 삭제시 미시행 plan 삭제 */
+		   from  MNWRCPNET
+		where  PTNO           =  #{ptno}                       /*  환자번호 */
+		 and  MDRP_NO        =  #{mdrpNo}
+		 and  RGCA_GRP_CD    =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+		 and  RGCA_ITEM_CD   =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+		 and  RGCA_ITEM_SNO  =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+		 and  RGCA_BSWR_CD   =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+		 and  RGCA_BSWR_SNO  =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+		 and  RGCA_ENFR_STTS_CD  = 'P'
+		]]>
+	</delete>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtPlan0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtPlan0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   delete  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-deleteCareActtPlan0001_환자정규간호활동시행_삭제 */
+			 from  MNWRCPNET
+			where  PTNO           =  #{ptno}                       /*  환자번호 */
+			  and  MDRP_NO        =  #{mdrpNo}
+			   /*        and  WARD_CD        =  :mns_wrcpnet_061[0].ward_cd                    /*  병동코드 */
+			  and  RGCA_GRP_CD    =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  RGCA_ITEM_CD   =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  RGCA_ITEM_SNO  =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  RGCA_BSWR_CD   =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			  and  RGCA_BSWR_SNO  =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			  and  RGCA_ENFR_RNO  =  #{rgcaEnfrRno}
+		]]>
+	</delete>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   insert  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0001_환자정규간호활동시행_기본저장 */
+			 into  MNWRCPNET
+				   (
+				   PTNO                       /*  환자번호 */
+				,  MDRP_NO
+				,  WARD_CD                    /*  병동코드 */
+				,  RGCA_GRP_CD                /*  정규간호활동그룹코드 */
+				,  RGCA_ITEM_CD               /*  정규간호활동항목코드 */
+				,  RGCA_ITEM_SNO              /*  정규간호활동항목일련번호 */
+				,  RGCA_BSWR_CD               /*  정규간호활동업무코드 */
+				,  RGCA_BSWR_SNO              /*  정규간호활동업무일련번호 */
+				,  RGCA_ENFR_RNO              /*  정규간호활동시행회차 */
+				,  RGCA_ENFR_STTS_CD          /*  정규간호활동시행상태코드 */
+				,  RGCA_ENFR_PRRN_DT          /*  정규간호활동시행예정일시 */
+				,  WRKN_DVSN_CD               /*  근무구분코드 */
+				,  DLTN_YN                    /*  삭제여부 */
+				,  FRST_RGSR_ID                             /*  최초등록자ID */
+				,  FRST_RGST_IP                             /*  최초등록IP */
+				,  FRST_RGST_DT                             /*  최초등록일시 */
+				,  FRST_RGST_CLNT_PRGM_ID                        /*  최초등록SMC클라이언트프로그램ID */
+				,  FRST_RGST_SRVR_PRGM_ID                        /*  최초등록SMC서버프로그램ID */
+				,  LAST_UPDR_ID                             /*  최종수정자ID */
+				,  LAST_UPDT_IP                             /*  최종수정IP */
+				,  LAST_UPDT_DT                             /*  최종수정일시 */
+				,  LAST_UPDT_CLNT_PRGM_ID                        /*  최종수정SMC클라이언트프로그램ID */
+				,  LAST_UPDT_SRVR_PRGM_ID                        /*  최종수정SMC서버프로그램ID */
+				   )
+		   values
+				   (
+				   #{ptno}                       /*  환자번호 */
+				,  #{mdrpNo}
+				,  #{wardCd}                    /*  병동코드 */
+				,  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+				,  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+				,  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+				,  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+				,  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+				,  (select  nvl(max(RGCA_ENFR_RNO), 0) + 1
+					  from  MNWRCPNET
+					 where 1=1
+			   /*                 and  PTNO          = :mns_wrcpnet_060[0].ptno */
+					   and  MDRP_NO       = #{mdrpNo}
+			   /*                 and  WARD_CD       = :mns_wrcpnet_060[0].ward_cd */
+					   and  RGCA_GRP_CD   = #{rgcaGrpCd}
+					   and  RGCA_ITEM_CD  = #{rgcaItemCd}
+					   and  RGCA_ITEM_SNO = #{rgcaItemSno}
+					   and  RGCA_BSWR_CD  = #{rgcaBswrCd}
+					   and  RGCA_BSWR_SNO = #{rgcaBswrSno}
+				   )
+				,  #{rgcaEnfrSttsCd}                              /*  정규간호활동시행상태코드 */
+				,  to_date(#{rgcaEnfrPrrnDt}, 'YYYYMMDDHH24MISS') /*  정규간호활동시행예정일시 */
+				,  #{wrknDvsnCd}                                   /*  근무구분코드 */
+				,  'N'
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				   )
+			]]>
+		  
+	</insert>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0002 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0002"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		insert  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-insertCareActtPlan0002_환자정규간호활동시행_실행정보 저장_추가액팅 */
+			 into  MNWRCPNET
+				   (
+				   PTNO                       /*  환자번호 */
+				,  MDRP_NO
+				,  WARD_CD                    /*  병동코드 */
+				,  RGCA_GRP_CD                /*  정규간호활동그룹코드 */
+				,  RGCA_ITEM_CD               /*  정규간호활동항목코드 */
+				,  RGCA_ITEM_SNO              /*  정규간호활동항목일련번호 */
+				,  RGCA_BSWR_CD               /*  정규간호활동업무코드 */
+				,  RGCA_BSWR_SNO              /*  정규간호활동업무일련번호 */
+				,  RGCA_ENFR_RNO              /*  정규간호활동시행회차 */
+				,  RGCA_ENFR_STTS_CD          /*  정규간호활동시행상태코드 */
+				,  RGCA_ENFR_PRRN_DT          /*  정규간호활동시행예정일시 */
+				,  RGCA_ENFR_DT               /*  정규간호활동시행일시 */
+				,  ENFR_NURS_ID               /*  시행간호사ID */
+				,  ENFR_NURS_NM               /*  시행간호사명 */
+				,  WRKN_DVSN_CD               /*  근무구분코드 */
+				,  ENDR_ID                    /*  시행의사ID */
+				,  ENDR_NM                    /*  시행의사명 */
+				,  RGCA_ENFR_RMRK_CTN         /*  정규간호활동시행비고내용 */
+				,  DLTN_YN                    /*  삭제여부 */
+				,  FRST_RGSR_ID                             /*  최초등록자ID */
+				,  FRST_RGST_IP                             /*  최초등록IP */
+				,  FRST_RGST_DT                             /*  최초등록일시 */
+				,  FRST_RGST_CLNT_PRGM_ID                        /*  최초등록SMC클라이언트프로그램ID */
+				,  FRST_RGST_SRVR_PRGM_ID                        /*  최초등록SMC서버프로그램ID */
+				,  LAST_UPDR_ID                             /*  최종수정자ID */
+				,  LAST_UPDT_IP                             /*  최종수정IP */
+				,  LAST_UPDT_DT                             /*  최종수정일시 */
+				,  LAST_UPDT_CLNT_PRGM_ID                        /*  최종수정SMC클라이언트프로그램ID */
+				,  LAST_UPDT_SRVR_PRGM_ID                        /*  최종수정SMC서버프로그램ID */
+				   )
+		   values
+				   (
+				   #{ptno}                       /*  환자번호 */
+				,  #{mdrpNo}
+				,  #{wardCd}                    /*  병동코드 */
+				,  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+				,  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+				,  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+				,  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+				,  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+				,  (select  nvl(max(RGCA_ENFR_RNO), 0) + 1
+					  from  MNWRCPNET
+					 where  PTNO          = #{ptno}
+					   and  MDRP_NO       = #{mdrpNo}
+			   /*                 and  WARD_CD       = :mns_wrcpnet_061[0].ward_cd */
+					   and  RGCA_GRP_CD   = #{rgcaGrpCd}
+					   and  RGCA_ITEM_CD  = #{rgcaItemCd}
+					   and  RGCA_ITEM_SNO = #{rgcaItemSno}
+					   and  RGCA_BSWR_CD  = #{rgcaBswrCd}
+					   and  RGCA_BSWR_SNO = #{rgcaBswrSno}
+				   )
+				,  #{rgcaEnfrSttsCd}                              /*  정규간호활동시행상태코드 */
+				,  trunc(to_date(#{rgcaEnfrDt}, 'YYYYMMDDHH24MI')) /*  정규간호활동시행예정일시 */
+				,  to_date(#{rgcaEnfrDt}, 'YYYYMMDDHH24MI')        /*  정규간호활동시행일시 */
+				,  #{enfrNursId}
+				,  #{enfrNursNm}
+				,  #{wrknDvsnCd}                                   /*  근무구분코드 */
+				,  #{endrId}
+				,  #{endrNm}
+				,  #{rgcaEnfrRmrkCtn}
+				,  'N'
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}    
+				,  #{gvUserIp}    
+				,  sysdate        
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				   )
+			]]>
+		  
+	</insert>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+	
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrCd" column="ORDR_CD"/>
+		<result property="ordrNm" column="ORDR_NM"/>
+		<result property="actnPrrnDt" column="ACTN_PRRN_DT"/>
+		<result property="wrknDvsnCd" column="WRKN_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listNnenErrmPlan0001_응급실 미실시정규간호활동 다건조회 */
+				   to_char(pd.RGCA_ENFR_PRRN_DT, 'YYYYMMDD') as ORDR_YMD
+			   		 ,  pc.RGCA_BSWR_CD as ORDR_CD
+			   		 ,  pc.RGCA_BSWR_NM as ORDR_NM
+				,  '' as ACTN_PRRN_DT
+				,  pd.WRKN_DVSN_CD as WRKN_DVSN_CD
+			 from  MNWRCPNIT pi
+				,  MNWRCGRPT mg
+				,  MNWRCPNAT pb
+				,  MNWRCPNET pd
+				,  MNWRCACMT pc
+			where
+				   pi.PTNO       = #{ptno}
+			  and  trunc(pd.RGCA_ENFR_PRRN_DT) = to_date(substr(#{ordrYmd},1,8),'YYYYMMDD')
+			  and  nvl(pi.DLTN_YN, 'N') = 'N'
+			  and  mg.RGCA_GRP_CD   = pi.RGCA_GRP_CD
+			  and  pb.PTNO          = pi.PTNO
+			  and  pb.MDRP_NO       = pi.MDRP_NO
+			  and  pb.WARD_CD       = pi.WARD_CD
+			  and  pb.RGCA_GRP_CD   = pi.RGCA_GRP_CD
+			  and  pb.RGCA_ITEM_CD  = pi.RGCA_ITEM_CD
+			  and  pb.RGCA_ITEM_SNO = pi.RGCA_ITEM_SNO
+			  and  nvl(pb.DLTN_YN, 'N') = 'N'
+			  and  pd.PTNO          = pb.PTNO
+			  and  pd.MDRP_NO       = pb.MDRP_NO
+			  and  pd.WARD_CD       = pb.WARD_CD
+			  and  pd.RGCA_GRP_CD   = pb.RGCA_GRP_CD
+			  and  pd.RGCA_ITEM_CD  = pb.RGCA_ITEM_CD
+			  and  pd.RGCA_ITEM_SNO = pb.RGCA_ITEM_SNO
+			  and  pd.RGCA_BSWR_CD  = pb.RGCA_BSWR_CD
+			  and  pd.RGCA_BSWR_SNO = pb.RGCA_BSWR_SNO
+			  and  pd.RGCA_ENFR_STTS_CD = 'P'
+			  and  pd.WRKN_DVSN_CD is not null
+			  and  nvl(pd.DLTN_YN, 'N') = 'N'
+			  and  pd.RGCA_BSWR_CD = pc.RGCA_BSWR_CD
+			  and  pd.WRKN_DVSN_CD = decode(#{strtHm}, '0600', 'N', '1400', 'D', '2200', 'E', '0000', pd.WRKN_DVSN_CD)
+			order
+			   by decode(pd.WRKN_DVSN_CD, 'N', 1
+			   								 , 'D', 2
+			   								 , 'E', 3 )
+			]]>
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="ptno" column="PTNO"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="rgcaGrpCd" column="RGCA_GRP_CD"/>
+		<result property="rgcaGrpNm" column="RGCA_GRP_NM"/>
+		<result property="rgcaItemCd" column="RGCA_ITEM_CD"/>
+		<result property="rgcaItemNm" column="RGCA_ITEM_NM"/>
+		<result property="rgcaSttsCd" column="RGCA_STTS_CD"/>
+		<result property="rgcaItemSno" column="RGCA_ITEM_SNO"/>
+		<result property="rgcaOptnValeVl2" column="RGCA_OPTN_VALE_VL_2"/>
+		<result property="rgcaOptnValeVl3" column="RGCA_OPTN_VALE_VL_3"/>
+		<result property="rgcaOptnValeVl4" column="RGCA_OPTN_VALE_VL_4"/>
+		<result property="rgcaBswrCd" column="RGCA_BSWR_CD"/>
+		<result property="rgcaBswrNm" column="RGCA_BSWR_NM"/>
+		<result property="rgcaBswrSno" column="RGCA_BSWR_SNO"/>
+		<result property="rcrdOptnDvsnCd" column="RCRD_OPTN_DVSN_CD"/>
+		<result property="rgcaEnfrRno" column="RGCA_ENFR_RNO"/>
+		<result property="rgcaEnfrSttsCd" column="RGCA_ENFR_STTS_CD"/>
+		<result property="wrknDvsnCd" column="WRKN_DVSN_CD"/>
+		<result property="rgcaEnfrPrrnDt" column="RGCA_ENFR_PRRN_DT"/>
+		<result property="rgcaEnfrDt" column="RGCA_ENFR_DT"/>
+		<result property="rgcaEnfrUpdtDt" column="RGCA_ENFR_UPDT_DT"/>
+		<result property="enfrNursId" column="ENFR_NURS_ID"/>
+		<result property="enfrNursNm" column="ENFR_NURS_NM"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="endrNm" column="ENDR_NM"/>
+		<result property="rgcaEnfrRmrkCtn" column="RGCA_ENFR_RMRK_CTN"/>
+		<result property="asttDlgtYn" column="ASTT_DLGT_YN"/>
+		<result property="sortSqnc1" column="SORT_SQNC_1"/>
+		<result property="sortSqnc2" column="SORT_SQNC_2"/>
+		<result property="sortSqnc3" column="SORT_SQNC_3"/>
+		<result property="finsYn" column="FINS_YN"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+		<result property="acttGrpDvsnCd" column="ACTT_GRP_DVSN_CD"/>
+		<result property="rgcaOptnValeVl5" column="RGCA_OPTN_VALE_VL_5"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ leading(pi pb pd) use_nl(pd) use_hash(pi count) com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-listCareActtPlan0001_환자정규간호활동_시행_기본조회 +*/
+				   pi.PTNO as PTNO                                                   /*  환자번호 */
+				,  pi.MDRP_NO as MDRP_NO
+				,  pi.WARD_CD as WARD_CD                                                /*  병동코드 */
+				,  pi.RGCA_GRP_CD as RGCA_GRP_CD                                            /*  정규간호활동그룹코드 */
+				,  mg.RGCA_GRP_NM as RGCA_GRP_NM
+				,  pi.RGCA_ITEM_CD as RGCA_ITEM_CD                                           /*  정규간호활동항목코드 */
+				,  mi.RGCA_ITEM_NM as RGCA_ITEM_NM
+				,  pi.RGCA_STTS_CD as RGCA_STTS_CD                                           /*  정규간호활동상태코드 */
+				,  pi.RGCA_ITEM_SNO as RGCA_ITEM_SNO                                          /*  정규간호활동항목일련번호 */
+				,  (select  pov.RGCA_OPTN_VALE_VL
+					  from  MNWRCPOVT pov
+					 where  1=1
+			   /*                 and pov.PTNO               = pi.PTNO */
+					   and  pov.MDRP_NO            = pi.MDRP_NO
+			   /*                 and  pov.WARD_CD            = pi.WARD_CD */
+					   and  pov.RGCA_GRP_CD        = pi.RGCA_GRP_CD
+					   and  pov.RGCA_ITEM_CD       = pi.RGCA_ITEM_CD
+					   and  pov.RGCA_ITEM_SNO      = pi.RGCA_ITEM_SNO
+					   and  pov.RGCA_OPTN_CD       = decode(pi.RGCA_GRP_CD||pi.RGCA_ITEM_CD, '1517', '18', '22')   /* 욕창인 경우 발생위치(상세), 나머지 삽입위치 */
+					   and  nvl(pov.DLTN_YN, 'N')  = 'N'             /*  삭제 되지 않은 건 */
+					   and  rownum = 1
+				   ) as RGCA_OPTN_VALE_VL_2
+				,  (select  pov.RGCA_OPTN_VALE_VL
+					  from  MNWRCPOVT pov
+					 where 1=1
+			   /*                 and  pov.PTNO               = pi.PTNO */
+					   and  pov.MDRP_NO            = pi.MDRP_NO
+			   /*                 and  pov.WARD_CD            = pi.WARD_CD */
+					   and  pov.RGCA_GRP_CD        = pi.RGCA_GRP_CD
+					   and  pov.RGCA_ITEM_CD       = pi.RGCA_ITEM_CD
+					   and  pov.RGCA_ITEM_SNO      = pi.RGCA_ITEM_SNO
+					   and  pov.RGCA_OPTN_CD       = decode(pi.RGCA_GRP_CD||pi.RGCA_ITEM_CD, '1517', '19', '25')  /* 욕창인 경우 발생위치(기타), 나머지 삽입위치(상세) */
+					   and  nvl(pov.DLTN_YN, 'N')  = 'N'             /*  삭제 되지 않은 건 */
+					   and  rownum = 1
+				   ) as RGCA_OPTN_VALE_VL_3
+				,  (select  pov.RGCA_OPTN_VALE_VL
+					  from  MNWRCPOVT pov
+					 where  1=1
+			   /*                 and pov.PTNO               = pi.PTNO */
+					   and  pov.MDRP_NO            = pi.MDRP_NO
+			   /*                 and  pov.WARD_CD            = pi.WARD_CD */
+					   and  pov.RGCA_GRP_CD        = pi.RGCA_GRP_CD
+					   and  pov.RGCA_ITEM_CD       = pi.RGCA_ITEM_CD
+					   and  pov.RGCA_ITEM_SNO      = pi.RGCA_ITEM_SNO
+					   and  pov.RGCA_OPTN_CD       = '27'                  /*  삽입위치(기타) */
+					   and  nvl(pov.DLTN_YN, 'N')  = 'N'             /*  삭제 되지 않은 건 */
+					   and  rownum = 1
+				   ) as RGCA_OPTN_VALE_VL_4
+				,  pb.RGCA_BSWR_CD as RGCA_BSWR_CD                                           /*  정규간호활동업무코드 */
+				,  (select mb.RGCA_BSWR_NM
+					  from MNWRCACMT mb
+					 where mb.RGCA_BSWR_CD = pb.RGCA_BSWR_CD
+				   ) as RGCA_BSWR_NM
+				,  pb.RGCA_BSWR_SNO as RGCA_BSWR_SNO              /*  정규간호활동업무일련번호 */
+				,  pb.RCRD_OPTN_DVSN_CD as RCRD_OPTN_DVSN_CD          /*  기록옵션구분코드 */
+				,  pd.RGCA_ENFR_RNO as RGCA_ENFR_RNO              /*  정규간호활동시행회차 */
+				,  pd.RGCA_ENFR_STTS_CD as RGCA_ENFR_STTS_CD          /*  정규간호활동시행상태코드 */
+				,  pd.WRKN_DVSN_CD as WRKN_DVSN_CD               /*  근무구분코드 */
+				,  to_char(pd.RGCA_ENFR_PRRN_DT, 'YYYYMMDD') as RGCA_ENFR_PRRN_DT /*  정규간호활동시행예정일시 */
+				,  to_char(pd.RGCA_ENFR_DT     , 'YYYYMMDDHH24MISS') as RGCA_ENFR_DT      /*  정규간호활동시행일시 */
+				,  to_char(pd.RGCA_ENFR_UPDT_DT, 'YYYYMMDDHH24MISS') as RGCA_ENFR_UPDT_DT /*  정규간호활동시행수정일시 */
+				,  pd.ENFR_NURS_ID as ENFR_NURS_ID               /*  시행간호사ID */
+				,  pd.ENFR_NURS_NM as ENFR_NURS_NM               /*  시행간호사명 */
+				,  pd.ENDR_ID as ENDR_ID                    /*  시행의사ID */
+				,  pd.ENDR_NM as ENDR_NM                    /*  시행의사명 */
+				,  pd.RGCA_ENFR_RMRK_CTN as RGCA_ENFR_RMRK_CTN         /*  정규간호활동시행비고내용 */
+				,  pb.ASTT_DLGT_YN as ASTT_DLGT_YN
+				,  mg.SORT_SQNC as SORT_SQNC_1
+				,  mi.SORT_SQNC as SORT_SQNC_2
+				,  pb.SORT_SQNC as SORT_SQNC_3
+				 ,  case when count.NUM > 0 then 'N' else 'Y'end as FINS_YN
+				,  nvl(pb.DLTN_YN, 'N') as DLTN_YN    /* 세부활동 삭제여부*/
+				,  mg.ACTT_GRP_DVSN_CD as ACTT_GRP_DVSN_CD
+				,  (select  pov.RGCA_OPTN_VALE_VL
+					  from  MNWRCPOVT pov
+					 where  1=1
+					   and  pov.MDRP_NO            = pi.MDRP_NO
+					   and  pov.RGCA_GRP_CD        = pi.RGCA_GRP_CD
+					   and  pov.RGCA_ITEM_CD       = pi.RGCA_ITEM_CD
+					   and  pov.RGCA_ITEM_SNO      = pi.RGCA_ITEM_SNO
+					   and  pov.RGCA_OPTN_CD       = '17'                  /*  사이즈(Fr) */
+					   and  nvl(pov.DLTN_YN, 'N')  = 'N'             /*  삭제 되지 않은 건 */
+					   and  rownum = 1
+				   ) as RGCA_OPTN_VALE_VL_5
+			 from  MNWRCPNIT pi
+				,  MNWRCGRPT mg
+				,  MNWRCITMT mi
+				,  MNWRCPNAT pb
+				,  MNWRCPNET pd
+				,  (select
+						max(RGCA_GRP_CD  ) as RGCA_GRP_CD
+					  , max(RGCA_ITEM_CD ) as RGCA_ITEM_CD
+					  , max(RGCA_ITEM_SNO) as RGCA_ITEM_SNO
+					  , max(RGCA_BSWR_CD ) as RGCA_BSWR_CD
+					  , max(RGCA_BSWR_SNO) as RGCA_BSWR_SNO
+					  , count(1)   as NUM
+					from  MNWRCPNET pd2
+					   where 1=1
+						   and  pd2.PTNO          = #{ptno}
+						   and  pd2.MDRP_NO       = #{mdrpNo}
+						   and  trunc(pd2.RGCA_ENFR_PRRN_DT) = to_date(#{inqrYmd}, 'YYYYMMDD')
+						   and  nvl(pd2.DLTN_YN, 'N') = 'N'             /*  삭제 되지 않은 건 */
+						   and  RGCA_ENFR_STTS_CD = 'P'    /* 시행예정*/
+					group by RGCA_GRP_CD, RGCA_ITEM_CD, RGCA_ITEM_SNO,RGCA_BSWR_CD, RGCA_BSWR_SNO
+					) count
+			where  1 = 1
+			   /*        and  pi.PTNO          = :mns_wrcpnet_056[0].ptno                                 /*  환자번호 */
+			  and  pi.MDRP_NO       = #{mdrpNo}
+			   /*        and  pi.WARD_CD       = :mns_wrcpnet_056[0].ward_cd */
+			  and  nvl(pi.DLTN_YN, 'N') = 'N'             /*  삭제 되지 않은 건 */
+			  and  mg.RGCA_GRP_CD   = pi.RGCA_GRP_CD
+			  and  mi.RGCA_GRP_CD = pi.RGCA_GRP_CD
+			  and  mi.RGCA_ITEM_CD  = pi.RGCA_ITEM_CD
+			   /*        and  pb.PTNO          = pi.PTNO */
+			  and  pb.MDRP_NO       = pi.MDRP_NO
+			   /*        and  pb.WARD_CD       = pi.WARD_CD */
+			  and  pb.RGCA_GRP_CD   = pi.RGCA_GRP_CD
+			  and  pb.RGCA_ITEM_CD  = pi.RGCA_ITEM_CD
+			  and  pb.RGCA_ITEM_SNO = pi.RGCA_ITEM_SNO
+			   /*        and  nvl(pb.DLTN_YN, 'N') = 'N'             /*  삭제 되지 않은 건 */
+			  and  pd.PTNO          = pb.PTNO
+			  and  pd.MDRP_NO       = pb.MDRP_NO
+			   /*        and  pd.WARD_CD       = pb.WARD_CD */
+			  and  pd.RGCA_GRP_CD   = pb.RGCA_GRP_CD
+			  and  pd.RGCA_ITEM_CD  = pb.RGCA_ITEM_CD
+			  and  pd.RGCA_ITEM_SNO = pb.RGCA_ITEM_SNO
+			  and  pd.RGCA_BSWR_CD  = pb.RGCA_BSWR_CD
+			  and  pd.RGCA_BSWR_SNO = pb.RGCA_BSWR_SNO
+			  and  trunc(pd.RGCA_ENFR_PRRN_DT) = to_date(#{inqrYmd}, 'YYYYMMDD')
+			  and  nvl(pd.DLTN_YN, 'N') = 'N'             /*  삭제 되지 않은 건 */
+			  and  ((nvl(pb.DLTN_YN, 'N') = 'Y' and RGCA_ENFR_STTS_CD = 'A')
+							or (nvl(pb.DLTN_YN, 'N') = 'N'))
+			  and  count.RGCA_GRP_CD  (+) = pb.RGCA_GRP_CD
+			  and  count.RGCA_ITEM_CD (+) = pb.RGCA_ITEM_CD
+			  and  count.RGCA_ITEM_SNO(+) = pb.RGCA_ITEM_SNO
+			  and  count.RGCA_BSWR_CD (+) = pb.RGCA_BSWR_CD
+			  and  count.RGCA_BSWR_SNO(+) = pb.RGCA_BSWR_SNO
+			]]>
+		  
+	</select>
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="sumCct2" column="SUM_CCT_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneNnenPlan_병동 미실시정규간호활동 조회 */
+				  count(a.PTNO) as SUM_CCT_2
+			 from  MNWRCPNET a  /*  환자정규간호활동시행  */
+				, MNWRCPNIT b  /*  환자정규간호활동항목 */
+				, MNWRCPNAT c  /*  환자정규간호활동업무 */
+			where  a.MDRP_NO			 = #{mdrpNo}
+			  and  a.WARD_CD			 = #{wardCd}
+			  /* and  ((a.WRKN_DVSN_CD is null) or (a.WRKN_DVSN_CD = :mns_wrcpnet_003[0].wrkn_dvsn_cd))  /*  근무구분코드   */
+			  and a.WRKN_DVSN_CD = #{wrknDvsnCd}
+			  /*  정규간호활동시행예정일시 */
+			  and  (
+				   ( #{wrknDvsnCd} in ('D', 'E')
+					 and a.RGCA_ENFR_PRRN_DT >= to_date(#{rgcaEnfrPrrnDt1} || '000000', 'yyyymmddhh24miss')
+					 and a.RGCA_ENFR_PRRN_DT <  to_date(#{rgcaEnfrPrrnDt2} || '235959', 'yyyymmddhh24miss')
+					)
+					or (#{wrknDvsnCd} = 'N'
+						 and a.RGCA_ENFR_PRRN_DT >= to_date(#{rgcaEnfrPrrnDt2} || '000000', 'yyyymmddhh24miss')
+						 and a.RGCA_ENFR_PRRN_DT <  to_date(#{rgcaEnfrPrrnDt2} || '235959', 'yyyymmddhh24miss')
+					)
+				   )
+			  /* and  a.RGCA_ENFR_PRRN_DT >= to_date(:mns_wrcpnet_003[0].rgca_enfr_prrn_dt_1, 'yyyymmddhh24miss') */
+			  /* and  a.RGCA_ENFR_PRRN_DT <  to_date(:mns_wrcpnet_003[0].rgca_enfr_prrn_dt_2, 'yyyymmddhh24miss') */
+			  and  a.RGCA_ENFR_STTS_CD = 'P'	/*  계획 단계 */
+			  and  a.RGCA_ENFR_DT		 is null /*  정규간호활동시행일시 */
+			  and  b.MDRP_NO       = a.MDRP_NO
+			  and  b.RGCA_GRP_CD   = a.RGCA_GRP_CD
+			  and  b.RGCA_ITEM_CD  = a.RGCA_ITEM_CD
+			  and  b.RGCA_ITEM_SNO = a.RGCA_ITEM_SNO
+			  and  b.RGCA_STTS_CD  = 'A'
+			  /*  skip 한 간호활동 제외 위해 추가 */
+			   	   and  c.MDRP_NO       = a.MDRP_NO
+			   	   and  c.RGCA_GRP_CD   = a.RGCA_GRP_CD
+			   	   and  c.RGCA_ITEM_CD  = a.RGCA_ITEM_CD
+			   	   and  c.RGCA_ITEM_SNO = a.RGCA_ITEM_SNO
+			   	   and  c.RGCA_BSWR_CD  = a.RGCA_BSWR_CD
+			   	   and  c.RGCA_BSWR_SNO = a.RGCA_BSWR_SNO
+			   	   and  nvl(c.DLTN_YN, 'N') = 'N'
+			  and  c.RCRD_OPTN_DVSN_CD = 'D'  /*  duty base */
+			]]>
+		  
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="afiTotlCct" column="AFI_TOTL_CCT"/>
+		<result property="workCct" column="WORK_CCT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnNtm0001_환자정규간호활동시행_예정_실행건수 조회 */
+				   count(1) as AFI_TOTL_CCT
+				,  nvl(sum(case  when RGCA_ENFR_STTS_CD =  'A' then 1
+								 when RGCA_ENFR_STTS_CD =  'S' then 1
+								 when RGCA_ENFR_STTS_CD =  'O' then 1
+								 else 0
+						   end), 0) as WORK_CCT
+			from  MNWRCPNET pd
+			where  pd.PTNO               =  #{ptno}                       /*  환자번호 */
+			  and  pd.MDRP_NO            =  #{mdrpNo}
+			   /*        and  pd.WARD_CD            =  :mns_wrcpnet_060[0].ward_cd                    /*  병동코드 */
+			  and  pd.RGCA_GRP_CD        =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  pd.RGCA_ITEM_CD       =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  pd.RGCA_ITEM_SNO      =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  pd.RGCA_BSWR_CD       =  nvl(#{rgcaBswrCd} , pd.RGCA_BSWR_CD)     /*  정규간호활동업무코드 */
+			  and  case
+					 when #{rgcaBswrSno} = 0                then 'TRUE'
+					 when pd.RGCA_BSWR_SNO = #{rgcaBswrSno} then 'TRUE'
+					 else 'FALSE'
+				   end = 'TRUE'           /*  정규간호활동업무일련번호 */
+			  and  pd.RGCA_ENFR_PRRN_DT  =  nvl(to_date(#{rgcaEnfrPrrnDt}, 'YYYYMMDD'), pd.RGCA_ENFR_PRRN_DT)
+			  and  nvl(pd .DLTN_YN, 'N') = 'N'
+			]]>
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="rgcaEnfrRno" column="RGCA_ENFR_RNO"/>
+		<result property="rgcaEnfrSttsCd" column="RGCA_ENFR_STTS_CD"/>
+		<result property="rgcaEnfrPrrnDt" column="RGCA_ENFR_PRRN_DT"/>
+		<result property="rgcaEnfrDt" column="RGCA_ENFR_DT"/>
+		<result property="rgcaPlanYmd" column="RGCA_PLAN_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneLastCareActtActn0001_환자정규간호활동_최종시행정보 */
+				   pd.RGCA_ENFR_RNO as RGCA_ENFR_RNO
+				,  pd.RGCA_ENFR_STTS_CD as RGCA_ENFR_STTS_CD
+				,  to_char(pd.RGCA_ENFR_PRRN_DT, 'YYYYMMDD') as RGCA_ENFR_PRRN_DT
+				,  to_char(pd.RGCA_ENFR_DT, 'YYYYMMDD') as RGCA_ENFR_DT
+				,  case
+					 when pd.RGCA_ENFR_PRRN_DT is null and
+						  (select  nvl(count(1), 0)
+							 from  MNWRCPNET s
+							where  s.PTNO            = pb.PTNO
+							  and  s.MDRP_NO         = pb.MDRP_NO
+			   /*                        and  s.WARD_CD         = pb.WARD_CD */
+							  and  s.RGCA_GRP_CD     = pb.RGCA_GRP_CD
+							  and  s.RGCA_ITEM_CD    = pb.RGCA_ITEM_CD
+							  and  s.RGCA_ITEM_SNO   = pb.RGCA_ITEM_SNO
+							  and  s.RGCA_BSWR_CD    = pb.RGCA_BSWR_CD
+							  and  s.RGCA_BSWR_SNO   = pb.RGCA_BSWR_SNO
+						  ) = 0                        then to_char(pb.RGCA_PLAN_YMD, 'YYYYMMDD')     /*  시행 내역이 없는 경우 업무의 계획일자 */
+					 when pd.RGCA_ENFR_PRRN_DT is null then '' /*  미실행건이 있는건 계획생성 하지 않음  */
+					 when pb.LINE_TRNV_CYCL_DDCN = 0   then ''                                        /*  반복 주기없는건은 1회성               */
+					 when pd.RGCA_ENFR_STTS_CD   = 'O' then to_char(pd.RGCA_ENFR_DT + 1, 'YYYYMMDD')  /*  연기건은 바로 다음날 바로 생성        */
+					 else to_char(pd.RGCA_ENFR_DT + pb.LINE_TRNV_CYCL_DDCN, 'YYYYMMDD')               /*  직전시행일에 주기만큼 지난 후         */
+				   end as RGCA_PLAN_YMD
+			 from  MNWRCPNAT pb
+				,  (select  pd.PTNO
+						 ,  pd.MDRP_NO
+						 ,  pd.WARD_CD
+						 ,  pd.RGCA_GRP_CD
+						 ,  pd.RGCA_ITEM_CD
+						 ,  pd.RGCA_ITEM_SNO
+						 ,  pd.RGCA_BSWR_CD
+						 ,  pd.RGCA_BSWR_SNO
+						 ,  pd.RGCA_ENFR_RNO
+						 ,  pd.RGCA_ENFR_STTS_CD
+						 ,  pd.RGCA_ENFR_PRRN_DT
+						 ,  pd.RGCA_ENFR_DT
+					  from  MNWRCPNET pd
+					 where  1 = 1
+					   and  pd.PTNO              = #{ptno}
+					   and  pd.MDRP_NO           = #{mdrpNo}
+			   /*                 and  pd.WARD_CD           = :mns_wrcpnat_070[0].ward_cd */
+					   and  pd.RGCA_GRP_CD       = #{rgcaGrpCd}
+					   and  pd.RGCA_ITEM_CD      = #{rgcaItemCd}
+					   and  pd.RGCA_ITEM_SNO     = #{rgcaItemSno}
+					   and  pd.RGCA_BSWR_CD      = #{rgcaBswrCd}
+					   and  pd.RGCA_BSWR_SNO     = #{rgcaBswrSno}
+					   and  nvl(pd.DLTN_YN, 'N') = 'N'             /*  삭제 되지 않은 건 */
+							/*  최종 시행 내역의 예정일에 있는 데이터 확인 */
+					   and  pd.RGCA_ENFR_PRRN_DT = (select  /*+ INDEX_DESC(s MNWRCPNET_PK)*/
+														   s.RGCA_ENFR_PRRN_DT
+													 from  MNWRCPNET s
+													where  s.PTNO             = pd.PTNO
+													  and  s.MDRP_NO          = pd.MDRP_NO
+			   /*                                                and  s.WARD_CD          = pd.WARD_CD */
+													  and  s.RGCA_GRP_CD      = pd.RGCA_GRP_CD
+													  and  s.RGCA_ITEM_CD     = pd.RGCA_ITEM_CD
+													  and  s.RGCA_ITEM_SNO    = pd.RGCA_ITEM_SNO
+													  and  s.RGCA_BSWR_CD     = pd.RGCA_BSWR_CD
+													  and  s.RGCA_BSWR_SNO    = pd.RGCA_BSWR_SNO
+													  and  rownum = 1
+												   )
+					   and  pd.RGCA_ENFR_STTS_CD in ('A', 'S', 'O')  /*  마지막 예정일에 한건이라도 시행, 연기, Skip 된 건이 있으면 계획 생성 */
+					   and  rownum = 1
+				   ) pd
+			where  1 = 1
+			  and  pb.PTNO             = #{ptno}
+			  and  pb.MDRP_NO          = #{mdrpNo}
+			   /*        and  pb.WARD_CD          = :mns_wrcpnat_070[0].ward_cd */
+			  and  pb.RGCA_GRP_CD      = #{rgcaGrpCd}
+			  and  pb.RGCA_ITEM_CD     = #{rgcaItemCd}
+			  and  pb.RGCA_ITEM_SNO    = #{rgcaItemSno}
+			  and  pb.RGCA_BSWR_CD     = #{rgcaBswrCd}
+			  and  pb.RGCA_BSWR_SNO    = #{rgcaBswrSno}
+			  and  pd.PTNO          (+)= pb.PTNO
+			  and  pd.MDRP_NO       (+)= pb.MDRP_NO
+			   /*        and  pd.WARD_CD       (+)= pb.WARD_CD */
+			  and  pd.RGCA_GRP_CD   (+)= pb.RGCA_GRP_CD
+			  and  pd.RGCA_ITEM_CD  (+)= pb.RGCA_ITEM_CD
+			  and  pd.RGCA_ITEM_SNO (+)= pb.RGCA_ITEM_SNO
+			  and  pd.RGCA_BSWR_CD  (+)= pb.RGCA_BSWR_CD
+			  and  pd.RGCA_BSWR_SNO (+)= pb.RGCA_BSWR_SNO
+			]]>
+		  
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="rgcaEnfrSttsCd" column="RGCA_ENFR_STTS_CD"/>
+		<result property="rgcaEnfrDt" column="RGCA_ENFR_DT"/>
+		<result property="wrknDvsnCd" column="WRKN_DVSN_CD"/>
+		<result property="endrId" column="ENDR_ID"/>
+		<result property="endrNm" column="ENDR_NM"/>
+		<result property="rgcaEnfrRmrkCtn" column="RGCA_ENFR_RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtActnInfm0001_환자정규간호활동시행 상태조회 */
+				   RGCA_ENFR_STTS_CD as RGCA_ENFR_STTS_CD                          /*  정규간호활동시행상태코드 */
+				,  to_char(RGCA_ENFR_DT, 'YYYYMMDDHH24MISS') as RGCA_ENFR_DT  /*  정규간호활동시행일시 */
+				,  WRKN_DVSN_CD as WRKN_DVSN_CD                               /*  근무구분코드 */
+				,  ENDR_ID as ENDR_ID                                    /*  시행의사ID */
+				,  ENDR_NM as ENDR_NM                                    /*  시행의사명 */
+				,  RGCA_ENFR_RMRK_CTN as RGCA_ENFR_RMRK_CTN                         /*  정규간호활동시행비고내용 */
+			 from  MNWRCPNET
+			where  1 = 1
+			  and  PTNO          = #{ptno}                       /*  환자번호 */
+			  and  MDRP_NO       = #{mdrpNo}
+			   /*        and  WARD_CD       = :mns_wrcpnet_072[0].ward_cd                    /*  병동코드 */
+			  and  RGCA_GRP_CD   = #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  RGCA_ITEM_CD  = #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  RGCA_ITEM_SNO = #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  RGCA_BSWR_CD  = #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			  and  RGCA_BSWR_SNO = #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			  and  RGCA_ENFR_RNO = #{rgcaEnfrRno}
+			]]>
+		  
+	</select>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO">
+		<result property="rgcaRcrdYn" column="RGCA_RCRD_YN"/>
+		<result property="wrknCd" column="WRKN_CD"/>
+		<result property="wrknTeamCd" column="WRKN_TEAM_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-selectOneCareActtRcrdStts_[간호활동] 현재 Duty 및 기록여부 조회 */
+			 nvl(mb.RGCA_RCRD_YN, 'Y') as RGCA_RCRD_YN
+		   , case when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'0630', 'yyyymmddhh24mi') then '1'
+					   when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'1430', 'yyyymmddhh24mi') then '2'
+					   when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'2200', 'yyyymmddhh24mi') then '3'
+					   else '3'
+					 end as WRKN_CD
+		   , case when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'0630', 'yyyymmddhh24mi') then 'N'
+				   when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'1430', 'yyyymmddhh24mi') then 'D'
+				   when sysdate < to_date(to_char(sysdate, 'yyyymmdd')||'2200', 'yyyymmddhh24mi') then 'E'
+				   else 'E'
+				 end as WRKN_TEAM_CD
+				   from
+		   MNWRCACMT mb
+				   where 1=1
+		   and  mb.RGCA_BSWR_CD      = #{rgcaBswrCd}
+		]]>
+		  
+	</select>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtChangeDuty () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtChangeDuty"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtChangeDuty_[간호활동] Duty 변경 */
+			   MNWRCPNET
+			set
+				   WRKN_DVSN_CD    = #{wrknDvsnCd}                           /*  정규간호활동시행상태코드 */
+				,  LAST_UPDR_ID       = #{gvUserId}    
+				,  LAST_UPDT_IP       = #{gvUserIp}    
+				,  LAST_UPDT_DT       = sysdate        
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+		   where  PTNO           =  #{ptno}                       /*  환자번호 */
+			   and  MDRP_NO        =  #{mdrpNo}
+			   and  RGCA_GRP_CD    =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			   and  RGCA_ITEM_CD   =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			   and  RGCA_ITEM_SNO  =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			   and  RGCA_BSWR_CD   =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			   and  RGCA_BSWR_SNO  =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			   and  RGCA_ENFR_RNO  =  #{rgcaEnfrRno}
+		]]>
+		  
+	</update>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnInfm0001 () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnInfm0001"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnInfm0001_환자정규간호활동시행_실행정보 저장 */
+				MNWRCPNET
+			  set  RGCA_ENFR_STTS_CD    = #{rgcaEnfrSttsCd}                           /*  정규간호활동시행상태코드 */
+				,  RGCA_ENFR_DT         = to_date(#{rgcaEnfrDt}, 'YYYYMMDDHH24MI')   /*  정규간호활동시행일시 */
+				,  ENFR_NURS_ID         = #{enfrNursId}                                /*  시행간호사ID */
+				,  ENFR_NURS_NM         = #{enfrNursNm}                                /*  시행간호사명 */
+				,  ENDR_ID              = #{endrId}                                     /*  시행의사ID */
+				,  ENDR_NM              = #{endrNm}                                     /*  시행의사명 */
+				,  RGCA_ENFR_RMRK_CTN   = ( case
+											when #{clotScrnId} = 'MNW935F2' then #{rgcaEnfrRmrkCtn}
+											when #{rgcaEnfrSttsCd} = 'A' then RGCA_ENFR_RMRK_CTN
+											else #{rgcaEnfrRmrkCtn}
+											end) /*  정규간호활동시행비고내용 */
+				,  LAST_UPDR_ID       = #{gvUserId}    
+				,  LAST_UPDT_IP       = #{gvUserIp}    
+				,  LAST_UPDT_DT       = sysdate        
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where  PTNO           =  #{ptno}                       /*  환자번호 */
+			  and  MDRP_NO        =  #{mdrpNo}
+			   /*        and  WARD_CD        =  :mns_wrcpnet_061[0].ward_cd                    /*  병동코드 */
+			  and  RGCA_GRP_CD    =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  RGCA_ITEM_CD   =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  RGCA_ITEM_SNO  =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  RGCA_BSWR_CD   =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			  and  RGCA_BSWR_SNO  =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			  and  RGCA_ENFR_RNO  =  #{rgcaEnfrRno}
+			]]>
+		  
+	</update>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtPstp () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtPstp"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtPstp_환자정규간호활동시행_실행정보 Postpone저장 */
+				   MNWRCPNET
+			  set  RGCA_ENFR_STTS_CD    = #{rgcaEnfrSttsCd}                           /*  정규간호활동시행상태코드 */
+				,  RGCA_ENFR_DT         = to_date(#{rgcaEnfrDt}, 'YYYYMMDDHH24MI')     /*  정규간호활동시행일시 */
+				,  ENFR_NURS_ID         = #{enfrNursId}                                /*  시행간호사ID */
+				,  ENFR_NURS_NM         = #{enfrNursNm}                                /*  시행간호사명 */
+				,  ENDR_ID              = #{endrId}                                     /*  시행의사ID */
+				,  ENDR_NM              = #{endrNm}                                     /*  시행의사명 */
+				,  RGCA_ENFR_RMRK_CTN   = #{rgcaEnfrRmrkCtn}                          /*  정규간호활동시행비고내용 */
+				,  LAST_UPDR_ID       = #{gvUserId}    
+				,  LAST_UPDT_IP       = #{gvUserIp}    
+				,  LAST_UPDT_DT       = sysdate        
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where  PTNO              =  #{ptno}                       /*  환자번호 */
+			  and  MDRP_NO           =  #{mdrpNo}
+			   /*        and  WARD_CD           =  :mns_wrcpnet_061[0].ward_cd                    /*  병동코드 */
+			  and  RGCA_GRP_CD       =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  RGCA_ITEM_CD      =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  RGCA_ITEM_SNO     =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  RGCA_BSWR_CD      =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			  and  RGCA_BSWR_SNO     =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			  and  RGCA_ENFR_PRRN_DT = ( select  s.RGCA_ENFR_PRRN_DT
+										   from  MNWRCPNET s
+										  where  s.PTNO          =  #{ptno}
+											and  s.MDRP_NO       =  #{mdrpNo}
+			   /*                                      and  s.WARD_CD       =  :mns_wrcpnet_061[0].ward_cd */
+											and  s.RGCA_GRP_CD   =  #{rgcaGrpCd}
+											and  s.RGCA_ITEM_CD  =  #{rgcaItemCd}
+											and  s.RGCA_ITEM_SNO =  #{rgcaItemSno}
+											and  s.RGCA_BSWR_CD  =  #{rgcaBswrCd}
+											and  s.RGCA_BSWR_SNO =  #{rgcaBswrSno}
+											and  s.RGCA_ENFR_RNO =  #{rgcaEnfrRno}
+									   )
+			  and RGCA_ENFR_STTS_CD = 'P'
+			]]>
+		  
+	</update>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnCncl () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnCncl"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnCncl_환자정규간호활동시행_취소 */
+				   MNWRCPNET
+			  set  RGCA_ENFR_STTS_CD    = 'P'                          /*  정규간호활동시행상태코드 P: Plan*/
+				,  RGCA_ENFR_DT         = null                         /*  정규간호활동시행일시 */
+				,  ENFR_NURS_ID         = null                         /*  시행간호사ID */
+				,  ENFR_NURS_NM         = null                         /*  시행간호사명 */
+				,  ENDR_ID              = null                         /*  시행의사ID */
+				,  ENDR_NM              = null                         /*  시행의사명 */
+				,  RGCA_ENFR_RMRK_CTN   = null                         /*  정규간호활동시행비고내용 */
+				,  LAST_UPDR_ID       = #{gvUserId}    
+				,  LAST_UPDT_IP       = #{gvUserIp}    
+				,  LAST_UPDT_DT       = sysdate        
+				,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where  PTNO           =  #{ptno}                       /*  환자번호 */
+			  and  MDRP_NO        =  #{mdrpNo}
+			   /*        and  WARD_CD        =  :mns_wrcpnet_061[0].ward_cd                    /*  병동코드 */
+			  and  RGCA_GRP_CD    =  #{rgcaGrpCd}                /*  정규간호활동그룹코드 */
+			  and  RGCA_ITEM_CD   =  #{rgcaItemCd}               /*  정규간호활동항목코드 */
+			  and  RGCA_ITEM_SNO  =  #{rgcaItemSno}              /*  정규간호활동항목일련번호 */
+			  and  RGCA_BSWR_CD   =  #{rgcaBswrCd}               /*  정규간호활동업무코드 */
+			  and  RGCA_BSWR_SNO  =  #{rgcaBswrSno}              /*  정규간호활동업무일련번호 */
+			  and  RGCA_ENFR_RNO  =  #{rgcaEnfrRno}
+			  and  RGCA_ENFR_STTS_CD in ('A', 'S', 'O')
+			]]>
+		  
+	</update>
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnDltnInfm () 
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnDltnInfm"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrCareActtPlanDVO"  >
+		<![CDATA[
+		   update  /*+ com-sds-healthcare-ehr-med-mn-mnr-dao-MnrCareActtPlanDAO-updateCareActtActnDltnInfm_[간호활동] 간호활동 시행계획 삭제컬럼 수정 */
+			   MNWRCPNET
+		   set
+				  DLTN_YN = #{dltnYn}
+			   ,  DLPR_ID = decode(#{dltnYn}, 'Y',  #{gvUserId}, null)
+			   ,  DLTN_DT = decode(#{dltnYn}, 'Y',  sysdate, null)
+		       ,  LAST_UPDR_ID       = #{gvUserId}    
+		       ,  LAST_UPDT_IP       = #{gvUserIp}    
+		       ,  LAST_UPDT_DT       = sysdate        
+		       ,  LAST_UPDT_CLNT_PRGM_ID  = #{gvClntPrgmId}
+		       ,  LAST_UPDT_SRVR_PRGM_ID  = #{gvSrvrPrgmId}
+			where  1 = 1
+			  and  PTNO               = #{ptno}
+			  and  MDRP_NO            = #{mdrpNo}
+			   /*        and  WARD_CD            = :mns_wrcpnet_075[0].ward_cd */
+			  and  RGCA_GRP_CD        = #{rgcaGrpCd}
+			  and  RGCA_ITEM_CD       = #{rgcaItemCd}
+			  and  RGCA_ITEM_SNO      = #{rgcaItemSno}
+			  and  RGCA_ENFR_PRRN_DT >= decode(#{dltnYn}, 'Y', trunc(to_date(#{rmvlDt}, 'YYYYMMDDHH24MI')), RGCA_ENFR_PRRN_DT)
+			  and  DLTN_YN = decode(#{dltnYn}, 'Y',  DLTN_YN, 'Y')
+			  and  RGCA_ENFR_STTS_CD  = 'P'
+			]]>
+		  
+	</update>
+
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhHsptAcntNoPpupDAO_sql.xml 
+    Description :                                      병원계좌번호_팝업 DAO
+                  -->
+<mapper namespace="HzhHsptAcntNoPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhHsptAcntNoPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="fninCd" column="FNIN_CD"/>
+		<result property="comnCdNm" column="COMN_CD_NM"/>
+		<result property="hsptAcntNo" column="HSPT_ACNT_NO"/>
+		<result property="depstAcntNo" column="DEPST_ACNT_NO"/>
+		<result property="hsptAcntNm" column="HSPT_ACNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup (HZH010F6_1_Popup_병원계좌번호_조회_DAM) 
+        Description :                                           hmd_hsacnot_l01$S01_병원계좌번호_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhHsptAcntNoPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhHsptAcntNoPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhHsptAcntNoPpupDAO-listHsptAcntNoPpup */
+		           rownum         as SQNC         /* 순서 */
+		        ,  FNIN_CD
+		        ,  COMN_CD_NM
+		        ,  HSPT_ACNT_NO
+		        ,  DEPST_ACNT_NO
+		        ,  HSPT_ACNT_NM
+		     from  
+		          (
+		           select         
+		                   z.FNIN_CD      as FNIN_CD      /* 금융기관코드 */
+		                ,  z.COMN_CD_NM    as COMN_CD_NM   /* 공통코드명[금융기관명] */
+		                ,  z.HSPT_ACNT_NO as HSPT_ACNT_NO /* 병원계좌번호 */
+		                ,  nvl(z.DEPST_ACNT_NO, z.HSPT_ACNT_NO) as DEPST_ACNT_NO /* 예금계좌번호 */
+		                ,  z.HSPT_ACNT_NM as HSPT_ACNT_NM /* 병원계좌명 */
+		             from
+		                  (select
+		                           s.FNIN_CD      FNIN_CD      /* 금융기관코드 */
+		                        ,  a.COMN_CD_NM   COMN_CD_NM   /* 공통코드명[금융기관명] */
+		                        ,  s.HSPT_ACNT_NO HSPT_ACNT_NO /* 병원계좌번호 */
+		                        ,  s.DEPST_ACNT_NO DEPST_ACNT_NO
+		                        ,  s.HSPT_ACNT_NM HSPT_ACNT_NM /* 병원계좌명 */
+		                        ,(
+		                          select nvl(COMN_INQR_SQNC, 99999) --조회순서 입력안했을 경우 99999 강제셋팅
+		                            from HZMICOCDT z
+		                           where z.MIS_COMN_CD = s.DEPST_ACNT_NO
+		                             and Z.COMN_GRP_CD = 'HZA_013' --MIS공통코드: 계좌번호 우선정렬
+		                         ) as                       SORT_CD
+		                     from
+		                           HZHSACNOT s /* (HZ)병원계좌번호 */
+		                        ,  HZMICOCDT a /* (HZ)MIS공통코드[금융기관] */
+		                    where
+		                           s.BSPL_CD     = #{bsplCd} /* 사업장코드 */
+		                      and (    s.HSPT_ACNT_NO like '%' || #{srchCdNm} || '%' /* 계좌번호 */
+		                           or  s.HSPT_ACNT_NM like '%' || #{srchCdNm} || '%' /* 계좌명 */
+		                           or  a.COMN_CD_NM   like '%' || #{srchCdNm} || '%' /* 금융기관 */
+		                          )
+		                   /* and  s.FNIN_CD     = decode(:hms_hsacnot_901[0].fnin_cd, '', s.FNIN_CD, :hms_hsacnot_901[0].fnin_cd) /* 금융기관코드 */
+		                      and  nvl(s.TOAC_CD, '*')  like #{toacCd} || '%'
+		                      and  s.MTHR_ACNT_YN = 'Y'
+		                      and  s.USE_YN       = 'Y'
+		                      and  a.BSPL_CD     = s.BSPL_CD                   /* 사업장코드 */
+		                      and  a.COMN_GRP_CD = 'GA036'                     /* 공통그룹코드[GA036:금융기관] */
+		                      and  a.MIS_COMN_CD = s.FNIN_CD                   /* MIS공통코드[금융기관코드] */
+		                    order  by  s.FNIN_CD       asc
+		                            ,  s.HSPT_ACNT_NO  asc
+		                  ) z
+		          order by SORT_CD
+		                 , COMN_CD_NM
+		                 , DEPST_ACNT_NO
+		          )
+		    ]]>
+	</select>
+
+
+
+</mapper>

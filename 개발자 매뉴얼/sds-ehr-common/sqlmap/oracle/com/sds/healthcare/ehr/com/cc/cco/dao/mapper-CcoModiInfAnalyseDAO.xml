@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoModiInfAnalyseDAO_sql.xml 
+    Description : -->
+<mapper namespace="CcoModiInfAnalyseDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO">
+	
+		<result property="fitGapId" column="FIT_GAP_ID"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="detlCdNm1" column="DETL_CD_NM1"/>
+		<result property="sbSystId" column="SB_SYST_ID"/>
+		<result property="detlCdNm2" column="DETL_CD_NM2"/>
+		<result property="cnsnUserNm" column="CNSN_USER_NM"/>
+		<result property="atchFileDscr" column="ATCH_FILE_DSCR"/>
+		<result property="bassCnfcYmd" column="BASS_CNFC_YMD"/>
+		<result property="prvcBassCtn" column="PRVC_BASS_CTN"/>
+		<result property="dvlrNm" column="DVLR_NM"/>
+		<result property="lnkdPartAsgnNm" column="LNKD_PART_ASGN_NM"/>
+		<result property="acptYn" column="ACPT_YN"/>
+		<result property="afiAcptNm" column="AFI_ACPT_NM"/>
+		<result property="assnVrsnNo" column="ASSN_VRSN_NO"/>
+		<result property="wrtgYmd" column="WRTG_YMD"/>
+		<result property="ovrvCtn" column="OVRV_CTN"/>
+		<result property="mdfcRangDbCtn" column="MDFC_RANG_DB_CTN"/>
+		<result property="mdfcRangSrvrCtn" column="MDFC_RANG_SRVR_CTN"/>
+		<result property="mdfcRangClntCtn" column="MDFC_RANG_CLNT_CTN"/>
+		<result property="mdfcRangEtc" column="MDFC_RANG_ETC"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyse */
+		<![CDATA[
+				select 
+		                    AD.FIT_GAP_ID                             																/* FITGAP ID */
+		                 ,  GD.SYST_ID                               																	/* 시스템ID */
+		                 ,  C1.DETL_CD_NM     as DETL_CD_NM1         			 										/* 시스템명 */
+		                 ,  GD.SB_SYST_ID                             																/* 서브시스템ID */
+		                 ,  C2.DETL_CD_NM     as DETL_CD_NM2          													/* 서브시스템명 */
+					     ,  GD.CNSN_USER_NM                           															/* 자문사용자명(컨설턴트) */
+		                 ,  AD.FILE_GRP_ID       as ATCH_FILE_DSCR  														/* 파일그룹ID */
+		                 ,  to_char(AD.BASS_CNFC_YMD,'YYYYMMDD') as BASS_CNFC_YMD						/* 근거회의일자 */
+		                 ,  GD.PRVC_BASS_CTN                          															/* 근거회의록내용 */
+		                 ,  AD.DVLR_NM                                																/* 개발자명 */
+		                 ,  AD.LNKD_PART_ASGN_NM                     					 									/* 연계파트담당자명 */
+		                 ,  AD.ACPT_YN                                																/* 수용여부 */
+						 ,  decode(AD.ACPT_YN, 'A', 'N/A', 'Y', 'Y', 'N', 'N', AD.ACPT_YN) as AFI_ACPT_NM 	/* 수용여부코드명 */
+		                 ,  AD.ASSN_VRSN_NO                           															/* 산정버전번호 */
+		                 ,  to_char(AD.WRTG_YMD,'YYYYMMDD') as WRTG_YMD 										/* 작성일자 */
+		                 ,  AD.OVRV_CTN                               																/* 개요내용 */
+		                -- , AD.CNTN_ANLY_CTN                          														/* 자문인 분석내용 */
+		                -- , AD.DVLR_ANLY_RSLT_CTN                     														/* 개발자분석결과내용 */
+		                -- , AD.PART_LNKD_CNFC_CTN                     														/* 파트연계회의내용 */
+		                 ,  AD.MDFC_RANG_DB_CTN                       														/* 변경범위DB내용 */
+		                 ,  AD.MDFC_RANG_SRVR_CTN                     														/* 변경범위서버내용 */
+		                 ,  AD.MDFC_RANG_CLNT_CTN                    	 													/* 변경범위클라이언트내용 */
+		                 ,  AD.MDFC_RANG_ETC                          														    /* 변경범위기타내용 */
+		                 --, AD.UNSB_CTN                               															/* 특이사항내용 */
+		                 ,  AD.DLTN_YN                                																/* 삭제여부 */
+				   from  CORMDIADT AD         																					/* 변경 영향도 분석서T */
+		              	 ,  CORFITGDT GD         																					/* FITGAP 결과서T */
+		              	 ,  CCCMCDDMT C1         																				/* 시스템 공통코드T */
+		              	 ,  CCCMCDDMT C2         																				/* 서브 시스템 공통코드T */
+				 where  AD.FIT_GAP_ID 	       = GD.FIT_GAP_ID
+				    and  C1.COMN_GRP_CD(+) = 'COR_062'
+				    and  GD.SYST_ID               = C1.COMN_DTLS_CD(+)
+				    and  C2.COMN_GRP_CD(+) = 'COR_063'
+				    and  GD.SB_SYST_ID          = C2.COMN_DTLS_CD(+)         	         	           	           
+					and  ( AD.DLTN_YN    is null or AD.DLTN_YN    = 'N')					   
+					and  ( GD.SYST_ID      is null or GD.SYST_ID     like  #{systId} || '%' )
+				    and  ( GD.SB_SYST_ID is null or GD.SB_SYST_ID like #{sbSystId} || '%')  
+		]]>
+		        <if test="fitGapId != null and fitGapId != ''.toString()">
+		            and  GD.FIT_GAP_ID   like #{fitGapId} || '%'
+		        </if>	
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateMergeModiInfAnalyse  () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateMergeModiInfAnalyse "  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateMergeModiInfAnalyse  */
+		            merge 
+		             into CORMDIADT AD         -- 변경 영향도 분석서
+		            using DUAL 
+		               on (FIT_GAP_ID                      = #{fitGapId}
+		                  ) 
+		             when matched then 
+		                  update set
+		                           FILE_GRP_ID                         = #{atchFileDscr}                           			-- 파일그룹ID
+		                         , BASS_CNFC_YMD                 = to_date(#{bassCnfcYmd}, 'YYYYMMDD')   -- 근거회의일자
+		                         , DVLR_NM                            = #{dvlrNm}                             			 	-- 개발자명
+		                         , LNKD_PART_ASGN_NM          = #{lnkdPartAsgnNm}                      			-- 연계파트담당자명
+		                         , ACPT_YN                             = #{acptYn}                              				-- 수용여부
+		                         , ASSN_VRSN_NO                   = #{assnVrsnNo}                          			-- 산정버전번호
+		                         , WRTG_YMD                         = to_date(#{wrtgYmd}, 'YYYYMMDD')        	-- 작성일자
+		                         , OVRV_CTN                          = #{ovrvCtn}                             				-- 개요내용
+		                         , CNTN_ANLY_CTN                 = #{cntnAnlyCtn}                         			-- 자문인 분석내용
+		                         , DVLR_ANLY_RSLT_CTN          = #{dvlrAnlyRsltCtn}                     			-- 개발자분석결과내용
+		                         , PART_LNKD_CNFC_CTN         = #{partLnkdCnfcCtn}                     			-- 파트연계회의내용
+		                         , MDFC_RANG_DB_CTN           = #{mdfcRangDbCtn}                       		-- 변경범위DB내용
+		                         , MDFC_RANG_SRVR_CTN        = #{mdfcRangSrvrCtn}                     			-- 변경범위서버내용
+		                         , MDFC_RANG_CLNT_CTN        = #{mdfcRangClntCtn}                     			-- 변경범위클라이언트내용
+		                         , MDFC_RANG_ETC                 = #{mdfcRangEtc}                         			-- 변경범위기타내용
+		                         , UNSB_CTN                          = #{unsbCtn}                             				-- 특이사항내용
+		                         , DLTN_YN                            = 'N'                              						-- 삭제여부
+		                         
+								 , LAST_UPDR_ID                     = #{gvUserId}                            				-- 최종수정자ID
+		                         , LAST_UPDT_IP                      = #{gvUserIp}                            				-- 최종수정IP
+		                         , LAST_UPDT_DT						= sysdate                                				-- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID	= #{gvClntPrgmId}                        			-- 최종수정클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID	= #{gvSrvrPrgmId}                        			-- 최종수정서버프로그램ID
+		                    where FIT_GAP_ID                       = #{fitGapId}
+		             when not matched then 
+		                  insert 
+		                    (
+		                           FIT_GAP_ID                       -- FITGAP ID
+		                         , FILE_GRP_ID                      -- 파일그룹ID
+		                         , BASS_CNFC_YMD              -- 근거회의일자
+		                         , DVLR_NM                         -- 개발자명
+		                         , LNKD_PART_ASGN_NM       -- 연계파트담당자명
+		                         , ACPT_YN                           -- 수용여부
+		                         , ASSN_VRSN_NO                 -- 산정버전번호
+		                         , WRTG_YMD                       -- 작성일자
+		                         , OVRV_CTN                        -- 개요내용
+		                         , CNTN_ANLY_CTN				  -- 자문인 분석내용
+		                         , DVLR_ANLY_RSLT_CTN         -- 개발자분석결과내용
+		                         , PART_LNKD_CNFC_CTN        -- 파트연계회의내용
+		                         , MDFC_RANG_DB_CTN          -- 변경범위DB내용
+		                         , MDFC_RANG_SRVR_CTN       -- 변경범위서버내용
+		                         , MDFC_RANG_CLNT_CTN       -- 변경범위클라이언트내용
+		                         , MDFC_RANG_ETC                -- 변경범위기타내용
+		                         , UNSB_CTN                         -- 특이사항내용
+		                         , DLTN_YN                           -- 삭제여부
+		                         , FRST_RGSR_ID                     -- 최초등록자ID
+		                         , FRST_RGST_IP                      -- 최초등록IP
+		                         , FRST_RGST_DT                     -- 최초등록일시
+		                         , FRST_RGST_CLNT_PRGM_ID    -- 최초등록클라이언트프로그램ID
+		                         , FRST_RGST_SRVR_PRGM_ID    -- 최초등록서버프로그램ID
+		                         , LAST_UPDR_ID                     -- 최종수정자ID
+		                         , LAST_UPDT_IP                      -- 최종수정IP
+		                         , LAST_UPDT_DT						-- 최종수정일시
+		                         , LAST_UPDT_CLNT_PRGM_ID	-- 최종수정클라이언트프로그램ID
+		                         , LAST_UPDT_SRVR_PRGM_ID	-- 최종수정서버프로그램ID
+		                    )
+		                    values
+		                    (
+		                           #{fitGapId}                       						-- FITGAP ID
+		                         , #{atchFileDscr}                      					-- 파일그룹ID
+		                           , to_date(#{bassCnfcYmd}, 'YYYYMMDD')		-- 근거회의일자
+		                         , #{dvlrNm}                         						-- 개발자명
+		                         , #{lnkdPartAsgnNm}                 					-- 연계파트담당자명
+		                         , #{acptYn}                         						-- 수용여부
+		                         , #{assnVrsnNo}                     						-- 산정버전번호
+		                           , to_date(#{wrtgYmd}, 'YYYYMMDD')			-- 작성일자
+		                         , #{ovrvCtn}                        						-- 개요내용
+		                         , #{cntnAnlyCtn}                    						-- 자문인 분석내용
+		                         , #{dvlrAnlyRsltCtn}                						-- 개발자분석결과내용
+		                         , #{partLnkdCnfcCtn}                					-- 파트연계회의내용
+		                         , #{mdfcRangDbCtn}                  					-- 변경범위DB내용
+		                         , #{mdfcRangSrvrCtn}                					-- 변경범위서버내용
+		                         , #{mdfcRangClntCtn}                					-- 변경범위클라이언트내용
+		                         , #{mdfcRangEtc}                    					-- 변경범위기타내용
+		                         , #{unsbCtn}                        						-- 특이사항내용
+		                         , 'N'                         									-- 삭제여부
+		                         , #{gvUserId}                       						-- 최초등록자ID
+		                         , #{gvUserIp}                       						-- 최초등록IP
+		                         , sysdate                           						-- 최초등록일시
+		                         , #{gvClntPrgmId}                   					-- 최초등록클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   						-- 최초등록서버프로그램ID
+		                         , #{gvUserId}                       						-- 최종수정자ID
+		                         , #{gvUserIp}                       						-- 최종수정IP
+		                         , sysdate                           						-- 최종수정일시
+		                         , #{gvClntPrgmId}                   					-- 최종수정클라이언트프로그램ID
+		                         , #{gvSrvrPrgmId}                   						-- 최종수정서버프로그램ID
+		                    )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-insertModiInfAnalyse  () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-insertModiInfAnalyse "  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-insertModiInfAnalyse  */
+		             insert 
+		              into CORMDIADT         -- 변경 영향도 분석서
+		            (
+		                   FIT_GAP_ID                                -- FITGAP ID
+		                 , FILE_GRP_ID                               -- 파일그룹ID
+		                 , BASS_CNFC_YMD                             -- 근거회의일자
+		                 , DVLR_NM                                   -- 개발자명
+		                 , LNKD_PART_ASGN_NM                         -- 연계파트담당자명
+		                 , ACPT_YN                                   -- 수용여부
+		                 , ASSN_VRSN_NO                              -- 산정버전번호
+		                 , WRTG_YMD                                  -- 작성일자
+		                 , OVRV_CTN                                  -- 개요내용
+		                 , CNTN_ANLY_CTN                             -- 자문인 분석내용
+		                 , DVLR_ANLY_RSLT_CTN                        -- 개발자분석결과내용
+		                 , PART_LNKD_CNFC_CTN                        -- 파트연계회의내용
+		                 , MDFC_RANG_DB_CTN                          -- 변경범위DB내용
+		                 , MDFC_RANG_SRVR_CTN                        -- 변경범위서버내용
+		                 , MDFC_RANG_CLNT_CTN                        -- 변경범위클라이언트내용
+		                 , MDFC_RANG_ETC                             -- 변경범위기타내용
+		                 , UNSB_CTN                                  -- 특이사항내용
+		                 , DLTN_YN                                   -- 삭제여부
+		                 , FRST_RGSR_ID                              -- 최초등록자ID
+		                 , FRST_RGST_IP                              -- 최초등록IP
+		                 , FRST_RGST_DT                              -- 최초등록일시
+		                 , FRST_RGST_CLNT_PRGM_ID                    -- 최초등록클라이언트프로그램ID
+		                 , FRST_RGST_SRVR_PRGM_ID                    -- 최초등록서버프로그램ID
+		                 , LAST_UPDR_ID                              -- 최종수정자ID
+		                 , LAST_UPDT_IP                              -- 최종수정IP
+		                 , LAST_UPDT_DT                              -- 최종수정일시
+		                 , LAST_UPDT_CLNT_PRGM_ID                    -- 최종수정클라이언트프로그램ID
+		                 , LAST_UPDT_SRVR_PRGM_ID                    -- 최종수정서버프로그램ID
+		            )
+		            values
+		            (
+		                           #{fitGapId}                       -- FITGAP ID
+		                         , #{fileGrpId}                      -- 파일그룹ID
+		                           , to_date(#{bassCnfcYmd}, 'YYYYMMDD')-- 근거회의일자
+		                         , #{dvlrNm}                         -- 개발자명
+		                         , #{lnkdPartAsgnNm}                 -- 연계파트담당자명
+		                         , #{acptYn}                         -- 수용여부
+		                         , #{assnVrsnNo}                     -- 산정버전번호
+		                           , to_date(#{wrtgYmd}, 'YYYYMMDD') -- 작성일자
+		                         , #{ovrvCtn}                        -- 개요내용
+		                         , #{cntnAnlyCtn}                    -- 자문인 분석내용
+		                         , #{dvlrAnlyRsltCtn}                -- 개발자분석결과내용
+		                         , #{partLnkdCnfcCtn}                -- 파트연계회의내용
+		                         , #{mdfcRangDbCtn}                  -- 변경범위DB내용
+		                         , #{mdfcRangSrvrCtn}                -- 변경범위서버내용
+		                         , #{mdfcRangClntCtn}                -- 변경범위클라이언트내용
+		                         , #{mdfcRangEtc}                    -- 변경범위기타내용
+		                         , #{unsbCtn}                        -- 특이사항내용
+		                         , 'N'                         -- 삭제여부
+		                 , #{gvUserId}                               -- 최초등록자ID
+		                 , #{gvUserIp}                               -- 최초등록IP
+		                 , sysdate                                   -- 최초등록일시
+		                 , #{gvClntPrgmId}                           -- 최초등록클라이언트프로그램ID
+		                 , #{gvSrvrPrgmId}                           -- 최초등록서버프로그램ID
+		                 , #{gvUserId}                               -- 최종수정자ID
+		                 , #{gvUserIp}                               -- 최종수정IP
+		                 , sysdate                                   -- 최종수정일시
+		                 , #{gvClntPrgmId}                           -- 최종수정클라이언트프로그램ID
+		                 , #{gvSrvrPrgmId}                           -- 최종수정서버프로그램ID
+		            )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateModiInfAnalyse  () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateModiInfAnalyse "  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-updateModiInfAnalyse  */
+		            update
+		                  CORMDIADT         -- 변경 영향도 분석서
+		               set
+		                   FILE_GRP_ID                               = #{fileGrpId}                           -- 파일그룹ID
+		                 , BASS_CNFC_YMD                             = to_date(#{bassCnfcYmd}, 'YYYYMMDD')    -- 근거회의일자
+		                 , DVLR_NM                                   = #{dvlrNm}                              -- 개발자명
+		                 , LNKD_PART_ASGN_NM                         = #{lnkdPartAsgnNm}                      -- 연계파트담당자명
+		                 , ACPT_YN                                   = #{acptYn}                              -- 수용여부
+		                 , ASSN_VRSN_NO                              = #{assnVrsnNo}                          -- 산정버전번호
+		                 , WRTG_YMD                                  = to_date(#{wrtgYmd}, 'YYYYMMDD')        -- 작성일자
+		                 , OVRV_CTN                                  = #{ovrvCtn}                             -- 개요내용
+		                 , CNTN_ANLY_CTN                             = #{cntnAnlyCtn}                         -- 자문인 분석내용
+		                 , DVLR_ANLY_RSLT_CTN                        = #{dvlrAnlyRsltCtn}                     -- 개발자분석결과내용
+		                 , PART_LNKD_CNFC_CTN                        = #{partLnkdCnfcCtn}                     -- 파트연계회의내용
+		                 , MDFC_RANG_DB_CTN                          = #{mdfcRangDbCtn}                       -- 변경범위DB내용
+		                 , MDFC_RANG_SRVR_CTN                        = #{mdfcRangSrvrCtn}                     -- 변경범위서버내용
+		                 , MDFC_RANG_CLNT_CTN                        = #{mdfcRangClntCtn}                     -- 변경범위클라이언트내용
+		                 , MDFC_RANG_ETC                             = #{mdfcRangEtc}                         -- 변경범위기타내용
+		                 , UNSB_CTN                                  = #{unsbCtn}                             -- 특이사항내용
+		                 , DLTN_YN                                   = 'N'                              -- 삭제여부
+		                 , LAST_UPDR_ID          = #{gvUserId}                            -- 최종수정자ID
+		                 , LAST_UPDT_IP          = #{gvUserIp}                            -- 최종수정IP
+		                 , LAST_UPDT_DT          = sysdate                                -- 최종수정일시
+		                 , LAST_UPDT_CLNT_PRGM_ID                    = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+		                 , LAST_UPDT_SRVR_PRGM_ID                    = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID
+		            where FIT_GAP_ID                       = #{fitGapId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO">
+	
+		<result property="fitGapId" column="FIT_GAP_ID"/>
+		<result property="systId" column="SYST_ID"/>
+		<result property="detlCdNm1" column="DETL_CD_NM1"/>
+		<result property="sbSystId" column="SB_SYST_ID"/>
+		<result property="detlCdNm2" column="DETL_CD_NM2"/>
+		<result property="cnsnUserNm" column="CNSN_USER_NM"/>
+		<result property="atchFileDscr" column="ATCH_FILE_DSCR"/>
+		<result property="bassCnfcYmd" column="BASS_CNFC_YMD"/>
+		<result property="prvcBassCtn" column="PRVC_BASS_CTN"/>
+		<result property="dvlrNm" column="DVLR_NM"/>
+		<result property="lnkdPartAsgnNm" column="LNKD_PART_ASGN_NM"/>
+		<result property="acptYn" column="ACPT_YN"/>
+		<result property="assnVrsnNo" column="ASSN_VRSN_NO"/>
+		<result property="wrtgYmd" column="WRTG_YMD"/>
+		<result property="ovrvCtn" column="OVRV_CTN"/>
+		<result property="cntnAnlyCtn" column="CNTN_ANLY_CTN"/>
+		<result property="dvlrAnlyRsltCtn" column="DVLR_ANLY_RSLT_CTN"/>
+		<result property="partLnkdCnfcCtn" column="PART_LNKD_CNFC_CTN"/>
+		<result property="mdfcRangDbCtn" column="MDFC_RANG_DB_CTN"/>
+		<result property="mdfcRangSrvrCtn" column="MDFC_RANG_SRVR_CTN"/>
+		<result property="mdfcRangClntCtn" column="MDFC_RANG_CLNT_CTN"/>
+		<result property="mdfcRangEtc" column="MDFC_RANG_ETC"/>
+		<result property="unsbCtn" column="UNSB_CTN"/>
+		<result property="dltnYn" column="DLTN_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-selectOneModiInfAnalyse */
+		<![CDATA[
+		             select 
+		                   		AD.FIT_GAP_ID                             											/* FITGAP ID */
+		                 	  , GD.SYST_ID                                												/* 시스템ID */
+		                 	  , C1.DETL_CD_NM     									 as DETL_CD_NM1 		/* 시스템명 */
+		                 	  , GD.SB_SYST_ID                             											/* 서브시스템ID */
+		                 	  , C2.DETL_CD_NM    	 								 as DETL_CD_NM2		/* 서브시스템명 */     
+		                 	  , GD.CNSN_USER_NM                        											/* 자문사용자명컨설턴트) */
+		                 	  , AD.FILE_GRP_ID  										 as ATCH_FILE_DSCR   /* 파일그룹ID */
+		                 	  , to_char(AD.BASS_CNFC_YMD,'YYYYMMDD') as BASS_CNFC_YMD 	/* 근거회의일자 */
+		                 	  , GD.PRVC_BASS_CTN                          										/* 근거회의록내용 */
+		                 	  , AD.DVLR_NM                                											/* 개발자명 */
+		                 	  , AD.LNKD_PART_ASGN_NM                      									/* 연계파트담당자명 */
+		                 	  , AD.ACPT_YN                                											/* 수용여부 */
+		                 	  , AD.ASSN_VRSN_NO                           										/* 산정버전번호 */
+		                 	  , to_char(AD.WRTG_YMD,'YYYYMMDD') 		 as WRTG_YMD  			/* 작성일자 */
+		                 	  , AD.OVRV_CTN                              		 									/* 개요내용 */
+		                 	  , AD.CNTN_ANLY_CTN                         	 									/* 자문인 분석내용 */
+		                 	  , AD.DVLR_ANLY_RSLT_CTN                     									/* 개발자분석결과내용 */
+		                 	  , AD.PART_LNKD_CNFC_CTN                     									/* 파트연계회의내용 */
+		                 	  , AD.MDFC_RANG_DB_CTN                       									/* 변경범위DB내용 */
+		                 	  , AD.MDFC_RANG_SRVR_CTN                     									/* 변경범위서버내용 */
+		                 	  , AD.MDFC_RANG_CLNT_CTN                     									/* 변경범위클라이언트내용 */
+		                 	  , AD.MDFC_RANG_ETC                          										/* 변경범위기타내용 */
+		                 	  , AD.UNSB_CTN                               											/* 특이사항내용 */
+		                 	  , AD.DLTN_YN                                											/* 삭제여부 */
+		              from   CORMDIADT AD         																/* 변경 영향도 분석서_T */
+		              	      , CORFITGDT GD         																/* FITGAP 결과서_T */
+		              	      , CCCMCDDMT C1         															/* 시스템 공통코드_T */
+		              	      , CCCMCDDMT C2         															/* 서브 시스템 공통코드_T */
+				     where  AD.FIT_GAP_ID 			= GD.FIT_GAP_ID
+				        and  C1.COMN_GRP_CD(+) 	= 'COR_062'
+				        and  GD.SYST_ID     			= C1.COMN_DTLS_CD(+)
+				        and  C2.COMN_GRP_CD(+) 	= 'COR_063'
+				        and  GD.SB_SYST_ID  			= C2.COMN_DTLS_CD(+)         	         	           
+					    and  ( AD.DLTN_YN is null   or AD.DLTN_YN  = 'N' )
+		              	and  GD.FIT_GAP_ID   			= #{fitGapId} 
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-deleteModiInfAnalyse () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-deleteModiInfAnalyse"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-deleteModiInfAnalyse */
+		          update 
+		                  CORMDIADT         -- 변경 영향도 분석서
+		               set
+		                   DLTN_YN                                  = 'Y'                             -- 삭제여부
+		                 , LAST_UPDR_ID          = #{gvUserId}                            -- 최종수정자ID
+		                 , LAST_UPDT_IP          = #{gvUserIp}                            -- 최종수정IP
+		                 , LAST_UPDT_DT          = sysdate                                -- 최종수정일시
+		                 , LAST_UPDT_CLNT_PRGM_ID                    = #{gvClntPrgmId}                        -- 최종수정클라이언트프로그램ID
+		                 , LAST_UPDT_SRVR_PRGM_ID                    = #{gvSrvrPrgmId}                        -- 최종수정서버프로그램ID
+		            where FIT_GAP_ID                       = #{fitGapId}
+	</delete>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO">
+	
+		<result property="fitGapId" column="FIT_GAP_ID"/>
+		<result property="fileGrpId" column="FILE_GRP_ID"/>
+		<result property="fileId" column="FILE_ID"/>
+		<result property="atchFileSno" column="ATCH_FILE_SNO"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="fldvNm" column="FLDV_NM"/>
+		<result property="fileSizeVl" column="FILE_SIZE_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile (변경영향도분석 첨부파일 조회처리) 
+        Description :                                           변경영향도분석내용에 첨부한 파일을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoModiInfAnalyseDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoModiInfAnalyseDAO-listModiInfAnalyseFile */
+		<![CDATA[
+		SELECT MAIN.FIT_GAP_ID										/* FITGAP ID */
+			 	 , MAIN.ATCH_FILE_ID       	as FILE_GRP_ID   	/* FILE GRP ID */
+		     	 , MAIN.ATCH_FILE_ID 	     	as FILE_ID			/* 첨부파일ID */
+		     	 , FLT.ATCH_FILE_SNO									/* 첨부파일일련번호 */
+		     	 , FLT.ATCH_FILE_OGCP_NM   as FILE_NM		/* 첨부파일원본명 */
+		     	 , FLT.ATCH_FILE_EXTSN_NM  as FLDV_NM 		/* 첨부파일확장자명 */
+		     	 , FLT.ATCH_FILE_SIZE_NVAL 	 as FILE_SIZE_VL 	/* 첨부파일크기수치 */ 
+		 FROM  
+		  	     (   
+					select AA.FIT_GAP_ID
+						    , trim(regexp_substr(replace(AA.FILE_GRP_ID,'|','| '),'[^|]+',1,level)) AS ATCH_FILE_ID
+				      from  (
+				   				  select ADT.FIT_GAP_ID
+				   		                  , ADT.FILE_GRP_ID
+				                    from CORMDIADT ADT  /* 변경 영향도 분석서_T */
+				    	          where ADT.FIT_GAP_ID = #{fitGapId} --'FG-CC-C0099'
+				    	             and ( ADT.DLTN_YN is null or ADT.DLTN_YN = 'N' ) /* 삭제가 않된 것... */
+				               ) AA
+				  connect 
+				          by 
+				       level <= length(regexp_replace(AA.FILE_GRP_ID, '[^|]')) + 1
+			    ) MAIN
+			  , CCATCHFLT FLT
+		WHERE MAIN.ATCH_FILE_ID = FLT.ATCH_FILE_ID
+		]]>
+	</select>
+
+
+
+</mapper>

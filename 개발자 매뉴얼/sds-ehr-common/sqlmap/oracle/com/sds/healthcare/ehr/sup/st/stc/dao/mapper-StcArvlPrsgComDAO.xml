@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_StcArvlPrsgComDAO_sql.xml 
+    Description : -->
+<mapper namespace="StcArvlPrsgComDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo-result" type="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO">
+	
+		<result property="mdrpNo" column="MDRP_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+		resultMap : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  resultMap="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOApntInfo */
+		<![CDATA[
+			select  b.MDRP_NO   
+			  from  APRCRPTNT a
+			     ,  APRCADBLT b
+		     where  a.PTNO = #{ptno}
+		       and  a.MDCR_YMD = trunc(sysdate)
+		       and  a.MCDP_CD = ( select  CNST_VL 
+							        from  COCONSTDT 
+								   where  CNST_GRP_ID   = 'CCD_001'
+									 and  CNST_ID LIKE 'DPRT_RT'
+								)
+			   and  a.CODV_CD = 'O'
+		       and  a.MDCR_ANDV_CD not in ('7', '9', 'A')
+		       and  nvl(a.MCFE_RCPC_CD, 'N') != 'R'
+		       and  a.CNCL_DT is null
+		       and  a.MDRP_NO = b.MDRP_NO
+		       and  nvl(b.CARE_RPTN_YN, 'N') ='N'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo-result" type="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="rdtmAndvCd" column="RDTM_ANDV_CD"/>
+		<result property="ordrYmd" column="ORDR_YMD"/>
+		<result property="ordrSno" column="ORDR_SNO"/>
+		<result property="orprVl" column="ORPR_VL"/>
+		<result property="codvCd" column="CODV_CD"/>
+		<result property="apntId" column="APNT_ID"/>
+		<result property="mdrpNo" column="MDRP_NO"/>
+		<result property="fldrNo" column="FLDR_NO"/>
+		<result property="popSno" column="POP_SNO"/>
+		<result property="rcstCd" column="RCST_CD"/>
+		<result property="mdcrAndvCd" column="MDCR_ANDV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+		resultMap : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  resultMap="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-listOrdrApntInfo */
+		<![CDATA[
+		     with RT_ORDR as
+		     (   
+			  select  b.PTNO
+			       ,  b.ORDR_YMD
+			       ,  b.ORDR_SNO
+			       ,  b.MDRP_NO	  
+			       ,  b.FLDR_NO
+			       ,  b.POP_SNO
+			       ,  b.CODV_CD
+			       ,  a.APNT_ID
+		           ,  a.RDTM_ANDV_CD
+		           ,  b.RCST_CD
+		           ,  c.MDCR_ANDV_CD
+			    from  STRESERVT a
+			       ,  STCURORMT b
+				   ,  APRCRPTNT c
+			   where  a.PTNO = #{ptno}
+			     and  a.APNT_YMD = trunc(sysdate)
+			     and  a.APNT_STTS_DVSN_CD = '00'
+			     and  a.RDTM_ANDV_CD <> 'T' 
+			     and  a.RPTN_DT is null
+			     and  a.PTNO = b.PTNO
+			     and  a.ORDR_YMD = b.ORDR_YMD
+			     and  a.ORDR_SNO = b.ORDR_SNO
+			     and  b.REFN_IDCT_DT is null
+		         and  b.PTAD_MDRP_NO = c.MDRP_NO
+			  ) 
+			  , PLAN_ORDR as 
+			  (
+			  select  b.PTNO
+			       ,  b.ORDR_YMD
+			       ,  b.ORDR_SNO
+			       ,  b.MDRP_NO	  
+			       ,  b.FLDR_NO
+			       ,  b.POP_SNO
+			       ,  b.CODV_CD
+			       ,  a.APNT_ID
+		           ,  a.RDTM_ANDV_CD
+		           ,  b.RCST_CD
+			    from  STRESERVT a
+			       ,  STCURORMT b
+			   where  a.PTNO = #{ptno}
+			     and  a.APNT_YMD <= trunc(sysdate)
+			     and  a.RPTN_DT is null 
+			     and  a.RDTM_ANDV_CD = 'T' 
+			     and  a.APNT_STTS_DVSN_CD = '00'
+			     and  a.PTNO = b.PTNO
+			     and  a.ORDR_YMD = b.ORDR_YMD
+			     and  a.ORDR_SNO = b.ORDR_SNO
+			     and  b.REFN_IDCT_DT is null
+			  )
+			  select  a.PTNO
+		           ,  a.RDTM_ANDV_CD
+		           ,  to_char(a.ORDR_YMD, 'yyyyMMdd') as  ORDR_YMD
+		           ,  a.ORDR_SNO
+		           ,  a.PTNO||to_char(a.ORDR_YMD, 'yyyymmdd')||lpad(to_char(a.ORDR_SNO), 22, '0') as ORPR_VL
+		           ,  a.CODV_CD
+		           ,  a.APNT_ID
+		           ,  a.MDRP_NO
+				   ,  a.FLDR_NO
+				   ,  a.POP_SNO
+		           ,  a.RCST_CD
+				   ,  a.MDCR_ANDV_CD
+			    from  RT_ORDR a
+			   union  all
+			  select  a.PTNO
+		           ,  a.RDTM_ANDV_CD
+		           ,  to_char(a.ORDR_YMD, 'yyyyMMdd') as  ORDR_YMD
+		           ,  a.ORDR_SNO
+		           ,  a.PTNO||to_char(a.ORDR_YMD, 'yyyymmdd')||lpad(to_char(a.ORDR_SNO), 22, '0') as ORPR_VL
+		           ,  a.CODV_CD
+		           ,  a.APNT_ID
+		           ,  a.MDRP_NO
+				   ,  a.FLDR_NO
+				   ,  a.POP_SNO
+		           ,  a.RCST_CD
+				   ,  '' as MDCR_ANDV_CD
+			    from  PLAN_ORDR a
+			   where  (a.PTNO, a.FLDR_NO, a.POP_SNO) in ( select  z.PTNO
+			                                                   ,  z.FLDR_NO
+			                                                   ,  z.POP_SNO
+			                                                from  RT_ORDR z )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn-result" type="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO">
+	
+		<result property="afiErrMesgCtn" column="AFI_ERR_MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+		resultMap : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  resultMap="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOnePtadOrdrPsblYn */
+		<![CDATA[
+		  select  fn_ac_get_ordr_psbl_yn(#{mdrpNo}) as AFI_ERR_MESG_CTN
+		    from  dual
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd-result" type="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO">
+	
+		<result property="mesgCtn" column="MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+		resultMap : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  resultMap="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectOneCheckCodvCd */
+		<![CDATA[
+		          select  case when count(*) > 0 then (
+		                                                select  z.RTX_CTRL_NM
+		                                                  from  STMCTRLMT z
+		                                                 where  z.RTX_CTRL_CD = 'STZ_241'
+		                                                   and  z.RTX_DTLS_CTRL_CD = 'ERROR_MSG'          
+		                                                )
+		                       else 'Y'
+		                  end MESG_CTN
+		            from  ( 
+		                   select  (
+		                           case when nvl(subC.CODV_CD, 'O') = 'O' and subB.CODV_CD = 'O' then 'Y' 
+		                                when subC.MDRP_NO = subB.MDRP_NO then 'Y'  
+		                                else 'N' 
+		                            end
+		                           ) as VALD_YN
+		                        ,  subA.APNT_ID
+		                     from  STRESERVT subA
+		                        ,  STCURORMT subB
+		                        ,  (
+		                              select  b.PTNO
+		                                   ,  b.MDRP_NO
+		                                   ,  b.CODV_CD
+		                                from  (
+		                                      select  a.PTNO
+		                                           ,  to_number(substr(min(a.RANK_MDRP_NO), 2)) as MDRP_NO
+		                                        from  (
+		                                              select  a.PTNO 
+		                                                   ,  'I' as CODV_CD
+		                                                   ,  'A'||nvl(max(a.MDRP_NO), 0) as RANK_MDRP_NO
+		                                                from  APRCRPTNT a
+		                                               where   a.PTNO = #{ptno}
+		                                                 and  (
+		                                                             a.DSCH_DT = to_date('29991231', 'yyyyMMdd')
+		                                                        or  a.DSCH_DT between trunc(sysdate) and trunc(sysdate) + 1
+		                                                      )
+		                                                 and  a.DSCH_DT = (
+		                                                                  select  max(DSCH_DT)
+		                                                                    from  APRCRPTNT z
+		                                                                   where  z.PTNO = a.PTNO
+		                                                                     and  z.CODV_CD = 'I'
+		                                                                     and  z.CNCL_DT is null
+		                                                                  )
+		                                                and  a.CODV_CD = 'I'
+		                                                and  a.CNCL_DT is null
+		                                                and  trunc(a.MDCR_DT) <= trunc(sysdate)
+		                                                and  not exists ( select  'Y'
+		                                                                    from  APRCRPTNT z
+		                                                                   where  z.PTNO = a.PTNO
+		                                                                     and  z.CODV_CD = 'I'
+		                                                                     and  z.CARE_WARD_CD in ( 
+																									select  z.RTX_DTLS_CTRL_CD
+		  																							  from  STMCTRLMT z
+		 																							 where  z.RTX_CTRL_CD = 'STZ_255'
+		   																							   and  z.RTX_DTLS_CTRL_CD <> '00'
+		                                                                                               )   /* 낮병동 제외  */
+		                                                                    and  trunc(z.MDCR_DT) = trunc(sysdate)
+		                                                                    /* and  trunc(z.DSCH_DT) = trunc(sysdate) */
+		                                                                    /* and  z.CHCK_STTS_CD = 'P' */
+		                                                                    and  z.CNCL_DT is null
+		                                                                    and  rownum = 1
+		                                                               )
+		                                               group
+		                                                  by  a.PTNO      
+		                                              ) a
+		                                        group 
+		                                           by  a.PTNO
+		                                      ) a   
+		                                   ,  APRCRPTNT b
+		                               where  a.MDRP_NO = b.MDRP_NO
+		                                 and  b.CNCL_DT is null    
+		                            ) subC                                
+		                    where  subA.PTNO = #{ptno}
+		                      and  subA.APNT_YMD = trunc(sysdate) 
+		                      and  subA.APNT_STTS_DVSN_CD = '00'
+		                      and  subA.RPTN_DT is null
+		                      and  subA.PTNO = subB.PTNO
+		                      and  subA.ORDR_YMD = subB.ORDR_YMD
+		                      and  subA.ORDR_SNO = subB.ORDR_SNO
+		                      and  subB.REFN_IDCT_DT is null
+		                      and  subB.PTNO = subC.PTNO(+)
+		                  ) z
+		           where  z.VALD_YN = 'N' 
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOApntRptn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOApntRptn"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOApntRptn */
+		<![CDATA[
+			 update  APRCADBLT                           
+		        set  CARE_RPTN_YN = 'Y'
+		          ,  CARE_RPTN_DT = sysdate
+		          ,  CARE_RCPS_ID = #{careRcpsId}
+		          /* 서버 프로그램 전환시 자동 추가된 항목 */
+		          ,  LAST_UPDR_ID = #{gvUserId}
+				  ,  LAST_UPDT_IP = #{gvUserIp}
+				  ,  LAST_UPDT_DT = sysdate
+				  ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+				  ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		      where  MDRP_NO = #{mdrpNo}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateReceiptByApntId () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateReceiptByApntId"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateReceiptByApntId */
+		<![CDATA[
+			update  STRESERVT
+		       set  RPTN_DT = sysdate
+		         ,  RCEQ_ID = #{rceqId}
+				 ,  LAST_UPDR_ID = #{gvUserId}                              /* 최종수정자ID */
+				 ,  LAST_UPDT_IP = #{gvUserIp}                              /* 최종수정IP */
+				 ,  LAST_UPDT_DT = sysdate                                   /* 최종수정일시 */
+				 ,  LAST_UPDT_CLNT_PRGM_ID =  #{gvClntPrgmId} /* 최종수정EMR클라이언트프로그램ID */
+				 ,  LAST_UPDT_SRVR_PRGM_ID =  #{gvSrvrPrgmId} /* 최종수정EMR서버프로그램ID */
+			 where  APNT_ID = #{apntId}
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMdcrYn () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMdcrYn"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMdcrYn */
+		<![CDATA[
+			update  APRCRPTNT
+		       set  MDCR_YN = 'Y'
+				 ,  LAST_UPDR_ID = #{gvUserId}                             /* 최종수정자ID */
+				 ,  LAST_UPDT_IP = #{gvUserIp}                              /* 최종수정IP */
+				 ,  LAST_UPDT_DT = sysdate                                 /* 최종수정일시 */
+				 ,  LAST_UPDT_CLNT_PRGM_ID =  #{gvClntPrgmId}    /* 최종수정EMR클라이언트프로그램ID */
+				 ,  LAST_UPDT_SRVR_PRGM_ID =  #{gvSrvrPrgmId}    /* 최종수정EMR서버프로그램ID */
+			 where  MDRP_NO = #{mdrpNo}
+		       and  CNCL_DT is null 
+		       and  nvl(MDCR_YN, '*') <> 'Y'
+		       and  CODV_CD = 'O'
+		]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateNoRptnPlanOrdrInfoByKey () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateNoRptnPlanOrdrInfoByKey"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateNoRptnPlanOrdrInfoByKey */
+		<![CDATA[
+		   update  STRESERVT
+			     set  IMPL_DT = sysdate
+			   	  ,  IMPT_ID = #{rceqId}
+				 ,  RPTN_DT = sysdate
+		          ,  RCEQ_ID = #{rceqId}
+			   		 /*  서버 프로그램 전환시 자동 추가된 항목 */
+			   		 ,  LAST_UPDR_ID = #{gvUserId}
+			   		 ,  LAST_UPDT_IP = #{gvUserIp}
+			   		 ,  LAST_UPDT_DT = sysdate
+			   		 ,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			   		 ,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			 where  APNT_ID in
+			 (
+		   select  a.APNT_ID
+		     from  STRESERVT a
+		          ,STCURORMT b
+		   where  a.PTNO = #{ptno}
+		      and  a.FLDR_NO = #{fldrNo}
+		      and  a.POP_SNO = #{popSno}
+		      and  a.APNT_YMD <= trunc(sysdate)
+		      and  a.RPTN_DT is null /* 접수안 된 것 */
+		      and  a.RDTM_ANDV_CD = 'T' 
+		      and  a.APNT_STTS_DVSN_CD = '00'
+		      and  a.PTNO = b.PTNO
+		      and  a.ORDR_YMD = b.ORDR_YMD
+		      and  a.ORDR_SNO = b.ORDR_SNO
+		      and  b.REFN_IDCT_DT is null
+			)
+		]]>	
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMcdpElbd () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMcdpElbd"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-updateOMcdpElbd */
+		<![CDATA[
+		 update  MNZDISPPT a
+		    set  a.RPTN_DT = sysdate
+		      ,  a.LAST_UPDR_ID = #{gvUserId}
+		      ,  a.LAST_UPDT_IP = #{gvUserIp}
+		      ,  a.LAST_UPDT_DT = sysdate
+		      ,  a.LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+		      ,  a.LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		  where  a.MDRP_NO = #{mdrpNo}
+		]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt-result" type="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO">
+	
+		<result property="mesgCtn" column="MESG_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO
+		resultMap : com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt"  parameterType="com.sds.healthcare.ehr.sup.st.stc.vo.StcArvlPrsgComDVO"  resultMap="com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-sup-st-stc-dao-StcArvlPrsgComDAO-selectCheckApntCnt */
+		<![CDATA[
+		     with RT_ORDR as
+		     (   
+			  select  b.PTNO  
+			       ,  b.FLDR_NO
+			       ,  b.POP_SNO
+			    from  STRESERVT a
+			       ,  STCURORMT b
+			   where  a.PTNO = #{ptno}
+			     and  a.APNT_YMD = trunc(sysdate)
+			     and  a.APNT_STTS_DVSN_CD = '00'
+			     and  a.RDTM_ANDV_CD <> 'T' 
+			     and  a.PTNO = b.PTNO
+			     and  a.ORDR_YMD = b.ORDR_YMD
+			     and  a.ORDR_SNO = b.ORDR_SNO
+			     and  b.REFN_IDCT_DT is null
+			  ) 
+			  , PLAN_ORDR as 
+			  (
+			  select  b.PTNO	  
+			       ,  b.FLDR_NO
+			       ,  b.POP_SNO
+			    from  STRESERVT a
+			       ,  STCURORMT b
+			   where  a.PTNO = #{ptno}
+			     and  a.APNT_YMD <= trunc(sysdate)
+			     and  a.RDTM_ANDV_CD = 'T' 
+			     and  a.APNT_STTS_DVSN_CD = '00'
+			     and  a.PTNO = b.PTNO
+			     and  a.ORDR_YMD = b.ORDR_YMD
+			     and  a.ORDR_SNO = b.ORDR_SNO
+			     and  b.REFN_IDCT_DT is null
+			  )
+			  select case when sum(cnt) > 0 then 'Y' else 'N' end MESG_CTN
+				from
+				( select  
+						  count(a.PTNO) as cnt
+					from  RT_ORDR a
+				   union  all
+				  select  
+						  count(a.PTNO) as cnt
+					from  PLAN_ORDR a
+				   where  (a.PTNO, a.FLDR_NO, a.POP_SNO) in ( select  z.PTNO
+																   ,  z.FLDR_NO
+																   ,  z.POP_SNO
+																from  RT_ORDR z )
+				   union  all											
+				  select  count(b.MDRP_NO) as cnt  
+					from   APRCRPTNT a
+						,  APRCADBLT b
+				   where  a.PTNO = #{ptno}
+				   and  a.MDCR_YMD = trunc(sysdate)
+				   and  a.MCDP_CD = ( select  CNST_VL 
+										from  COCONSTDT 
+									   where  CNST_GRP_ID   = 'CCD_001'
+										 and  CNST_ID LIKE 'DPRT_RT'
+									)
+				   and  a.CODV_CD = 'O'
+				   and  a.MDCR_ANDV_CD not in ('7', '9', 'A')
+				   and  nvl(a.MCFE_RCPC_CD, 'N') != 'R'
+				   and  a.CNCL_DT is null
+				   and  a.MDRP_NO = b.MDRP_NO
+				 )	
+		]]>
+	</select>
+
+
+
+</mapper>

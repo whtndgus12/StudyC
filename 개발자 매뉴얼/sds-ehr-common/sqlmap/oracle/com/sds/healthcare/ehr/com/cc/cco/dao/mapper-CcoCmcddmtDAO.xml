@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcoCmcddmtDAO_sql.xml 
+    Description :                                      옵션항목
+                  -->
+<mapper namespace="CcoCmcddmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="detlCdDscrCtn" column="DETL_CD_DSCR_CTN"/>
+		<result property="detlCdNm1" column="DETL_CD_NM_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl (옵션항목 조건 코드상세 조회) 
+        Description :                                           옵션항목 조건 코드상세 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl-result" useCache="true" flushCache="false">
+		<![CDATA[
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdDetl */
+		select  /*+ ccd_cmcddmt_l06$S01_옵션항목 조건 코드상세 조회 */ 
+		             a.COMN_DTLS_CD                             /* 공통세부코드       */
+		           , nvl(b.DETL_CD_NM, a.DETL_CD_NM) DETL_CD_NM  /* 상세코드명         */
+		           , a.DETL_CD_DSCR_CTN
+		           , a.COMN_DTLS_CD || ' - ' || nvl(b.DETL_CD_NM, a.DETL_CD_NM) AS "DETL_CD_NM_1"
+		    from     CCCMCDDMT a                         /* 코드상세           */
+		           , CCCMCDDLT b                         /* 언어별상세코드명   */
+		           , CCCMCDMMT c
+		    where    a.COMN_GRP_CD    = c.COMN_GRP_CD
+		      and    c.COMN_GRP_CD    = #{comnGrpCd}
+		      and    trunc(c.APST_YMD) <= trunc(sysdate)
+		      and    trunc(c.APFN_YMD) >= trunc(sysdate)
+		      and    a.COMN_GRP_CD    = b.COMN_GRP_CD(+)
+		      and    a.COMN_DTLS_CD   = b.COMN_DTLS_CD(+)
+		      and    b.LNGG_CD(+)     = #{lnggCd}
+		      and    trunc(a.APST_YMD) <= trunc(sysdate)
+		      and    trunc(a.APFN_YMD) >= trunc(sysdate)
+		      and    ((nvl(#{slctCtn}, '*') = '*') or
+		              (a.COMN_DTLS_CD in ( select  xa.COMN_DTLS_CD
+		                                   from    CCCMCDIDT xa
+		                                   where   xa.COMN_GRP_CD    = a.COMN_GRP_CD
+		                                     and   #{slctCtn} like '%' || xa.COMN_ITEM_CD || '/' || nvl(xa.COMN_ITEM_CHRC_VL, '!!') || '%'
+		                                 )
+		              )
+		             )
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem-result" type="com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO">
+	
+		<result property="comnDtlsCd" column="COMN_DTLS_CD"/>
+		<result property="comnItemCd" column="COMN_ITEM_CD"/>
+		<result property="comnItemNm" column="COMN_ITEM_NM"/>
+		<result property="comnItemChrcVl" column="COMN_ITEM_CHRC_VL"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem (옵션항목 조건 코드항목 조회) 
+        Description :                                           옵션항목 조건 코드항목 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem"  parameterType="com.sds.healthcare.ehr.com.cc.cco.vo.CcoCmcddmtDVO"  resultMap="com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cc-cco-dao-CcoCmcddmtDAO-listOptnItemCndtCdItem */
+		select  /*+ ccd_cmcddmt_l07$S01_옵션항목 조건 코드항목 조회 */ 
+		            a.COMN_DTLS_CD          /* 공통세부코드       */
+		          , a.COMN_ITEM_CD          /* 공통항목코드       */
+		          , b.COMN_ITEM_NM          /* 공통항목명         */
+		          , a.COMN_ITEM_CHRC_VL     /* 공통항목문자값     */
+		    from    CCCMCDIDT a      /* 코드항목값         */
+		          , CCCMCDIMT b      /* 코드항목           */
+		    where   a.COMN_GRP_CD  = b.COMN_GRP_CD(+)
+		      and   a.COMN_ITEM_CD = b.COMN_ITEM_CD(+)
+		      and   a.COMN_GRP_CD  = #{comnGrpCd}
+		      and   ((nvl(#{slctCtn}, '*') = '*') or
+		             (a.COMN_DTLS_CD in ( select  xa.COMN_DTLS_CD
+		                                  from    CCCMCDIDT xa
+		                                  where   xa.COMN_GRP_CD    = a.COMN_GRP_CD
+		                                    and   #{slctCtn} like '%' || xa.COMN_ITEM_CD || '/' || nvl(xa.COMN_ITEM_CHRC_VL, '!!') || '%'
+		                                )
+		             )
+		            )
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmpPtntInfmDAO_sql.xml 
+    Description :                                      환자기본정보
+                  -->
+<mapper namespace="SmpPtntInfmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm-result" type="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="ptntAlisNm" column="PTNT_ALIS_NM"/>
+		<result property="ptntEnsnLsnm" column="PTNT_ENSN_LSNM"/>
+		<result property="ptntEnsnNm" column="PTNT_ENSN_NM"/>
+		<result property="frrn" column="FRRN"/>
+		<result property="brrn" column="BRRN"/>
+		<result property="bsovAftrPtno" column="BSOV_AFTR_PTNO"/>
+		<result property="bsrn" column="BSRN"/>
+		<result property="btdt" column="BTDT"/>
+		<result property="ageVl" column="AGE_VL"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="gendNm" column="GEND_NM"/>
+		<result property="ntnlCd" column="NTNL_CD"/>
+		<result property="psptNo" column="PSPT_NO"/>
+		<result property="frgnRgstNo" column="FRGN_RGST_NO"/>
+		<result property="ssn" column="SSN"/>
+		<result property="frgnIdntCd" column="FRGN_IDNT_CD"/>
+		<result property="ptntInfwPathCd" column="PTNT_INFW_PATH_CD"/>
+		<result property="inccPtntYn" column="INCC_PTNT_YN"/>
+		<result property="rqprNm" column="RQPR_NM"/>
+		<result property="rqprTlnoCtn" column="RQPR_TLNO_CTN"/>
+		<result property="rqstInprId" column="RQST_INPR_ID"/>
+		<result property="rqstInptDt" column="RQST_INPT_DT"/>
+		<result property="dethYmd" column="DETH_YMD"/>
+		<result property="dethYmdRgsrId" column="DETH_YMD_RGSR_ID"/>
+		<result property="prtsRsrn" column="PRTS_RSRN"/>
+		<result property="prtsNm" column="PRTS_NM"/>
+		<result property="inifAgrmYn" column="INIF_AGRM_YN"/>
+		<result property="snstInfmAgrmYn" column="SNST_INFM_AGRM_YN"/>
+		<result property="uniqIdntInfmAgrmYn" column="UNIQ_IDNT_INFM_AGRM_YN"/>
+		<result property="inifAgrmRgstSystNm" column="INIF_AGRM_RGST_SYST_NM"/>
+		<result property="inifAgrmSgntYn" column="INIF_AGRM_SGNT_YN"/>
+		<result property="scryYn" column="SCRY_YN"/>
+		<result property="insrQlfcExclYn" column="INSR_QLFC_EXCL_YN"/>
+		<result property="emailId" column="EMAIL_ID"/>
+		<result property="emailDmanNm" column="EMAIL_DMAN_NM"/>
+		<result property="cashRcptUseNo" column="CASH_RCPT_USE_NO"/>
+		<result property="ovrsRsdtYn" column="OVRS_RSDT_YN"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+		<result property="cstmId" column="CSTM_ID"/>
+		<result property="samePhspIdntYn" column="SAME_PHSP_IDNT_YN"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm"  parameterType="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntInfm */
+		       PTNO
+		     , PTNT_NM
+		     , PTNT_ALIS_NM
+		     , PTNT_ENSN_LSNM
+		     , PTNT_ENSN_NM
+		     , FRRN
+		     , BRRN
+		     , BSOV_AFTR_PTNO
+		     , BSRN
+		     , to_char(BTDT, 'yyyymmddhh24miss')            as BTDT
+		     , trunc(months_between(sysdate, BTDT)/12) as AGE_VL /*  나이             */
+		     , GEND_CD
+		     , GEND_CD || '/' || trunc(months_between(sysdate, BTDT)/12)  as GEND_NM
+		     , NTNL_CD
+		     , PSPT_NO
+		     , FRGN_RGST_NO
+		     , SSN
+		     , FRGN_IDNT_CD
+		     , PTNT_INFW_PATH_CD
+		     , INCC_PTNT_YN
+		     , RQPR_NM
+		     , RQPR_TLNO_CTN
+		     , RQST_INPR_ID
+		     , to_char(RQST_INPT_DT, 'yyyymmddhh24miss') as RQST_INPT_DT
+		     , to_char(DETH_YMD, 'yyyymmdd') as DETH_YMD
+		     , DETH_YMD_RGSR_ID
+		     , PRTS_RSRN
+		     , PRTS_NM
+		     , INIF_AGRM_YN
+		     , SNST_INFM_AGRM_YN
+		     , UNIQ_IDNT_INFM_AGRM_YN
+		     , INIF_AGRM_RGST_SYST_NM
+		     , INIF_AGRM_SGNT_YN
+		     , SCRY_YN
+		     , INSR_QLFC_EXCL_YN
+		     , EMAIL_ID
+		     , EMAIL_DMAN_NM
+		     , CASH_RCPT_USE_NO
+		     , OVRS_RSDT_YN
+		     , RMRK_CTN
+		     , CSTM_ID
+		     , SAME_PHSP_IDNT_YN
+		     , to_char(STRT_YMD, 'yyyymmdd')            as STRT_YMD
+		     , to_char(FNSH_YMD, 'yyyymmdd')            as FNSH_YMD
+		  from APPTPTNTV
+		 where PTNO = #{ptno}
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno-result" type="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cnpnDvsnCd" column="CNPN_DVSN_CD"/>
+		<result property="cnpnSno" column="CNPN_SNO"/>
+		<result property="ptntTlno" column="PTNT_TLNO"/>
+		<result property="tlnoCnfrNeedYn" column="TLNO_CNFR_NEED_YN"/>
+		<result property="ovrsTlnoYn" column="OVRS_TLNO_YN"/>
+		<result property="pnrlCd" column="PNRL_CD"/>
+		<result property="smsrTrgtDvsnCd" column="SMSR_TRGT_DVSN_CD"/>
+		<result property="rmrkCtn" column="RMRK_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno"  parameterType="com.sds.healthcare.ehr.sup.sm.smp.vo.SmpPtntInfmDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smp-dao-SmpPtntInfmDAO-selectOnePtntTlno */
+		       PTNO as PTNO
+		     , CNPN_DVSN_CD as CNPN_DVSN_CD
+		     , CNPN_SNO as CNPN_SNO
+		     , PTNT_TLNO as PTNT_TLNO
+		     , TLNO_CNFR_NEED_YN as TLNO_CNFR_NEED_YN
+		     , OVRS_TLNO_YN as OVRS_TLNO_YN
+		     , PNRL_CD as PNRL_CD
+		     , SMSR_TRGT_DVSN_CD as SMSR_TRGT_DVSN_CD
+		     , RMRK_CTN as RMRK_CTN
+		  from apptcnpnt
+		 where 1=1
+		<choose>
+		    <when test='afiPrsgNm == "ptno_cnpnDvsnCd"'>
+		    <!-- #{afiPrsgNm} -->
+		   and PTNO = #{ptno}
+		   and CNPN_DVSN_CD = #{cnpnDvsnCd}
+		   and rownum = 1
+		    </when>
+		    <otherwise> 
+		   and PTNO = #{ptno}
+		   and CNPN_DVSN_CD = #{cnpnDvsnCd}
+		   and CNPN_SNO = #{cnpnSno}
+		    </otherwise>   
+		</choose>   
+	</select>
+
+
+
+</mapper>

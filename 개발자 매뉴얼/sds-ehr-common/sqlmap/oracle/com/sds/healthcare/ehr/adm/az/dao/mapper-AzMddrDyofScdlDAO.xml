@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzMddrDyofScdlDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzMddrDyofScdlDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc-result" type="com.sds.healthcare.ehr.adm.az.vo.AzMddrDyofScdlDVO">
+	
+		<result property="mcdpSqncVl" column="MCDP_SQNC_VL"/>
+		<result property="abrvMcdpCd" column="ABRV_MCDP_CD"/>
+		<result property="cct1" column="CCT1"/>
+		<result property="cct2" column="CCT2"/>
+		<result property="cct3" column="CCT3"/>
+		<result property="cct4" column="CCT4"/>
+		<result property="cct5" column="CCT5"/>
+		<result property="cct6" column="CCT6"/>
+		<result property="cct7" column="CCT7"/>
+		<result property="cct8" column="CCT8"/>
+		<result property="cct9" column="CCT9"/>
+		<result property="sum" column="SUM"/>
+		<result property="wrtnCnt" column="WRTN_CNT"/>
+		<result property="cmptCnt" column="CMPT_CNT"/>
+		<result property="afiTotlRa" column="AFI_TOTL_RA"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc (진료일정변경 통보현황 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzMddrDyofScdlDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzMddrDyofScdlDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc-result" useCache="true" flushCache="false">
+		select  /*+ use_nl(a b c) index (a MDBDYOFST_I01) SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzMddrDyofScdlDAO-listMdcrScdlMdfvNtfc */
+		        b.MCDP_SQNC_VL
+		      , b.ABRV_DPRT_CD as ABRV_MCDP_CD
+		      , sum(decode(trunc(a.STRT_YMD)
+		                  , trunc(a.LAST_UPDT_DT), 0
+		                                         , decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 0)
+		                                                 , 0, 1,0))) as CCT1
+		      , sum(decode(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 0, 1, 0)) as CCT2
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 1)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 5)
+		                          , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 1
+		                                                                     , 0)
+		                  , 0)) as CCT3
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 6)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT),10)
+		                          ,trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                          ,1
+		                          ,0)
+		                  , 0)) as CCT4
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 11)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT),15)
+		                          ,trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                          ,1
+		                          ,0)
+		                  , 0)) as CCT5
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 16)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT),20)
+		                          ,trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                          ,1
+		                          ,0)
+		                  , 0)) as CCT6
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 21)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT),25)
+		                          ,trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                          ,1
+		                          ,0)
+		                  , 0)) as CCT7
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 26)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , decode(least(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT),30)
+		                          ,trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                          ,1
+		                          ,0)
+		                  , 0)) as CCT8
+		      , sum(decode(greatest(trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT), 31)
+		                  , trunc(a.STRT_YMD) - trunc(a.LAST_UPDT_DT)
+		                  , 1
+		                  , 0)) as CCT9
+		      , count(a.MCDP_CD) as SUM
+		      , sum(decode(a.PTCN_CD, '2', 1, 0)) as WRTN_CNT
+		      , sum(decode(a.PTCN_CD, '1', 1, 0)) as CMPT_CNT
+		      , sum(decode(a.PTCN_CD, '1', 1, 0)) / greatest(count(a.MCDP_CD), 1) * 100 as AFI_TOTL_RA
+		  from  MDBDYOFST a
+		      , HZDEPTMMT b
+		      <![CDATA[
+		 where  a.STRT_YMD     <= to_date(#{inqrApfnYmd}, 'yyyymmdd')
+		   and  a.FNSH_YMD     >= to_date(#{inqrApstYmd}, 'yyyymmdd')
+		   ]]>
+		   and  b.DPRT_CD(+)    = a.MCDP_CD
+		 group  by
+		        b.MCDP_SQNC_VL
+		      , b.ABRV_DPRT_CD      
+		 order  by
+		        b.MCDP_SQNC_VL
+	</select>
+
+
+
+</mapper>

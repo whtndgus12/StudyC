@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_CcuNotidmtDAO_sql.xml 
+    Description :                                      수신 노티
+                  -->
+<mapper namespace="CcuNotidmtDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO">
+	
+		<result property="reptNtm" column="REPT_NTM"/>
+		<result property="reptNtm1" column="REPT_NTM1"/>
+		<result property="gradDvsnCd" column="GRAD_DVSN_CD"/>
+		<result property="titlNm" column="TITL_NM"/>
+		<result property="rturVl" column="RTUR_VL"/>
+		<result property="rturVl1" column="RTUR_VL1"/>
+		<result property="rturVl2" column="RTUR_VL2"/>
+		<result property="rturVl3" column="RTUR_VL3"/>
+		<result property="fldrDvsnCd" column="FLDR_DVSN_CD"/>
+		<result property="inqrYn" column="INQR_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr (노티대상자 건수 조회) 
+        Description :                                           노티대상자 건수 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-selectOneNotiTgprCctInqr */
+		<![CDATA[
+		select  /*+ cud_notidmt_s01$S01_노티대상자 건수 조회 */ 
+		        /*+ INDEX(A CUNOTIDMT_I02) LEADING(A) USE_NL(B) */
+		            nvl(sum(decode(B.GRAD_DVSN_CD,'0',1,0)),0) AS "REPT_NTM" ,  --일반
+		            nvl(sum(decode(B.GRAD_DVSN_CD,'1',1,0)) + sum(decode(B.GRAD_DVSN_CD,'2',1,0)),0) AS "REPT_NTM1", --중요+긴급
+		            CAST('' AS VARCHAR2(20)) AS "GRAD_DVSN_CD",
+		            CAST('' AS VARCHAR2(500)) AS "TITL_NM",
+		            CAST('' AS VARCHAR2(100)) AS "RTUR_VL",
+		            CAST('' AS VARCHAR2(100)) AS "RTUR_VL1",
+		            CAST('' AS VARCHAR2(100)) AS "RTUR_VL2",
+		            CAST('' AS VARCHAR2(100)) AS "RTUR_VL3",
+		            CAST('' AS VARCHAR2(20)) AS "FLDR_DVSN_CD",
+		            CAST('' AS VARCHAR2(1)) AS "INQR_YN"
+		      from  CUNOTIDMT A,
+		              CUNOTIMMT B
+		     where
+		            A.RGST_YMD >= trunc(sysdate - 7)  -- 노티는 -7일 건수 조회
+		       and  A.RCVR_ID  = #{rcvrId}
+		       and  A.INQR_YN  = 'N'  -- 조회 여부(Y-조회, N-미조회)
+		       and  A.FLDR_DVSN_CD = '0' -- 0-수신
+		       and  A.RGST_YMD = B.RGST_YMD
+		       and  A.RGST_SNO = B.RGST_SNO
+		       and  B.TRSM_TYPE_CD <> '4'
+		       and  B.TITL_NM is not null
+		       and  (A.NOTC_DLTN_YN is null or A.NOTC_DLTN_YN = 'N')
+		       --and  (B.DLTN_YN is null or B.DLTN_YN = 'N') --노티발신함 삭제건은 포함(로직 제외)
+		       and  (B.NOTC_APNT_SNDG_EN is null or B.NOTC_APNT_SNDG_EN = 'Y')
+		       and  (A.NOTC_SNDG_CNCL_YN is null or A.NOTC_SNDG_CNCL_YN = 'N')
+		]]>	
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiRltmDlvyYn (노티 실시간 전달여부 수정) 
+        Description :                                           노티 실시간 전달여부 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiRltmDlvyYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiRltmDlvyYn */
+		update  /*+ cud_notidmt_u03$I01_노티 실시간 전달 여부 수정 */
+		            CUNOTIDMT
+		       set  DLVY_YN           = #{dlvyYn},
+		            LAST_UPDR_ID      = #{gvUserId},
+		            LAST_UPDT_IP      = #{gvUserIp},
+		            LAST_UPDT_DT      = sysdate,
+		            LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+		            LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+		       and  RGST_SNO = #{rgstSno}
+		       and  RCVR_ID  = #{rcvrId}
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr-result" type="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO">
+	
+		<result property="reptNtm" column="REPT_NTM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="notcDvsnCd" column="NOTC_DVSN_CD"/>
+		<result property="iconName" column="ICON_NAME"/>
+		<result property="formName" column="FORM_NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr (업무 노티 건수 조회) 
+        Description :                                           업무 노티 건수 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO
+		resultMap : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO"  resultMap="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-listBswrNotiTgprCctInqr */
+		<![CDATA[
+		select  /*+ ORDERED USE_NL(A B C D E) INDEX(A CUNOTIDMT_I01) */
+		        SUM(CASE WHEN A.INQR_YN = 'N' THEN 1 ELSE 0 END) AS "REPT_NTM"
+		        /*COUNT(B.RGST_SNO) AS "REPT_NTM"*/
+		      , C.DETL_CD_NM
+		      , B.NOTC_DVSN_CD
+		      , D.COMN_ITEM_CHRC_VL AS "ICON_NAME"
+		      , E.COMN_ITEM_CHRC_VL AS "FORM_NAME"      
+		  from  CUNOTIDMT A,
+		          CUNOTIMMT B,
+		          CCCMCDDMT C,
+		          CCCMCDIDT D,
+		          CCCMCDIDT E
+		 where
+		        A.RGST_YMD >= trunc(sysdate - 7)  -- 노티는 -7일 건수 조회
+		   and  A.RCVR_ID  = #{rcvrId}
+		   /*and  A.INQR_YN  = 'N'  -- 조회 여부(Y-조회, N-미조회)*/
+		   and  A.RGST_YMD = B.RGST_YMD
+		   and  A.RGST_SNO = B.RGST_SNO
+		   and  B.NOTC_DVSN_CD = C.COMN_DTLS_CD
+		]]>
+		<if test="notcDvsnCd == null">
+		   and  B.NOTC_DVSN_CD NOT IN ('M3', 'M4')
+		</if>
+		<![CDATA[
+		   and  (A.NOTC_DLTN_YN is null or A.NOTC_DLTN_YN = 'N')
+		   and  B.TRSM_TYPE_CD = '4'
+		   and  B.TITL_NM is not null
+		]]>
+		<if test="notcDvsnCd != null">
+		   and B.NOTC_DVSN_CD = #{notcDvsnCd}
+		</if>
+		<![CDATA[
+		   and C.COMN_GRP_CD = 'CUC_018'
+		   and C.COMN_GRP_CD = D.COMN_GRP_CD
+		   and C.COMN_DTLS_CD = D.COMN_DTLS_CD
+		   and D.COMN_ITEM_CD = 'ICON_NAME'
+		   and C.COMN_GRP_CD = E.COMN_GRP_CD
+		   and C.COMN_DTLS_CD = E.COMN_DTLS_CD
+		   and E.COMN_ITEM_CD = 'FORM_NAME'
+		 group 
+		    by  B.NOTC_DVSN_CD, C.DETL_CD_NM, D.COMN_ITEM_CHRC_VL, E.COMN_ITEM_CHRC_VL
+		]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiInqrYn (노티 수신여부 수정) 
+        Description :                                           노티 수신여부 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiInqrYn"  parameterType="com.sds.healthcare.ehr.com.cu.ccu.vo.CcuNotidmtDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-com-cu-ccu-dao-CcuNotidmtDAO-updateNotiInqrYn */
+		update  CUNOTIDMT
+		       set  INQR_YN           = 'Y',
+		            LAST_UPDR_ID      = #{gvUserId},
+		            LAST_UPDT_IP      = #{gvUserIp},
+		            LAST_UPDT_DT      = sysdate,
+		            LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId},
+		            LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+		     where  RGST_YMD = to_date(#{rgstYmd},'yyyy-mm-dd')
+		       and  RGST_SNO = #{rgstSno}
+		       and  RCVR_ID  = #{rcvrId}
+	</update>
+
+</mapper>

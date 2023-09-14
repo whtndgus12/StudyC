@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzUserDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzUserDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser-result" type="com.sds.healthcare.ehr.adm.az.vo.AzUserDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzUserDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzUserDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser-result" useCache="true" flushCache="false">
+		select   /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-selectOneUser */
+		        a.USER_ID as USER_ID
+		      , a.USER_NM as USER_NM  
+		      , b.USER_LCNS_NO as USER_LCNS_NO       
+		      , a.MDCR_DPRT_CD  as MDCR_DPRT_CD 
+		      , b.USER_SPCZ_DRLC_NO  as USER_SPCZ_DRLC_NO 
+		  from   CCUSRDPHT a
+		       , CCUSERAMV b           
+		 where   a.LGIN_ID        = b.LGIN_ID
+		   and   a.USER_ID = #{userId}       
+		   and   (
+		          (nvl(b.USER_STTS_CD, '9') in ('8', '9')) 
+		          or
+		          ( 
+		            (nvl(b.USER_STTS_CD, '9') not in ('8', '9')) 
+		            and 
+		            (
+		              <![CDATA[
+		              (trunc(a.APST_YMD) <= trunc(sysdate)) 
+		              and 
+		              (a.APFN_YMD >= trunc(sysdate))
+		              ]]>
+		            )
+		          )          
+		         )            
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser-result" type="com.sds.healthcare.ehr.adm.az.vo.AzUserDVO">
+	
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzUserDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzUserDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzUserDAO-listUser */
+		     b.USER_ID as USER_ID
+		  ,  a.USER_NM as USER_NM 
+		 from  CCUSERAMT a    /*  OCS사용자 */
+		    ,  CCUSRDPHT b    /*  사용자진료조직관계이력 */  
+		where  1=1
+		  <if test="rtrmYn = 'N'"> 
+		  and  a.USER_STTS_CD != '9'          /*  사용자상태코드   8:휴직  9:퇴직 */  
+		  </if>  
+		  and  b.LGIN_ID      = a.LGIN_ID  
+		  <![CDATA[
+		  and  a.APST_YMD     <= sysdate      /*  적용시작일자 */
+		  and  a.APFN_YMD     >= sysdate      /*  적용종료일자 */  
+		  and  b.APST_YMD     <= sysdate      /*  적용시작일자 */
+		  and  b.APFN_YMD     >= sysdate      /*  적용종료일자 */
+		  ]]>  
+		  <if test="ocfmCd != null and ocfmCd !=''"> 
+		  and  a.OCFM_CD      = #{ocfmCd}       /*  직종코드  HAA:의사  */
+		  </if>   
+		  <if test="dprtCd != null and dprtCd !=''"> 
+		  and  b.MDCR_DPRT_CD = #{dprtCd}  /*  진료부서코드 */  
+		  </if>  
+		  <if test="abrvDprtCd != null and abrvDprtCd !=''"> 
+		  and b.MDCR_DPRT_CD = (
+		                     select  DPRT_CD
+		                       from  HZDEPTMMT
+		                      where  ABRV_DPRT_CD = #{abrvDprtCd}
+		                      )
+		  </if>    
+		order by  USER_NM, USER_ID
+	</select>
+
+
+
+</mapper>

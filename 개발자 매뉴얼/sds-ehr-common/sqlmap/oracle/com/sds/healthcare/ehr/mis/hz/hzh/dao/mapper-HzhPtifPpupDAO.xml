@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhPtifPpupDAO_sql.xml 
+    Description :                                      환자정보 팝업용 DAO
+                  -->
+<mapper namespace="HzhPtifPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO">
+	
+		<result property="sqnc" column="SQNC"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="zpadNm" column="ZPAD_NM"/>
+		<result property="deadNm" column="DEAD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup (HZH010FG_1_Popup_환자정보_목록 조회) 
+        Description :                                           hzd_ptptntt_l01$S01_환자정보_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-listPtifPpup */
+				   rownum    as SQNC    /* 순서 */
+				,  x.PTNO    as PTNO    /* 환자번호 */
+				,  x.PTNT_NM as PTNT_NM /* 환자명 */
+				,  x.GEND_CD as GEND_CD /* 성별코드 */
+				,  x.ZPAD_NM as ZPAD_NM /* 우편번호주소명 */
+				,  x.DEAD_NM as DEAD_NM /* 상세주소명 */
+			 from
+				  (select
+						   t.PTNO    PTNO    /* 환자번호 */
+						,  t.PTNT_NM PTNT_NM /* 환자명 */
+						,  t.GEND_CD GEND_CD /* 성별코드 */
+						,  t.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+						,  t.DEAD_NM DEAD_NM /* 상세주소명 */
+					 from
+						  (select  /*+ index(m APPTPTNTT_PK) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+								   m.PTNO                   like #{srchCdNm} || '%' /* 환자번호 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  s.ADRS_SNO(+)           = 1 /*EHR2.3 SNO가 1인 데이터는 무조건 있어야 하기때문에 SNO조건 추가 */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:환자번호] */
+							  and  length(#{srchCdNm}) >= 4
+							union  all
+						   select  /*+ index(m APPTPTNTT_I02) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+						   /*        m.PTNT_NM                   = :hzs_deptmmt_905[0].srch_cd_nm        /* 환자명 */
+								   m.PTNT_NM                like #{srchCdNm} || '%' /* 환자명 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  s.ADRS_SNO(+)           = 1 /*EHR2.3 SNO가 1인 데이터는 무조건 있어야 하기때문에 SNO조건 추가 */
+							  and  #{srchCd} = 'N'                                   /* 검색코드[N:환자명] */
+						  ) t
+					order
+					   by  case #{srchCd} when 'C' then t.PTNO    else t.PTNT_NM end  asc
+						,  case #{srchCd} when 'C' then t.PTNT_NM else t.PTNO    end  asc
+				   ) x
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO">
+	
+		<result property="rnum" column="RNUM"/>
+		<result property="sqnc" column="SQNC"/>
+		<result property="ptno" column="PTNO"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="zpadNm" column="ZPAD_NM"/>
+		<result property="deadNm" column="DEAD_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup (HZH010FG_1_Popup_환자정보_목록 조회) 
+        Description :                                           hzd_ptptntt_l01$S01_환자정보_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select	/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-pagingPtifPpup */
+		    RNUM
+		  , RNUM   as SQNC    /* 순서 */
+		  , PTNO    /* 환자번호 */
+		  , PTNT_NM /* 환자명 */
+		  , GEND_CD /* 성별코드 */
+		  , ZPAD_NM /* 우편번호주소명 */
+		  , DEAD_NM /* 상세주소명 */
+		from(
+		   select 
+				   rownum    as RNUM    /* 순서 */
+				,  x.PTNO    as PTNO    /* 환자번호 */
+				,  x.PTNT_NM as PTNT_NM /* 환자명 */
+				,  x.GEND_CD as GEND_CD /* 성별코드 */
+				,  x.ZPAD_NM as ZPAD_NM /* 우편번호주소명 */
+				,  x.DEAD_NM as DEAD_NM /* 상세주소명 */
+			 from
+				  (select
+						   t.PTNO    PTNO    /* 환자번호 */
+						,  t.PTNT_NM PTNT_NM /* 환자명 */
+						,  t.GEND_CD GEND_CD /* 성별코드 */
+						,  t.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+						,  t.DEAD_NM DEAD_NM /* 상세주소명 */
+					 from
+						  (select  /*+ index(m APPTPTNTT_PK) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+								   m.PTNO                   like #{srchCdNm} || '%' /* 환자번호 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  s.ADRS_SNO(+)           = 1 /*EHR2.3 SNO가 1인 데이터는 무조건 있어야 하기때문에 SNO조건 추가 */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:환자번호] */
+							  and  length(#{srchCdNm}) >= 4
+							union  all
+						   select  /*+ index(m APPTPTNTT_I02) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+						   /*        m.PTNT_NM                   = :hzs_deptmmt_905[0].srch_cd_nm        /* 환자명 */
+								   m.PTNT_NM                like #{srchCdNm} || '%' /* 환자명 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  s.ADRS_SNO(+)           = 1 /*EHR2.3 SNO가 1인 데이터는 무조건 있어야 하기때문에 SNO조건 추가 */
+							  and  #{srchCd} = 'N'                                   /* 검색코드[N:환자명] */
+						  ) t
+					order
+					   by  case #{srchCd} when 'C' then t.PTNO    else t.PTNT_NM end  asc
+						,  case #{srchCd} when 'C' then t.PTNT_NM else t.PTNO    end  asc
+				   ) x
+		)
+		 where RNUM > cast(coalesce(#{nextKeyValue}, '0') as number)
+		    and RNUM <= cast(coalesce(#{nextKeyValue}, '0') as number) + #{pageSize}
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO">
+	
+		<result property="totalDataCount" column="TOTAL_DATA_COUNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup (HZH010FG_1_Popup_환자정보_목록 개수 조회) 
+        Description :                                           hzd_ptptntt_l01$S01_환자정보_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPtifPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select 	/*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPtifPpupDAO-selectOnePtifPpup */
+		 count(*) AS TOTAL_DATA_COUNT
+		from(
+		   select  
+				   rownum    as SQNC    /* 순서 */
+				,  x.PTNO    as PTNO    /* 환자번호 */
+				,  x.PTNT_NM as PTNT_NM /* 환자명 */
+				,  x.GEND_CD as GEND_CD /* 성별코드 */
+				,  x.ZPAD_NM as ZPAD_NM /* 우편번호주소명 */
+				,  x.DEAD_NM as DEAD_NM /* 상세주소명 */
+			 from
+				  (select
+						   t.PTNO    PTNO    /* 환자번호 */
+						,  t.PTNT_NM PTNT_NM /* 환자명 */
+						,  t.GEND_CD GEND_CD /* 성별코드 */
+						,  t.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+						,  t.DEAD_NM DEAD_NM /* 상세주소명 */
+					 from
+						  (select  /*+ index(m APPTPTNTT_PK) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+								   m.PTNO                   like #{srchCdNm} || '%' /* 환자번호 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  #{srchCd} = 'C'                                   /* 검색코드[C:환자번호] */
+							  and  length(#{srchCdNm}) >= 4
+							union  all
+						   select  /*+ index(m APPTPTNTT_I02) index(s APPTADRST_PK) */
+								   m.PTNO    PTNO    /* 환자번호 */
+								,  m.PTNT_NM PTNT_NM /* 환자명 */
+								,  m.GEND_CD GEND_CD /* 성별코드 */
+								,  s.ZPAD_NM ZPAD_NM /* 우편번호주소명 */
+								,  s.DEAD_NM DEAD_NM /* 상세주소명 */
+							 from
+								   APPTPTNTT m /* (AP)환자 */
+								,  APPTADRSV s /* (AP)환자주소 */
+							where
+						   /*        m.PTNT_NM                   = :hzs_deptmmt_905[0].srch_cd_nm        /* 환자명 */
+								   m.PTNT_NM                like #{srchCdNm} || '%' /* 환자명 */
+							  and  s.PTNO        (+)           = m.PTNO                                /* 환자번호 */
+							  and  s.ADRS_USGE_CD(+)           = 'A'                                   /* 주소용도코드(APB_003)[A:기본주소] */
+							  and  #{srchCd} = 'N'                                   /* 검색코드[N:환자명] */
+						  ) t
+					order
+					   by  case #{srchCd} when 'C' then t.PTNO    else t.PTNT_NM end  asc
+						,  case #{srchCd} when 'C' then t.PTNT_NM else t.PTNO    end  asc
+				   ) x
+		)
+			]]>
+	</select>
+
+
+
+</mapper>

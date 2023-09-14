@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzClncExamPrjcDAO_sql.xml 
+    Description : -->
+<mapper namespace="AzClncExamPrjcDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr-result" type="com.sds.healthcare.ehr.adm.az.vo.AzClncExamPrjcDVO">
+	
+		<result property="irbrNo" column="IRBR_NO"/>
+		<result property="crdrId1" column="CRDR_ID1"/>
+		<result property="crdrClno1" column="CRDR_CLNO1"/>
+		<result property="crdrId2" column="CRDR_ID2"/>
+		<result property="crdrClno2" column="CRDR_CLNO2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzClncExamPrjcDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzClncExamPrjcDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr-result" useCache="true" flushCache="false">
+		select /*+ ordered use_nl(a b c d e) index(a SDTCLIPAT_IDX1)
+		                                       index(b SDTCLIPJT_IDX1)
+		                                       index(c APPTPTNTT_PK) SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzClncExamPrjcDAO-selectOneCrdr */
+		         b.IRBR_NO as IRBR_NO
+		      ,  b.CRDR_ID1 as CRDR_ID1
+		      ,  b.CRDR_CLNO1 as CRDR_CLNO1
+		      ,  b.CRDR_ID2 as CRDR_ID2
+		      ,  b.CRDR_CLNO2 as CRDR_CLNO2
+		   from
+		         SDTCLIPAT a  /*  임상시험과제 환자관리 */
+		      ,  SDTCLIPJT b  /*  임상시험과제 관리 */
+		  where  a.PTNO    = #{ptno}
+		    and  b.IRBR_NO = a.IRBR_NO
+		    and  b.USE_YN  = 'Y'
+		    and  rownum    = 1
+	</select>
+
+
+
+</mapper>

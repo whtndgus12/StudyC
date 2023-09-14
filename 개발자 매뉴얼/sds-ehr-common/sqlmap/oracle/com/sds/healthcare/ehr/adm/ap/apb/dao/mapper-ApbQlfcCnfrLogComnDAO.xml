@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbQlfcCnfrLogComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbQlfcCnfrLogComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogComnDAO-selectOneQlfcType-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcCnfrLogComnDVO">
+	
+		<result property="qlfcTypeCd" column="QLFC_TYPE_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogComnDAO-selectOneQlfcType (자격유형 조회) 
+        Description :                                           acd_etqclgt_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcCnfrLogComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogComnDAO-selectOneQlfcType-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogComnDAO-selectOneQlfcType"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbQlfcCnfrLogComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogComnDAO-selectOneQlfcType-result" useCache="true" flushCache="false">
+		select  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbQlfcCnfrLogAdmComnDAO-selectOneQlfcType */
+						  case when a.INPY_LMTT_YMD is not null then 'X'
+							   when a.DPPR_YN    = 'Y'          then 'Y'
+							   else decode(a.QLDV_CD, '1', '11'
+													, '2', '11'
+													, '4', '12'
+													, '5', '12'
+													, '6', '12'
+													, '7', '21'
+													, '8', '22', null)
+						  end  as QLFC_TYPE_CD
+					 from
+						   ACETQCLGT a
+					where  a.PTNO     = substr(#{ptno}, 1, 8)
+					  and  a.TRNM_DT between trunc(sysdate) and trunc(sysdate) + 0.99999
+					  and  a.RECV_DT is not null
+					  and  a.QLDV_CD is not null
+					  and  rownum = 1
+	</select>
+
+
+
+</mapper>

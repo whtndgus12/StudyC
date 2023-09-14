@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_SmcComnDrSgntDAO_sql.xml 
+    Description :                                      SmcComnDrSgntDAO 클래스
+                  -->
+<mapper namespace="SmcComnDrSgntDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt-result" type="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnDrSgntDVO">
+	
+		<result property="esimBdByte" column="ESIM_BD_BYTE"/>
+		<result property="esimBd" column="ESIM_BD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt () 
+        Description :                                           재검자목록 개인서명 조회
+                                            
+		parameterType : com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnDrSgntDVO
+		resultMap : com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt-result
+    -->
+	<select id="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt"  parameterType="com.sds.healthcare.ehr.sup.sm.smc.vo.SmcComnDrSgntDVO"  resultMap="com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt-result" useCache="true" flushCache="false">
+				<![CDATA[
+				   select  /*+ smd_bsdrsgt_s01$S01_재검자목록 개인서명 조회 */
+						      /*SQL_ID: com-sds-healthcare-ehr-sup-sm-smc-dao-SmcComnDrSgntDAO-selectOneRernDrIndvSgnt*/
+			   a.ESIM_BD as ESIM_BD_BYTE
+			   ,  '' as ESIM_BD 
+		 from  MRBSDRSGT a  /*  의사수기서명 */
+			,  HZUSERMMT b  /*  같은 주민번호의 사번을 찾기 위함 */
+			,  HZUSERMMT c  /*  입력받은 로그인 ID 의 주민번호를 찾기 위함 */
+			,  CCUSRDPHT d  /*  입력받은 아이디의 로그인ID를 찾기 위함 */
+		where  d.USER_ID = #{lginId}
+		  and  c.EMNO = d.LGIN_ID
+		  and  b.EMPL_FRRN = c.EMPL_FRRN
+		  and  b.EMPL_BRRN = c.EMPL_BRRN
+		  and  a.USER_ID   = b.EMNO
+		  and  a.DLTN_YN = 'N'
+		  and  a.RPRS_IMAG_YN = 'Y'
+		]]>
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AzPrjcInfoDAO_sql.xml 
+    Description :                                      연구과제관련 정보를 조회한다.
+                  -->
+<mapper namespace="AzPrjcInfoDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno-result" type="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO">
+	
+		<result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno (연구과제 책임자 및 공동연구자 조회) 
+        Description :                                           연구과제 책임자 및 공동연구자를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-listGetPrjcEmno */
+		<![CDATA[
+		with PRJC_CD_TABLE as /* 해당 환자가 속한 연구과제 코드 추출(해지안된 유효한 대상자이면서, 유효한 연구과제인 경우만 추출함) */
+		(
+		   select  b.RSRC_PRJC_CD  /* 연구과제코드 */
+		     from  RPTCLIPAT a     /* 연구과제환자 */
+		        ,  RPRSRPRJT b     /* 연구과제관리 */
+		    where  1=1
+		      and  b.RSRC_PRJC_CD = a.PRJT_CD
+		      and  a.PTNO = #{ptno}
+		      /* 유효한 대상자 상태인지 확인 */
+		      and  (a.TRNT_YMD is null or to_char(a.TRNT_YMD,'yyyymmdd')>= to_char(sysdate,'yyyymmdd')) /* 해지일자 */
+		      /* 유효한 연구과제인지 확인 */
+		      and  (b.DEL_YN is null or b.DEL_YN != 'Y') --삭제안된 과제
+		      and  b.RSRC_PRJC_PRSS_CD = '02'-- 연구과제진행상태 (01:개시전 / 02:진행중 / 03:종료 / 04:중지)  진행중인 연구과제만 조회
+		      and  nvl(b.RSRC_PRJC_REAL_FNSH_YMD, '99991231') >= to_char(sysdate, 'yyyymmdd') -- 종료안된 과제
+		)
+		/* 1. 연구책임자 */
+		select  x.RSRC_RNPR_EMNO as USER_ID
+		  from  RPRSRPRJT x /* 연구과제관리 */
+		     ,  PRJC_CD_TABLE y
+		 where  1=1
+		   and  x.RSRC_PRJC_CD = y.RSRC_PRJC_CD
+		 union
+		/* 2. 공동연구자 */
+		select  x.RSRH_ID as USER_ID
+		  from  RPJONRSRT x /* 공동연구자 */
+		     ,  PRJC_CD_TABLE y
+		 where  1=1
+		   and  x.RSRC_PRJC_CD = y.RSRC_PRJC_CD
+		   and  x.USE_YN = 'Y'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn-result" type="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO">
+	
+		<result property="clrsPrjcTrgtPtntYn" column="CLRS_PRJC_TRGT_PTNT_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn (연구과제대상환자여부) 
+        Description :                                           연구과제대상환자여부
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOnePrjcTrgtPtntYn */
+		<![CDATA[
+		select  case when a.PTNT_CTRL_NMBR_VL5 = 0 then FN_RP_CHECK_CLRS_PT(#{ptno}) else 'N' end as CLRS_PRJC_TRGT_PTNT_YN
+		  from  APCTRLMMT a
+		 where  1=1
+		   and  a.PTNT_CTRL_CD = 'AP098'
+		   and  a.PTNT_DTLS_CTRL_CD = 'APC506F1'
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg-result" type="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO">
+	
+		<result property="notcTitlNm" column="NOTC_TITL_NM"/>
+		<result property="notcCtn" column="NOTC_CTN"/>
+		<result property="ptntNm" column="PTNT_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg (노티메시지내용) 
+        Description :                                           노티메시지내용
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO
+		resultMap : com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg"  parameterType="com.sds.healthcare.ehr.adm.az.vo.AzPrjcInfoDVO"  resultMap="com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-az-dao-AzPrjcInfoDAO-selectOneNotiMsg */
+		select  '연구 대상자 '||p.PTNT_NM||'('||a.PTNO||') 입원 알림내용' as NOTC_TITL_NM
+		     ,  '입원일시 : '||to_char(a.MDCR_DT, 'yyyy')||'년 '||
+		                    to_char(a.MDCR_DT, 'mm'  )||'월 '||
+		                    to_char(a.MDCR_DT, 'dd'  )||'일'
+		        ||' / '||
+		        '입원과 : ' ||(select x.ABRV_DPRT_CD||'('||x.KORN_DPRT_NM||')' from HZDEPTMMT x where x.DPRT_CD = a.MCDP_CD)
+		        ||' / '||
+		        '입원병동 : ' ||(select x.ABRV_DPRT_CD from HZDEPTMMT x where x.DPRT_CD = a.WARD_CD)
+		        as NOTC_CTN
+		     ,  p.PTNT_NM
+		  from  APRCRPTNT a
+		     ,  APPTPTNTT p
+		 where  1=1
+		   and  a.MDRP_NO = #{mdrpNo}
+		   and  p.PTNO    = a.PTNO
+	</select>
+
+
+
+</mapper>

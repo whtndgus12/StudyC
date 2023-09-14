@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDrInfmMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpDrInfmMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr (주치의 연락처 의사 전체조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnDrAllInfmInqr */
+		       a.LGIN_ID           as LGIN_ID,            /* 로그인ID*/
+		       b.USER_ID           as USER_ID,            /* 사용자ID*/
+		       a.USER_NM           as USER_NM,            /* 사용자명*/
+		       d.DETL_CD_NM        as DETL_CD_NM,         /* 직급명*/
+		       b.MDCR_DPRT_CD      as MDCR_DPRT_CD,       /* 근무파트코드*/
+		       c.KORN_DPRT_NM      as KORN_DPRT_NM,       /* 근무부서명*/
+		       a.USER_LCNS_NO      as USER_LCNS_NO,       /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO as USER_SPCZ_DRLC_NO,  /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,               /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO           /* 내선전화번호*/
+		  from  (SELECT LGIN_ID,
+		                USER_NM,
+		                USER_LCNS_NO,
+		                USER_SPCZ_DRLC_NO,
+		                CLNO,
+		                EXTS_TLNO,
+		                APST_YMD,
+		                APFN_YMD,
+		                OCCL_CD,
+		                HSPT_CD
+		          FROM CCUSERAMT
+		         WHERE ((OCFM_CD in ('HAA','HAD') AND OCFM_DETL_CD IN ('HAA01','HAA02','HAA03','HAA04','HAA05','HAA06','HAA07','HAD25')) or /* 직종 - 전문의사, 일반의사, 레지던트3년차, 인턴, 임상심리사*/
+		                (OCCL_CD in ('RB9','RC8','RCJ') )  or
+		                 (USER_LCNS_NO is not null))
+		           and USER_STTS_CD <> '9'     
+		         )a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,    /* 인사마스터*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT COMN_DTLS_CD,
+		                DETL_CD_NM,
+		                SCRN_DSPL_SQNC
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD = 'GP008') d     /* 직급공통*/
+		 where  a.LGIN_ID      = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+)  /* 근무파트코드*/  
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD(+)/* 직급*/
+		   and  a.HSPT_CD      = #{hsptCd}        /* 위치코드*/
+		]]>        
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2"'> /* 1: 사번기준 */
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'               
+		             </when>
+		           </choose>       
+		    </when>
+		    <when test='inqrBaseCd == "3" or inqrBaseCd == "4" or inqrBaseCd == "6"'>   /* 진료과기준 */
+		       <choose>
+		          <when test='inqrBaseCd == "3"'>
+		             and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm}||'%'
+		          </when>
+		          <when test='inqrBaseCd == "4"'>
+		             and FN_MD_GET_UPDEPT(b.MDCR_DPRT_CD) = FN_CC_GET_CNST_VL('CCD_001', 'DPRT_GS')
+		          </when>
+		           <when test='inqrBaseCd == "6"'>
+		             and b.MDCR_DPRT_CD in (FN_CC_GET_CNST_VL('CCD_001', 'DPRT_IM_HOC' ))
+		          </when>
+		       </choose>
+		    </when>
+		</choose>    
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr (주치의 연락처 Staff 정보 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnStffInfmInqr */
+		       a.LGIN_ID,           /* 로그인ID*/
+		       b.USER_ID,           /* 사용자ID*/
+		       a.USER_NM,           /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO         /* 내선전화번호*/
+		  from  (SELECT LGIN_ID,
+		                USER_NM,
+		                USER_LCNS_NO,
+		                USER_SPCZ_DRLC_NO,
+		                CLNO,
+		                EXTS_TLNO,
+		                OCCL_CD,
+		                APFN_YMD,
+		                APST_YMD,
+		                HSPT_CD
+		          FROM CCUSERAMT
+		         WHERE (OCFM_CD in ('HAA','HAD') and OCFM_DETL_CD in('HAA01','HAA02','HAD25'))  or  /* 직종*/
+		               (OCCL_CD in ('RB9','RC8','RCJ'))        /* 직급*/
+		           and USER_STTS_CD <> '9'  /* 퇴직*/)a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 인사마스터*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT COMN_DTLS_CD ,
+		                DETL_CD_NM,
+		                SCRN_DSPL_SQNC
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD = 'GP008') d    /* 직급공통*/
+		 where  a.LGIN_ID      = b.LGIN_ID     
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+)  /* 근무파트코드*/   
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD (+)
+		   and  a.HSPT_CD      = #{hsptCd}
+		   ]]>
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2"'>
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'
+		             </when>
+		           </choose>       
+		    </when>
+		    <when test='inqrBaseCd == "3" or inqrBaseCd == "4" or inqrBaseCd == "6"'>
+		       <choose>
+		          <when test='inqrBaseCd == "3"'>
+		             and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm}||'%'
+		          </when>
+		          <when test='inqrBaseCd == "4"'>
+		             and FN_MD_GET_UPDEPT(b.MDCR_DPRT_CD) = FN_CC_GET_CNST_VL('CCD_001', 'DPRT_GS')
+		          </when>
+		           <when test='inqrBaseCd == "6"'>
+		             and b.MDCR_DPRT_CD in (FN_CC_GET_CNST_VL('CCD_001', 'DPRT_IM_HOC' ))
+		          </when>
+		       </choose>
+		    </when>
+		</choose>    
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr (주치의 연락처 주치의 정보 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr */
+		       a.LGIN_ID,           /* 사용자ID*/
+		       b.USER_ID,           /* 로그인ID*/
+		       a.USER_NM,           /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO         /* 내선전화번호*/
+		  from (SELECT LGIN_ID ,
+		               USER_NM ,
+		               USER_LCNS_NO,
+		               USER_SPCZ_DRLC_NO,
+		               CLNO,
+		               EXTS_TLNO,
+		               OCCL_CD,
+		               HSPT_CD,
+		               APFN_YMD,
+		               APST_YMD
+		          FROM CCUSERAMT
+		         WHERE OCFM_CD      = 'HAA'           /* 직종*/      
+		           AND USER_LCNS_NO is not null  
+		           AND USER_STTS_CD <> '9'  /* 퇴직*/) a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 사용자역할*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		       (SELECT COMN_DTLS_CD,
+		               DETL_CD_NM,
+		               SCRN_DSPL_SQNC
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD  = 'GP008') d    /* 직급공통*/        
+		 where  a.LGIN_ID      = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+) /* 근무파트코드*/   
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD(+)
+		   and  a.HSPT_CD      = #{hsptCd}
+		]]>
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2"'>
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'
+		             </when>
+		           </choose>       
+		    </when>
+		    <when test='inqrBaseCd == "3" or inqrBaseCd == "4" or inqrBaseCd == "6"'>
+		       <choose>
+		          <when test='inqrBaseCd == "3"'>
+		             and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm}||'%'
+		          </when>
+		          <when test='inqrBaseCd == "4"'>
+		             and FN_MD_GET_UPDEPT(b.MDCR_DPRT_CD) = FN_CC_GET_CNST_VL('CCD_001', 'DPRT_GS')
+		          </when>
+		           <when test='inqrBaseCd == "6"'>
+		             and b.MDCR_DPRT_CD in (FN_CC_GET_CNST_VL('CCD_001', 'DPRT_IM_HOC' ))
+		          </when>
+		       </choose>
+		    </when>
+		</choose>    
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnTodayOtptInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnTodayOtptInfmInqr (주치의 연락처 금일외래정보조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnTodayOtptInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnTodayOtptInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnTodayOtptInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnGndrInfmInqr */
+		       a.LGIN_ID,           /* 로그인ID*/
+		       b.USER_ID,           /* 사용자ID*/
+		       case when a.USER_NM like '%일반%' then '외래일반'
+		            else a.USER_NM
+		        end  as USER_NM,     /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO         /* 내선전화번호*/
+		  from  (SELECT * 
+		          FROM CCUSERAMT
+		         WHERE (OCFM_CD in('HAA','HAD') and OCFM_DETL_CD in('HAA01','HAA02','HAD25' ) ) or
+		               (OCCL_CD in('RB9','RC8','RCJ'))
+		           AND (APST_YMD <= trunc(sysdate) and decode(APFN_YMD,null,trunc(sysdate+1),APFN_YMD) >= trunc(sysdate))
+		           AND USER_STTS_CD <> '9'  /* 퇴직*/) a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 사용자역할*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT *
+		           FROM CCCMCDDMT
+		          WHERE COMN_GRP_CD  = 'GP008') d    /* 직급공통*/        
+		 where  a.LGIN_ID      = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+) /* 근무파트코드*/   
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD(+)   
+		    and a.HSPT_CD      = #{hsptCd}
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr (주치의 연락처 간호사정보조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnNursInfmInqr */
+		       a.LGIN_ID,           /* 로그인ID*/
+		       b.USER_ID,           /* 사용자ID*/
+		       a.USER_NM,           /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       ''   as TLNO               /* 내선전화번호*/
+		  from  (SELECT LGIN_ID,
+		                USER_NM,
+		                USER_LCNS_NO,
+		                USER_SPCZ_DRLC_NO,
+		                CLNO,
+		                EXTS_TLNO,
+		                OCCL_CD,
+		                HSPT_CD,
+		                APFN_YMD,
+		                APST_YMD
+		          FROM CCUSERAMT
+		         WHERE (OCFM_CD = 'HAB'  and  OCFM_DETL_CD in('HAB01','HAB02','HAB03','HAD17')) or /* 간호관리자, 간호사, 간호조무사, 시술협조사*/
+		               (OCCL_CD in('N01','N02','N03','N04','N05','Q02','RB7','RC1','RC6','RD1','N51','N52','N53','N54'))
+		           AND  USER_STTS_CD <> '9'  /* 퇴직*/) a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 사용자역할*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT * 
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD = 'GP008') d    /* 직급공통*/
+		 where  a.LGIN_ID      = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+)  /* 근무파트코드*/
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD(+)   
+		   and  a.HSPT_CD      = #{hsptCd}     /* 위치코드*/
+		]]>
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2"'>
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'
+		             </when>
+		           </choose>       
+		    </when>
+		    <when test='inqrBaseCd == "3" or inqrBaseCd == "4" or inqrBaseCd == "6"'>
+		       <choose>
+		          <when test='inqrBaseCd == "3"'>
+		             and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm}||'%'
+		          </when>
+		          <when test='inqrBaseCd == "4"'>
+		             and FN_MD_GET_UPDEPT(b.MDCR_DPRT_CD) = FN_CC_GET_CNST_VL('CCD_001', 'DPRT_GS')
+		          </when>
+		           <when test='inqrBaseCd == "6"'>
+		             and b.MDCR_DPRT_CD in (FN_CC_GET_CNST_VL('CCD_001', 'DPRT_IM_HOC' ))
+		          </when>
+		       </choose>
+		    </when>
+		</choose>    
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr (주치의 연락처 의료기사 정보조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnMcteEngnInfmInqr */
+		       a.LGIN_ID,           /* 로그인ID*/
+		       b.USER_ID,           /* 사용자ID*/
+		       a.USER_NM,           /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO          /* 내선전화번호*/
+		  from (SELECT *
+		          FROM CCUSERAMT
+		         WHERE (OCFM_CD = 'HAD' ) /* 의료기사직*/        
+		           AND USER_STTS_CD <> '9'  /* 퇴직*/ ) a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 사용자역할*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT * 
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD = 'GP008') d    /* 직급공통*/
+		 where  a.LGIN_ID     = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD(+)   /* 근무파트코드*/   
+		   and  a.OCCL_CD      = d.COMN_DTLS_CD(+) 
+		   and  a.HSPT_CD      = #{hsptCd}
+		]]>
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2"'>
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'
+		             </when>
+		           </choose>       
+		    </when>
+		    <when test='inqrBaseCd == "3" or inqrBaseCd == "4" or inqrBaseCd == "6"'>
+		       <choose>
+		          <when test='inqrBaseCd == "3"'>
+		             and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm}||'%'
+		          </when>
+		          <when test='inqrBaseCd == "4"'>
+		             and FN_MD_GET_UPDEPT(b.MDCR_DPRT_CD) = FN_CC_GET_CNST_VL('CCD_001', 'DPRT_GS')
+		          </when>
+		           <when test='inqrBaseCd == "6"'>
+		             and b.MDCR_DPRT_CD in (FN_CC_GET_CNST_VL('CCD_001', 'DPRT_IM_HOC' ))
+		          </when>
+		       </choose>
+		    </when>
+		</choose>    
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="mdcrDprtCd" column="MDCR_DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr (주치의 연락처 직원 전체 정보조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listGndrCnpnEmplAllInfmInqr */
+		       a.LGIN_ID,           /* 로그인ID*/
+		       b.USER_ID,           /* 사용자ID*/
+		       a.USER_NM,           /* 사용자명*/
+		       d.DETL_CD_NM,        /* 직급명*/
+		       b.MDCR_DPRT_CD,      /* 근무파트코드*/
+		       c.KORN_DPRT_NM,      /* 근무부서명*/
+		       a.USER_LCNS_NO,      /* 의사면허번호*/
+		       a.USER_SPCZ_DRLC_NO, /* 전문의면허번호*/
+		       case when a.CLNO is null then '' 
+		            when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		            when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		            else a.CLNO
+		       end  as CLNO,              /* 휴대전화번호*/
+		       a.EXTS_TLNO as TLNO          /* 내선전화번호*/
+		  from  CCUSERAMT a,    /* 사용자마스터*/        
+		        CCUSRDPHT b,     /* 사용자역할*/
+		        HZDEPTMMT c,    /* 부서마스터*/
+		        (SELECT * 
+		          FROM CCCMCDDMT
+		         WHERE COMN_GRP_CD = 'GP008') d    /* 직급공통*/
+		 where  a.LGIN_ID     = b.LGIN_ID
+		   and  b.MDCR_DPRT_CD = c.DPRT_CD   /* 근무파트코드*/  
+		   and  a.OCCL_CD = d.COMN_DTLS_CD(+)         
+		   and  a.USER_STTS_CD <> '9'  /* 퇴직*/
+		   and  a.HSPT_CD = #{hsptCd}
+		]]>
+		 <choose>
+		    <when test='inqrBaseCd == "1" or inqrBaseCd == "2" or inqrBaseCd == "3"'>
+		           <choose>
+		             <when test='inqrBaseCd == "1"'>
+		               and a.LGIN_ID like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "2"'>
+		               and a.USER_NM like #{inqrCndtNm} || '%'
+		             </when>
+		             <when test='inqrBaseCd == "3"'>
+		               and (select ABRV_DPRT_CD from HZDEPTMMT where DPRT_CD = b.MDCR_DPRT_CD) like #{inqrCndtNm} || '%'
+		             </when>
+		           </choose>              
+		    </when>
+		</choose>   
+		  order by c.KORN_DPRT_NM, 
+		           d.SCRN_DSPL_SQNC, 
+		           TRUNC((decode(to_char(a.APFN_YMD,'YYYY-MM-DD'),'2999-12-31',sysdate,a.APFN_YMD)-a.APST_YMD)/365),  /* 호봉*/
+		           a.APST_YMD
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="srchTrgtDvsnCd" column="SRCH_TRGT_DVSN_CD"/>
+		<result property="inqrBaseCd" column="INQR_BASE_CD"/>
+		<result property="inqrCndtNm" column="INQR_CNDT_NM"/>
+		<result property="slctHsptCd" column="SLCT_HSPT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-selectOneDummy */
+		select
+		      ''  as SRCH_TRGT_DVSN_CD,
+		      ''  as INQR_BASE_CD,
+		      ''  as INQR_CNDT_NM,
+		      ''  as SLCT_HSPT_CD
+		  from dual
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-updateClncDpchUploadKeyUpdt (임상과장 업로드 Key 수정) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-updateClncDpchUploadKeyUpdt"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-updateClncDpchUploadKeyUpdt */
+		  <![CDATA[
+		  update MZCTRLMMT 
+		       set MDCR_CTRL_CHRC_VL1 = #{filePathNm},
+		           FRST_RGSR_ID = #{gvUserId}, 
+		           FRST_RGST_IP = #{gvUserIp}, 
+		           FRST_RGST_DT = sysdate, 
+		           FRST_RGST_CLNT_PRGM_ID = #{gvClntPrgmId}, 
+		           FRST_RGST_SRVR_PRGM_ID = #{gvSrvrPrgmId}, 
+		           LAST_UPDR_ID = #{gvUserId}, 
+		           LAST_UPDT_IP = #{gvUserIp}, 
+		           LAST_UPDT_DT = sysdate, 
+		           LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}, 
+		           LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId} 
+		     where MDCR_CTRL_CD = 'MZZ002'
+		       and MDCR_DTLS_CTRL_CD = #{mdcrDtlsCtrlCd}
+		   ]]>
+	</update>
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr (당직의 연락처 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listDtdrCnpnInqr */
+		           a.LGIN_ID
+		          ,a.USER_NM
+		          ,'당직('||a.KORN_DPRT_NM||')' as KORN_DPRT_NM
+		          ,case when a.CLNO is null then '' 
+		                when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		                when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		                else a.CLNO
+		           end  as CLNO              /* 휴대전화번호*/
+		          ,case when a.TLNO is null then '' 
+		                    when LENGTH(a.TLNO) = 11 then substr(a.TLNO,1,3) || '-' || substr(a.TLNO,4,4)|| '-' || substr(a.TLNO,8,4) 
+		                    when LENGTH(a.TLNO) = 10 then substr(a.TLNO,1,3) || '-' || substr(a.TLNO,4,3)|| '-' || substr(a.TLNO,7,4)
+		                    else a.TLNO
+		           end  as TLNO               /* 내선전화번호*/
+		          ,case when a.USER_NM = '당직의'        then  a.DNDT_SPSB_CTN
+		                when DNDT_SPSB_CTN is not null then  a.DETL_CD_NM || '('||a.DNDT_SPSB_CTN||')'
+		                else a.DETL_CD_NM
+		            end  as DETL_CD_NM
+		          ,a.USER_LCNS_NO
+		          ,a.USER_SPCZ_DRLC_NO
+		    from 
+		    (
+		        select 
+		             a.DTPR_ID as LGIN_ID
+		            ,a.USER_NM 
+		            ,a.DETL_CD_NM
+		            ,a.DPRT_CD
+		            ,a.KORN_DPRT_NM as KORN_DPRT_NM
+		            ,a.USER_LCNS_NO
+		            ,a.USER_SPCZ_DRLC_NO
+		            ,a.STND_ABRD_CTN2 as TLNO
+		            ,a.CLNO
+		            ,case when a.DNDT_STRT_YMD is null then a.DNDT_SPSB_CTN
+		                  when a.DNDT_SPSB_CTN is null then a.DNDT_STRT_HM||'~'||a.DNDT_FNSH_HM
+		                  else                              a.DNDT_STRT_HM||'~'||a.DNDT_FNSH_HM||', '||a.DNDT_SPSB_CTN
+		             end  as DNDT_SPSB_CTN
+		        from     
+		        (
+		            select 
+		                  a.flag
+		                 ,a.DNDT_WRKN_YMD
+		                 ,a.DPRT_CD
+		                 ,decode(d.DETL_CD_NM, null , f.KORN_DPRT_NM, d.DETL_CD_NM) as KORN_DPRT_NM
+		                 ,a.DNDT_DVSN_CD         /* 당직타입코드*/
+		                 ,c.DETL_CD_NM    as CALL_TYPE_NM  /* 당직타입명*/
+		                 ,c.SCRN_DSPL_SQNC 
+		                 ,'' as SORT_SQNC
+		                 ,a.DTPR_ID
+		                 ,b.USER_NM             /* 당직의사명*/
+		                 ,d.STND_ABRD_CTN2   /* 당직전화번호*/
+		                 ,b.CLNO                /* 휴대전화*/
+		                 ,a.DNDT_STRT_YMD
+		                 ,a.DNDT_STRT_HM
+		                 ,a.DNDT_FNSH_YMD
+		                 ,a.DNDT_FNSH_HM
+		                 ,a.DNDT_SPSB_CTN 
+		                 ,b.USER_LCNS_NO 
+		                 ,b.USER_SPCZ_DRLC_NO 
+		                 ,e.DETL_CD_NM 
+		                 , row_number() over (partition by a.DNDT_WRKN_YMD, a.DPRT_CD, a.DNDT_DVSN_CD order by sysdate - to_date(a.DNDT_STRT_YMD,'YYYYMMDDHH24MISS')) as ROW_NUM 
+		            from 
+		               (
+		                select 
+		                    2 as flag
+		                    , a.*
+		                    , to_char(a.DNDT_WRKN_YMD,'YYYYMMDD')||a.dutyfrom_hh||a.dutyfrom_mm||'00' as DNDT_STRT_YMD
+		                    , case
+		                          when a.dutyto_hh in ('00','24')   then to_char(a.DNDT_WRKN_YMD+1,'YYYYMMDD')
+		                          when a.dutyto_hh > a.dutyfrom_hh then to_char(a.DNDT_WRKN_YMD  ,'YYYYMMDD')
+		                          else                                      to_char(a.DNDT_WRKN_YMD-1,'YYYYMMDD')
+		                      end || a.dutyto_hh || a.dutyto_mm || '00'                         as DNDT_FNSH_YMD
+		                from 
+		                        (
+		                        select 
+		                             a.DNDT_WRKN_YMD 
+		                            ,a.DPRT_CD 
+		                            ,a.DNDT_DVSN_CD 
+		                            ,a.DNDT_WRKN_SNO 
+		                            ,a.DTPR_ID 
+		                            ,a.DNDT_SPSB_CTN 
+		                            ,a.DNDT_STRT_HM 
+		                            ,a.DNDT_FNSH_HM 
+		                            ,substr(a.DNDT_STRT_HM	, 1, 2)	dutyfrom_hh
+		                            ,substr(a.DNDT_STRT_HM	, 4, 2)	dutyfrom_mm
+		                            ,substr(a.DNDT_FNSH_HM	, 1, 2)	dutyto_hh
+		                            ,substr(a.DNDT_FNSH_HM	, 4, 2)	dutyto_mm
+		                          from ETECALLDT a
+		                         where exists(select 1 
+		                                        from HZDEPTMMt x
+		                                       where x.DPRT_CD = #{dprtCd} 
+		                                         and x.MDCR_TISS_DVSN_CD = 'M01'
+		                                         and decode(x.MDCR_TISS_DVSN_CD,'C01','Y','N') = 'N'
+		                                         and ((x.USE_YN = 'Y')or (x.USE_YN is null))
+		                                         and x.ABRV_DPRT_CD not in ('CIM','ICL','PY2')
+		                                        union all 
+		                                        select 1 
+		                                          from HZDEPTMMT x
+		                                         where x.DPRT_CD = #{dprtCd}
+		                                           and x.HRAF_HGRN_DPRT_CD = '106240'
+		                                           and decode(x.MDCR_TISS_DVSN_CD,'C01','Y','N') = 'N'
+		                                           and ((x.USE_YN = 'Y')or (x.USE_YN is null))
+		                                        union all
+		                                          select 1 from dual where #{dprtCd} = '112180'
+		                                        union all 
+		                                          select 1 from dual where #{inqrBaseCd} = '106280'
+		                                  )
+		                           and a.DNDT_WRKN_YMD between trunc(sysdate)-1 
+		                                                   and trunc(sysdate)+1
+		                           and a.DNDT_DVSN_CD in (select x.COMN_DTLS_CD 
+		                                                   from ETCMCDDMT  x 
+		                                                  where x.COMN_GRP_CD  = 'ET4000'
+		                                                    and trunc(sysdate) between x.APST_YMD and x.APFN_YMD
+		                                                    and x.DETL_CD_DSCR_CTN = 'D'
+		                                                 )
+		                           and a.DPRT_CD      in (select x.DETL_CD_DSCR_CTN  
+		                                                   from ETCMCDDMT x
+		                                                  where x.COMN_GRP_CD  = 'ET4003'
+		                                                    and trunc(sysdate) between x.APST_YMD and x.APFN_YMD
+		                                                    and	(	(instr(nvl(x.STND_ABRD_CTN5, '@'), #{inqrBaseCd}||'|')	> 0)
+		                                                        or	(	instr(nvl(x.STND_ABRD_CTN5, '@'), #{dprtCd}||'|')	> 0
+		                                                            and	instr(nvl(x.STND_ABRD_CTN3, '@'), #{inqrBaseCd}||'|')	= 0
+		                                                            and	instr(nvl(x.STND_ABRD_CTN4, '@'), #{inqrBaseCd}||'|')	= 0
+		                                                            )
+		                                                        )
+		                                                 )
+		                          )a
+		                   union all
+		                   select    1                              FLAG
+		                            ,A.DLLZ_YMD						DNDT_WRKN_YMD
+		                            --,A.DPRT_CD						DPRT_CD
+		                            ,''								DPRT_CD
+		                            ,'레지던트'						DNDT_DVSN_CD
+		                            ,ROW_NUMBER() OVER (PARTITION BY A.DPRT_CD ORDER BY A.OCCL_CD, A.USER_ID)		DNDT_WRKN_SNO
+		                            ,A.USER_ID						DTPR_ID
+		                            --,A.DLLZ_CD_NM					DNDT_SPSB_CTN
+		                            ,''								DNDT_SPSB_CTN
+		                            ,A.DUTYFROM
+		                            ,A.DUTYTO
+		                            ,DECODE(A.DUTYFROM_HH, '24', '00', A.DUTYFROM_HH)	DUTYFROM_HH
+		                            ,A.DUTYFROM_MM
+		                            ,DECODE(A.DUTYTO_HH, '24', '00', A.DUTYTO_HH)		DUTYTO_HH
+		                            ,A.DUTYTO_MM
+		                            ,TO_CHAR(A.STRT_DT, 'YYYYMMDDHH24MISS')				DNDT_STRT_YMD
+		                            ,TO_CHAR(A.FNSH_DT, 'YYYYMMDDHH24MISS')				DNDT_FNSH_YMD
+		                     from (
+		                             select   a.*
+		                                     ,A.DLLZ_STRT_HM_STR			DUTYFROM
+		                                     ,A.DLLZ_FNSH_HM_STR			DUTYTO
+		                                    ,TO_CHAR(A.STRT_DT, 'HH24')		DUTYFROM_HH
+		                                    ,TO_CHAR(A.STRT_DT, 'MI')		DUTYFROM_MM
+		                                    ,TO_CHAR(A.FNSH_DT, 'HH24')		DUTYTO_HH
+		                                    ,TO_CHAR(A.FNSH_DT, 'MI')		DUTYTO_MM
+		                               from (
+		                                          select 
+		                                                 A.DPRT_CD			  --// 부서코드
+		                                                ,(
+		                                                 SELECT	FN_MD_GET_UPDEPT(A.DPRT_CD)
+		                                                    FROM	DUAL
+		                                                 )					AS UPDEPT
+		                                                ,A.USER_ID			  --// 사번
+		                                                ,A.DLLZ_YMD			 --// 근무일자
+		                                                ,A.OCFM_CD			  --// 직종
+		                                                ,A.OCCL_CD			  --// 직급
+		                                                ,A.DLLZ_CD			  --// 근무코드
+		                                                ,B.DLLZ_CD_NM		  --// 근무명
+		                                                ,B.DLLZ_STRT_HM_STR	--// 근무시작시간
+		                                                ,B.DLLZ_FNSH_HM_STR	--// 근무종료시간
+		                                                ,B.NXDY_YN			  --// 익일 여부
+		                                                ,B.NON_RGLR_FRMT_YN	 --// 비정형 근무 타입 여부 (근무 중간에 휴게시간이 있는 형태)
+		                                                ,B.ITEM_HINT_CTN		--// 비정형 근무일 때 실제 근무 COMMENT
+		                                                ,TO_DATE(TO_CHAR(A.DLLZ_YMD, 'YYYYMMDD') || REPLACE(B.DLLZ_STRT_HM_STR, ':'), 'YYYYMMDDHH24MI') AS STRT_DT --// 실제 근무 시작일시
+		                                                ,TO_DATE(DECODE(B.NXDY_YN, 'Y', TO_CHAR(A.DLLZ_YMD+1, 'YYYYMMDD')
+		                                                                                , TO_CHAR(A.DLLZ_YMD  , 'YYYYMMDD')) || REPLACE(B.DLLZ_FNSH_HM_STR, ':'), 'YYYYMMDDHH24MI') AS FNSH_DT --// 실제 근무 종료일시
+		                                                ,A.LAST_UPDT_DT
+		                                                ,A.LAST_UPDT_IP
+		                                                ,A.LAST_UPDR_ID
+		                                            from ETWWRKNDT a
+		                                               , ETWDLLZMT b
+		                                           where a.DLLZ_YMD  between trunc(sysdate)-1 
+		                                                                 and trunc(sysdate)
+		                                             and (   a.DPRT_CD = #{dprtCd}
+		                                                  or FN_MD_GET_UPDEPT(a.DPRT_CD)  = FN_MD_GET_UPDEPT(#{dprtCd})
+		                                                 )
+		                                             and b.DLLZ_DSPL_CD(+) <>'O'
+		                                             and b.DLLZ_CD (+)     = a.DLLZ_CD
+		                                             and a.OCCL_CD         <> 'DA1'    --인턴제외                                     
+		                                    ) a
+		                              where 1=1
+		                                AND	A.UPDEPT	NOT IN	(
+		                                                        SELECT	NVL(MAX('IM'), '@')
+		                                                          FROM	ETCMCDDMT X
+		                                                         WHERE	X.COMN_GRP_CD	= 'ET4002'
+		                                                           AND  trunc(sysdate) between x.APST_YMD and x.APFN_YMD
+		                                                           AND	ROWNUM		= 1
+		                                                        )
+		                                AND	TO_DATE(TO_CHAR(A.DLLZ_YMD  , 'YYYYMMDD') || '220000', 'YYYYMMDDHH24MISS')	< A.FNSH_DT
+		                                AND	TO_DATE(TO_CHAR(A.DLLZ_YMD+1, 'YYYYMMDD') || '060000', 'YYYYMMDDHH24MISS')	> A.STRT_DT	--// 근무 시간까지 적용하려고 할 때
+		                                AND	SYSDATE	BETWEEN A.STRT_DT
+		                                                AND A.FNSH_DT - 0.00001
+		                           ) a
+		                 ) a 
+		                 , CCUSERAMT b
+		                 , ETCMCDDMT c
+		                 , ETCMCDDMT d
+		                 , CCCMCDDMT e
+		                 , HZDEPTMMT f
+		            where 
+		                  b.LGIN_ID = a.DTPR_ID
+		              and sysdate between to_date(a.DNDT_STRT_YMD,'YYYYMMDDHH24MISS')  
+		                              and to_date(a.DNDT_FNSH_YMD,'YYYYMMDDHH24MISS') - 0.00001
+		              and c.COMN_GRP_CD(+) = 'ET4000'
+		              and c.COMN_DTLS_CD(+) = a.DNDT_DVSN_CD
+		              and trunc(sysdate) between c.APST_YMD(+) and c.APFN_YMD(+)
+		              and d.COMN_GRP_CD(+) = 'ET4003'
+		              and d.DETL_CD_DSCR_CTN(+) = a.DPRT_CD
+		              and trunc(sysdate) between d.APST_YMD(+) and d.APFN_YMD(+)
+		              and trunc(sysdate) between d.APST_YMD(+)
+		                                     and d.APFN_YMD(+)
+		              and e.COMN_GRP_Cd(+) = 'GP005'
+		              and e.COMN_DTLS_CD(+)  = b.OCCL_CD
+		              and f.DPRT_Cd(+)       = a.DPRT_CD      
+		            union all 
+		             select 
+		                     0              as FLAG
+		                   , trunc(sysdate) as DNDT_WRKN_YMD
+		                   , a.COMN_DTLS_CD  as DPRT_CD 
+		                   , a.DETL_CD_DSCR_CTN  as KORN_DPRT_NM
+		                   , ''                  
+		                   , ''
+		                   , 0
+		                   , row_number() over (partition by a.DETL_CD_NM  order by a.DETL_CD_DSCR_CTN) as SORT_SQNC
+		                   , '' 
+		                   , '당직의'          as USER_NM
+		                   ,a.STND_ABRD_CTN2 as TLNO
+		                   ,a.STND_ABRD_CTN2 as CLNO
+		                   ,''
+		                   ,''
+		                   ,''
+		                   ,''
+		                   ,'레지던트(당직의)' as DNDT_SPSB_CTN
+		                   ,''
+		                   ,''
+		                   ,''
+		                   ,1
+		               from ETCMCDDMT a
+		               where a.COMN_GRP_CD(+) = 'ET4002'
+		                 and trunc(sysdate) between a.APST_YMD and a.APFN_YMD
+		                 and (	(instr(nvl(a.STND_ABRD_CTN5, '@'), #{inqrBaseCd}||'|')	> 0)
+		                    or	(	instr(nvl(a.STND_ABRD_CTN5, '@'), #{dprtCd}||'|')	> 0
+		                        and	instr(nvl(a.STND_ABRD_CTN3, '@'), #{inqrBaseCd}||'|')	= 0
+		                        and	instr(nvl(a.STND_ABRD_CTN4, '@'), #{inqrBaseCd}||'|')	= 0
+		                        )
+		                     )        
+		        ) a
+		        order by 
+		                 a.DNDT_WRKN_YMD
+		                ,a.Flag
+		                ,a.SCRN_DSPL_SQNC nulls first
+		                ,a.DNDT_DVSN_CD 
+		                ,a.USER_NM
+		                ,a.ROW_NUM
+		    ) a
+		where ((a.KORN_DPRT_NM is null) or (a.KORN_DPRT_NM not like '%전공의%'))
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO">
+	
+		<result property="lginId" column="LGIN_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="clno" column="CLNO"/>
+		<result property="tlno" column="TLNO"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="detlCdNm" column="DETL_CD_NM"/>
+		<result property="userLcnsNo" column="USER_LCNS_NO"/>
+		<result property="userSpczDrlcNo" column="USER_SPCZ_DRLC_NO"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr (임상과장 연락처 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrInfmMngmDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		    select /*SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrInfmMngmDAO-listClncDpchCnpnInqr */
+		           a.LGIN_ID                      /* 사용자ID*/
+		          ,a.USER_NM                      /* 사용자명*/
+		          ,case when a.CLNO is null then '' 
+		                    when LENGTH(a.CLNO) = 11 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,4)|| '-' || substr(a.CLNO,8,4) 
+		                    when LENGTH(a.CLNO) = 10 then substr(a.CLNO,1,3) || '-' || substr(a.CLNO,4,3)|| '-' || substr(a.CLNO,7,4)
+		                    else a.CLNO
+		           end  as CLNO                   /* 휴대전화번호*/
+		          ,case when a.EXTS_TLNO is null then '' 
+		                    when LENGTH(a.EXTS_TLNO) = 11 then substr(a.EXTS_TLNO,1,3) || '-' || substr(a.EXTS_TLNO,4,4)|| '-' || substr(a.EXTS_TLNO,8,4) 
+		                    when LENGTH(a.EXTS_TLNO) = 10 then substr(a.EXTS_TLNO,1,3) || '-' || substr(a.EXTS_TLNO,4,3)|| '-' || substr(a.EXTS_TLNO,7,4)
+		                    else a.EXTS_TLNO
+		           end  as TLNO               /* 내선전화번호*/
+		          ,a.KORN_DPRT_NM  as KORN_DPRT_NM   /* 직급명*/
+		          ,a.DETL_CD_NM    as DETL_CD_NM
+		          ,a.USER_LCNS_NO                  /* 면허번호1*/
+		          ,a.USER_SPCZ_DRLC_NO             /* 면허번호2*/
+		    from 
+		      (
+		            select 
+		                 a.LGIN_ID
+		                ,a.USER_NM
+		                ,a.DETL_CD_NM
+		                ,a.HRAF_PRAP_DPRT_CD
+		                ,a.KORN_DPRT_NM
+		                ,a.USER_LCNS_NO
+		                ,a.USER_SPCZ_DRLC_NO
+		                ,a.CLNO
+		                ,a.EXTS_TLNO
+		            from 
+		            (
+		                select 
+		                       a.LGIN_ID
+		                     , a.USER_NM
+		                     , c.DETL_CD_NM
+		                     , z.HRAF_PRAP_DPRT_CD
+		                     , '담당교수(책임의사)' as KORN_DPRT_NM
+		                     , a.USER_LCNS_NO 
+		                     , a.USER_SPCZ_DRLC_NO 
+		                     , decode(a.CLNO , '' , d.CLNO, a.CLNO) as CLNO
+		                     , d.EXTS_TLNO
+		                     , '1' as SQNC_SNO
+		                     , c.SCRN_DSPL_SQNC      
+		                     , z.APFN_YMD 
+		                from CCCMCDDMT c
+		                   , HZDEPTMMT b
+		                   , CCUSERAMT a
+		                   , CCUSRDPHT z
+		                   , CCUSERAMT d
+		                where a.LGIN_ID = #{chdrId}
+		                  and trunc(sysdate) between a.APST_YMD and b.APFN_YMD 
+		                  and a.LGIN_ID    = z.LGIN_ID(+)
+		                  and z.MNSB_YN    = 'Y'
+		                  and b.DPRT_CD(+) = z.HRAF_PRAP_DPRT_CD  
+		                  and c.COMN_GRP_CD = 'GP005'
+		                  and c.COMN_DTLS_CD = a.OCCL_CD    
+		                  and d.LGIN_ID = a.LGIN_ID
+		                  and trunc(sysdate) between d.APST_YMD and d.APFN_YMD
+		                  and a.HSPT_CD = #{hsptCd}  
+		                  and c.DETL_CD_NM not like '%인턴%'  /* 인턴제외*/
+		                union all
+		                select a.LGIN_ID 
+		                     , a.USER_NM
+		                     , c.DETL_CD_NM 
+		                     , z.HRAF_PRAP_DPRT_CD
+		                     , '임상과장'
+		                     , a.USER_LCNS_NO 
+		                     , a.USER_SPCZ_DRLC_NO 
+		                     , decode(a.CLNO , '' , d.CLNO, a.CLNO)
+		                     , d.EXTS_TLNO 
+		                     , '2'  as SQNC_SNO
+		                     , c.SCRN_DSPL_SQNC      
+		                     , z.APFN_YMD 
+		                from CCCMCDDMT c
+		                   , HZDEPTMMT b
+		                   , CCUSERAMT a
+		                   , CCUSRDPHT z
+		                   , CCUSERAMT d
+		                where
+		                      USER_ID in  (
+		                                    select distinct
+		                                           V.EMNO
+		                                     from  (
+		                                              select
+		                                                       EMNO
+		                                                     , EMPY_NM
+		                                                     , DPRT_CD
+		                                                     , OCPS_CD
+		                                                     , OCCL_CD
+		                                                     , '1' CHASU
+		                                                 from HZUSERMMT
+		                                                where OCPS_CD in ('A09','A19','A10','A24')
+		                                                  and HLOF_STTS_CD like 'A%'
+		                                                  and DPRT_CD is not null
+		                                                  and ((#{hsptCd} = '11100117') and (BSPL_CD = '1A') or 
+		                                                       (#{hsptCd} = '11100494') and (BSPL_CD = '2A') or
+		                                                       (#{hsptCd} = '31100252') and (BSPL_CD = '3A')
+		                                                       )
+		                                                  and (DPRT_CD, OCPS_CD) in (select A.DPRT_CD, min(A.OCPS_CD) as AJOB_CD 
+		                                                                               from HZUSERMMT A
+		                                                                              where A.OCPS_CD in ('A09','A19','A10','A24')
+		                                                                                and A.HLOF_STTS_CD like 'A%'
+		                                                                                and A.DPRT_CD = (select DPRT_CD from HZUSERMMT where EMNO = #{chdrId})
+		                                                                              group by A.DPRT_CD 
+		                                                                            )
+		                                                union                                      
+		                                               select  C.EMNO
+		                                                     , D.EMPY_NM
+		                                                     , C.DPRT_CD
+		                                                     , C.AJOB_CD
+		                                                     , D.OCPS_CD
+		                                                     , '1' CHASU
+		                                                 from HHADDJOBT c, HZUSERMMT d
+		                                                where c.EMNO  = d.EMNO
+		                                                  and c.AJOB_CD in ('A09','A19','A10','A24')
+		                                                  and d.HLOF_STTS_CD like 'A%'
+		                                                  and nvl(c.FNSH_YMD,'99991231') >= to_char(sysdate,'YYYYMMDD')
+		                                                  and c.DPRT_Cd is not null
+		                                                  and ((#{hsptCd} = '11100117') and (d.BSPL_CD = '1A') or 
+		                                                       (#{hsptCd} = '11100494') and (d.BSPL_CD = '2A') or
+		                                                       (#{hsptCd} = '31100252') and (d.BSPL_CD = '3A')
+		                                                       )
+		                                                  and (c.DPRT_CD, c.AJOB_CD) in (select b.DPRT_CD, min(b.AJOB_CD) as  AJOB_CD
+		                                                                                   from HHADDJOBT B,
+		                                                                                        HZUSERMMT C                                            
+		                                                                                  where B.EMNO = c.EMNO
+		                                                                                    and B.AJOB_CD in ('A09','A19','A10','A24')
+		                                                                                    and c.HLOF_STTS_CD like 'A%'
+		                                                                                    and nvl(b.FNSH_YMD,'99991231') >= to_char(sysdate,'YYYYMMDD')
+		                                                                                    and b.DPRT_CD =( select DPRT_CD from HZUSERMMT where  EMNO = #{chdrId})
+		                                                                                    group by b.DPRT_CD 
+		                                                                                 )
+		                                                  and not exists(select  1 
+		                                                                   from HHADDJOBT 
+		                                                                  where OCPS_CD in ('A09','A19','A10','A24')
+		                                                                    and HLOF_STTS_CD like 'A%'
+		                                                                    and DPRT_CD is not null
+		                                                                    and DPRT_CD = C.DPRT_CD
+		                                                                    and OCPS_CD < C.AJOB_CD
+		                                                                 )
+		                                         ) V 
+		                                    group by V.EMNO, V.EMPY_NM, V.DPRT_CD, OCCL_CD, CHASU
+		                                  )   
+		                  and trunc(sysdate) between a.APST_YMD and b.APFN_YMD 
+		                  and a.LGIN_ID    = z.LGIN_ID(+)
+		                  and z.MNSB_YN    = 'Y'
+		                  and b.DPRT_CD(+) = z.HRAF_PRAP_DPRT_CD  
+		                  and c.COMN_GRP_CD = 'GP005'
+		                  and c.COMN_DTLS_CD = a.OCCL_CD    
+		                  and d.LGIN_ID = a.LGIN_ID          
+		                  and trunc(sysdate) between d.APST_YMD and d.APFN_YMD     
+		                  and ((#{inqrBaseCd} = '1') or 
+		                       (#{inqrBaseCd} = '2') and( a.HSPT_CD = #{hsptCd}  ))     
+		            ) A
+		        order by a.SCRN_DSPL_SQNC, a.KORN_DPRT_NM, a.SQNC_SNO, a.APFN_YMD
+		    ) a
+		]]>
+	</select>
+
+
+
+</mapper>

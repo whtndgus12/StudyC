@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnrBodyMsrnDAO_sql.xml 
+    Description :                                      신체계측 DAO
+                  -->
+<mapper namespace="MnrBodyMsrnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn-result" type="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrBodyMsrnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="cnosItemRcrdVl1" column="CNOS_ITEM_RCRD_VL_1"/>
+		<result property="bodyMsrnUnitCd" column="BODY_MSRN_UNIT_CD"/>
+		<result property="cnosItemRcrdVl4" column="CNOS_ITEM_RCRD_VL_4"/>
+		<result property="cnosItemRcrdVl9" column="CNOS_ITEM_RCRD_VL_9"/>
+		<result property="cnosItemRcrdVl10" column="CNOS_ITEM_RCRD_VL_10"/>
+		<result property="cnosItemRcrdVl6" column="CNOS_ITEM_RCRD_VL_6"/>
+		<result property="bodyMsrnRcrdDt" column="BODY_MSRN_RCRD_DT"/>
+		<result property="bodyMsrnRcrdDt1" column="BODY_MSRN_RCRD_DT_1"/>
+		<result property="bodyMsrnRcrdDt2" column="BODY_MSRN_RCRD_DT_2"/>
+		<result property="bodyMsrnRcrdDt3" column="BODY_MSRN_RCRD_DT_3"/>
+		<result property="bodyMsrnRcrdDt4" column="BODY_MSRN_RCRD_DT_4"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn (가장 최근 신체계측 측정값 조회) 
+        Description :                                           가장 최근 신체계측 측정값 조회(mnd_cvsdomt_s01)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnr.vo.MnrBodyMsrnDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn"  parameterType="com.sds.healthcare.ehr.med.mn.mnr.vo.MnrBodyMsrnDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-med-mn-mnr-dao-MnrBodyMsrnDAO-selectOnePtntLtstBodyMsrn */
+		<![CDATA[
+		select /*+ mnd_cvsdomt_s01$S01_가장최근신체계측측정값조회 DAM */
+		       PTNO as PTNO
+		     , nvl(substr(DT_WT , 15) , 0) as CNOS_ITEM_RCRD_VL_1              /* 체중*/
+		     , case when length(DT_WT) > 14 then (select BODY_MSRN_UNIT_CD
+		                                           from MECFSBMMT c
+		                                          where c.body_msrn_rcrd_dt = to_date(substr(DT_WT, 1, 14),'YYYYMMDDHH24MISS')
+		                                            and c.body_msrn_item_sno = 1 and c.BODY_MSRN_RCRD_VL = substr(DT_WT, 15) and rownum = 1)
+		           else '' end as BODY_MSRN_UNIT_CD /* 신체계측단위코드*/
+		     , nvl(substr(DT_HT , 15) , 0) as CNOS_ITEM_RCRD_VL_4              /* 신장*/
+		     , nvl(substr(DT_CT , 15) , 0) as CNOS_ITEM_RCRD_VL_9              /* 흉위*/
+		     , nvl(substr(DT_HD , 15) , 0) as CNOS_ITEM_RCRD_VL_10              /* 두위*/
+		     , nvl(substr(DT_AN , 15) , 0) as CNOS_ITEM_RCRD_VL_6              /* 복위*/
+		     , substr(DT_WT  , 1, 14) as BODY_MSRN_RCRD_DT
+		     , substr(DT_HT  , 1, 14) as BODY_MSRN_RCRD_DT_1
+		     , substr(DT_CT  , 1, 14) as BODY_MSRN_RCRD_DT_2
+		     , substr(DT_HD  , 1, 14) as BODY_MSRN_RCRD_DT_3
+		     , substr(DT_AN  , 1, 14) as BODY_MSRN_RCRD_DT_4
+		from(
+		    select
+		           a.PTNO
+		         , max(DT_WT) as DT_WT
+		         , max(DT_HT) as DT_HT
+		         , max(DT_CT) as DT_CT
+		         , max(DT_HD) as DT_HD
+		         , max(DT_AN) as DT_AN
+		      from (
+		             select domt.PTNO
+		                  , max(decode(damt.CNOS_ITEM_SNO, 1, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_WT
+		                  , max(decode(damt.CNOS_ITEM_SNO, 4, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_HT
+		                  , max(decode(damt.CNOS_ITEM_SNO, 9, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_CT
+		                  , max(decode(damt.CNOS_ITEM_SNO, 10, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_HD
+		                  , max(decode(damt.CNOS_ITEM_SNO, 6, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_AN
+		              from  MECFSDOMT domt
+		                  , MECFSBMMT bmmt
+		                  , MECFSDAMT damt
+		              where domt.PTNO              = #{ptno}
+		                and bmmt.CNOS_RCRD_NO  (+) = domt.CNOS_RCRD_NO
+		                and damt.CNOS_ITEM_SNO (+) = bmmt.BODY_MSRN_ITEM_SNO
+		                and damt.CNOS_ITEM_NM  (+) in ('WT', 'HT','HC','복위')
+		              group
+		                 by domt.PTNO
+		            union
+		            select domt.PTNO
+		                 , '' as DT_HT
+		                 , '' as DT_WT
+		                 , max(decode(bmmt.BODY_MSRN_ITEM_SNO, 9, to_char(bmmt.BODY_MSRN_RCRD_DT, 'YYYYMMDDHH24MISS') || bmmt.BODY_MSRN_RCRD_VL , 0)) as DT_CT
+		                 , '' as DT_DT
+		                 , '' as DT_CT
+		              from MECFSDOMT domt
+		                 , MECFSBMMT bmmt
+		             where domt.PTNO              = #{ptno}
+		               and bmmt.CNOS_RCRD_NO (+)  = domt.CNOS_RCRD_NO
+		             group
+		                by domt.PTNO
+		             ) a
+		      group by ptno
+		)
+		]]>
+	</select>
+
+
+
+</mapper>

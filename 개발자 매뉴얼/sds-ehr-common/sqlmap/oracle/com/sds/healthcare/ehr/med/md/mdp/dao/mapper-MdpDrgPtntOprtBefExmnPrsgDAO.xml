@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDrgPtntOprtBefExmnPrsgDAO_sql.xml
+    Description : -->
+<mapper namespace="MdpDrgPtntOprtBefExmnPrsgDAO">
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO">
+  <result property="totlCct" column="TOTL_CCT"/>
+	</resultMap>
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn ()
+        Description : parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntExtlExmnOrdrSaveYn */
+				   count(*) as TOTL_CCT
+			 from
+				   MDDRGOMDT    /*  DRG환자외부검사시행 */
+			where
+				   MDRP_NO = #{mdrpNo}
+			]]>
+	</select>
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO">
+  <result property="oprtYmd" column="OPRT_YMD"/>
+  <result property="rganYn" column="RGAN_YN"/>
+	</resultMap>
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn ()
+        Description : parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listPtntOprtYmdAnstYn */
+				   to_char(c.OPRT_YMD, 'YYYYMMDD') as OPRT_YMD
+				,  decode(c.ANKI_CD, '02', 'Y', '04', 'Y', 'N') as RGAN_YN
+			 from
+				   APRCRPTNT a      /*  진료접수 */
+				,  MDOPSCHET c      /*  수술스케쥴 */
+			where
+				   a.MDRP_NO   = #{mdrpNo}
+			  and  a.CNCL_DT   is null
+			  and  a.DR_DRG_NO is not null
+			  and  a.CODV_CD   <> 'O'
+			  and  c.PTNO      = a.PTNO
+			  and  c.OPRT_YMD between trunc(a.MDCR_DT) - 1 and trunc(a.MDCR_DT) + 1
+			  and  c.OPRT_STTS_CD <> '9'
+			  and  rownum      = 1
+			]]>
+	</select>
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO">
+  <result property="sortSqnc" column="SORT_SQNC"/>
+  <result property="ordrCd" column="ORDR_CD"/>
+  <result property="ordrNm" column="ORDR_NM"/>
+  <result property="enfrYn" column="ENFR_YN"/>
+  <result property="extlExmnEnfrYn" column="EXTL_EXMN_ENFR_YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm ()
+        Description : parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-listExtlExmnEnfrInfm */
+				   rownum  as SORT_SQNC
+				,  c.ORDR_CD as ORDR_CD
+				,  c.ORDR_NM as ORDR_NM
+				,  decode(d.ORDR_CD, '', 'N', 'Y')  as ENFR_YN
+				,  decode(c.EXTL_EXMN_ENFR_YN, 'Y', 'Y', 'N') as EXTL_EXMN_ENFR_YN
+			 from  (
+				   select  distinct
+						   a.MDCR_DTLS_CTRL_CD as ORDR_CD
+						,  a.MDCR_DTLS_CTRL_NM as ORDR_NM
+						,  b.EXTL_EXMN_ENFR_YN
+					 from  MZCTRLMMT a
+						,  MDDRGOMDT b
+					where  a.MDCR_CTRL_CD       = decode(#{mcdpCd}, '111300', 'MM436', '111310', 'MM442', 'MM435')  /*  111300 : OPH, 111310: ENT */
+					  and  a.MDCR_CTRL_CHRC_VL1 = decode(#{rganYn}, 'Y', 'Y', a.MDCR_CTRL_CHRC_VL1)
+					  and  b.PTNO(+)            = #{ptno}
+					  and  b.ORDR_CD(+)         = a.MDCR_DTLS_CTRL_CD
+				   ) c
+				,  (
+				   select  distinct
+						   b.MDCR_DTLS_CTRL_CD as ORDR_CD
+					 from  MDEXMORDT a
+						,  MZCTRLMMT b
+					where  a.PTNO = #{ptno}
+					  and  (
+							(a.ENFR_DT between to_date(#{oprtYmd}, 'YYYYMMDD') - to_number(b.MDCR_CTRL_CHRC_VL3)
+										   and to_date(#{oprtYmd}, 'YYYYMMDD')
+							)
+							or
+							(a.ORDR_YMD between to_date(#{oprtYmd}, 'YYYYMMDD') - to_number(b.MDCR_CTRL_CHRC_VL3)
+											and to_date(#{oprtYmd}, 'YYYYMMDD')
+							)
+						   )
+					  and  nvl(a.DC_DVSN_CD, 'N') = 'N'
+					  and  b.MDCR_CTRL_CD         = decode(#{mcdpCd}, '111300', 'MM436', '111310', 'MM442', 'MM435')
+					  and  instr(b.MDCR_CTRL_CHRC_VL2, a.ORDR_CD || ',') > 0
+					  and  b.MDCR_CTRL_CHRC_VL1   = decode(#{rganYn}, 'Y', 'Y', b.MDCR_CTRL_CHRC_VL1)
+				   ) d
+			where  c.ORDR_CD = d.ORDR_CD(+)
+			order
+			   by  c.ORDR_CD
+			]]>
+	</select>
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-deleteExtlExmnEnfr ()
+        Description : parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO
+    -->
+	<delete id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-deleteExtlExmnEnfr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO"  >
+		<![CDATA[
+		   DELETE  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-deleteExtlExmnEnfr */
+			 from  MDDRGOMDT
+			where  MDRP_NO = #{mdrpNo}
+			]]>
+	</delete>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-insertExtlExmnEnfr ()
+        Description : parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO
+    -->
+	<insert id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-insertExtlExmnEnfr"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDrgPtntOprtBefExmnPrsgDVO"  >
+		<![CDATA[
+			   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDrgPtntOprtBefExmnPrsgDAO-insertExtlExmnEnfr */
+				 into  MDDRGOMDT
+					   (
+					   MDRP_NO
+					,  SNO
+					,  ORDR_CD
+					,  PTNO
+					,  CODV_CD
+					,  EXTL_EXMN_ENFR_YN
+					/*  AUDIT */
+					,  FRST_RGSR_ID
+					,  FRST_RGST_IP
+					,  FRST_RGST_DT
+					,  FRST_RGST_CLNT_PRGM_ID
+					,  FRST_RGST_SRVR_PRGM_ID
+					,  LAST_UPDR_ID
+					,  LAST_UPDT_IP
+					,  LAST_UPDT_DT
+					,  LAST_UPDT_CLNT_PRGM_ID
+					,  LAST_UPDT_SRVR_PRGM_ID
+					   )
+			   select
+					   a.MDRP_NO
+					,  a.DRG_PTNT_SNO
+					,  #{ordrCd}
+					,  a.PTNO
+					,  a.CODV_CD
+					,  #{extlExmnEnfrYn}
+					/*  AUDIT */
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+					,  #{gvUserId}
+					,  #{gvUserIp}
+					,  sysdate
+					,  #{gvClntPrgmId}
+					,  #{gvSrvrPrgmId}
+				 from
+					   MDDRGPTMT a
+				where
+					   a.MDRP_NO = #{mdrpNo}
+				  and  a.APFN_YMD is null
+			]]>
+	</insert>
+
+
+</mapper>

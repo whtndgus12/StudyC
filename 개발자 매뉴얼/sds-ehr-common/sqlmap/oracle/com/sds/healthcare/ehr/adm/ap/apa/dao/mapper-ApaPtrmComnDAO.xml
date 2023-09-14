@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApaPtrmComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApaPtrmComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO">
+	
+		<result property="asgmWardCd" column="ASGM_WARD_CD"/>
+		<result property="asgmPtrmNo" column="ASGM_PTRM_NO"/>
+		<result property="asgmChdrId" column="ASGM_CHDR_ID"/>
+		<result property="asgmMcdpCd" column="ASGM_MCDP_CD"/>
+		<result property="asgmPtrmGradCd" column="ASGM_PTRM_GRAD_CD"/>
+		<result property="asgmPtrmDvsnCd" column="ASGM_PTRM_DVSN_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm (최신병동병실정보 조회) 
+        Description :                                           apd_wmovemt_s02
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm-result" useCache="true" flushCache="false">
+		select /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneLtstAsgmWardPtrm */
+			   ASGM_WARD_CD as ASGM_WARD_CD
+			,  ASGM_PTRM_NO as ASGM_PTRM_NO
+		    ,  ASGM_CHDR_ID as ASGM_CHDR_ID
+		    ,  ASGM_MCDP_CD as ASGM_MCDP_CD
+			,  ASGM_PTRM_GRAD_CD as ASGM_PTRM_GRAD_CD
+			,  ASGM_PTRM_DVSN_CD as ASGM_PTRM_DVSN_CD
+		 from
+			   (
+			   /*  하루에 2건 이상 배정이 가능하므로.. */
+			   select
+					   a.ASGM_WARD_CD
+					,  a.ASGM_PTRM_NO
+		            /*  진료과 지정의 추가  */
+		            ,  a.ASGM_CHDR_ID
+		            ,  a.ASGM_MCDP_CD
+					,  b.PTRM_GRAD_CD as ASGM_PTRM_GRAD_CD
+					,  PTRM_DVSN_CD   as ASGM_PTRM_DVSN_CD
+					,  row_number() over (order by a.ASGM_DT desc) as rnk
+				from
+						MNWMOVEMT a
+					 ,  APRCPTRMT b /* 병실 : 배정된 병동/병실의 병실등급 및 구분 값을 조회하기 위해서*/
+				 where
+						a.MDRP_NO = #{mdrpNo}
+				   and  a.MVMN_RQST_PRSS_CD = 'F'
+				   and  a.ASGM_DT between trunc(sysdate) and trunc(sysdate)+.99999
+				   and  b.WARD_CD = a.ASGM_WARD_CD
+				   and  b.PTRM_NO = a.ASGM_PTRM_NO
+				   and  b.APFN_YMD = to_date('29991231', 'yyyymmdd')
+				   and  a.RQPR_ID not in ('AUTO')
+			   )
+		where
+			   rnk = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO">
+	
+		<result property="wardCd" column="WARD_CD"/>
+		<result property="abrvWardCd" column="ABRV_WARD_CD"/>
+		<result property="lcdvCd" column="LCDV_CD"/>
+		<result property="ptrmNo" column="PTRM_NO"/>
+		<result property="apstYmd" column="APST_YMD"/>
+		<result property="apfnYmd" column="APFN_YMD"/>
+		<result property="mcdpCd1" column="MCDP_CD1"/>
+		<result property="mcdpCd2" column="MCDP_CD2"/>
+		<result property="mcdpEtcCtn" column="MCDP_ETC_CTN"/>
+		<result property="ptrmDvsnCd" column="PTRM_DVSN_CD"/>
+		<result property="ptrmDvsnNm" column="PTRM_DVSN_NM"/>
+		<result property="ptrmGradCd" column="PTRM_GRAD_CD"/>
+		<result property="ptrmGradNm" column="PTRM_GRAD_NM"/>
+		<result property="ptrmRprtDvsnCd" column="PTRM_RPRT_DVSN_CD"/>
+		<result property="gendCd" column="GEND_CD"/>
+		<result property="sckbCot" column="SCKB_COT"/>
+		<result property="frstSckbCot" column="FRST_SCKB_COT"/>
+		<result property="sthsPtntCnt" column="STHS_PTNT_CNT"/>
+		<result property="admsPrrnPtntCnt" column="ADMS_PRRN_PTNT_CNT"/>
+		<result property="dschPrrnPtntCnt" column="DSCH_PRRN_PTNT_CNT"/>
+		<result property="ptrmInfmCd" column="PTRM_INFM_CD"/>
+		<result property="padpRmrkCtn" column="PADP_RMRK_CTN"/>
+		<result property="oprnSckbExclYn" column="OPRN_SCKB_EXCL_YN"/>
+		<result property="oprnSckbExclResnCd" column="OPRN_SCKB_EXCL_RESN_CD"/>
+		<result property="oprnSckbExclReetCtn" column="OPRN_SCKB_EXCL_REET_CTN"/>
+		<result property="embdResnCd" column="EMBD_RESN_CD"/>
+		<result property="embdResnRmrkCtn" column="EMBD_RESN_RMRK_CTN"/>
+		<result property="atmtRmtrExcpSckbCd" column="ATMT_RMTR_EXCP_SCKB_CD"/>
+		<result property="atmtRmtrExcpSckbNm" column="ATMT_RMTR_EXCP_SCKB_NM"/>
+		<result property="rmtrAplcNeedYn" column="RMTR_APLC_NEED_YN"/>
+		<result property="spcySckbDvsnCd" column="SPCY_SCKB_DVSN_CD"/>
+		<result property="spcySckbMxmmUsePsblHh" column="SPCY_SCKB_MXMM_USE_PSBL_HH"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm (병실정보 조회) 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm-result" useCache="true" flushCache="false">
+		SELECT     /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOnePtrm */
+		        WARD_CD        /*  */
+		     ,  h1.ABRV_DPRT_CD as ABRV_WARD_CD 
+		     ,  h1.LCDV_CD as LCDV_CD         
+		     ,  PTRM_NO        /*  */
+		     ,  a.APST_YMD        /*  */
+		     ,  a.APFN_YMD        /*  */
+		     ,  MCDP_CD1        /*  */
+		     ,  MCDP_CD2        /*  */
+		     ,  MCDP_ETC_CTN        /*  */
+		     ,  PTRM_DVSN_CD        /*  */
+		     ,  c1.DETL_CD_NM as PTRM_DVSN_NM
+		     ,  PTRM_GRAD_CD        
+		     ,  c2.DETL_CD_NM as PTRM_GRAD_NM
+		     ,  PTRM_RPRT_DVSN_CD        /*  */        
+		     ,  GEND_CD        /*  */
+		     ,  SCKB_COT        /*  */
+		     ,  FRST_SCKB_COT        /*  */
+		     ,  STHS_PTNT_CNT        /*  */
+		     ,  ADMS_PRRN_PTNT_CNT        /*  */
+		     ,  DSCH_PRRN_PTNT_CNT        /*  */
+		     ,  PTRM_INFM_CD        /*  */
+		     ,  PADP_RMRK_CTN        /*  */
+		     ,  OPRN_SCKB_EXCL_YN        /*  */
+		     ,  OPRN_SCKB_EXCL_RESN_CD        /*  */
+		     ,  OPRN_SCKB_EXCL_REET_CTN        /*  */
+		     ,  EMBD_RESN_CD        /*  */
+		     ,  EMBD_RESN_RMRK_CTN        /*  */
+		     ,  ATMT_RMTR_EXCP_SCKB_CD        /*  */
+		     ,  c3.detl_cd_nm as ATMT_RMTR_EXCP_SCKB_NM          
+		     ,  i3.COMN_ITEM_CHRC_VL as RMTR_APLC_NEED_YN  /*  전실신청내역을 유지해야 하는 병실인지 체크 */
+		     ,  SPCY_SCKB_DVSN_CD        /*  */
+		     ,  SPCY_SCKB_MXMM_USE_PSBL_HH        /*  */            
+		  FROM  APRCPTRMT a
+		     ,  CCCMCDDMT c1     
+		     ,  CCCMCDDMT c2
+		     ,  HZDEPTMMT h1
+		     ,  CCCMCDDMT c3
+		     ,  CCCMCDIDT i3
+		 where  WARD_CD = #{wardCd}
+		   and  PTRM_NO = #{ptrmNo}
+		   and  to_date(#{inqrYmd}, 'yyyymmdd') between  a.APST_YMD 
+		                                                                and  a.APFN_YMD
+		   and c1.COMN_GRP_CD = 'AP001'
+		   and c1.COMN_DTLS_CD = a.PTRM_DVSN_CD
+		   and c2.COMN_GRP_CD = 'AP002'
+		   and c2.COMN_DTLS_CD = a.PTRM_GRAD_CD
+		   and h1.DPRT_CD = a.WARD_CD
+		   and c3.COMN_GRP_CD(+) = 'APA011'
+		   and c3.COMN_DTLS_CD(+) = a.ATMT_RMTR_EXCP_SCKB_CD
+		   and c3.COMN_GRP_CD = i3.COMN_GRP_CD(+)
+		   and c3.COMN_DTLS_CD = i3.COMN_DTLS_CD(+)
+		   and i3.COMN_ITEM_CD(+) = 'OPTION5'
+		   and rownum = 1
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot-result" type="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO">
+	
+		<result property="sckbCot" column="SCKB_COT"/>
+		<result property="frstSckbCot" column="FRST_SCKB_COT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot (병상수 조회) 
+        Description :                                           병상수를 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot"  parameterType="com.sds.healthcare.ehr.adm.ap.apa.vo.ApaPtrmComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apa-dao-ApaPtrmComnDAO-selectOneTotSckbCot */
+		<![CDATA[
+		select  sum(r.SCKB_COT) as SCKB_COT
+		     ,  sum(r.FRST_SCKB_COT) FRST_SCKB_COT
+		  from  APRCPTRMT r
+		 where  1=1
+		   and  nvl(to_date(#{baseYmd}, 'yyyymmdd'), trunc(sysdate)) between r.APST_YMD
+		                                                                 and r.APFN_YMD
+		   /*응급실, 분만장 등의 병동은 제외한다.*/
+		   and  not exists  (
+		                    select  'Y'
+		                      from  apctrlmmt x
+		                     where  x.ptnt_ctrl_cd = 'AP_WARD'   
+		                       and  x.ptnt_dtls_ctrl_cd = r.ward_cd
+		                    )
+		]]>
+	</select>
+
+
+
+</mapper>

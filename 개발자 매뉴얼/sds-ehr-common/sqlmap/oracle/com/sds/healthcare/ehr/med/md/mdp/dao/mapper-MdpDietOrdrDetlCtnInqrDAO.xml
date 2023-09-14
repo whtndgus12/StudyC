@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MdpDietOrdrDetlCtnInqrDAO_sql.xml 
+    Description : -->
+<mapper namespace="MdpDietOrdrDetlCtnInqrDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO">
+	
+		<result property="distYmd" column="DIST_YMD"/>
+		<result property="distMedvCd" column="DIST_MEDV_CD"/>
+		<result property="dietFnshYmd" column="DIET_FNSH_YMD"/>
+		<result property="dietFnshMedvCd" column="DIET_FNSH_MEDV_CD"/>
+		<result property="dietNm" column="DIET_NM"/>
+		<result property="dietVlm" column="DIET_VLM"/>
+		<result property="kcalQty" column="KCAL_QTY"/>
+		<result property="admsDt" column="ADMS_DT"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="emrgPblcYn" column="EMRG_PBLC_YN"/>
+		<result property="emrgPblcResnCtn" column="EMRG_PBLC_RESN_CTN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList (식사처방내역 조회) 
+        Description :                                           환자에게 내려진 식사처방내역을 조회한다.(간호식사기본)
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrList */   /*+ mdd_wdietmt_l01$S01_식사처방내역 조회 */
+					   to_char(a.DIST_YMD, 'YYYYMMDD') as DIST_YMD           /*  식사개시일자         */
+					,  a.DIST_MEDV_CD as DIST_MEDV_CD                            /*  식사개시끼니         */
+					,  to_char(a.DIET_FNSH_YMD, 'YYYYMMDD') as DIET_FNSH_YMD    /*  식사종료일시         */
+					,  a.DIET_FNSH_MEDV_CD as DIET_FNSH_MEDV_CD                       /*  식사종료끼니         */
+					,  b.DIET_NM as DIET_NM                                 /*  식사명               */
+					,  to_char(a.DIET_VLM) as DIET_VLM                       /*  볼륨                 */
+					,  to_char(a.KCAL_QTY) as KCAL_QTY                      /*  킬로칼로리           */
+		   /*          ,  a.ADMS_DT                                 /*  입원일시             */
+					,  to_char(d.MDCR_DT, 'yyyymmdd') as ADMS_DT
+					,  to_char(a.FRST_RGST_DT, 'YYYYMMDDHH24MI') as FRST_RGST_DT /*  등록일시             */
+					,  a.EMRG_PBLC_YN as EMRG_PBLC_YN                                   /*  긴급발행구분, 20120816, IDS */
+					,  a.EMRG_PBLC_RESN_CTN as EMRG_PBLC_RESN_CTN                             /*  긴급발행사유, 20120816, IDS */
+				 from
+					   MNWDIETMT a                               /*  식사기본             */
+					,  SUDIECDCT b                               /*  식사코드             */
+					,  APRCRPTNT d                               /*  진료 접수            */
+					,  MNZCAUTMT g                               /*  간호CAUTION마스터   */
+				where  a.PTNO =  #{ptno}                                /*  환자번호             */
+				  and  a.DIST_YMD >= to_date(#{distYmd}, 'YYYYMMDD') /*  식사개시일자         */
+				  and  ((a.DIET_FNSH_YMD <= to_date(#{dietFnshYmd}, 'YYYYMMDD')) or
+						(a.DIET_FNSH_YMD = to_date('29991231', 'YYYYMMDD')))  /*  식사종료일자         */
+			      and  fn_day_check(#{distYmd}, #{dietFnshYmd}) <= 7
+				  and  b.DIET_CD(+) = a.DIET_CD                       /*  식사코드             */
+				  and  a.PTNO  = d.PTNO
+				  and  a.MDRP_NO = d.MDRP_NO
+				  and  a.PTNO   = d.PTNO
+				  and  d.CODV_CD = 'I'
+				  and  g.PTNO(+) = a.PTNO
+				  and  g.CATN_DVSN_CD(+) = 'F'
+				  and  #{dietFnshYmd} is not null  /*  식사 종료일자 */
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO">
+	
+		<result property="slipCd" column="SLIP_CD"/>
+		<result property="slipNm" column="SLIP_NM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList (식사처방 SLIP정보조회) 
+        Description :                                           식사처방의 SLIP명 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietSlipInfmList */   /*+ mdd_bslipct_l01$S01_식사처방 기본정보조회  */   
+		   		   a.SLIP_CD as SLIP_CD
+				,  a.SLIP_NM as SLIP_NM
+			 from  MDBSLIPCT a
+				,  SUDIECDCT b
+			where  a.SLIP_CD1 = '*'
+			  and  a.SLIP_CD2 = FN_CC_GET_CNST_VL('MDP_005', 'SLIP_CD_DIET')
+			  and  a.SLIP_CD = b.ORDR_SCRN_LRCL_CD
+			  and  b.ORDR_SCRN_LRCL_CD is not null
+		      and  a.SCRN_DSPL_YN is not null
+			group
+			   by  a.SLIP_CD
+				,  a.SLIP_NM
+				,  a.SORT_SQNC
+			order
+			   by  a.SORT_SQNC
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO">
+	
+		<result property="ordrScrnLrclCd" column="ORDR_SCRN_LRCL_CD"/>
+		<result property="dietCd" column="DIET_CD"/>
+		<result property="dietNm" column="DIET_NM"/>
+		<result property="dietDscrCtn" column="DIET_DSCR_CTN"/>
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="someStrzYn" column="SOME_STRZ_YN"/>
+		<result property="tethAsstYn" column="TETH_ASST_YN"/>
+		<result property="dgltAsst1StepYn" column="DGLT_ASST_1_STEP_YN"/>
+		<result property="dgltAsst2aStepYn" column="DGLT_ASST_2A_STEP_YN"/>
+		<result property="lvdsYn" column="LVDS_YN"/>
+		<result property="hyplYn" column="HYPL_YN"/>
+		<result property="ordrCalrMndtYn" column="ORDR_CALR_MNDT_YN"/>
+		<result property="brkfBvrgSlctPsblYn" column="BRKF_BVRG_SLCT_PSBL_YN"/>
+		<result property="evmlBvrgSlctPsblYn" column="EVML_BVRG_SLCT_PSBL_YN"/>
+		<result property="dietQtySlctPsblYn" column="DIET_QTY_SLCT_PSBL_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList (식사처방코드 목록 조회) 
+        Description :                                           식사처방코드 목록을 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listDietOrdrList */   /*+ mdd_bslipct_l02$S01_식사처방 상세정보 조회 */  
+		           a.ORDR_SCRN_LRCL_CD as ORDR_SCRN_LRCL_CD
+				,  a.DIET_CD as DIET_CD
+				,  a.DIET_NM||ORDR_SCRN_SRWR_NM as DIET_NM
+				,  a.DIET_DSCR_CTN as DIET_DSCR_CTN
+				,  a.SORT_SQNC as SORT_SQNC
+				,  nvl(a.SOME_STRZ_YN, 'N') as SOME_STRZ_YN           /*  준멸균여부 */
+				,  nvl(a.TETH_ASST_YN, 'N') as TETH_ASST_YN           /*  치아보조여부 */
+				,  nvl(a.DGLT_ASST_1_STEP_YN, 'N') as DGLT_ASST_1_STEP_YN           /*  연하보조1단계여부 */
+				,  nvl(a.DGLT_ASST_2A_STEP_YN, 'N') as DGLT_ASST_2A_STEP_YN           /*  연하보조2단계여부 */
+				,  nvl(a.LVDS_YN, 'N') as LVDS_YN            /*  연하보조3단계B여부 -간질환 */
+				,  nvl(a.HYPL_YN, 'N') as HYPL_YN            /*  연하보조3단계여부 -경저염 */
+				,  case when DIET_CD like 'Q33N%' then 'X'
+												  else nvl(a.ORDR_CALR_MNDT_YN, 'X') end as ORDR_CALR_MNDT_YN   /*  Kcal 입력여부 */
+				,  nvl(a.BRKF_BVRG_SLCT_PSBL_YN, 'N') as BRKF_BVRG_SLCT_PSBL_YN         /*  조식음료 */
+				,  nvl(a.EVML_BVRG_SLCT_PSBL_YN, 'N') as EVML_BVRG_SLCT_PSBL_YN                   /*  석식음료 */
+				,  nvl(a.DIET_QTY_SLCT_PSBL_YN, 'N') as DIET_QTY_SLCT_PSBL_YN           /*  식사량   */
+			 from  SUDIECDCT a
+			where  1 = 1
+			  /* and  a.APFN_YMD <= to_date('29991231', 'yyyymmdd') */
+			  and  a.APFN_YMD = to_date('29991231', 'yyyymmdd')
+			  and  a.ORDR_SCRN_LRCL_CD like #{ordrScrnLrclCd} ||'%'
+			  and  a.DIET_NM||ORDR_SCRN_SRWR_NM like '%'||#{dietNm} ||'%'
+			  and  a.ORDR_PSBL_YN = 'Y'
+			order
+			   by  5
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO">
+	
+		<result property="ordrCd" column="ORDR_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn (식사처방 유무 조회(입원 2일째까지)) 
+        Description :                                           입원 2일째까지 식사처방이 존재하는지 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntDietOrdrEn */   /*+ mdd_basordt_l01$S01_식이처방 유무 조회 */
+				  a.ORDR_CD as ORDR_CD
+			 from
+				   MDBASORDT a
+				,  APRCRPTNT p /*  진료접수 */
+			where  a.MDRP_NO   = #{mdrpNo}
+			  and  a.SLIP_CD like 'DT%'
+			  and  p.MDRP_NO = a.MDRP_NO
+			  and  a.ORDR_YMD  <= trunc(p.MDCR_DT)+1
+			  and  rownum  = 1
+			]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn-result" type="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO">
+	
+		<result property="ntm" column="NTM"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn (금식 외의 식사처방 유무 조회(입원기간)) 
+        Description :                                           (입원기간 내에) 금식 외 식사처방이 존재하는지 조회한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO
+		resultMap : com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn"  parameterType="com.sds.healthcare.ehr.med.md.mdp.vo.MdpDietOrdrDetlCtnInqrDVO"  resultMap="com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-md-mdp-dao-MdpDietOrdrDetlCtnInqrDAO-listPtntNpoExclDietOrdrEn */   /*+ mdd_basordt_l02$S01_입원2일째까지 금식외 식사가 있었는지 조회 */
+				  count(*)  as NTM
+			 from
+				   MDBASORDT a
+			where  a.MDRP_NO   = #{mdrpNo}
+			  and  a.SLIP_CD like 'DT%'
+			  and  a.ORDR_CD   <> 'Q70000'
+			]]>
+	</select>
+
+
+
+</mapper>

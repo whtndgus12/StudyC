@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_HzhPrjcClbyRsrhPpupDAO_sql.xml 
+    Description :                                      과제별연구자 팝업용 DAO
+                  -->
+<mapper namespace="HzhPrjcClbyRsrhPpupDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO">
+	
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="rsrcInfmHxId" column="RSRC_INFM_HX_ID"/>
+		<result property="irbrPrjcNo" column="IRBR_PRJC_NO"/>
+		<result property="rsrhId" column="RSRH_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="dvsnCd1" column="DVSN_CD_1"/>
+		<result property="dvsnNm1" column="DVSN_NM_1"/>
+		<result property="dvsnCd2" column="DVSN_CD_2"/>
+		<result property="dvsnNm2" column="DVSN_NM_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup (과제별_연구자_Popup_목록 조회) 
+        Description :                                           hzd_jonrsrt_l01$S01_과제별_연구자_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup-result" useCache="true" flushCache="false">
+		 select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpup */
+			   rownum         as SORT_SQNC    /* 순서 */
+			 , s.RSRC_PRJC_CD      as  RSRC_PRJC_CD /* 연구과제코드 */
+			 ,  s.RSRC_PRJC_KRLN_NM     as  RSRC_PRJC_NM /* 연구과제명 */
+			 ,  s.RSRC_INFM_HX_ID    as RSRC_INFM_HX_ID /* 연구정보이력ID */
+			 ,  s.IRBR_PRJC_NO      as IRBR_PRJC_NO       /* IRB과제번호 */
+			 ,  t.RSRH_ID             as  RSRH_ID      /* 연구자ID */
+			 ,  a.USER_NM          as  USER_NM      /* 사용자명 */
+			 ,  a.MDCR_DPRT_CD    as   DPRT_CD      /* 진료부서코드 */
+			 ,  (SELECT KORN_DPRT_NM FROM HZDEPTMMT WHERE DPRT_CD = a.MDCR_DPRT_CD)   as  KORN_DPRT_NM /* 한글부서명 */
+			 ,  t.RSRH_DVSN_CD   as   DVSN_CD_1    /* 연구자구분코드 */
+			 ,  FN_HZ_GET_MIS_COMCODENM(t.BSPL_CD, 'RPA_008', t.RSRH_DVSN_CD ) as DVSN_NM_1    /* 연구자구분명 */
+			 ,  NVL(t.DLTN_YN,'N')   as  DVSN_CD_2    /* 삭제여부 */
+			 ,  decode(NVL(t.DLTN_YN,'N') , 'Y', '삭제',  '') 	as  DVSN_NM_2    /* 삭제여부명 */
+		 from   RPRSRPRJT s /* (HZ)연구과제 */
+				,  RPJONRSRT t /* (HZ)공동연구자 */
+				,  CCUSRDPHT a /* (HZ)사원IF */
+		 where (s.DLTN_YN is null or s.DLTN_YN != 'Y')
+		   and  s.BSPL_CD =  #{bsplCd}           /* 사업장코드 */
+		   and  t.RSRC_PRJC_CD  = s.RSRC_PRJC_CD /* 연구과제코드 */
+		   and  a.USER_ID  (+) = t.RSRH_ID      /* 연구자ID */
+		   and  t.RSRH_DVSN_CD  != 'RAUD'     --Auditor  조회대상에서 제외
+		   and  t.RSRH_DVSN_CD  != 'RIVS'     --실태조사관 조회대상에서 제외
+		   and  t.RSRH_DVSN_CD  != 'RQCV'     --QC visitor 조회대상에서 제외
+			<if test='srchCd != null and srchCd == "R" and irbrPrjcNo != null and irbrPrjcNo != ""'>
+			  and (#{srchCd} = 'R' and upper(s.IRBR_PRJC_NO) like  '%' || pa_sm.set_ec(upper(#{irbrPrjcNo})) || '%' escape pa_sm.ec) /* IRB 과제번호 */
+			</if>
+			<if test='srchCd != null and srchCd == "C" and srchCdNm != null and srchCdNm != ""'>
+			  and (#{srchCd} = 'C' and upper(s.RSRC_PRJC_CD) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec) /* 과제코드 */
+			</if>
+			<if test='srchCd != null and srchCd == "N" and srchCdNm != null and srchCdNm != ""'>
+			  and (#{srchCd} = 'N' and upper(s.RSRC_PRJC_KRLN_NM) like '%' || pa_sm.set_ec(upper(#{srchCdNm})) || '%' escape pa_sm.ec) /* 과제명 */
+			</if>
+		 order  by  case #{srchCd} when 'N' then s.RSRC_PRJC_KRLN_NM  else s.RSRC_PRJC_CD end  asc
+					,  case #{srchCd} when 'N' then a.USER_NM else t.RSRH_ID end  asc
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup-result" type="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO">
+	
+		<result property="sortSqnc" column="SORT_SQNC"/>
+		<result property="rsrcPrjcCd" column="RSRC_PRJC_CD"/>
+		<result property="rsrcPrjcNm" column="RSRC_PRJC_NM"/>
+		<result property="rsrhId" column="RSRH_ID"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="dprtCd" column="DPRT_CD"/>
+		<result property="kornDprtNm" column="KORN_DPRT_NM"/>
+		<result property="dvsnCd1" column="DVSN_CD_1"/>
+		<result property="dvsnNm1" column="DVSN_NM_1"/>
+		<result property="dvsnCd2" column="DVSN_CD_2"/>
+		<result property="dvsnNm2" column="DVSN_NM_2"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup (과제별_연구자_Popup_목록 조회) 
+        Description :                                           hzd_jonrsrt_l01$S01_과제별_연구자_Popup_조회_DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO
+		resultMap : com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup-result
+    -->
+	<select id="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup"  parameterType="com.sds.healthcare.ehr.mis.hz.hzh.vo.HzhPrjcClbyRsrhPpupDVO"  resultMap="com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   select  /*SQL_ID: com-sds-healthcare-ehr-mis-hz-hzh-dao-HzhPrjcClbyRsrhPpupDAO-listPrjcClbyRsrhPpupKumcBackup */
+				   rownum         as SORT_SQNC    /* 순서 */
+				,  z.RSRC_PRJC_CD as RSRC_PRJC_CD /* 연구과제코드 */
+				,  z.RSRC_PRJC_NM as RSRC_PRJC_NM /* 연구과제명 */
+				,  z.RSRH_ID      as RSRH_ID      /* 연구자ID */
+				,  z.USER_NM      as USER_NM      /* 사용자명 */
+				,  z.DPRT_CD      as DPRT_CD      /* 부서코드 */
+				,  z.KORN_DPRT_NM as KORN_DPRT_NM /* 한글부서명 */
+				,  z.DVSN_CD_1    as DVSN_CD_1    /* 연구자구분코드 */
+				,  z.DVSN_NM_1    as DVSN_NM_1    /* 연구자구분명 */
+				,  z.DVSN_CD_2    as DVSN_CD_2    /* 사용여부코드 */
+				,  z.DVSN_NM_2    as DVSN_NM_2    /* 사용여부명 */
+			 from
+				  (select
+						   m.RSRC_PRJC_CD RSRC_PRJC_CD /* 연구과제코드 */
+						,  m.RSRC_PRJC_NM RSRC_PRJC_NM /* 연구과제명 */
+						,  m.RSRH_ID      RSRH_ID      /* 연구자ID */
+						,  m.USER_NM      USER_NM      /* 사용자명 */
+						,  m.DPRT_CD      DPRT_CD      /* 부서코드 */
+						,  m.KORN_DPRT_NM KORN_DPRT_NM /* 한글부서명 */
+						,  m.DVSN_CD_1    DVSN_CD_1    /* 연구자구분 */
+						,  m.DVSN_NM_1    DVSN_NM_1    /* 연구자구분 */
+						,  m.DVSN_CD_2    DVSN_CD_2    /* 사용여부 */
+						,  m.DVSN_NM_2    DVSN_NM_2    /* 사용여부 */
+					 from
+						  (select
+								   s.RSRC_PRJC_CD                                                       RSRC_PRJC_CD /* 연구과제코드 */
+								,  s.RSRC_PRJC_NM                                                       RSRC_PRJC_NM /* 연구과제명 */
+								,  t.RSRH_ID                                                            RSRH_ID      /* 연구자ID */
+								,  a.EMPY_NM                                                            USER_NM      /* 사용자명 */
+								,  b.DPRT_CD                                                            DPRT_CD      /* 부서코드 */
+								,  b.KORN_DPRT_NM                                                       KORN_DPRT_NM /* 한글부서명 */
+								,  t.RSRH_DVSN_CD                                                       DVSN_CD_1    /* 연구자구분 */
+								,  decode(t.RSRH_DVSN_CD, '0', '공동연구자', '1', '비의사(계약직)', '') DVSN_NM_1    /* 연구자구분 */
+								,  t.USE_YN                                                             DVSN_CD_2    /* 사용여부 */
+								,  decode(t.USE_YN      , 'Y',     '사용중', 'N',       '사용종료', '') DVSN_NM_2    /* 사용여부 */
+							 from
+								   RPRSRPRJT s /* (HZ)연구과제 */
+								,  RPJONRSRT t /* (HZ)공동연구자 */
+								,  HZUSERMMT a /* (HZ)사원IF */
+								,  HZDEPTMMT b /* (HZ)조직IF */
+							where (s.DEL_YN is null or s.DEL_YN != 'Y')
+							  and  s.BSPL_CD         =        #{bsplCd}           /* 사업장코드 */
+							  and  s.RSRC_PRJC_CD like '%' || #{srchCdNm} || '%' /* 검색코드[연구과제코드] */
+							  and  t.BSPL_CD         = s.BSPL_CD      /* 사업장코드 */
+							  and  t.RSRC_PRJC_CD    = s.RSRC_PRJC_CD /* 연구과제코드 */
+							  and  a.EMNO            = t.RSRH_ID      /* 연구자ID */
+							  and  b.DPRT_CD(+)      = a.ORGL_BLNG_DPRT_CD      /* 부서코드 */
+							  and  #{srchCd} = 'C'  /* 검색코드[C:연구과제코드] */
+							union  all
+						   select
+								   s.RSRC_PRJC_CD                                                       RSRC_PRJC_CD /* 연구과제코드 */
+								,  s.RSRC_PRJC_NM                                                       RSRC_PRJC_NM /* 연구과제명 */
+								,  t.RSRH_ID                                                            RSRH_ID      /* 연구자ID */
+								,  a.EMPY_NM                                                            USER_NM      /* 사용자명 */
+								,  b.DPRT_CD                                                            DPRT_CD      /* 부서코드 */
+								,  b.KORN_DPRT_NM                                                       KORN_DPRT_NM /* 한글부서명 */
+								,  t.RSRH_DVSN_CD                                                       DVSN_CD_1    /* 연구자구분 */
+								,  decode(t.RSRH_DVSN_CD, '0', '공동연구자', '1', '비의사(계약직)', '') DVSN_NM_1    /* 연구자구분 */
+								,  t.USE_YN                                                             DVSN_CD_2    /* 사용여부 */
+								,  decode(t.USE_YN      , 'Y',     '사용중', 'N',       '사용종료', '') DVSN_NM_2    /* 사용여부 */
+							 from
+								   RPRSRPRJT s /* (HZ)연구과제 */
+								,  RPJONRSRT t /* (HZ)공동연구자 */
+								,  HZUSERMMT a /* (HZ)사원IF */
+								,  HZDEPTMMT b /* (HZ)조직IF */
+							where (s.DEL_YN is null or s.DEL_YN != 'Y')
+							  and  s.BSPL_CD         =        #{bsplCd}           /* 사업장코드 */
+							  and  s.RSRC_PRJC_NM like '%' || #{srchCdNm} || '%' /* 검색코드[연구과제명] */
+							  and  t.BSPL_CD         = s.BSPL_CD      /* 사업장코드 */
+							  and  t.RSRC_PRJC_CD    = s.RSRC_PRJC_CD /* 연구과제코드 */
+							  and  a.EMNO            = t.RSRH_ID      /* 연구자ID */
+							  and  b.DPRT_CD(+)      = a.ORGL_BLNG_DPRT_CD      /* 부서코드 */
+							  and  #{srchCd} = 'N'  /* 검색코드[N:연구과제명] */
+						  ) m
+					order  by  case #{srchCd} when 'C' then m.RSRC_PRJC_CD else m.RSRC_PRJC_NM end  asc
+							,  case #{srchCd} when 'C' then m.RSRH_ID      else m.USER_NM      end  asc
+				  ) z
+			]]>
+	</select>
+
+
+
+</mapper>

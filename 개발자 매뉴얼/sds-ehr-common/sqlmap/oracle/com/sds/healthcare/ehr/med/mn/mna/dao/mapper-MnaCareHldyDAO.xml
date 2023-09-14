@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnaCareHldyDAO_sql.xml
+    Description : 
+-->
+
+<mapper namespace="MnaCareHldyDAO">
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr-result" type="com.sds.healthcare.ehr.med.mn.mna.vo.MnaCareHldyDVO">
+	  <result property="hldyYmd" column="HLDY_YMD"/>
+	  <result property="pbhlNm" column="PBHL_NM"/>
+	  <result property="pbhlDvsnCd" column="PBHL_DVSN_CD"/>
+	  <result property="hsptMdcrYn" column="HSPT_MDCR_YN"/>
+	</resultMap>
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr ()
+        Description : parameterType : com.sds.healthcare.ehr.med.mn.mna.vo.MnaCareHldyDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr"  parameterType="com.sds.healthcare.ehr.med.mn.mna.vo.MnaCareHldyDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*+ com-sds-healthcare-ehr-med-mn-mna-dao-MnaCareHldyDAO-listHldyInqr_공휴일 조회 */
+				  to_char(HLDY_YMD, 'yyyymmdd') as HLDY_YMD
+				, PBHL_NM as PBHL_NM
+				, PBHL_DVSN_CD as PBHL_DVSN_CD
+				, HSPT_MDCR_YN as HSPT_MDCR_YN
+			 from APDSPBHLT a
+				where
+				  (
+					  (#{wodvCd} = '1' and a.HLDY_YMD = to_date(#{hldyYmd},'yyyy-mm-dd'))
+					  or
+					  (#{wodvCd} = '2' and (a.HLDY_YMD between to_date(#{strtYmd},'yyyy-mm-dd') and
+															  to_date(#{fnshYmd},'yyyy-mm-dd')))
+					  or
+					  (#{wodvCd} = '3' and a.PBHL_DVSN_CD = #{pbhlDvsnCd})
+					  or
+					  (#{wodvCd} = '4' and a.HSPT_MDCR_YN = #{hsptMdcrYn})
+					  or
+					  (#{wodvCd} = '5' and a.HLDY_YMD between to_date(#{strtYmd},'yyyymm') and
+																				last_day(to_date(#{fnshYmd},'yyyymm')))
+				  )
+			order by HLDY_YMD
+			]]>
+	</select>	
+
+
+</mapper>

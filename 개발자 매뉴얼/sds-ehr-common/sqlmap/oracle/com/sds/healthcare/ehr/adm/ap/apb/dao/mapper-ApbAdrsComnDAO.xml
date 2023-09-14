@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_ApbAdrsComnDAO_sql.xml 
+    Description : -->
+<mapper namespace="ApbAdrsComnDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO">
+	
+		<result property="wodvCd" column="WODV_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy-result" useCache="true" flushCache="false">
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneDummy */
+		select '' WODV_CD
+		from dual
+	</select>
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchInsertAdrs (환자 주소 다건 등록) 
+        Description :                                           xpd_csadrst_i02$I01_고객 주소 단건 등록
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchInsertAdrs" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO" >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchInsertAdrs */
+		 into  APPTADRST
+		 (
+			   PTNO
+			,  ADRS_USGE_CD
+			,  ADRS_SNO
+			,  ZPCD
+			,  ZPAD_NM
+			,  DEAD_NM
+			,  OLNW_ADRS_DVSN_CD
+			,  PSML_RCEP_ADRS_YN
+			,  ADRS_CNFR_NEED_YN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+		 )
+		 values
+		 (
+			   #{ptno}
+			,  #{adrsUsgeCd}
+			,  (select nvl(max(ADRS_SNO), 0) + 1
+					from APPTADRST inner
+				   where inner.PTNO = #{ptno}
+					 and inner.ADRS_USGE_CD = #{adrsUsgeCd})
+			,  #{zpcd}
+			,  #{zpadNm}
+			,  #{deadNm}
+			,  nvl(#{olnwAdrsDvsnCd}, 'N')
+			,  nvl(#{psmlRcepAdrsYn}, 'N')
+			,  nvl(#{adrsCnfrNeedYn}, 'N')
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 )
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchUpdateAdrs (환자주소수정) 
+        Description :                                           xpd_csadrst_u01$I01_고객 주소 수정
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchUpdateAdrs" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO" >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchUpdateAdrs */
+		   APPTADRST
+		set
+			   ZPCD              = #{zpcd}                       /*  우편번호 */
+			,  ZPAD_NM           = #{zpadNm}                    /*  우편번호 주소명 */
+			,  DEAD_NM           = decode(instr(nvl(#{deadNm},' '),'*'), 0, #{deadNm}, DEAD_NM) /*  상세주소명 */
+			,  OLNW_ADRS_DVSN_CD = nvl(#{olnwAdrsDvsnCd}, 'N')/* 신구주소구분코드 */
+			,  PSML_RCEP_ADRS_YN = nvl(#{psmlRcepAdrsYn}, 'N')/* 우편물수령주소여부 */
+			,  ADRS_CNFR_NEED_YN = nvl(#{adrsCnfrNeedYn}, 'N')/* 주소확인필요여부 */
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO           = #{ptno}
+			and  ADRS_USGE_CD      = #{adrsUsgeCd}
+			and  ADRS_SNO          = #{adrsSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchDeleteAdrs (환자 주소삭제) 
+        Description :                                           xpd_csadrst_d01$I01_고객 주소 수정 DAM
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchDeleteAdrs" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO" >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchDeleteAdrs */
+		   APPTADRST
+		where
+		   PTNO      = #{ptno}
+		and  ADRS_USGE_CD = #{adrsUsgeCd} /* 주소용도코드 */
+		and  ADRS_SNO     = #{adrsSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchAddrMdfcHx (환자 주소 변경이력 등록) 
+        Description :                                           xpd_csadrht_i01$I01_고객 주소 변경이력 등록(다건)
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchAddrMdfcHx" parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO" >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-executeBatchAddrMdfcHx */
+		 into APPTADRHT
+		 (
+		     PTNO
+		  ,  ADRS_USGE_CD
+		  ,  ADRS_SNO
+		  ,  MDFC_DT               /* 변경일시*/
+		  ,  ZPCD 
+		  ,  ZPAD_NM
+		  ,  DEAD_NM
+		  ,  OLNW_ADRS_DVSN_CD
+		  ,  PSML_RCEP_ADRS_YN
+		  ,  ADRS_CNFR_NEED_YN
+		  ,  FRST_RGSR_ID
+		  ,  FRST_RGST_IP
+		  ,  FRST_RGST_DT
+		  ,  FRST_RGST_CLNT_PRGM_ID
+		  ,  FRST_RGST_SRVR_PRGM_ID
+		  ,  LAST_UPDR_ID
+		  ,  LAST_UPDT_IP
+		  ,  LAST_UPDT_DT
+		  ,  LAST_UPDT_CLNT_PRGM_ID
+		  ,  LAST_UPDT_SRVR_PRGM_ID
+		 )
+		 select
+		    PTNO
+		   ,  ADRS_USGE_CD
+		   ,  ADRS_SNO
+		   ,  current_timestamp              /* 변경일시*/
+		   ,  ZPCD
+		   ,  ZPAD_NM
+		   ,  DEAD_NM
+		   ,  OLNW_ADRS_DVSN_CD
+		   ,  PSML_RCEP_ADRS_YN
+		   ,  ADRS_CNFR_NEED_YN
+		   ,  FRST_RGSR_ID
+		   ,  FRST_RGST_IP
+		   ,  FRST_RGST_DT
+		   ,  FRST_RGST_CLNT_PRGM_ID
+		   ,  FRST_RGST_SRVR_PRGM_ID
+		   ,  #{gvUserId}
+		   ,  #{gvUserIp}
+		   ,  LAST_UPDT_DT
+		   ,  #{gvClntPrgmId}
+		   ,  #{gvSrvrPrgmId}
+		 from  APPTADRHT
+		 where  PTNO           = #{ptno}
+		   and  ADRS_USGE_CD      = #{adrsUsgeCd}
+		   and  ADRS_SNO          = #{adrsSno}
+	</update>
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs-result" type="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO">
+	
+		<result property="ptno" column="PTNO"/>
+		<result property="adrsUsgeCd" column="ADRS_USGE_CD"/>
+		<result property="adrsSno" column="ADRS_SNO"/>
+		<result property="zpcd" column="ZPCD"/>
+		<result property="zpadNm" column="ZPAD_NM"/>
+		<result property="deadNm" column="DEAD_NM"/>
+		<result property="olnwAdrsDvsnCd" column="OLNW_ADRS_DVSN_CD"/>
+		<result property="psmlRcepAdrsYn" column="PSML_RCEP_ADRS_YN"/>
+		<result property="adrsCnfrNeedYn" column="ADRS_CNFR_NEED_YN"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs () 
+        Description :                                           apd_ptadrst_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+		resultMap : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs-result
+    -->
+	<select id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  resultMap="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs-result" useCache="true" flushCache="false">
+		 SELECT /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-selectOneAdrsAdrs */
+		             PTNO,
+		             ADRS_USGE_CD,
+		             ADRS_SNO,
+		             ZPCD,
+		             ZPAD_NM,
+		             DEAD_NM,
+		             OLNW_ADRS_DVSN_CD,
+		             PSML_RCEP_ADRS_YN,
+		             ADRS_CNFR_NEED_YN       
+		  FROM  APPTADRSV a
+		WHERE a.PTNO    = #{ptno}
+		    AND a.ADRS_USGE_CD = #{adrsUsgeCd}
+		    AND A.ADRS_SNO = #{adrsSno}
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-updateAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-updateAdrs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  >
+		update  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-updateAdrs */
+		   APPTADRST
+		set
+			   ZPCD              = #{zpcd}                       /*  우편번호 */
+			,  ZPAD_NM           = #{zpadNm}                    /*  우편번호 주소명 */
+			,  DEAD_NM           = decode(instr(nvl(#{deadNm},' '),'*'), 0, #{deadNm}, DEAD_NM) /*  상세주소명 */
+			,  OLNW_ADRS_DVSN_CD = nvl(#{olnwAdrsDvsnCd}, 'N')/* 신구주소구분코드 */
+			,  PSML_RCEP_ADRS_YN = nvl(#{psmlRcepAdrsYn}, 'N')/* 우편물수령주소여부 */
+			,  ADRS_CNFR_NEED_YN = nvl(#{adrsCnfrNeedYn}, 'N')/* 주소확인필요여부 */
+			,  LAST_UPDR_ID      = #{gvUserId}
+			,  LAST_UPDT_IP      = #{gvUserIp}
+			,  LAST_UPDT_DT      = sysdate
+			,  LAST_UPDT_CLNT_PRGM_ID = #{gvClntPrgmId}
+			,  LAST_UPDT_SRVR_PRGM_ID = #{gvSrvrPrgmId}
+			where  PTNO           = #{ptno}
+			and  ADRS_USGE_CD      = #{adrsUsgeCd}
+			and  ADRS_SNO          = #{adrsSno}
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertAdrs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  >
+		insert  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertAdrs */
+		 into  APPTADRST
+		 (
+			   PTNO
+			,  ADRS_USGE_CD
+			,  ADRS_SNO
+			,  ZPCD
+			,  ZPAD_NM
+			,  DEAD_NM
+			,  OLNW_ADRS_DVSN_CD
+			,  PSML_RCEP_ADRS_YN
+			,  ADRS_CNFR_NEED_YN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+		 )
+		 values
+		 (
+			   #{ptno}
+			,  #{adrsUsgeCd}
+			,  (select nvl(max(ADRS_SNO), 0) + 1
+					from APPTADRST inner
+				   where inner.PTNO = #{ptno}
+					 and inner.ADRS_USGE_CD = #{adrsUsgeCd})
+			,  #{zpcd}
+			,  #{zpadNm}
+			,  #{deadNm}
+			,  nvl(#{olnwAdrsDvsnCd}, 'N')
+			,  nvl(#{psmlRcepAdrsYn}, 'N')
+			,  nvl(#{adrsCnfrNeedYn}, 'N')
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+			,  #{gvUserId}
+			,  #{gvUserIp}
+			,  sysdate
+			,  #{gvClntPrgmId}
+			,  #{gvSrvrPrgmId}
+		 )
+	</insert>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-deleteAdrs () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<delete id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-deleteAdrs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  >
+		delete  /*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-deleteAdrs */
+		   APPTADRST
+		where
+		   PTNO      = #{ptno}
+		and  ADRS_USGE_CD = #{adrsUsgeCd} /* 주소용도코드 */
+		and  ADRS_SNO     = #{adrsSno}
+	</delete>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertCopyPrpdNwbrAdrs (엄마주소 신생아주소로 복사) 
+        Description :                                           엄마주소를 신생아주소로 복사한다.
+                                            
+		parameterType : com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertCopyPrpdNwbrAdrs"  parameterType="com.sds.healthcare.ehr.adm.ap.apb.vo.ApbAdrsComnDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ap-apb-dao-ApbAdrsComnDAO-insertCopyPrpdNwbrAdrs */
+		insert  
+		 into  APPTADRST
+		 (
+			   PTNO
+			,  ADRS_USGE_CD
+			,  ADRS_SNO
+			,  ZPCD
+			,  ZPAD_NM
+			,  DEAD_NM
+			,  OLNW_ADRS_DVSN_CD
+			,  PSML_RCEP_ADRS_YN
+			,  ADRS_CNFR_NEED_YN
+			,  FRST_RGSR_ID
+			,  FRST_RGST_IP
+			,  FRST_RGST_DT
+			,  FRST_RGST_CLNT_PRGM_ID
+			,  FRST_RGST_SRVR_PRGM_ID
+			,  LAST_UPDR_ID
+			,  LAST_UPDT_IP
+			,  LAST_UPDT_DT
+			,  LAST_UPDT_CLNT_PRGM_ID
+			,  LAST_UPDT_SRVR_PRGM_ID
+		 )
+		select  
+		 	    #{nwbrPtno}
+		     ,  ADRS_USGE_CD
+		     ,  ADRS_SNO
+		     ,  ZPCD
+		     ,  ZPAD_NM
+		     ,  DEAD_NM
+		     ,  OLNW_ADRS_DVSN_CD
+		     ,  PSML_RCEP_ADRS_YN
+		     ,  ADRS_CNFR_NEED_YN
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}
+		     ,  #{gvUserId}
+		     ,  #{gvUserIp}
+		     ,  sysdate
+		     ,  #{gvClntPrgmId}
+		     ,  #{gvSrvrPrgmId}     
+		  from  APPTADRST
+		 where  1=1
+		   and  PTNO = #{prpdPtno}
+		   and  ADRS_USGE_CD = 'A'
+	</insert>
+
+</mapper>

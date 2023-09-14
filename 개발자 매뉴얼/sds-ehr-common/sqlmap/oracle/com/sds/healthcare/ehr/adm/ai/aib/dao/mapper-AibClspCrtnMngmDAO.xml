@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_AibClspCrtnMngmDAO_sql.xml 
+    Description : -->
+<mapper namespace="AibClspCrtnMngmDAO">
+
+
+
+
+
+   <!--
+        SQL Name : com-sds-healthcare-ehr-adm-ai-aib-dao-AibClspCrtnMngmDAO-executeClspDlpr1 (통합심사 입원청구명세서삭제) 
+        Description : aid_crspcft_m10
+
+		parameterType : com.sds.healthcare.ehr.adm.ai.aib.vo.AibClspCrtnMngmDVO
+    -->	
+	<select id="com-sds-healthcare-ehr-adm-ai-aib-dao-AibClspCrtnMngmDAO-executeClspDlpr1"  statementType="CALLABLE"  parameterType="com.sds.healthcare.ehr.adm.ai.aib.vo.AibClspCrtnMngmDVO"  >
+		/*SQL_ID: com-sds-healthcare-ehr-adm-ai-aib-dao-AibClspCrtnMngmDAO-executeClspDlpr1 */
+		{ call
+		      DECLARE
+			      tb_aprcrptnt   aprcrptnt%rowtype := null;  /*  tb_진료접수     */
+		  	      wk_error_msg        varchar2(1000) := null; 
+			  BEGIN
+			      select a.*
+			   		 into  tb_aprcrptnt
+			   	    from  APRCRPTNT a
+			   	  where  a.MDRP_NO = #{mdrpNo, mode=IN, jdbcType=NUMERIC, javaType=java.math.BigDecimal}
+			   	  ;
+		   		 SP_AI_C_CANCEL_REQFILE_I
+			   									  (
+			   										 #{dvsnVl, mode=IN, jdbcType=VARCHAR, javaType=string}                /*  01. 작업구분             */
+			   									  ,  #{cmdvCd, mode=IN, jdbcType=VARCHAR, javaType=string}                /*  02. 청구구분             */
+			   									  ,  tb_aprcrptnt            /*  03. tb_진료접수          */
+			   									  ,  #{gvUserId, mode=IN, jdbcType=VARCHAR, javaType=string}
+			   									  ,  #{gvUserIp, mode=IN, jdbcType=VARCHAR, javaType=string}
+			   									  ,  #{gvClntPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+			   									  ,  #{gvSrvrPrgmId, mode=IN, jdbcType=VARCHAR, javaType=string}
+			   									  ,  #{errYn, mode=INOUT, jdbcType=VARCHAR, javaType=string}                /*      에러여부             */
+		                                          ,  wk_error_msg               /*      에러메세지           */
+			   									  );
+			   		   #{errCtn, mode=INOUT, jdbcType=VARCHAR, javaType=string}  := replace(wk_error_msg, '[sp_ai_c_cancel_reqfile_i]', null);
+			   	END
+		}
+	</select>	
+</mapper>

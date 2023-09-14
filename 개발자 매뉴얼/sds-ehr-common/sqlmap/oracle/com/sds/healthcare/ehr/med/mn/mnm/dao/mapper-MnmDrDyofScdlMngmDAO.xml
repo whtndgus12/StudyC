@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MnmDrDyofScdlMngmDAO_sql.xml 
+    Description :                                      의사휴진일정 관리
+                  -->
+<mapper namespace="MnmDrDyofScdlMngmDAO">
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO">
+	
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="strtHhDvsnCd" column="STRT_HH_DVSN_CD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="fnshHhDvsnCd" column="FNSH_HH_DVSN_CD"/>
+		<result property="afiDyofResnNm" column="AFI_DYOF_RESN_NM"/>
+		<result property="drDyofUnslCtn" column="DR_DYOF_UNSL_CTN"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="admsOtdvCd" column="ADMS_OTDV_CD"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="ptcnCd" column="PTCN_CD"/>
+		<result property="ptadCmntCtn" column="PTAD_CMNT_CTN"/>
+		<result property="dyofResnCd" column="DYOF_RESN_CD"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="ptcnDt" column="PTCN_DT"/>
+		<result property="apntPtntCnt" column="APNT_PTNT_CNT"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1 () 
+        Description :                       
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1-result" useCache="true" flushCache="false">
+		/* SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1 */
+		<![CDATA[
+		SELECT  /* 의사휴진일정 조회1_MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr1 */
+		        to_char(a.STRT_YMD, 'YYYYMMDD')                                 as STRT_YMD             /* 시작일자                      */
+		     ,  a.STRT_HH_DVSN_CD                                               as STRT_HH_DVSN_CD      /* 시작시간구분코드              */
+		     ,  to_char(a.FNSH_YMD, 'YYYYMMDD')                                 as FNSH_YMD             /* 종료일자                      */
+		     ,  a.FNSH_HH_DVSN_CD                                               as FNSH_HH_DVSN_CD      /* 종료시간구분코드              */
+		     ,  (   select  MDCR_DTLS_CTRL_NM 
+		              from  MZCTRLMMT
+		             where  MDCR_CTRL_CD        =   'MM300' 
+		               and  MDCR_DTLS_CTRL_CD   =   a.DYOF_RESN_CD 
+		        )                                                               as AFI_DYOF_RESN_NM     /* AFI휴진사유명                 */
+		     ,  a.DR_DYOF_UNSL_CTN                                              as DR_DYOF_UNSL_CTN     /* 의사휴진특이내용              */
+		     ,  a.MDDR_ID                                                       as MDDR_ID              /* 진료의사ID                    */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.MDDR_ID 
+		        )                                                               as MDDR_NM              /* 진료의사명                    */
+		     ,  a.ADMS_OTDV_CD                                                  as ADMS_OTDV_CD         /* 입원외래구분코드              */
+		     ,  a.MCDP_CD                                                       as MCDP_CD              /* 진료과코드                    */
+		     ,  a.PTCN_CD                                                       as PTCN_CD              /* 원무확인코드(1:진료과,2:원무) */
+		     ,  a.PTAD_CMNT_CTN                                                 as PTAD_CMNT_CTN        /* 원무커멘트내용                */
+		     ,  a.DYOF_RESN_CD                                                  as DYOF_RESN_CD         /* 휴진사유코드                  */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.FRST_RGSR_ID 
+		        )                                                               as FRST_RGSR_NM         /* 최초등록자명                  */
+		     ,  (   select  USER_NM 
+		              from  CCUSRDPHT 
+		             where  USER_ID = a.LAST_UPDR_ID 
+		        )                                                               as LAST_UPDR_NM         /* 최종수정자명                  */
+		     ,  to_char(a.LAST_UPDT_DT, 'YYYYMMDDHH24MISS')                     as LAST_UPDT_DT         /* 최종수정일시                  */
+		     ,  to_char(a.FRST_RGST_DT, 'YYYYMMDDHH24MISS')                     as FRST_RGST_DT         /* 최초등록일시                  */
+		     ,  to_char(a.PTCN_DT, 'YYYYMMDDHH24MISS')                          as PTCN_DT              /* 원무확인일시                  */
+		     ,  a.APNT_PTNT_CNT                                                 as APNT_PTNT_CNT        /* 예약환자수                    */
+		     ,  (   select  ABRV_DPRT_CD 
+		              from  HZDEPTMMT 
+		             where  DPRT_CD = a.MCDP_CD 
+		        )                                                               as ABRV_DPRT_CD         /* 약어부서코드 */
+		  from  MDBDYOFST a
+		 where  (   to_date(#{strtYmd}, 'yyyymmdd')  between a.STRT_YMD and a.FNSH_YMD  or 
+		            to_date(#{fnshYmd}, 'yyyymmdd')  between a.STRT_YMD and a.FNSH_YMD  or 
+		            (   a.STRT_YMD >= to_date(#{strtYmd}, 'yyyymmdd') and 
+		                a.FNSH_YMD <= to_date(#{fnshYmd}, 'yyyymmdd')
+		            )
+		        )
+		   and  fn_day_check(#{strtYmd}, #{fnshYmd}) < 366
+		   and  a.MCDP_CD like #{mcdpCd} ||'%'      /*  진료과/진료부서 */
+		   and  a.MDDR_ID like #{mddrId} ||'%'      /*  진료의 */
+		   and  a.MDDR_ID   !=  'MEDAN1'            /*  마취과 대표ID MEDAN1은 제외 */
+		   and  nvl(a.DLTN_YN, 'N') = nvl(#{dltnYn}, 'N')
+		   and  (   (nvl(#{dvsnCd},' ') != 'N') or 
+		            (nvl(#{dvsnCd},' ')  = 'N' and a.PTCN_DT is null)               /* 원무미확인*/
+		        )
+		   and  (   (#{dyofResnCd} is null) or 
+		            (#{dyofResnCd} = a.DYOF_RESN_CD)
+		        )
+		   and  (   (nvl(#{rmrkCtn1}, '*') = '*') or 
+		            (#{rmrkCtn1} like '%' || nvl(ADMS_OTDV_CD, '*') || '%')
+		        )                                   /*  휴진구분 */
+		 order
+		    by  a.STRT_YMD
+		     ,  a.MDDR_ID
+		]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO">
+	
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="strtHhDvsnCd" column="STRT_HH_DVSN_CD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="fnshHhDvsnCd" column="FNSH_HH_DVSN_CD"/>
+		<result property="afiDyofResnNm" column="AFI_DYOF_RESN_NM"/>
+		<result property="drDyofUnslCtn" column="DR_DYOF_UNSL_CTN"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="admsOtdvCd" column="ADMS_OTDV_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="ptcnCd" column="PTCN_CD"/>
+		<result property="ptadCmntCtn" column="PTAD_CMNT_CTN"/>
+		<result property="dyofResnCd" column="DYOF_RESN_CD"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="ptcnDt" column="PTCN_DT"/>
+		<result property="apntPtntCnt" column="APNT_PTNT_CNT"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2 (의사휴진일정 조회2) 
+        Description :                                           mdd_bdyofst_l02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr2 */   /*+ mdd_bdyofst_l02$S01_의사휴진일정 조회2_DAM */
+		   			to_char(bdy.STRT_YMD, 'YYYYMMDD')                                  as STRT_YMD            /*  시작일자                      */
+		   		 ,  bdy.STRT_HH_DVSN_CD as STRT_HH_DVSN_CD                                                                    /*  시작시간구분코드              */
+		   		 ,  to_char(bdy.FNSH_YMD, 'YYYYMMDD')                                  as FNSH_YMD            /*  종료일자                      */
+		   		 ,  bdy.FNSH_HH_DVSN_CD as FNSH_HH_DVSN_CD                                                                    /*  종료시간구분코드              */
+					,  ( select MDCR_DTLS_CTRL_NM from MZCTRLMMT
+		   			   where MDCR_CTRL_CD = 'MM300' and MDCR_DTLS_CTRL_CD =  bdy.DYOF_RESN_CD ) as AFI_DYOF_RESN_NM    /*  AFI휴진사유명                 */
+		   		 ,  bdy.DR_DYOF_UNSL_CTN as DR_DYOF_UNSL_CTN                                                                   /*  의사휴진특이내용              */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.MDDR_ID )                  as MDDR_NM             /*  진료의사명                    */
+		   		 ,  bdy.ADMS_OTDV_CD as ADMS_OTDV_CD                                                                       /*  입원외래구분코드              */
+		   		 ,  bdy.MDDR_ID as MDDR_ID                                                                            /*  진료의사ID                    */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.FRST_RGSR_ID )             as FRST_RGSR_NM        /*  최초등록자명                  */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.LAST_UPDR_ID )             as LAST_UPDR_NM        /*  최종수정자명                  */
+		   		 ,  to_char(bdy.LAST_UPDT_DT,  'YYYYMMDDHH24MISS')                     as LAST_UPDT_DT        /*  최종수정일시                  */
+		   		 ,  bdy.MCDP_CD as MCDP_CD                                                                            /*  진료과코드                    */
+		   		 ,  bdy.PTCN_CD as PTCN_CD                                                                            /*  원무확인코드(1:진료과,2:원무) */
+		   		 ,  bdy.PTAD_CMNT_CTN as PTAD_CMNT_CTN                                                                      /*  원무커멘트내용                */
+		   		 ,  bdy.DYOF_RESN_CD as DYOF_RESN_CD                                                                       /*  휴진사유코드                  */
+		   		 ,  to_char(bdy.FRST_RGST_DT,  'YYYYMMDDHH24MISS')                     as FRST_RGST_DT        /*  최초등록일시                  */
+		   		 ,  to_char(bdy.PTCN_DT,       'YYYYMMDDHH24MISS')                     as PTCN_DT             /*  원무확인일시                  */
+					,  bdy.APNT_PTNT_CNT as APNT_PTNT_CNT                                                                      /*  예약환자수                    */
+					,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A where F_A.DPRT_CD = bdy.MCDP_CD ) as ABRV_DPRT_CD  /*  약어부서코드 */
+		   		 from
+					   MDBDYOFST bdy
+				where  bdy.PTCN_DT between  to_date(#{strtYmd}, 'yyyymmdd')
+									   and  to_date(#{fnshYmd}, 'yyyymmdd')  + .99999                          /*  원무확인일시 */
+			      and  fn_day_check(#{strtYmd}, #{fnshYmd}) < 366
+				  and  bdy.MCDP_CD          like #{mcdpCd} ||'%'                                               /*  진료과/진료부서 */
+				  and  bdy.MDDR_ID          like #{mddrId} ||'%'                                               /*  진료의 */
+				  and  bdy.MDDR_ID          != 'MEDAN1'                                                       /*  마취과 대표ID MEDAN1은 제외 */
+				  and  nvl(bdy.DLTN_YN, 'N') = nvl(#{dltnYn}, 'N')
+				  and  (  (#{dyofResnCd} is null)
+					   or (#{dyofResnCd} = bdy.DYOF_RESN_CD)
+					   )
+		   		  and   /*  휴진구분 */
+		   			   (   (nvl(#{rmrkCtn1}, '*') = '*')
+		   				or (#{rmrkCtn1} like '%' || nvl(ADMS_OTDV_CD, '*') || '%')
+		   			   )
+				order
+				   by  bdy.PTCN_DT
+					,  bdy.MDDR_ID
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO">
+	
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="strtHhDvsnCd" column="STRT_HH_DVSN_CD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="fnshHhDvsnCd" column="FNSH_HH_DVSN_CD"/>
+		<result property="afiDyofResnNm" column="AFI_DYOF_RESN_NM"/>
+		<result property="drDyofUnslCtn" column="DR_DYOF_UNSL_CTN"/>
+		<result property="mddrNm" column="MDDR_NM"/>
+		<result property="admsOtdvCd" column="ADMS_OTDV_CD"/>
+		<result property="mddrId" column="MDDR_ID"/>
+		<result property="frstRgsrNm" column="FRST_RGSR_NM"/>
+		<result property="lastUpdrNm" column="LAST_UPDR_NM"/>
+		<result property="lastUpdtDt" column="LAST_UPDT_DT"/>
+		<result property="mcdpCd" column="MCDP_CD"/>
+		<result property="ptcnCd" column="PTCN_CD"/>
+		<result property="ptadCmntCtn" column="PTAD_CMNT_CTN"/>
+		<result property="dyofResnCd" column="DYOF_RESN_CD"/>
+		<result property="frstRgstDt" column="FRST_RGST_DT"/>
+		<result property="ptcnDt" column="PTCN_DT"/>
+		<result property="apntPtntCnt" column="APNT_PTNT_CNT"/>
+		<result property="abrvDprtCd" column="ABRV_DPRT_CD"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3 (의사휴진일정 조회3) 
+        Description :                                           mdd_bdyofst_l03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3-result" useCache="true" flushCache="false">
+			<![CDATA[
+			   SELECT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlListInqr3 */   /*+ mdd_bdyofst_l03$S01_의사휴진일정 조회3_DAM */
+		   			to_char(bdy.STRT_YMD, 'YYYYMMDD')                                  as STRT_YMD            /*  시작일자                      */
+		   		 ,  bdy.STRT_HH_DVSN_CD as STRT_HH_DVSN_CD                                                                    /*  시작시간구분코드              */
+		   		 ,  to_char(bdy.FNSH_YMD, 'YYYYMMDD')                                  as FNSH_YMD            /*  종료일자                      */
+		   		 ,  bdy.FNSH_HH_DVSN_CD as FNSH_HH_DVSN_CD                                                                    /*  종료시간구분코드              */
+		   		 ,  ( select MDCR_DTLS_CTRL_NM from MZCTRLMMT
+		   				   where MDCR_CTRL_CD = 'MM300' and MDCR_DTLS_CTRL_CD =  bdy.DYOF_RESN_CD ) as AFI_DYOF_RESN_NM    /*  AFI휴진사유명                 */
+		   		 ,  bdy.DR_DYOF_UNSL_CTN as DR_DYOF_UNSL_CTN                                                                   /*  의사휴진특이내용              */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.MDDR_ID )                  as MDDR_NM             /*  진료의사명                    */
+		   		 ,  bdy.ADMS_OTDV_CD as ADMS_OTDV_CD                                                                       /*  입원외래구분코드              */
+		   		 ,  bdy.MDDR_ID as MDDR_ID                                                                            /*  진료의사ID                    */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.FRST_RGSR_ID )             as FRST_RGSR_NM        /*  최초등록자명                  */
+		   		 ,  ( select F_A.USER_NM from CCUSRDPHT F_A where F_A.USER_ID = bdy.LAST_UPDR_ID )             as LAST_UPDR_NM        /*  최종수정자명                  */
+		   		 ,  to_char(bdy.LAST_UPDT_DT,  'YYYYMMDDHH24MISS')                     as LAST_UPDT_DT        /*  최종수정일시                  */
+		   		 ,  bdy.MCDP_CD as MCDP_CD                                                                            /*  진료과코드                    */
+		   		 ,  bdy.PTCN_CD as PTCN_CD                                                                            /*  원무확인코드(1:진료과,2:원무) */
+		   		 ,  bdy.PTAD_CMNT_CTN as PTAD_CMNT_CTN                                                                      /*  원무커멘트내용                */
+		   		 ,  bdy.DYOF_RESN_CD as DYOF_RESN_CD                                                                       /*  휴진사유코드                  */
+		   		 ,  to_char(bdy.FRST_RGST_DT,  'YYYYMMDDHH24MISS')                     as FRST_RGST_DT        /*  최초등록일시                  */
+		   		 ,  to_char(bdy.PTCN_DT,       'YYYYMMDDHH24MISS')                     as PTCN_DT             /*  원무확인일시                  */
+		   		 ,  bdy.APNT_PTNT_CNT as APNT_PTNT_CNT                                                                      /*  예약환자수                    */
+		   		 ,  ( select F_A.ABRV_DPRT_CD from HZDEPTMMT F_A where F_A.DPRT_CD = bdy.MCDP_CD ) as ABRV_DPRT_CD  /*  약어부서코드 */
+				 from  APDSDRDPT dsd
+					,  MDBDYOFST bdy
+				where  1=1
+				  and  bdy.MCDP_CD          like #{mcdpCd} ||'%'                                               /*  진료과/진료부서 */
+				  and  bdy.MDDR_ID          like #{mddrId} ||'%'                                               /*  진료의 */
+				  and  ( /*  2003.11.05 김만태 추가 (선택의 조건 확대 적용:요청자-원무 김준수)   */
+						   (#{dvsnCd} = '0')  and  (bdy.ADMS_OTDV_CD in ('O', 'I', 'T'))  /*  전체               */
+						or (#{dvsnCd} = '1')  and  (bdy.ADMS_OTDV_CD in ('I', 'T'))       /*  [외래+입원]+[입원] */
+						or (#{dvsnCd} = '2')  and  (bdy.ADMS_OTDV_CD in ('T'))            /*  [외래+입원]        */
+						or (#{dvsnCd} = '3')  and  (bdy.ADMS_OTDV_CD in ('I'))            /*  [입원]             */
+						or (#{dvsnCd} = '4')  and  (bdy.ADMS_OTDV_CD in ('O'))            /*  [외래]             */
+					   )
+				  and  (  to_date(#{strtYmd}, 'yyyymmdd')  between bdy.STRT_YMD and bdy.FNSH_YMD
+					   or to_date(#{fnshYmd}, 'yyyymmdd')  between bdy.STRT_YMD and bdy.FNSH_YMD
+					   or bdy.STRT_YMD >= to_date(#{strtYmd}, 'yyyymmdd') and bdy.FNSH_YMD   <= to_date(#{fnshYmd}, 'yyyymmdd')
+					   )
+		  		      and  fn_day_check(#{strtYmd}, #{fnshYmd}) < 366				   
+				  and  bdy.MDDR_ID          != 'MEDAN1'                                                       /*  마취과 대표ID MEDAN1은 제외 */
+				  and  nvl(bdy.DLTN_YN, 'N') = nvl(#{dltnYn}, 'N')
+				  and  dsd.MCDP_CD             = bdy.MCDP_CD
+				  and  dsd.MDDR_ID             = bdy.MDDR_ID
+				  and  (  to_date(#{strtYmd}, 'yyyymmdd')  between dsd.APST_YMD and dsd.APFN_YMD
+					   or to_date(#{fnshYmd}, 'yyyymmdd')  between dsd.APST_YMD and dsd.APFN_YMD
+					   or dsd.APST_YMD >= to_date(#{strtYmd}, 'yyyymmdd') and dsd.APFN_YMD   <= to_date(#{fnshYmd}, 'yyyymmdd')
+					   )
+				  and  dsd.SMCR_YN             = 'Y'
+		   	   and  (  (#{dyofResnCd} is null)
+		   			or (#{dyofResnCd} = bdy.DYOF_RESN_CD)
+		   			)
+				order
+				   by  bdy.STRT_YMD
+					,  bdy.MDDR_ID
+				]]>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO">
+	
+		<result property="strtHhDvsnCd" column="STRT_HH_DVSN_CD"/>
+		<result property="strtYmd" column="STRT_YMD"/>
+		<result property="fnshHhDvsnCd" column="FNSH_HH_DVSN_CD"/>
+		<result property="fnshYmd" column="FNSH_YMD"/>
+		<result property="dyofResnCd" column="DYOF_RESN_CD"/>
+		<result property="mddrId1" column="MDDR_ID_1"/>
+		<result property="mcdpCd1" column="MCDP_CD_1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4 (의사휴진일정 조회4) 
+        Description :                                           mdd_bdyofst_l04
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4-result" useCache="true" flushCache="false">
+		<![CDATA[
+		select  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-listDrDyofScdlInqr4 */
+		        STRT_HH_DVSN_CD                     as STRT_HH_DVSN_CD      /* 시작시간구분코드 */
+		     ,  to_char(STRT_YMD, 'YYYYMMDD')       as STRT_YMD             /* 시작일자         */
+		     ,  FNSH_HH_DVSN_CD                     as FNSH_HH_DVSN_CD      /* 종료시간구분코드 */
+		     ,  to_char(FNSH_YMD, 'YYYYMMDD')       as FNSH_YMD             /* 종료일자         */
+		     ,  DYOF_RESN_CD                        as DYOF_RESN_CD         /* 휴진사유코드     */
+		     ,  ''                                  as MDDR_ID_1
+		     ,  ''                                  as MCDP_CD_1
+		  from  MDBDYOFST
+		 where  MCDP_CD             =   #{mcdpCd}
+		   and  MDDR_ID             =   #{mddrId}
+		   and  ADMS_OTDV_CD        =   #{admsOtdvCd}
+		   and  nvl(DLTN_YN, 'N')   =   'N'
+		]]>
+		 <choose>
+		   <when test='afiInqrDvsnNm != null and afiInqrDvsnNm == "nowDayOff"'>
+		   <!-- #{afiInqrDvsnNm} -->
+		   and  trunc(sysdate) between STRT_YMD and FNSH_YMD
+		   </when>
+		   <otherwise>
+		   and  STRT_YMD            =   to_date(#{strtYmd}, 'yyyymmdd')
+		   </otherwise>
+		 </choose>
+	</select>
+
+
+
+
+	<resultMap id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck-result" type="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO">
+	
+		<result property="inqrCnt" column="INQR_CNT"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck (의사휴진일정 등록체크) 
+        Description :                                           mdd_bdyofst_s01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+		resultMap : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck-result
+    -->
+	<select id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  resultMap="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck-result" useCache="true" flushCache="false">
+		<![CDATA[
+		   SELECT  /*SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-selectOneDrDyofScdlRgstCeck */
+				   count(*) as INQR_CNT
+			 from  MDBDYOFST
+			where  1=1
+			  and  MCDP_CD   = #{mcdpCd}
+			  and  MDDR_ID   = #{mddrId}
+			  and ((to_date(#{strtYmd}, 'yyyymmdd') between STRT_YMD and FNSH_YMD) or
+				   (to_date(#{fnshYmd}, 'yyyymmdd') between STRT_YMD and FNSH_YMD))
+			  and (
+						( #{admsOtdvCd}    is null)
+					 or ((#{admsOtdvCd} = 'T')  and ((ADMS_OTDV_CD = 'T') or
+																		(ADMS_OTDV_CD = 'I') or
+																		(ADMS_OTDV_CD = 'O')))
+					 or ((#{admsOtdvCd} != 'T') and ((ADMS_OTDV_CD = #{admsOtdvCd}) or
+																		(ADMS_OTDV_CD = 'T')))
+				  )
+			  and  nvl(DLTN_YN, 'N') = 'N'
+			]]>
+	</select>
+
+
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdl (의사휴진일정 삭제) 
+        Description :                                           mdd_bdyofst_u01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdl"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  >
+		<![CDATA[
+		   UPDATE /*+ mdd_bdyofst_u01$U01_의사휴진일정 삭제_DAM */
+				   MDBDYOFST
+			  set  DLTN_YN               = 'Y'                                                        /*  삭제여부         */
+				,  PTAD_CMNT_CTN         = #{ptadCmntCtn}                          /*  원무커멘트내용 */
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  LAST_UPDR_ID          = #{gvUserId}
+				,  LAST_UPDT_IP          = #{gvUserIp}
+				,  LAST_UPDT_DT          = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID     = #{gvSrvrPrgmId}
+			where  MCDP_CD               = #{mcdpCd}                                /*  진료과코드       */
+			  and  MDDR_ID               = #{mddrId}                                /*  진료의           */
+			  and  ADMS_OTDV_CD          = #{admsOtdvCd}                           /*  입원외래구분코드 */
+			  and  STRT_YMD              = to_date(#{strtYmd}, 'yyyymmdd')          /*  시작일자         */
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadCnfrDt (의사휴진일정 원무확인일시 수정) 
+        Description :                                           mdd_bdyofst_u02
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadCnfrDt"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadCnfrDt */   /*+ mdd_bdyofst_u02$U01_의사휴진일정 원무확인일시 수정_DAM */
+				   MDBDYOFST
+			  set  PTCN_DT               = decode(#{ptcnYn},'Y',sysdate,'C',null,PTCN_DT)
+				,  PTAD_CMNT_CTN         = decode(#{ptcnYn},'M',#{ptadCmntCtn},PTAD_CMNT_CTN)
+				,  LAST_UPDR_ID          = #{gvUserId}
+				,  LAST_UPDT_IP          = #{gvUserIp}
+				,  LAST_UPDT_DT          = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID     = #{gvSrvrPrgmId}
+			where  MCDP_CD               = #{mcdpCd}
+			  and  MDDR_ID               = #{mddrId}
+			  and  ADMS_OTDV_CD          = #{admsOtdvCd}
+			  and  STRT_YMD              = to_date(#{strtYmd}, 'YYYYMMDD')
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadRgst (의사휴진일정 원무외등록 수정) 
+        Description :                                           mdd_bdyofst_u03
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+    -->	
+	<update id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadRgst"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  >
+		<![CDATA[
+		   UPDATE  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-updateDrDyofScdlPtadRgst */   /*+ mdd_bdyofst_u03$U01_의사휴진일정 원무외등록 수정_DAM */
+				   MDBDYOFST
+			  set  STRT_HH_DVSN_CD       = #{strtHhDvsnCd}
+				,  FNSH_YMD              = to_date(#{fnshYmd}, 'YYYYMMDD')
+				,  FNSH_HH_DVSN_CD       = #{fnshHhDvsnCd}
+				,  DYOF_RESN_CD          = #{dyofResnCd}
+				,  DR_DYOF_UNSL_CTN      = #{drDyofUnslCtn}
+				,  SBDR_ID               = #{sbdrId}
+				,  PTCN_CD               = #{ptcnCd}
+				,  PTAD_CMNT_CTN         =  null              /*  원무Comment  */
+				,  PTCN_DT               =  null              /*  원무확인일시 */
+				,  ACS_COPY_YN           = #{acsCopyYn}
+				,  DLTN_YN               = 'N'
+				,  APNT_PTNT_CNT         = #{apntPtntCnt}
+				,  FRST_RGSR_ID          = #{gvUserId}   /*  최초등록자ID - 수정인데도 등록컬럼에 update한다.*/
+				,  FRST_RGST_IP          = #{gvUserIp}        /*  최초등록IP   - 수정인데도 등록컬럼에 update한다.*/
+				,  FRST_RGST_DT          = sysdate            /*  최초등록일시 - 수정인데도 등록컬럼에 update한다.*/
+				,  FRST_RGST_CLNT_PRGM_ID     = #{gvClntPrgmId}
+				,  FRST_RGST_SRVR_PRGM_ID     = #{gvSrvrPrgmId}
+				,  LAST_UPDR_ID          = #{gvUserId}
+				,  LAST_UPDT_IP          = #{gvUserIp}
+				,  LAST_UPDT_DT          = sysdate
+				,  LAST_UPDT_CLNT_PRGM_ID     = #{gvClntPrgmId}
+				,  LAST_UPDT_SRVR_PRGM_ID     = #{gvSrvrPrgmId}
+			where  MCDP_CD               = #{mcdpCd}
+			  and  MDDR_ID               = #{mddrId}
+			  and  ADMS_OTDV_CD          = #{admsOtdvCd}
+			  and  STRT_YMD              = to_date(#{strtYmd}, 'YYYYMMDD')
+			]]>
+	</update>
+
+
+
+
+    <!--
+        SQL Name : com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-insertDrDyofScdlRgst (의사휴진일정 등록) 
+        Description :                                           mdd_bdyofst_i01
+                                            
+		parameterType : com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO
+    -->	
+	<insert id="com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-insertDrDyofScdlRgst"  parameterType="com.sds.healthcare.ehr.med.mn.mnm.vo.MnmDrDyofScdlMngmDVO"  >
+		<![CDATA[
+		   INSERT  /*+ SQL_ID: com-sds-healthcare-ehr-med-mn-mnm-dao-MnmDrDyofScdlMngmDAO-insertDrDyofScdlRgst */   /*+ mdd_bdyofst_i01$I01_의사휴진일정 등록_DAM */
+			 into  MDBDYOFST
+				(
+				   MCDP_CD                              /*  진료과코드       */
+				,  MDDR_ID                              /*  진료의사ID       */
+				,  ADMS_OTDV_CD                         /*  입원외래구분코드 */
+				,  STRT_YMD                             /*  시작일자         */
+				,  STRT_HH_DVSN_CD                      /*  시작시간구분코드 */
+				,  FNSH_YMD                             /*  종료일자         */
+				,  FNSH_HH_DVSN_CD                      /*  종료시간구분코드 */
+				,  DYOF_RESN_CD                         /*  휴진사유코드     */
+				,  DR_DYOF_UNSL_CTN                     /*  의사휴진특이내용 */
+				,  SBDR_ID                              /*  대진의사ID       */
+				,  PTCN_CD                              /*  원무확인코드     */
+				,  PTAD_CMNT_CTN                        /*  원무커멘트내용   */
+				,  ACS_COPY_YN                          /*  ACS복사여부      */
+				,  DLTN_YN                              /*  삭제여부         */
+				,  APNT_PTNT_CNT                        /*  예약환자수       */
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  FRST_RGSR_ID
+				,  FRST_RGST_IP
+				,  FRST_RGST_DT
+				,  FRST_RGST_CLNT_PRGM_ID
+				,  FRST_RGST_SRVR_PRGM_ID
+				,  LAST_UPDR_ID
+				,  LAST_UPDT_IP
+				,  LAST_UPDT_DT
+				,  LAST_UPDT_CLNT_PRGM_ID
+				,  LAST_UPDT_SRVR_PRGM_ID
+				)
+		   values
+				(
+				   #{mcdpCd}                             /*  진료과코드       */
+				,  #{mddrId}                             /*  진료의사ID       */
+				,  #{admsOtdvCd}                        /*  입원외래구분코드 */
+				,  to_date(#{strtYmd}, 'YYYYMMDD')       /*  시작일자         */
+				,  #{strtHhDvsnCd}                     /*  시작시간구분코드 */
+				,  to_date(#{fnshYmd}, 'YYYYMMDD')       /*  종료일자         */
+				,  #{fnshHhDvsnCd}                     /*  종료시간구분코드 */
+				,  #{dyofResnCd}                        /*  휴진사유코드     */
+				,  #{drDyofUnslCtn}                    /*  의사휴진특이내용 */
+				,  #{sbdrId}                             /*  대진의사ID       */
+				,  #{ptcnCd}                             /*  원무확인코드     */
+				,  #{ptadCmntCtn}                       /*  원무커멘트내용   */
+				,  #{acsCopyYn}                         /*  ACS복사여부      */
+				,  'N'                                                     /*  삭제여부         */
+				,  #{apntPtntCnt}                       /*  예약환자수       */
+				/*  서버 프로그램 전환시 자동 추가된 항목 */
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				,  #{gvUserId}
+				,  #{gvUserIp}
+				,  sysdate
+				,  #{gvClntPrgmId}
+				,  #{gvSrvrPrgmId}
+				)
+			]]>
+	</insert>
+
+</mapper>
